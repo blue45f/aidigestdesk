@@ -8,6 +8,7 @@ import {
   ChevronRight,
   CircleHelp,
   Clipboard,
+  Code2,
   Copy,
   Download,
   ExternalLink,
@@ -18,6 +19,7 @@ import {
   Moon,
   Newspaper,
   PanelLeft,
+  Palette,
   Search,
   Settings2,
   Sparkles,
@@ -31,6 +33,7 @@ import type { ComponentType, ReactNode } from "react";
 import {
   benchmarkEntries,
   calculateModelCosts,
+  comparisonProviderOrder,
   comparisonRows,
   createNewsletterMarkdown,
   createPipelineExportJson,
@@ -38,6 +41,7 @@ import {
   createSourceMonitorCsv,
   curationMonitors,
   featureBacklog,
+  getBenchmarkDomainLabel,
   getCatalogStats,
   getModelById,
   getProviderLabel,
@@ -48,12 +52,15 @@ import {
   modelProfiles,
   movePipelineStage,
   personaGuides,
+  providerCatalog,
   runContentAudit,
   searchCatalog,
   SNAPSHOT_DATE,
   sources,
   updatePipeline,
   updates,
+  vibeCodingCommands,
+  type BenchmarkDomain,
   type ContentCategory,
   type CurationMonitor,
   type FeatureBacklogItem,
@@ -66,23 +73,29 @@ import {
   type SearchResults,
   type SourceRef,
   type UpdatePipelineItem,
+  type VibeCodingCommand,
 } from "@aidigestdesk/content";
 
 type ProviderFilter = ProviderId | "all";
 type CategoryFilter = ContentCategory | "all";
+type ResourceLanguageFilter = LearningResource["language"] | "all";
+type ResourceTypeFilter = LearningResource["type"] | "all";
+type BenchmarkDomainFilter = BenchmarkDomain | "all";
 
 const providerFilters: Array<{ id: ProviderFilter; label: string }> = [
   { id: "all", label: "전체" },
-  { id: "openai", label: "GPT" },
-  { id: "anthropic", label: "Claude" },
-  { id: "google", label: "Gemini" },
-  { id: "xai", label: "Grok" },
-  { id: "manus", label: "Manus" },
+  ...providerCatalog.map((provider) => ({
+    id: provider.id,
+    label: provider.shortLabel,
+  })),
 ];
 
 const categoryFilters: Array<{ id: CategoryFilter; label: string }> = [
   { id: "all", label: "전체" },
+  { id: "news", label: "뉴스" },
   { id: "updates", label: "업데이트" },
+  { id: "vibe", label: "바이브 코딩" },
+  { id: "design", label: "디자인/PPT" },
   { id: "comparison", label: "모델 비교" },
   { id: "benchmarks", label: "벤치마크" },
   { id: "manuals", label: "사용법" },
@@ -95,6 +108,9 @@ const categoryFilters: Array<{ id: CategoryFilter; label: string }> = [
 
 const navItems = [
   { href: "#updates", label: "업데이트", icon: Newspaper },
+  { href: "#webzine", label: "웹진", icon: Newspaper },
+  { href: "#vibe-coding", label: "바이브 코딩", icon: Code2 },
+  { href: "#design", label: "디자인/PPT", icon: Palette },
   { href: "#comparison", label: "모델 비교", icon: Table2 },
   { href: "#benchmarks", label: "벤치마크", icon: BarChart3 },
   { href: "#manuals", label: "사용법", icon: CircleHelp },
@@ -403,8 +419,8 @@ function Briefing({
               오늘의 AI 브리핑
             </h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
-              GPT, Claude, Gemini, Grok, Manus의 최신 스펙과 실무 판단 포인트를
-              한국어로 한 화면에서 비교합니다.
+              GPT, Claude, Gemini, Grok, Manus, Kimi, DeepSeek, Qwen, Mistral의
+              최신 스펙과 AI 바이브 코딩 판단 포인트를 한국어로 비교합니다.
             </p>
           </div>
           <a
@@ -504,6 +520,280 @@ function SourceWatch({ sources: visibleSources }: { sources: SourceRef[] }) {
         ))}
       </div>
     </aside>
+  );
+}
+
+function WebzineSection({
+  results,
+  useFallback,
+}: {
+  results: SearchResults;
+  useFallback: boolean;
+}) {
+  const magazineUpdates = (
+    results.updates.length || !useFallback
+      ? results.updates
+      : updates.filter((item) =>
+          ["news", "vibe", "design"].includes(item.category),
+        )
+  )
+    .filter((item) => ["news", "vibe", "design"].includes(item.category))
+    .slice(0, 5);
+  const lead = magazineUpdates[0];
+  const sideItems = magazineUpdates.slice(1);
+  const communityItems = (
+    results.resources.length || !useFallback
+      ? results.resources
+      : learningResources
+  )
+    .filter((resource) =>
+      ["강좌/영상", "블로그/글", "커뮤니티", "도서"].includes(resource.type),
+    )
+    .toSorted((a, b) =>
+      a.language === b.language ? 0 : a.language === "한국어" ? -1 : 1,
+    )
+    .slice(0, 6);
+
+  return (
+    <section id="webzine" className="space-y-4">
+      <SectionHeader
+        icon={Newspaper}
+        title="AI 뉴스와 커뮤니티 웹진"
+        description="모델 릴리스, AI 주권/규제 뉴스, 한국어 유튜브·블로그·도서 자료를 웹진형으로 묶었습니다."
+      />
+      {lead ? (
+        <div className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
+          <article className="rounded-lg border border-border bg-surface p-5">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-md border border-border bg-bg px-2 py-1 text-xs font-semibold text-accent">
+                {lead.category === "news"
+                  ? "뉴스"
+                  : lead.category === "vibe"
+                    ? "바이브 코딩"
+                    : "디자인/PPT"}
+              </span>
+              <span className="text-xs font-semibold text-text-subtle">
+                {lead.date} · {getProviderLabel(lead.providerId)}
+              </span>
+            </div>
+            <h2 className="mt-3 text-2xl font-semibold leading-tight text-text">
+              {lead.title}
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-text-muted">
+              {lead.summary}
+            </p>
+            <p className="mt-3 text-sm leading-6 text-text-subtle">
+              {lead.impact}
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {lead.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-subtle"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </article>
+
+          <aside className="space-y-3">
+            {sideItems.map((item) => (
+              <article
+                key={item.id}
+                className="rounded-lg border border-border bg-surface p-4"
+              >
+                <p className="text-xs font-semibold text-accent">
+                  {item.date} · {getProviderLabel(item.providerId)}
+                </p>
+                <h3 className="mt-2 text-sm font-semibold leading-5 text-text">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-xs leading-5 text-text-muted">
+                  {item.summary}
+                </p>
+              </article>
+            ))}
+          </aside>
+        </div>
+      ) : (
+        <EmptyState
+          title="조건에 맞는 웹진 기사가 없습니다"
+          body="뉴스 또는 바이브 코딩 카테고리에서 다시 확인하세요."
+        />
+      )}
+
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {communityItems.map((resource) => (
+          <a
+            key={resource.id}
+            href={resource.url}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-lg border border-border bg-surface p-4 transition hover:border-border-strong"
+          >
+            <span className="flex items-start justify-between gap-3">
+              <span>
+                <span className="rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle">
+                  {resource.language} · {resource.type}
+                </span>
+                <span className="mt-3 block text-sm font-semibold text-text">
+                  {resource.title}
+                </span>
+              </span>
+              <ExternalLink
+                className="size-3.5 shrink-0 text-text-subtle"
+                aria-hidden
+              />
+            </span>
+            <span className="mt-2 block text-xs leading-5 text-text-muted">
+              {resource.summary}
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function fitClass(fit: VibeCodingCommand["vibeCodingFit"]) {
+  switch (fit) {
+    case "매우 높음":
+      return "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300";
+    case "높음":
+      return "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-900 dark:bg-sky-950/40 dark:text-sky-300";
+    case "보통":
+      return "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300";
+    default:
+      return "border-zinc-200 bg-zinc-50 text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300";
+  }
+}
+
+function VibeCodingSection({ commands }: { commands: VibeCodingCommand[] }) {
+  return (
+    <section id="vibe-coding" className="space-y-4">
+      <SectionHeader
+        icon={Code2}
+        title="AI 바이브 코딩 허브"
+        description="전용 CLI, OpenAI 호환 API, 공식 SDK, 로컬 배포를 모델별 명령어와 운영 주의점으로 비교합니다."
+      />
+      {commands.length ? (
+        <div className="grid gap-4 xl:grid-cols-2">
+          {commands.map((command) => (
+            <article
+              key={command.id}
+              className="rounded-lg border border-border bg-surface p-4"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold text-accent">
+                    {getProviderLabel(command.providerId)} · {command.surface}
+                  </p>
+                  <h3 className="mt-1 text-base font-semibold text-text">
+                    {command.modelName}
+                  </h3>
+                </div>
+                <span
+                  className={`rounded-md border px-2.5 py-1.5 text-xs font-semibold ${fitClass(
+                    command.vibeCodingFit,
+                  )}`}
+                >
+                  {command.vibeCodingFit}
+                </span>
+              </div>
+              <p className="mt-3 text-sm leading-6 text-text-muted">
+                {command.useCase}
+              </p>
+              <pre className="mt-3 overflow-x-auto rounded-md border border-border bg-bg p-3 text-xs leading-5 text-text">
+                <code>{command.command}</code>
+              </pre>
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <TextList title="셋업 포인트" items={command.setupNotes} />
+                <TextList title="주의점" items={command.caveats} />
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          title="조건에 맞는 바이브 코딩 명령어가 없습니다"
+          body="제공사 필터를 전체로 바꾸거나 바이브 코딩 카테고리에서 다시 확인하세요."
+        />
+      )}
+    </section>
+  );
+}
+
+function DesignWorkflowSection() {
+  const designUpdates = updates
+    .filter((item) => item.category === "design")
+    .slice(0, 2);
+  const pptSignals = benchmarkEntries.filter((entry) => entry.domain === "ppt");
+
+  return (
+    <section id="design" className="space-y-4">
+      <SectionHeader
+        icon={Palette}
+        title="디자인/PPT 산출물 비교"
+        description="PPT, 웹진, 문서 기반 산출물은 모델 점수보다 입력 자료 처리, 에이전트 실행, 검수 흐름을 기준으로 비교합니다."
+      />
+      <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
+        <article className="rounded-lg border border-border bg-surface p-5">
+          <p className="text-xs font-semibold text-accent">
+            사이트맵 추가 섹션
+          </p>
+          <h3 className="mt-2 text-lg font-semibold text-text">
+            AI 웹진·PPT 제작 워크플로
+          </h3>
+          <p className="mt-2 text-sm leading-6 text-text-muted">
+            Manus는 태스크형 제작, Gemini는 영상/PDF/이미지 이해, Mistral은
+            OCR과 자체 배포 가능성, GPT/Claude는 문안과 구조화 검수에 강점을
+            둡니다.
+          </p>
+          <ul className="mt-4 space-y-2">
+            {designUpdates.map((item) => (
+              <li key={item.id} className="text-xs leading-5 text-text-muted">
+                <span className="font-semibold text-text">{item.title}</span>{" "}
+                {item.summary}
+              </li>
+            ))}
+          </ul>
+        </article>
+        <article className="rounded-lg border border-border bg-surface">
+          <div className="border-b border-border px-4 py-3">
+            <h3 className="text-sm font-semibold text-text">
+              PPT/문서 분야 운영 지표
+            </h3>
+            <p className="mt-1 text-xs text-text-subtle">
+              정량 벤치마크가 아닌 공식 기능·운영 신호는 metric으로 구분합니다.
+            </p>
+          </div>
+          <div className="divide-y divide-border">
+            {pptSignals.map((entry) => (
+              <div
+                key={entry.id}
+                className="grid gap-3 px-4 py-3 md:grid-cols-[8rem_1fr_7rem]"
+              >
+                <span className="text-xs font-semibold text-accent">
+                  {getProviderLabel(entry.providerId)}
+                </span>
+                <div>
+                  <p className="text-sm font-semibold text-text">
+                    {entry.modelName}
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-text-muted">
+                    {entry.metric} · {entry.context}
+                  </p>
+                </div>
+                <span className="text-right text-xs font-semibold text-text-subtle">
+                  {entry.score}
+                </span>
+              </div>
+            ))}
+          </div>
+        </article>
+      </div>
+    </section>
   );
 }
 
@@ -663,15 +953,42 @@ function TextList({ title, items }: { title: string; items: string[] }) {
 }
 
 function BenchmarkBoard() {
+  const [domain, setDomain] = useState<BenchmarkDomainFilter>("all");
+  const benchmarkDomainFilters: Array<{
+    id: BenchmarkDomainFilter;
+    label: string;
+  }> = [
+    "all",
+    "overall",
+    "coding",
+    "ppt",
+    "research",
+    "multimodal",
+    "cost",
+    "agent",
+  ].map((id) => ({
+    id: id as BenchmarkDomainFilter,
+    label: getBenchmarkDomainLabel(id as BenchmarkDomainFilter),
+  }));
+  const visibleEntries = benchmarkEntries.filter(
+    (entry) => domain === "all" || entry.domain === domain,
+  );
   const maxScore = Math.max(
-    ...benchmarkEntries.map((entry) => Number(entry.score.replace("*", ""))),
+    1,
+    ...visibleEntries.map((entry) => Number(entry.score.replace("*", "")) || 0),
   );
   return (
     <section id="benchmarks" className="space-y-4">
       <SectionHeader
         icon={BarChart3}
         title="벤치마크와 비용"
-        description="Artificial Analysis Intelligence Index를 기준으로 가격, 속도, latency, context를 함께 봅니다."
+        description="Artificial Analysis와 공식 문서 기반 운영 지표를 분야별로 나누어 가격, 속도, latency, context와 함께 봅니다."
+      />
+      <SegmentBar
+        label="분야"
+        items={benchmarkDomainFilters}
+        value={domain}
+        onChange={setDomain}
       />
       <div className="rounded-lg border border-border bg-surface">
         <div className="grid grid-cols-[4.5rem_1fr_5rem] gap-3 border-b border-border px-4 py-3 text-xs font-semibold text-text-subtle md:grid-cols-[5rem_1.4fr_1fr_1fr_1fr_5rem]">
@@ -682,8 +999,9 @@ function BenchmarkBoard() {
           <span className="hidden md:block">Latency</span>
           <span className="text-right">점수</span>
         </div>
-        {benchmarkEntries.map((entry) => {
-          const width = `${(Number(entry.score.replace("*", "")) / maxScore) * 100}%`;
+        {visibleEntries.map((entry) => {
+          const numericScore = Number(entry.score.replace("*", "")) || 0;
+          const width = `${Math.max(4, (numericScore / maxScore) * 100)}%`;
           return (
             <div
               key={entry.id}
@@ -697,8 +1015,10 @@ function BenchmarkBoard() {
                   {entry.modelName}
                 </p>
                 <p className="mt-1 text-xs text-text-subtle">
-                  {getProviderLabel(entry.providerId)} · {entry.context}
+                  {getProviderLabel(entry.providerId)} ·{" "}
+                  {getBenchmarkDomainLabel(entry.domain)} · {entry.context}
                 </p>
+                <p className="mt-1 text-xs text-text-muted">{entry.metric}</p>
                 <div className="mt-2 h-1.5 rounded-md bg-surface-2">
                   <div
                     className="h-1.5 rounded-md bg-accent"
@@ -721,6 +1041,14 @@ function BenchmarkBoard() {
             </div>
           );
         })}
+        {!visibleEntries.length ? (
+          <div className="px-4 py-4">
+            <EmptyState
+              title="조건에 맞는 벤치마크가 없습니다"
+              body="다른 분야 필터를 선택하면 지표가 다시 표시됩니다."
+            />
+          </div>
+        ) : null}
       </div>
     </section>
   );
@@ -735,15 +1063,20 @@ function ComparisonMatrix() {
         description="최신 모델 스펙과 제품 성격이 다른 항목은 같은 축에 놓되 해석 기준을 분리했습니다."
       />
       <div className="overflow-x-auto rounded-lg border border-border bg-surface">
-        <table className="min-w-[68rem] w-full border-collapse text-left">
+        <table className="min-w-[112rem] w-full border-collapse text-left">
           <thead>
             <tr className="border-b border-border text-xs text-text-subtle">
               <th className="w-36 px-4 py-3 font-semibold">축</th>
-              <th className="px-4 py-3 font-semibold">GPT</th>
-              <th className="px-4 py-3 font-semibold">Claude</th>
-              <th className="px-4 py-3 font-semibold">Gemini</th>
-              <th className="px-4 py-3 font-semibold">Grok</th>
-              <th className="px-4 py-3 font-semibold">Manus</th>
+              {comparisonProviderOrder.map((providerId) => {
+                const provider = providerCatalog.find(
+                  (item) => item.id === providerId,
+                );
+                return (
+                  <th key={providerId} className="px-4 py-3 font-semibold">
+                    {provider?.shortLabel ?? getProviderLabel(providerId)}
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody>
@@ -755,21 +1088,14 @@ function ComparisonMatrix() {
                 <th className="bg-bg px-4 py-4 align-top text-xs font-semibold text-text">
                   {row.axis}
                 </th>
-                <td className="px-4 py-4 align-top text-xs leading-5 text-text-muted">
-                  {row.openai}
-                </td>
-                <td className="px-4 py-4 align-top text-xs leading-5 text-text-muted">
-                  {row.anthropic}
-                </td>
-                <td className="px-4 py-4 align-top text-xs leading-5 text-text-muted">
-                  {row.google}
-                </td>
-                <td className="px-4 py-4 align-top text-xs leading-5 text-text-muted">
-                  {row.xai}
-                </td>
-                <td className="px-4 py-4 align-top text-xs leading-5 text-text-muted">
-                  {row.manus}
-                </td>
+                {comparisonProviderOrder.map((providerId) => (
+                  <td
+                    key={providerId}
+                    className="px-4 py-4 align-top text-xs leading-5 text-text-muted"
+                  >
+                    {row.cells[providerId]}
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
@@ -964,26 +1290,80 @@ function PersonaPlaybooks({ guides }: { guides: PersonaGuide[] }) {
 }
 
 function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
+  const [language, setLanguage] = useState<ResourceLanguageFilter>("all");
+  const [resourceType, setResourceType] = useState<ResourceTypeFilter>("all");
+  const languageFilters: Array<{ id: ResourceLanguageFilter; label: string }> =
+    [
+      { id: "all", label: "전체" },
+      { id: "한국어", label: "한국어" },
+      { id: "영어", label: "영어" },
+    ];
+  const typeFilters: Array<{ id: ResourceTypeFilter; label: string }> = [
+    { id: "all", label: "전체" },
+    { id: "공식 문서", label: "공식 문서" },
+    { id: "강좌/영상", label: "유튜브/영상" },
+    { id: "블로그/글", label: "블로그/글" },
+    { id: "도서", label: "도서" },
+    { id: "커뮤니티", label: "커뮤니티" },
+  ];
+  const filteredResources = useMemo(
+    () =>
+      resources
+        .filter(
+          (resource) =>
+            (language === "all" || resource.language === language) &&
+            (resourceType === "all" || resource.type === resourceType),
+        )
+        .toSorted((a, b) =>
+          a.language === b.language ? 0 : a.language === "한국어" ? -1 : 1,
+        ),
+    [language, resourceType, resources],
+  );
   const grouped = useMemo(() => {
     return {
-      official: resources.filter((resource) => resource.type === "공식 문서"),
-      videos: resources.filter((resource) => resource.type === "강좌/영상"),
-      books: resources.filter((resource) => resource.type === "도서"),
-      community: resources.filter((resource) => resource.type === "커뮤니티"),
+      official: filteredResources.filter(
+        (resource) => resource.type === "공식 문서",
+      ),
+      videos: filteredResources.filter(
+        (resource) => resource.type === "강좌/영상",
+      ),
+      blogs: filteredResources.filter(
+        (resource) => resource.type === "블로그/글",
+      ),
+      books: filteredResources.filter((resource) => resource.type === "도서"),
+      community: filteredResources.filter(
+        (resource) => resource.type === "커뮤니티",
+      ),
     };
-  }, [resources]);
+  }, [filteredResources]);
 
   return (
     <section id="learning" className="space-y-4">
       <SectionHeader
         icon={Library}
         title="강좌와 도서"
-        description="한국어 실습 채널과 공식 문서, 실무 도서를 같이 두어 입문자와 개발자가 같은 화면에서 길을 잡게 했습니다."
+        description="공식 문서, 한국어 유튜브, 기술 블로그, 도서 검색 허브를 언어와 자료 형식으로 좁혀 봅니다."
       />
-      <div className="grid gap-3 xl:grid-cols-3">
+      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-2">
+        <SegmentBar
+          label="자료 언어"
+          items={languageFilters}
+          value={language}
+          onChange={setLanguage}
+        />
+        <SegmentBar
+          label="자료 형식"
+          items={typeFilters}
+          value={resourceType}
+          onChange={setResourceType}
+        />
+      </div>
+      <div className="grid gap-3 xl:grid-cols-5">
         <ResourceColumn title="공식 문서" resources={grouped.official} />
-        <ResourceColumn title="강좌/영상" resources={grouped.videos} />
+        <ResourceColumn title="유튜브/영상" resources={grouped.videos} />
+        <ResourceColumn title="블로그/글" resources={grouped.blogs} />
         <ResourceColumn title="도서" resources={grouped.books} />
+        <ResourceColumn title="커뮤니티" resources={grouped.community} />
       </div>
     </section>
   );
@@ -1025,6 +1405,16 @@ function ResourceColumn({
               </span>
               <span className="mt-2 block text-xs leading-5 text-text-muted">
                 {resource.summary}
+              </span>
+              <span className="mt-3 flex flex-wrap gap-1.5">
+                {resource.tags.slice(0, 3).map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </span>
             </a>
           ))
@@ -1581,8 +1971,8 @@ function ModelCostCalculator() {
               {cheapest?.formattedTotal ?? "$0.00"}
             </p>
             <p className="mt-1 text-xs leading-5 text-text-subtle">
-              Manus는 태스크 실행형 서비스라 모델 토큰 단가 비교에서는
-              제외했습니다.
+              Manus, Kimi, Qwen처럼 태스크형 서비스이거나 공식 USD 토큰 단가를
+              화면에서 확정하지 못한 항목은 계산기에서 제외했습니다.
             </p>
           </div>
         </article>
@@ -1787,6 +2177,12 @@ export default function App() {
       : hasActiveFilter
         ? []
         : learningResources;
+  const visibleVibeCommands =
+    results.vibeCodingCommands.length > 0
+      ? results.vibeCodingCommands
+      : hasActiveFilter
+        ? []
+        : vibeCodingCommands;
   const visibleMonitors =
     results.curationMonitors.length > 0
       ? results.curationMonitors
@@ -1849,6 +2245,9 @@ export default function App() {
             </div>
 
             <Briefing results={results} useFallback={!hasActiveFilter} />
+            <WebzineSection results={results} useFallback={!hasActiveFilter} />
+            <VibeCodingSection commands={visibleVibeCommands} />
+            <DesignWorkflowSection />
             <ModelCards
               models={visibleModels}
               selectedModelId={selectedModel?.id ?? ""}

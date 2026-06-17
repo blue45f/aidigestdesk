@@ -24,11 +24,43 @@ describe("catalog search", () => {
     expect(results.models[0]?.providerId).toBe("openai");
   });
 
+  it("finds newly added AI providers and vibe coding commands", () => {
+    const kimiResults = searchCatalog("Kimi");
+    expect(
+      kimiResults.models.some((model) => model.id === "kimi-k27-code"),
+    ).toBe(true);
+
+    const deepSeekResults = searchCatalog("딥시크");
+    expect(
+      deepSeekResults.models.some((model) => model.id === "deepseek-v4-flash"),
+    ).toBe(true);
+
+    const qwenResults = searchCatalog("Qwen", "qwen");
+    expect(qwenResults.models.some((model) => model.id === "qwen3-2507")).toBe(
+      true,
+    );
+
+    const vibeResults = searchCatalog("aider", "all", "vibe");
+    expect(vibeResults.vibeCodingCommands.length).toBeGreaterThan(0);
+  });
+
   it("finds learning books only in books category", () => {
     const results = searchCatalog("", "all", "books");
     expect(results.resources.length).toBeGreaterThan(0);
     expect(
       results.resources.every((resource) => resource.type === "도서"),
+    ).toBe(true);
+  });
+
+  it("finds Korean official and community learning resources", () => {
+    const results = searchCatalog("한국어", "all", "learning");
+
+    expect(results.resources.length).toBeGreaterThan(0);
+    expect(
+      results.resources.some((resource) => resource.language === "한국어"),
+    ).toBe(true);
+    expect(
+      results.resources.some((resource) => resource.type === "블로그/글"),
     ).toBe(true);
   });
 
@@ -40,13 +72,14 @@ describe("catalog search", () => {
 
   it("exposes summary stats", () => {
     expect(getCatalogStats()).toMatchObject({
-      providers: 5,
-      updates: 6,
-      benchmarkRows: 6,
-      personaGuides: 4,
-      monitors: 7,
-      pipelineItems: 4,
-      costProfiles: 5,
+      providers: 9,
+      updates: 15,
+      benchmarkRows: 12,
+      vibeCommands: 8,
+      personaGuides: 5,
+      monitors: 13,
+      pipelineItems: 6,
+      costProfiles: 10,
     });
   });
 
@@ -93,7 +126,7 @@ describe("catalog search", () => {
       runsPerMonth: 1_000,
     });
 
-    expect(estimates).toHaveLength(5);
+    expect(estimates).toHaveLength(10);
     expect(estimates[0]?.totalCost).toBeLessThanOrEqual(
       estimates.at(-1)?.totalCost ?? 0,
     );
