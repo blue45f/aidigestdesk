@@ -26,13 +26,27 @@ pnpm run verify
 
 ## 배포
 
-운영 배포는 GitHub Pages와 Actions로 수행합니다.
+운영 배포는 Vercel production으로 수행합니다.
+
+- 운영 URL: `https://aidigestdesk.vercel.app/`
+- Vercel 프로젝트: `blue45fs-projects/aidigestdesk`
+- 설정 파일: `vercel.json`
+- 빌드 경로: `apps/web/dist`
+- 빌드 명령: `pnpm run build`
+- 설치 명령: `pnpm install --frozen-lockfile`
+
+로컬 CLI 배포:
+
+```bash
+npx vercel deploy --prod --yes
+```
+
+GitHub Pages는 보조 정적 배포 경로로 유지합니다.
 
 - 워크플로: `.github/workflows/deploy-pages.yml`
 - 트리거: `main` 브랜치 push 또는 GitHub Actions 수동 실행
-- 빌드 경로: `apps/web/dist`
+- URL: `https://blue45f.github.io/aidigestdesk/`
 - Pages base path: `/aidigestdesk/`
-- 예상 URL: `https://blue45f.github.io/aidigestdesk/`
 
 로컬에서 Pages 경로를 검증할 때는 아래처럼 base path를 지정해 빌드합니다.
 
