@@ -1,0 +1,31 @@
+{
+  "name": "aidigestdesk",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AIDigestDesk — GPT, Claude, Gemini, Grok, Manus 등 주요 상용 AI/LLM 업데이트·벤치마크·기능 비교·사용법·강좌/도서 정보를 한국어로 큐레이션하는 포털.",
+  "type": "module",
+  "packageManager": "pnpm@11.4.0",
+  "engines": {
+    "node": ">=24.16.0",
+    "pnpm": ">=11"
+  },
+  "scripts": {
+    "build:libs": "pnpm --filter @aidigestdesk/content run build",
+    "dev": "pnpm run build:libs && pnpm -r --parallel --stream run dev",
+    "build": "pnpm -r run build",
+    "lint": "pnpm run typecheck",
+    "typecheck": "pnpm run build:libs && pnpm -r run typecheck",
+    "test": "pnpm -r run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "snapshot:sources": "pnpm --filter @aidigestdesk/content run snapshot:sources",
+    "verify": "pnpm run typecheck && pnpm run test && pnpm run build",
+    "ci": "pnpm run verify"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "playwright": "^1.58.0",
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3"
+  }
+}
