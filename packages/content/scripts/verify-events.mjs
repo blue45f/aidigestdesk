@@ -60,7 +60,48 @@ const parseSourceIds = (entry) => {
     .filter(Boolean);
 };
 
+const normalizeTextForCompare = (value) =>
+  value
+    .normalize("NFKC")
+    .toLowerCase()
+    .replace(/[\r\n\t]+/g, " ")
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const normalizeEventTitleForCompare = (value) => normalizeTextForCompare(value);
+const normalizeUrlForCompare = (value) =>
+  value
+    .replace(/#.*$/, "")
+    .replace(/\/$/, "")
+    .trim()
+    .toLowerCase();
+
+const tokenSetFromTitle = (value) =>
+  new Set(normalizeEventTitleForCompare(value).split(" ").filter(Boolean));
+
+const calculateTitleMatchScore = (leftTitle, rightTitle) => {
+  const left = normalizeEventTitleForCompare(leftTitle);
+  const right = normalizeEventTitleForCompare(rightTitle);
+  if (!left || !right) return 0;
+  if (left === right) return 100;
+
+  const leftTokens = left.split(" ").filter(Boolean);
+  const rightTokens = right.split(" ").filter(Boolean);
+  if (!leftTokens.length || !rightTokens.length) return 0;
+
+  const rightSet = tokenSetFromTitle(right);
+  const overlap = leftTokens.filter((token) => rightSet.has(token)).length;
+  const coverage = overlap / Math.max(leftTokens.length, rightTokens.length);
+  const base = coverage * 80;
+
+  let containmentBonus = 0;
+  if (left.includes(right) || right.includes(left)) containmentBonus = 10;
+  return base + containmentBonus;
+};
+
 const tecaMappedEvents = [];
+const TECA_MATCH_THRESHOLD = 65;
 
 for (const entry of entries) {
   const id = normalizeString(parseRawField(entry, "id"));
@@ -106,10 +147,11 @@ for (const entry of entries) {
   duplicates.set(id, startCount + 1);
 
   if (url) {
-    if (urlSet.has(url)) {
+    const normalizedUrl = normalizeUrlForCompare(url);
+    if (urlSet.has(normalizedUrl)) {
       warnings.push(`url 중복: ${url}`);
     } else {
-      urlSet.set(url, true);
+      urlSet.set(normalizedUrl, true);
     }
   }
 
@@ -144,7 +186,17 @@ for (const entry of entries) {
   }
 
   if (sourceIds.includes("teca-hackathon-db")) {
-    tecaMappedEvents.push({ id, title, url, startRaw, endRaw, status, sourceIds });
+    tecaMappedEvents.push({
+      id,
+      title,
+      titleForCompare: normalizeEventTitleForCompare(title),
+      url,
+      normalizedUrl: normalizeUrlForCompare(url),
+      startRaw,
+      endRaw,
+      status,
+      sourceIds,
+    });
   }
 }
 
@@ -194,40 +246,139 @@ async function compareWithTecaData(tecaEvents) {
   const tecaByUrl = parseTecaHackathons(tecaScript.text);
   const warnings = [];
   let matched = 0;
+  let unmatched = 0;
 
   for (const event of tecaEvents) {
-    const teca = tecaByUrl.get(event.url);
-    if (!teca) {
+    const tecaCandidates = tecaByUrl.get(event.normalizedUrl) ?? [];
+    const bestMatch = selectBestTecaMatch(event, tecaCandidates);
+
+    if (!bestMatch) {
+      unmatched += 1;
       warnings.push(`TECA 미반영: ${event.title} (${event.url})`);
       continue;
     }
 
-    if (event.title !== teca.title) {
+    const {
+      candidate,
+      score,
+      reason,
+    } = bestMatch;
+
+    if (score < TECA_MATCH_THRESHOLD) {
+      unmatched += 1;
+      warnings.push(
+        `TECA 매칭 신뢰도 낮음: catalog=${event.title}, teca=${candidate.title}, score=${score}, url=${event.url}${reason ? `, 이유=${reason}` : ""}`,
+      );
+      continue;
+    }
+
+    if (event.title !== candidate.title) {
       warnings.push(
         `TECA 제목 불일치: catalog=${event.title}, teca=${teca.title}, url=${event.url}`,
       );
     }
-    if (event.startRaw !== teca.startDate) {
+    if (event.startRaw !== candidate.startDate) {
       warnings.push(
         `TECA 시작일 불일치: catalog=${event.startRaw || "<empty>"}, teca=${
-          teca.startDate
+          candidate.startDate
         }, title=${event.title}`,
       );
     }
-    if ((event.endRaw || event.startRaw) !== teca.endDate) {
+    if ((event.endRaw || event.startRaw) !== candidate.endDate) {
       warnings.push(
         `TECA 종료일 불일치: catalog=${event.endRaw || event.startRaw}, teca=${
-          teca.endDate
+          candidate.endDate
         }, title=${event.title}`,
       );
     }
     matched += 1;
   }
 
+  if (unmatched > 0) {
+    warnings.unshift(
+      `TECA 교차검증 매칭 불일치: ${unmatched}건 (총 ${tecaEvents.length}건)`,
+    );
+  }
+  warnings.unshift(`TECA 교차검증 매칭: ${matched}/${tecaEvents.length}건`);
+
   return {
     warnings,
     matches: matched,
   };
+}
+
+function selectBestTecaMatch(event, candidates) {
+  if (candidates.length === 0) return null;
+
+  let best = { candidate: null, score: -1, reason: "" };
+
+  for (const candidate of candidates) {
+    const titleScore = calculateTitleMatchScore(
+      event.titleForCompare,
+      candidate.titleForCompare,
+    );
+    const dateMatchScore = getDateMatchScore(
+      event.startRaw,
+      event.endRaw,
+      candidate.startDate,
+      candidate.endDate,
+    );
+    const score = titleScore + dateMatchScore;
+    const reason = buildMatchReason(
+      event.title,
+      candidate.title,
+      event.startRaw,
+      candidate.startDate,
+      event.endRaw,
+      candidate.endDate,
+      dateMatchScore,
+    );
+
+    if (score > best.score) {
+      best = { candidate, score, reason };
+    }
+  }
+
+  return best.score < 40 ? null : best;
+}
+
+function buildMatchReason(
+  catalogTitle,
+  tecaTitle,
+  catalogStart,
+  tecaStart,
+  catalogEnd,
+  tecaEnd,
+  dateScore,
+) {
+  const reasons = [];
+  if (dateScore === 0) {
+    reasons.push("날짜 미매칭");
+  }
+  if (!isTitleOverlap(catalogTitle, tecaTitle)) {
+    reasons.push("제목 유사도 낮음");
+  }
+  return reasons.join("; ");
+}
+
+function isTitleOverlap(catalogTitle, tecaTitle) {
+  return calculateTitleMatchScore(catalogTitle, tecaTitle) >= 60;
+}
+
+function getDateMatchScore(
+  catalogStartDate,
+  catalogEndDate,
+  tecaStartDate,
+  tecaEndDate,
+) {
+  const catalogStart = catalogStartDate || "";
+  const catalogEnd = catalogEndDate || catalogStartDate || "";
+  let score = 0;
+
+  if (tecaStartDate && catalogStart === tecaStartDate) score += 40;
+  if (tecaEndDate && catalogEnd && catalogEnd === tecaEndDate) score += 20;
+
+  return score;
 }
 
 async function loadTecaScript() {
@@ -280,11 +431,15 @@ function parseTecaHackathons(scriptText) {
       body.match(/\brecruitEnd:\s*([^,\n]+)/)?.[1] ?? "",
     );
 
-    map.set(link, {
+    const normalizedLink = normalizeUrlForCompare(link);
+    const existing = map.get(normalizedLink) ?? [];
+    const item = {
       title,
+      titleForCompare: normalizeEventTitleForCompare(title),
       startDate: convertKoreanDateToISO(recruitStart),
       endDate: convertKoreanDateToISO(recruitEnd),
-    });
+    };
+    map.set(normalizedLink, [...existing, item]);
   }
 
   return map;

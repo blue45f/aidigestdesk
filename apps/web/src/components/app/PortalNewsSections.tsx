@@ -30,7 +30,10 @@ import {
 import { useMemo, useState } from "react";
 
 import { EmptyState, SectionHeader, SegmentBar } from "@/components/app/CommonUi";
-import { getBrowserLocaleContext } from "@/utils/environment";
+import {
+  type LocaleAwareFilterDefaults,
+  getLocaleAwareFilterDefaults,
+} from "@/utils/environment";
 
 const stats = getCatalogStats();
 
@@ -297,25 +300,6 @@ function formatCommunityProviderLabels(resource: { providerIds?: ProviderId[] })
   return resource.providerIds
     .map((providerId) => getProviderLabel(providerId) ?? "기타")
     .join(" · ");
-}
-
-type LocaleAwareFilterDefaults = {
-  eventAreaScope: EventScheduleAreaScope;
-  eventRegion: EventScheduleRegionFilter;
-  eventLanguage: EventScheduleLanguageFilter;
-  communityLanguage: WebzineCommunityLanguageFilter;
-};
-
-function getLocaleAwareFilterDefaults(): LocaleAwareFilterDefaults {
-  const browserContext = getBrowserLocaleContext();
-  const isDomesticUser = browserContext.isDomestic;
-
-  return {
-    eventAreaScope: isDomesticUser ? "국내" : "국외",
-    eventRegion: isDomesticUser ? "국내" : "all",
-    eventLanguage: isDomesticUser ? "한국어" : "영어",
-    communityLanguage: isDomesticUser ? "한국어" : "영어",
-  };
 }
 
 export function Briefing({
@@ -813,6 +797,8 @@ export function WebzineSection({
   results: SearchResults;
   useFallback: boolean;
 }) {
+  const localeAwareDefaults: LocaleAwareFilterDefaults =
+    getLocaleAwareFilterDefaults();
   const [newsCategoryFilter, setNewsCategoryFilter] =
     useState<WebzineNewsCategoryFilter>("all");
   const [newsSortMode, setNewsSortMode] =
@@ -827,8 +813,8 @@ export function WebzineSection({
   const [communitySortDirection, setCommunitySortDirection] =
     useState<WebzineCommunitySortDirection>("asc");
   const [communityLanguageFilter, setCommunityLanguageFilter] =
-    useState<WebzineCommunityLanguageFilter>(() =>
-      getLocaleAwareFilterDefaults().communityLanguage,
+    useState<WebzineCommunityLanguageFilter>(
+      () => localeAwareDefaults.communityLanguage,
     );
   const [communityTypeFilter, setCommunityTypeFilter] =
     useState<WebzineCommunityTypeFilter>("all");
@@ -1130,7 +1116,7 @@ export function WebzineSection({
               onClick={() => {
                 setCommunityQuery("");
                 setCommunityLanguageFilter(
-                  getLocaleAwareFilterDefaults().communityLanguage,
+                  localeAwareDefaults.communityLanguage,
                 );
                 setCommunityTypeFilter("all");
                 setCommunitySortMode("language");
@@ -1256,7 +1242,8 @@ function EventCalendarBoard() {
     startOfMonth(parseDate(SNAPSHOT_DATE)),
   );
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const localeAwareDefaults = getLocaleAwareFilterDefaults();
+  const localeAwareDefaults: LocaleAwareFilterDefaults =
+    getLocaleAwareFilterDefaults();
   const [selectedType, setSelectedType] = useState<EventScheduleType | "all">(
     "all",
   );
