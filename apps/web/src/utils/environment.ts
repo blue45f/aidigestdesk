@@ -12,23 +12,30 @@ export type LocaleAwareFilterDefaults = {
   resourceLanguage: "koreanOrCaption" | "all" | "한국어" | "영어";
 };
 
-const DOMESTIC_LANGUAGE_PREFIXES = ["ko", "ko-kr", "ko_kr"] as const;
 const DOMESTIC_TIMEZONE_HINTS = ["asia/seoul", "asia/pyongyang", "asia/jeju"] as const;
+const KOREAN_LOCALE_PATTERNS = [
+  "ko",
+  "ko-kr",
+  "ko_kr",
+  "ko-krx",
+] as const;
 
 export function getBrowserLocaleContext(): BrowserLocaleContext {
   if (typeof Intl === "undefined") {
     return { isDomestic: false, locale: "", timeZone: "" };
   }
 
-  const localeFromNavigator =
-    typeof navigator !== "undefined"
-      ? (navigator.languages?.[0] || navigator.language || "")
-      : "";
-  const locale = (
-    localeFromNavigator ||
-    Intl.DateTimeFormat().resolvedOptions().locale ||
-    ""
-  ).toLowerCase();
+  const candidateLocales = [
+    ...((typeof navigator !== "undefined" && Array.from(navigator.languages ?? [])) || []),
+    Intl.DateTimeFormat().resolvedOptions().locale || "",
+    "",
+  ]
+    .map((value) => value.toLowerCase())
+    .filter(Boolean);
+  const locale =
+    candidateLocales.find((value) => value.length > 0) ??
+    Intl.DateTimeFormat().resolvedOptions().locale.toLowerCase() ??
+    "";
 
   let timeZone = "";
   try {
@@ -37,15 +44,18 @@ export function getBrowserLocaleContext(): BrowserLocaleContext {
     timeZone = "";
   }
 
-  const isKoreanLocale = DOMESTIC_LANGUAGE_PREFIXES.some((prefix) =>
-    locale === prefix || locale.startsWith(`${prefix}-`),
+  const hasKoreanLocaleHint = candidateLocales.some((value) =>
+    KOREAN_LOCALE_PATTERNS.some(
+      (localePattern) =>
+        value.startsWith(`${localePattern}-`) || value === localePattern,
+    ),
   );
   const isKoreanTimeZone = DOMESTIC_TIMEZONE_HINTS.some((tzHint) =>
     timeZone.includes(tzHint),
   );
 
   return {
-    isDomestic: isKoreanLocale || isKoreanTimeZone,
+    isDomestic: hasKoreanLocaleHint || isKoreanTimeZone,
     locale,
     timeZone,
   };
