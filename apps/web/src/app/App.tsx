@@ -351,6 +351,14 @@ function sourceKindLabel(kind: SourceRef["kind"]) {
   }
 }
 
+const sourceKindFilters: Array<{ id: SourceKindFilter; label: string }> = [
+  { id: "all", label: "전체" },
+  { id: "official", label: sourceKindLabel("official") },
+  { id: "benchmark", label: sourceKindLabel("benchmark") },
+  { id: "publisher", label: sourceKindLabel("publisher") },
+  { id: "community", label: sourceKindLabel("community") },
+];
+
 function accentBorder(profile: ModelProfile) {
   switch (profile.accent) {
     case "green":
@@ -2093,6 +2101,7 @@ function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
   const [resourceProvider, setResourceProvider] =
     useState<ResourceProviderFilter>("all");
   const [focus, setFocus] = useState<ResourceFocusFilter>("all");
+  const [sourceKind, setSourceKind] = useState<SourceKindFilter>("all");
   const [tag, setTag] = useState("all");
   const languageFilters: Array<{ id: ResourceLanguageFilter; label: string }> =
     [
@@ -2152,12 +2161,25 @@ function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
             (resourceProvider === "all" ||
               resource.providerIds?.includes(resourceProvider)) &&
             matchesResourceFocus(resource, focus) &&
+            (sourceKind === "all" ||
+              getSources(resource.sourceIds).some(
+                (source) => source.kind === sourceKind,
+              )) &&
             (tag === "all" || resource.tags.includes(tag)),
         )
         .toSorted((a, b) =>
           a.language === b.language ? 0 : a.language === "한국어" ? -1 : 1,
         ),
-    [focus, language, level, resourceProvider, resourceType, resources, tag],
+    [
+      focus,
+      language,
+      level,
+      resourceProvider,
+      resourceType,
+      resources,
+      sourceKind,
+      tag,
+    ],
   );
   const grouped = useMemo(() => {
     return {
@@ -2222,6 +2244,12 @@ function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
           items={levelFilters}
           value={level}
           onChange={setLevel}
+        />
+        <SegmentBar
+          label="출처 성격"
+          items={sourceKindFilters}
+          value={sourceKind}
+          onChange={setSourceKind}
         />
         <label className="block">
           <span className="text-xs font-semibold text-text-subtle">
@@ -2293,6 +2321,7 @@ function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
                 setLevel("all");
                 setResourceProvider("all");
                 setFocus("all");
+                setSourceKind("all");
                 setTag("all");
               }}
               className="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
@@ -3186,13 +3215,6 @@ function NumberField({
 function SourcesSection({ sourceItems }: { sourceItems: SourceRef[] }) {
   const [kind, setKind] = useState<SourceKindFilter>("all");
   const [publisherQuery, setPublisherQuery] = useState("");
-  const sourceKindFilters: Array<{ id: SourceKindFilter; label: string }> = [
-    { id: "all", label: "전체" },
-    { id: "official", label: "공식" },
-    { id: "benchmark", label: "벤치마크" },
-    { id: "publisher", label: "출판사/기관" },
-    { id: "community", label: "커뮤니티" },
-  ];
   const filteredSources = sourceItems.filter(
     (source) =>
       (kind === "all" || source.kind === kind) &&
