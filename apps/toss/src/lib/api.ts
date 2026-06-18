@@ -1,10 +1,13 @@
 import data from '../sample-data.json';
 
-export interface Source {
-  id: string; title: string; publisher: string; kind: string; kindLabel: string;
-  priority: string; url: string; excerpt: string;
+export interface Update {
+  id: string; title: string; provider: string; date: string;
+  summary: string; impact: string; tags: string[]; url: string;
 }
 
-const items: Source[] = ((data as { items?: Source[] }).items || []);
-export function getSources(): Source[] { return items; }
-export function getSource(id: string): Source | undefined { return items.find((s) => s.id === id); }
+const items: Update[] = ((data as { items?: Update[] }).items || [])
+  .slice()
+  .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+export function getUpdates(): Update[] { return items; }
+export function getUpdate(id: string): Update | undefined { return items.find((u) => u.id === id); }
