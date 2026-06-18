@@ -12,6 +12,7 @@ import {
   updates,
   type SearchResults,
   type SourceRef,
+  type SourceKind,
 } from "@aidigestdesk/content";
 import {
   CalendarDays,
@@ -67,10 +68,17 @@ type WebzineCommunityLanguageFilter = "all" | "한국어" | "영어";
 type WebzineCommunityTypeFilter = "all" | "강좌/영상" | "블로그/글" | "커뮤니티" | "도서";
 type WebzineCommunitySortMode = "language" | "title" | "type" | "provider";
 type WebzineCommunitySortDirection = "asc" | "desc";
+type WebzineListLimit = number;
 type EventPromotionSortMode = "date" | "title" | "provider" | "type";
 type EventPromotionSortDirection = "asc" | "desc";
 type EventCalendarAgendaSortMode = "date" | "title" | "organizer" | "status";
 type EventCalendarAgendaSortDirection = "asc" | "desc";
+type BriefingSortMode = "date" | "title" | "provider" | "category" | "impact";
+type BriefingSortDirection = "asc" | "desc";
+type BriefingProviderFilter = "all" | ProviderId | "market";
+type SourceWatchSortMode = "publisher" | "title" | "kind" | "note" | "checked";
+type SourceWatchSortDirection = "asc" | "desc";
+type SourceWatchKindFilter = "all" | SourceKind;
 
 const scheduleRegionFilters: Array<{ id: EventScheduleRegionFilter; label: string }> = [
   { id: "all", label: "전체" },
@@ -297,11 +305,86 @@ export function Briefing({
   results: SearchResults;
   useFallback: boolean;
 }) {
-  const topUpdates = results.updates.length
-    ? results.updates.slice(0, 3)
-    : useFallback
-      ? updates.slice(0, 3)
-      : [];
+  const [briefingQuery, setBriefingQuery] = useState("");
+  const [briefingProviderFilter, setBriefingProviderFilter] =
+    useState<BriefingProviderFilter>("all");
+  const [briefingSortMode, setBriefingSortMode] =
+    useState<BriefingSortMode>("date");
+  const [briefingSortDirection, setBriefingSortDirection] =
+    useState<BriefingSortDirection>("desc");
+  const [briefingLimit, setBriefingLimit] =
+    useState<WebzineListLimit>(3);
+  const briefingSourceData =
+    results.updates.length || !useFallback ? results.updates : updates;
+  const briefingProviders = useMemo(() => {
+    const providers = Array.from(
+      new Set(briefingSourceData.map((item) => item.providerId)),
+    ).toSorted((left, right) => (left || "기타").localeCompare(right || "기타"));
+    return ["all", ...providers] as BriefingProviderFilter[];
+  }, [briefingSourceData]);
+  const briefSortFilters: Array<{ id: BriefingSortMode; label: string }> = [
+    { id: "date", label: "날짜" },
+    { id: "title", label: "제목" },
+    { id: "provider", label: "제공사" },
+    { id: "category", label: "카테고리" },
+    { id: "impact", label: "임팩트" },
+  ];
+  const briefSortDirectionFilters: Array<{
+    id: BriefingSortDirection;
+    label: string;
+  }> = [
+    { id: "asc", label: "오름차순" },
+    { id: "desc", label: "내림차순" },
+  ];
+  const searchBriefing = briefingQuery.trim().toLocaleLowerCase("ko-KR");
+  const filteredBriefingUpdates = useMemo(() => {
+    const direction = briefingSortDirection === "asc" ? 1 : -1;
+    return briefingSourceData
+      .filter(
+        (item) =>
+          briefingProviderFilter === "all" ||
+          item.providerId === briefingProviderFilter,
+      )
+      .filter((item) => {
+        if (!searchBriefing) return true;
+        return `${item.title} ${item.summary} ${item.impact} ${item.date} ${item.tags.join(
+          " ",
+        )} ${webzineNewsCategoryLabel(item.category)}`
+          .toLocaleLowerCase("ko-KR")
+          .includes(searchBriefing);
+      })
+      .toSorted((left, right) => {
+        if (briefingSortMode === "date") {
+          return left.date.localeCompare(right.date) * direction;
+        }
+        if (briefingSortMode === "title") {
+          return left.title.localeCompare(right.title) * direction;
+        }
+        if (briefingSortMode === "provider") {
+          return (
+            (getProviderLabel(left.providerId) ?? "기타").localeCompare(
+              getProviderLabel(right.providerId) ?? "기타",
+            ) * direction
+          );
+        }
+        if (briefingSortMode === "category") {
+          return webzineNewsCategoryLabel(left.category).localeCompare(
+            webzineNewsCategoryLabel(right.category),
+          ) * direction;
+        }
+        return left.impact.localeCompare(right.impact) * direction;
+      });
+  }, [
+    briefingProviderFilter,
+    briefingSortDirection,
+    briefingSortMode,
+    briefingSourceData,
+    searchBriefing,
+  ]);
+  const visibleBriefingUpdates =
+    briefingLimit === 0
+      ? filteredBriefingUpdates
+      : filteredBriefingUpdates.slice(0, briefingLimit);
   return (
     <section
       id="updates"
@@ -327,6 +410,107 @@ export function Briefing({
             벤치마크 원문 <ExternalLink className="size-3.5" aria-hidden />
           </a>
         </div>
+        <div className="mt-4 grid gap-2 xl:grid-cols-[1.4fr_1fr_1fr_1fr_1.1fr]">
+          <label className="block xl:col-span-2">
+            <span className="text-xs font-semibold text-text-subtle">브리핑 검색</span>
+            <div className="relative mt-2">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-subtle" />
+              <input
+                value={briefingQuery}
+                onChange={(event) => setBriefingQuery(event.target.value)}
+                placeholder="제목, 임팩트, 키워드"
+                className="h-10 w-full rounded-md border border-border bg-bg px-9 py-2 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+              />
+            </div>
+          </label>
+          <label className="block">
+            <span className="text-xs font-semibold text-text-subtle">
+              제공사
+            </span>
+            <select
+              value={briefingProviderFilter}
+              onChange={(event) =>
+                setBriefingProviderFilter(
+                  event.target.value as BriefingProviderFilter,
+                )
+              }
+              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+            >
+              {briefingProviders.map((provider) => (
+                <option key={provider} value={provider}>
+                  {provider === "all" ? "전체" : getProviderLabel(provider)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <span className="text-xs font-semibold text-text-subtle">정렬</span>
+            <select
+              value={briefingSortMode}
+              onChange={(event) =>
+                setBriefingSortMode(event.target.value as BriefingSortMode)
+              }
+              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+            >
+              {briefSortFilters.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <span className="text-xs font-semibold text-text-subtle">
+              정렬 방향
+            </span>
+            <select
+              value={briefingSortDirection}
+              onChange={(event) =>
+                setBriefingSortDirection(
+                  event.target.value as BriefingSortDirection,
+                )
+              }
+              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+            >
+              {briefSortDirectionFilters.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
+            <select
+              value={briefingLimit}
+              onChange={(event) => setBriefingLimit(Number(event.target.value))}
+              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+            >
+              <option value={0}>전체</option>
+              <option value={3}>3개</option>
+              <option value={5}>5개</option>
+              <option value={10}>10개</option>
+            </select>
+          </label>
+        </div>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-bg p-2 px-3">
+          <p className="text-xs font-semibold text-text-subtle">
+            표시 {visibleBriefingUpdates.length}개 / 전체 {filteredBriefingUpdates.length}개
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setBriefingQuery("");
+              setBriefingProviderFilter("all");
+              setBriefingSortMode("date");
+              setBriefingSortDirection("desc");
+              setBriefingLimit(3);
+            }}
+            className="rounded-md border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-text-muted transition hover:text-text"
+          >
+            초기화
+          </button>
+        </div>
         <div className="mt-5 grid gap-2 sm:grid-cols-5">
           {providerSummary.map((item) => (
             <div
@@ -341,8 +525,8 @@ export function Briefing({
           ))}
         </div>
         <div className="mt-5 space-y-3">
-          {topUpdates.length ? (
-            topUpdates.map((item) => (
+          {visibleBriefingUpdates.length ? (
+            visibleBriefingUpdates.map((item) => (
               <article
                 key={item.id}
                 className="grid gap-3 rounded-md border border-border bg-bg p-4 md:grid-cols-[8rem_1fr]"
@@ -377,13 +561,84 @@ export function Briefing({
         </div>
       </div>
       <SourceWatch
-        sources={results.sources.length ? results.sources : sources.slice(0, 5)}
+        sources={results.sources.length ? results.sources : sources}
       />
     </section>
   );
 }
 
 function SourceWatch({ sources: visibleSources }: { sources: SourceRef[] }) {
+  const [sourceWatchQuery, setSourceWatchQuery] = useState("");
+  const [sourceWatchKindFilter, setSourceWatchKindFilter] =
+    useState<SourceWatchKindFilter>("all");
+  const [sourceWatchSortMode, setSourceWatchSortMode] =
+    useState<SourceWatchSortMode>("checked");
+  const [sourceWatchSortDirection, setSourceWatchSortDirection] =
+    useState<SourceWatchSortDirection>("desc");
+  const [sourceWatchLimit, setSourceWatchLimit] =
+    useState<WebzineListLimit>(3);
+  const sourceWatchSortFilters: Array<{ id: SourceWatchSortMode; label: string }> =
+    [
+      { id: "publisher", label: "출처" },
+      { id: "title", label: "제목" },
+      { id: "kind", label: "출처 성격" },
+      { id: "note", label: "메모" },
+      { id: "checked", label: "확인일" },
+    ];
+  const sourceWatchKindFilters = useMemo(() => {
+    const kindValues = Array.from(new Set(visibleSources.map((source) => source.kind)));
+    return ["all", ...kindValues] as SourceWatchKindFilter[];
+  }, [visibleSources]);
+  const sourceWatchDirectionFilters: Array<{
+    id: SourceWatchSortDirection;
+    label: string;
+  }> = [
+    { id: "asc", label: "오름차순" },
+    { id: "desc", label: "내림차순" },
+  ];
+  const sourceWatchSearch = sourceWatchQuery.trim().toLocaleLowerCase("ko-KR");
+  const filteredSourceWatch = useMemo(
+    () =>
+      visibleSources
+        .filter((source) =>
+          sourceWatchKindFilter === "all" || source.kind === sourceWatchKindFilter,
+        )
+        .filter((source) => {
+          if (!sourceWatchSearch) return true;
+          return `${source.publisher} ${source.title} ${source.note} ${source.kind}`
+            .toLocaleLowerCase("ko-KR")
+            .includes(sourceWatchSearch);
+        })
+        .toSorted((left, right) => {
+          const direction =
+            sourceWatchSortDirection === "asc" ? 1 : -1;
+          if (sourceWatchSortMode === "publisher") {
+            return left.publisher.localeCompare(right.publisher) * direction;
+          }
+          if (sourceWatchSortMode === "title") {
+            return left.title.localeCompare(right.title) * direction;
+          }
+          if (sourceWatchSortMode === "kind") {
+            return left.kind.localeCompare(right.kind) * direction;
+          }
+          if (sourceWatchSortMode === "note") {
+            return left.note.localeCompare(right.note) * direction;
+          }
+          return right.lastChecked.localeCompare(left.lastChecked) * direction;
+        }),
+    [
+      sourceWatchKindFilter,
+      sourceWatchSearch,
+      sourceWatchSortDirection,
+      sourceWatchSortMode,
+      visibleSources,
+    ],
+  );
+  const visibleFilteredSources =
+    sourceWatchLimit === 0
+      ? filteredSourceWatch
+      : filteredSourceWatch.slice(0, sourceWatchLimit);
+
   return (
     <aside className="rounded-lg border border-border bg-surface p-5">
       <div className="flex items-center justify-between gap-3">
@@ -391,7 +646,120 @@ function SourceWatch({ sources: visibleSources }: { sources: SourceRef[] }) {
         <Gauge className="size-4 text-text-subtle" aria-hidden />
       </div>
       <div className="mt-4 space-y-3">
-        {visibleSources.slice(0, 3).map((source) => (
+        <div className="grid gap-2">
+          <label className="block">
+            <span className="text-xs font-semibold text-text-subtle">출처 검색</span>
+            <div className="relative mt-2">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-subtle" />
+              <input
+                value={sourceWatchQuery}
+                onChange={(event) => setSourceWatchQuery(event.target.value)}
+                placeholder="공식 문서, 공식 채널, 벤치마크"
+                className="h-10 w-full rounded-md border border-border bg-bg px-9 py-2 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+              />
+            </div>
+          </label>
+          <div className="grid gap-2 xl:grid-cols-2">
+            <label className="block">
+              <span className="text-xs font-semibold text-text-subtle">
+                출처 성격
+              </span>
+              <select
+                value={sourceWatchKindFilter}
+                onChange={(event) =>
+                  setSourceWatchKindFilter(
+                    event.target.value as SourceWatchKindFilter,
+                  )
+                }
+                className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+              >
+                {sourceWatchKindFilters.map((kind) => (
+                  <option key={kind} value={kind}>
+                    {kind === "all" ? "전체" : kind}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block">
+              <span className="text-xs font-semibold text-text-subtle">정렬</span>
+              <select
+                value={sourceWatchSortMode}
+                onChange={(event) =>
+                  setSourceWatchSortMode(
+                    event.target.value as SourceWatchSortMode,
+                  )
+                }
+                className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+              >
+                {sourceWatchSortFilters.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div className="grid gap-2 xl:grid-cols-3">
+            <label className="block">
+              <span className="text-xs font-semibold text-text-subtle">
+                정렬 방향
+              </span>
+              <select
+                value={sourceWatchSortDirection}
+                onChange={(event) =>
+                  setSourceWatchSortDirection(
+                    event.target.value as SourceWatchSortDirection,
+                  )
+                }
+                className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+              >
+                {sourceWatchDirectionFilters.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block">
+              <span className="text-xs font-semibold text-text-subtle">
+                표시 개수
+              </span>
+              <select
+                value={sourceWatchLimit}
+                onChange={(event) =>
+                  setSourceWatchLimit(Number(event.target.value))
+                }
+                className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+              >
+                <option value={0}>전체</option>
+                <option value={3}>3개</option>
+                <option value={5}>5개</option>
+                <option value={10}>10개</option>
+              </select>
+            </label>
+            <div className="rounded-md border border-border bg-bg p-2">
+              <p className="text-xs font-semibold text-text-subtle">
+                표시 {visibleFilteredSources.length}개 / 전체 {filteredSourceWatch.length}개
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setSourceWatchQuery("");
+                  setSourceWatchKindFilter("all");
+                  setSourceWatchSortMode("checked");
+                  setSourceWatchSortDirection("desc");
+                  setSourceWatchLimit(3);
+                }}
+                className="mt-2 rounded-md border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-text-muted transition hover:text-text"
+              >
+                초기화
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="mt-4 space-y-3">
+        {visibleFilteredSources.map((source) => (
           <a
             key={source.id}
             href={source.url}
@@ -433,6 +801,7 @@ export function WebzineSection({
     useState<WebzineNewsSortDirection>("desc");
   const [newsQuery, setNewsQuery] = useState("");
   const [communityQuery, setCommunityQuery] = useState("");
+  const [newsLimit, setNewsLimit] = useState<WebzineListLimit>(5);
   const [communitySortMode, setCommunitySortMode] =
     useState<WebzineCommunitySortMode>("language");
   const [communitySortDirection, setCommunitySortDirection] =
@@ -441,6 +810,7 @@ export function WebzineSection({
     useState<WebzineCommunityLanguageFilter>("한국어");
   const [communityTypeFilter, setCommunityTypeFilter] =
     useState<WebzineCommunityTypeFilter>("all");
+  const [communityLimit, setCommunityLimit] = useState<WebzineListLimit>(6);
 
   const newsCategoryFilters: Array<{
     id: WebzineNewsCategoryFilter;
@@ -544,14 +914,15 @@ export function WebzineSection({
       useFallback,
     ],
   );
-  const sortedMagazineUpdates = filteredNewsItems.slice(0, 5);
-  const lead = sortedMagazineUpdates[0];
-  const sideItems = sortedMagazineUpdates.slice(1);
+  const visibleMagazineUpdates =
+    newsLimit === 0 ? filteredNewsItems : filteredNewsItems.slice(0, newsLimit);
+  const lead = visibleMagazineUpdates[0];
+  const sideItems = visibleMagazineUpdates.slice(1);
 
   const searchCommunity = communityQuery
     .trim()
     .toLocaleLowerCase("ko-KR");
-  const communityItems = useMemo(
+  const filteredCommunityItems = useMemo(
     () =>
       (
         results.resources.length || !useFallback
@@ -588,8 +959,7 @@ export function WebzineSection({
           if (communitySortMode === "type")
             return left.type.localeCompare(right.type) * direction;
           return left.title.localeCompare(right.title) * direction;
-        })
-        .slice(0, 6),
+        }),
     [
       communityLanguageFilter,
       searchCommunity,
@@ -600,6 +970,10 @@ export function WebzineSection({
       useFallback,
     ],
   );
+  const visibleCommunityItems =
+    communityLimit === 0
+      ? filteredCommunityItems
+      : filteredCommunityItems.slice(0, communityLimit);
 
   return (
     <section id="webzine" className="space-y-4">
@@ -608,7 +982,7 @@ export function WebzineSection({
         title="AI 뉴스와 커뮤니티 웹진"
         description="모델 릴리스, AI 주권/규제 뉴스, 한국어 유튜브·블로그·도서 자료를 웹진형으로 묶었습니다."
       />
-      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1fr_8rem_8rem_10rem]">
+      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1fr_8rem_8rem_8rem_auto]">
         <SegmentBar
           label="웹진 구분"
           items={newsCategoryFilters}
@@ -636,10 +1010,36 @@ export function WebzineSection({
           value={newsSortDirection}
           onChange={setNewsSortDirection}
         />
+        <label className="block">
+          <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
+          <select
+            value={newsLimit}
+            onChange={(event) => setNewsLimit(Number(event.target.value))}
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+          >
+            <option value={0}>전체</option>
+            <option value={5}>5개</option>
+            <option value={10}>10개</option>
+            <option value={20}>20개</option>
+          </select>
+        </label>
+        <button
+          type="button"
+          onClick={() => {
+            setNewsQuery("");
+            setNewsCategoryFilter("all");
+            setNewsSortMode("date");
+            setNewsSortDirection("desc");
+            setNewsLimit(5);
+          }}
+          className="rounded-md border border-border bg-bg px-2.5 py-2 text-xs font-semibold text-text-muted transition hover:text-text"
+        >
+          초기화
+        </button>
         <div className="rounded-md border border-border bg-bg p-3">
           <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
           <p className="mt-1 text-lg font-semibold text-text">
-            {filteredNewsItems.length}개
+            표시 {visibleMagazineUpdates.length}개 / 전체 {filteredNewsItems.length}개
           </p>
         </div>
       </div>
@@ -675,6 +1075,19 @@ export function WebzineSection({
             </div>
           </div>
           <label className="block">
+            <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
+            <select
+              value={communityLimit}
+              onChange={(event) => setCommunityLimit(Number(event.target.value))}
+              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+            >
+              <option value={0}>전체</option>
+              <option value={6}>6개</option>
+              <option value={9}>9개</option>
+              <option value={12}>12개</option>
+            </select>
+          </label>
+          <label className="block">
             <span className="text-xs font-semibold text-text-subtle">
               자료 검색
             </span>
@@ -685,6 +1098,26 @@ export function WebzineSection({
               className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
             />
           </label>
+          <div className="rounded-md border border-border bg-bg p-3">
+            <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
+            <p className="mt-1 text-lg font-semibold text-text">
+              표시 {visibleCommunityItems.length}개 / 전체 {filteredCommunityItems.length}개
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setCommunityQuery("");
+                setCommunityLanguageFilter("한국어");
+                setCommunityTypeFilter("all");
+                setCommunitySortMode("language");
+                setCommunitySortDirection("asc");
+                setCommunityLimit(6);
+              }}
+              className="mt-2 rounded-md border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-text-muted transition hover:text-text"
+            >
+              초기화
+            </button>
+          </div>
         </div>
       </div>
       {lead ? (
@@ -751,9 +1184,9 @@ export function WebzineSection({
         />
       )}
 
-      {communityItems.length ? (
+      {visibleCommunityItems.length ? (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {communityItems.map((resource) => (
+          {visibleCommunityItems.map((resource) => (
             <a
               key={resource.id}
               href={resource.url}

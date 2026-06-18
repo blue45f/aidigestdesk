@@ -13,6 +13,8 @@ type ModelCostSortMode =
 type ModelCostSortDirection = "asc" | "desc";
 type EventCostSortMode = "model" | "normal" | "event" | "saved";
 type EventCostSortDirection = "asc" | "desc";
+type CostEstimateListLimit = number;
+type EventEstimateListLimit = number;
 
 export function ModelCostCalculator() {
   const [scenario, setScenario] = useState({
@@ -24,6 +26,8 @@ export function ModelCostCalculator() {
   const [costSortMode, setCostSortMode] = useState<ModelCostSortMode>("total");
   const [costSortDirection, setCostSortDirection] =
     useState<ModelCostSortDirection>("asc");
+  const [costEstimateLimit, setCostEstimateLimit] =
+    useState<CostEstimateListLimit>(0);
   const cheapest = estimates[0];
   const costSortModeFilters: Array<{
     id: ModelCostSortMode;
@@ -66,6 +70,8 @@ export function ModelCostCalculator() {
       }
     });
   }, [costSortDirection, costSortMode, estimates]);
+  const visibleCostEstimates =
+    costEstimateLimit === 0 ? sortedEstimates : sortedEstimates.slice(0, costEstimateLimit);
 
   const updateScenario = (key: keyof typeof scenario, value: string) => {
     const parsed = Number(value);
@@ -116,7 +122,7 @@ export function ModelCostCalculator() {
         </article>
 
         <article className="overflow-hidden rounded-lg border border-border bg-surface">
-          <div className="grid gap-2 border-b border-border px-4 py-3 md:grid-cols-3">
+          <div className="grid gap-2 border-b border-border px-4 py-3 md:grid-cols-4">
             <SegmentBar
               label="정렬"
               items={costSortModeFilters}
@@ -129,8 +135,28 @@ export function ModelCostCalculator() {
               value={costSortDirection}
               onChange={setCostSortDirection}
             />
+            <label className="block">
+              <span className="text-xs font-semibold text-text-subtle">
+                표시 개수
+              </span>
+              <select
+                value={costEstimateLimit}
+                onChange={(event) =>
+                  setCostEstimateLimit(Number(event.target.value))
+                }
+                className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+              >
+                <option value={0}>전체</option>
+                <option value={12}>12개</option>
+                <option value={24}>24개</option>
+                <option value={36}>36개</option>
+              </select>
+            </label>
             <div className="rounded-md border border-border bg-bg px-3 py-2 text-xs font-semibold text-text-subtle">
-              <span>표시 {sortedEstimates.length}개</span>
+              <span>
+                표시 {visibleCostEstimates.length}개 / 전체{" "}
+                {sortedEstimates.length}개
+              </span>
             </div>
           </div>
           <div className="overflow-x-auto">
@@ -141,7 +167,7 @@ export function ModelCostCalculator() {
                 <span className="text-right">출력</span>
                 <span className="text-right">월 합계</span>
               </div>
-              {sortedEstimates.map((estimate) => (
+              {visibleCostEstimates.map((estimate) => (
                 <div
                   key={estimate.profile.id}
                   className="grid grid-cols-[1fr_6rem_6rem_6rem] gap-3 border-b border-border px-4 py-3 last:border-b-0"
@@ -214,6 +240,8 @@ export function EventCostComparisonSection() {
     useState<EventCostSortMode>("saved");
   const [eventSortDirection, setEventSortDirection] =
     useState<EventCostSortDirection>("desc");
+  const [eventEstimateLimit, setEventEstimateLimit] =
+    useState<EventEstimateListLimit>(0);
   const eventSortModeFilters: Array<{
     id: EventCostSortMode;
     label: string;
@@ -236,9 +264,7 @@ export function EventCostComparisonSection() {
   const discountFactor =
     creditMode === "double-credit" || creditMode === "half-price" ? 0.5 : 1;
   const sortedEventEstimates = useMemo(() => {
-    const estimates = calculateModelCosts(scenario)
-      .slice(0, 6)
-      .map((estimate) => ({
+    const estimates = calculateModelCosts(scenario).map((estimate) => ({
         ...estimate,
         adjustedTotal: estimate.totalCost * discountFactor,
       }));
@@ -264,6 +290,10 @@ export function EventCostComparisonSection() {
       }
     });
   }, [discountFactor, eventSortDirection, eventSortMode, scenario]);
+  const visibleEventEstimates =
+    eventEstimateLimit === 0
+      ? sortedEventEstimates
+      : sortedEventEstimates.slice(0, eventEstimateLimit);
 
   return (
     <section id="event-costs" className="space-y-4">
@@ -326,27 +356,47 @@ export function EventCostComparisonSection() {
         </article>
 
         <article className="overflow-hidden rounded-lg border border-border bg-surface">
-          <div className="grid gap-2 border-b border-border px-4 py-3 md:grid-cols-2">
-            <SegmentBar
-              label="정렬"
-              items={eventSortModeFilters}
-              value={eventSortMode}
-              onChange={setEventSortMode}
+        <div className="grid gap-2 border-b border-border px-4 py-3 md:grid-cols-3">
+          <SegmentBar
+            label="정렬"
+            items={eventSortModeFilters}
+            value={eventSortMode}
+            onChange={setEventSortMode}
             />
             <SegmentBar
               label="정렬 방향"
-              items={eventSortDirectionFilters}
-              value={eventSortDirection}
-              onChange={setEventSortDirection}
-            />
-          </div>
+            items={eventSortDirectionFilters}
+            value={eventSortDirection}
+            onChange={setEventSortDirection}
+          />
+          <label className="block">
+            <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
+            <select
+              value={eventEstimateLimit}
+              onChange={(event) =>
+                setEventEstimateLimit(Number(event.target.value))
+              }
+              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+            >
+              <option value={0}>전체</option>
+              <option value={6}>6개</option>
+              <option value={12}>12개</option>
+              <option value={18}>18개</option>
+            </select>
+          </label>
+        </div>
+        <div className="grid border-b border-border px-4 py-3 text-xs">
+          <span className="font-semibold text-text-subtle">
+            표시 {visibleEventEstimates.length}개 / 전체 {sortedEventEstimates.length}개
+          </span>
+        </div>
           <div className="grid grid-cols-[1fr_6rem_6rem] gap-3 border-b border-border px-4 py-3 text-xs font-semibold text-text-subtle md:grid-cols-[1.4fr_7rem_7rem_7rem]">
             <span>모델</span>
             <span className="text-right">일반</span>
             <span className="text-right">이벤트</span>
             <span className="hidden text-right md:block">절감</span>
           </div>
-            {sortedEventEstimates.map((estimate) => {
+            {visibleEventEstimates.map((estimate) => {
               const saved = estimate.totalCost - estimate.adjustedTotal;
             return (
               <div
@@ -374,6 +424,9 @@ export function EventCostComparisonSection() {
               </div>
             );
           })}
+          {!visibleEventEstimates.length ? (
+            <p className="px-4 py-3 text-sm text-text-subtle">조건에 맞는 비교 대상이 없습니다.</p>
+          ) : null}
         </article>
       </div>
     </section>

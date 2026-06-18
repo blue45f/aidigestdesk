@@ -17,6 +17,7 @@ type SourceSortMode =
   | "lastChecked"
   | "note";
 type SourceSortDirection = "asc" | "desc";
+type SourceListLimit = number;
 
 export function SourcesSection({
   sourceItems,
@@ -28,6 +29,7 @@ export function SourcesSection({
   const [sortMode, setSortMode] = useState<SourceSortMode>("title");
   const [sortDirection, setSortDirection] =
     useState<SourceSortDirection>("asc");
+  const [sourceLimit, setSourceLimit] = useState<SourceListLimit>(0);
 
   const sortModeFilters: Array<{ id: SourceSortMode; label: string }> = [
     { id: "title", label: "제목" },
@@ -74,21 +76,25 @@ export function SourcesSection({
           default:
             return 0;
         }
-      });
+    });
   }, [kind, publisherQuery, sortDirection, sortMode, sourceItems]);
+  const visibleSources =
+    sourceLimit === 0 ? filteredSources : filteredSources.slice(0, sourceLimit);
 
   const resetFilters = () => {
     setKind("all");
     setPublisherQuery("");
     setSortMode("title");
     setSortDirection("asc");
+    setSourceLimit(0);
   };
 
   const isResetDisabled =
     kind === "all" &&
     publisherQuery.trim() === "" &&
     sortMode === "title" &&
-    sortDirection === "asc";
+    sortDirection === "asc" &&
+    sourceLimit === 0;
 
   return (
     <section id="sources" className="space-y-4">
@@ -127,10 +133,23 @@ export function SourcesSection({
           value={sortDirection}
           onChange={setSortDirection}
         />
+        <label className="block">
+          <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
+          <select
+            value={sourceLimit}
+            onChange={(event) => setSourceLimit(Number(event.target.value))}
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+          >
+            <option value={0}>전체</option>
+            <option value={12}>12개</option>
+            <option value={24}>24개</option>
+            <option value={48}>48개</option>
+          </select>
+        </label>
         <div className="rounded-md border border-border bg-bg p-3">
           <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
           <p className="mt-1 text-lg font-semibold text-text">
-            {filteredSources.length}개
+            표시 {visibleSources.length}개 / 전체 {filteredSources.length}개
           </p>
           <button
             type="button"
@@ -143,9 +162,9 @@ export function SourcesSection({
         </div>
       </div>
 
-      {filteredSources.length ? (
+      {visibleSources.length ? (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {filteredSources.map((source) => (
+          {visibleSources.map((source) => (
             <a
               key={source.id}
               href={source.url}

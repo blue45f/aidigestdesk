@@ -48,6 +48,7 @@ type ModelSpecSortMode = "label" | "value";
 type ModelSourceSortMode = "publisher" | "kind" | "checked";
 type ComparisonMatrixSortMode = "axis" | "filled" | "coverage";
 type ComparisonMatrixSortDirection = "asc" | "desc";
+type ListLimit = number;
 
 function parseNumericMetric(value: string) {
   const normalized = value.replace(/,/g, "").trim();
@@ -130,6 +131,7 @@ export function ModelCards({
     useState<ModelCardSortMode>("model");
   const [cardSortDirection, setCardSortDirection] =
     useState<ModelCardSortDirection>("asc");
+  const [modelLimit, setModelLimit] = useState<ListLimit>(0);
   const modelQueryTerms = useMemo(() => getSearchTerms(modelQuery), [modelQuery]);
 
   const modelSortDirectionFilters: Array<{
@@ -221,6 +223,15 @@ export function ModelCards({
       statusFilter,
     ],
   );
+  const visibleCards =
+    modelLimit === 0 ? filteredCards : filteredCards.slice(0, modelLimit);
+  const isModelCardsResetDisabled =
+    modelQuery === "" &&
+    statusFilter === "all" &&
+    providerFilter === "all" &&
+    cardSortMode === "model" &&
+    cardSortDirection === "asc" &&
+    modelLimit === 0;
 
   useEffect(() => {
     const selectedInList = filteredCards.some(
@@ -289,27 +300,42 @@ export function ModelCards({
           value={cardSortMode}
           onChange={setCardSortMode}
         />
-        <SegmentBar
-          label="정렬 방향"
-          items={modelSortDirectionFilters}
-          value={cardSortDirection}
-          onChange={setCardSortDirection}
-        />
-        <div className="rounded-md border border-border bg-bg p-3">
-          <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
-          <p className="mt-1 text-lg font-semibold text-text">
-            {filteredCards.length}개
-          </p>
+            <SegmentBar
+              label="정렬 방향"
+              items={modelSortDirectionFilters}
+              value={cardSortDirection}
+              onChange={setCardSortDirection}
+            />
+            <label className="block">
+              <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
+              <select
+                value={modelLimit}
+                onChange={(event) => setModelLimit(Number(event.target.value))}
+                className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+              >
+                <option value={0}>전체</option>
+                <option value={12}>12개</option>
+                <option value={24}>24개</option>
+                <option value={36}>36개</option>
+              </select>
+            </label>
+          <div className="rounded-md border border-border bg-bg p-3">
+              <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
+              <p className="mt-1 text-lg font-semibold text-text">
+                표시 {visibleCards.length}개 / 전체 {filteredCards.length}개
+              </p>
           <button
             type="button"
+            disabled={isModelCardsResetDisabled}
             onClick={() => {
               setProviderFilter("all");
-            setStatusFilter("all");
-            setModelQuery("");
-            setCardSortMode("model");
-            setCardSortDirection("asc");
+              setStatusFilter("all");
+              setModelQuery("");
+              setCardSortMode("model");
+              setCardSortDirection("asc");
+              setModelLimit(0);
             }}
-            className="mt-3 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+            className="mt-3 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text disabled:cursor-not-allowed disabled:opacity-60"
           >
             초기화
           </button>
@@ -317,7 +343,7 @@ export function ModelCards({
       </div>
       {filteredCards.length ? (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-          {filteredCards.map((profile) => (
+          {visibleCards.map((profile) => (
             <button
               key={profile.id}
               type="button"
@@ -376,16 +402,20 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
   const profileSources = getSources(profile.sourceIds);
   const [modelSpecSortMode, setModelSpecSortMode] =
     useState<ModelSpecSortMode>("label");
-  const [modelSortDirection, setModelSortDirection] =
+  const [modelSpecSortDirection, setModelSpecSortDirection] =
     useState<ModelCardSortDirection>("asc");
   const [modelSourceSortMode, setModelSourceSortMode] =
     useState<ModelSourceSortMode>("publisher");
   const [modelSourceKindFilter, setModelSourceKindFilter] =
     useState<SourceKindFilter>("all");
+  const [modelSourceSortDirection, setModelSourceSortDirection] =
+    useState<ModelCardSortDirection>("asc");
+  const [specLimit, setSpecLimit] = useState<ListLimit>(0);
+  const [sourceLimit, setSourceLimit] = useState<ListLimit>(0);
   const sortedSpecs = useMemo(
     () =>
       [...profile.specs].toSorted((left, right) => {
-        const direction = modelSortDirection === "asc" ? 1 : -1;
+        const direction = modelSpecSortDirection === "asc" ? 1 : -1;
         if (modelSpecSortMode === "label") {
           return left.label.localeCompare(right.label, "ko") * direction;
         }
@@ -399,7 +429,7 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
         }
         return left.value.localeCompare(right.value, "ko") * direction;
       }),
-    [modelSortDirection, modelSpecSortMode, profile.specs],
+    [modelSpecSortDirection, modelSpecSortMode, profile.specs],
   );
   const sortedSources = useMemo(() => {
     return profileSources
@@ -408,7 +438,7 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
           modelSourceKindFilter === "all" || source.kind === modelSourceKindFilter,
       )
       .toSorted((left, right) => {
-        const direction = modelSortDirection === "asc" ? 1 : -1;
+        const direction = modelSourceSortDirection === "asc" ? 1 : -1;
         if (modelSourceSortMode === "publisher") {
           return left.publisher.localeCompare(right.publisher, "ko") * direction;
         }
@@ -425,9 +455,21 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
   }, [
     modelSourceKindFilter,
     modelSourceSortMode,
-    modelSortDirection,
+    modelSourceSortDirection,
     profileSources,
   ]);
+  const visibleSpecs =
+    specLimit === 0 ? sortedSpecs : sortedSpecs.slice(0, specLimit);
+  const visibleSources =
+    sourceLimit === 0 ? sortedSources : sortedSources.slice(0, sourceLimit);
+  const isModelDetailResetDisabled =
+    modelSpecSortMode === "label" &&
+    modelSpecSortDirection === "asc" &&
+    modelSourceSortMode === "publisher" &&
+    modelSourceKindFilter === "all" &&
+    modelSourceSortDirection === "asc" &&
+    specLimit === 0 &&
+    sourceLimit === 0;
   return (
     <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
       <article className="rounded-lg border border-border bg-surface p-5">
@@ -455,7 +497,7 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
       </article>
       <article className="rounded-lg border border-border bg-surface p-5">
         <h3 className="text-sm font-semibold text-text">스펙 요약</h3>
-        <div className="mt-4 grid gap-2 border-t border-border pt-3 xl:grid-cols-2">
+        <div className="mt-4 grid gap-2 border-t border-border pt-3 xl:grid-cols-3">
           <label>
             <span className="text-xs font-semibold text-text-subtle">
               스펙 정렬
@@ -471,56 +513,119 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
               <option value="value">값</option>
             </select>
           </label>
-          <div className="flex items-end gap-2">
-            <button
-              type="button"
-              onClick={() =>
-                setModelSortDirection((current) =>
-                  current === "asc" ? "desc" : "asc",
-                )
-              }
-              className="inline-flex h-10 w-full items-center justify-center rounded-md border border-border bg-bg px-3 text-xs font-semibold text-text-subtle transition hover:text-text"
+          <button
+            type="button"
+            onClick={() =>
+              setModelSpecSortDirection((current) =>
+                current === "asc" ? "desc" : "asc",
+              )
+            }
+            className="inline-flex h-10 w-full items-center justify-center rounded-md border border-border bg-bg px-3 text-xs font-semibold text-text-subtle transition hover:text-text"
+          >
+            스펙 방향 {modelSpecSortDirection === "asc" ? "오름차순" : "내림차순"}
+          </button>
+          <label>
+            <span className="text-xs font-semibold text-text-subtle">스펙 표시</span>
+            <select
+              value={specLimit}
+              onChange={(event) => setSpecLimit(Number(event.target.value))}
+              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
             >
-              방향 {modelSortDirection === "asc" ? "오름차순" : "내림차순"}
-            </button>
-            <label className="block flex-1">
-              <span className="text-xs font-semibold text-text-subtle">
-                출처 필터
-              </span>
-              <select
-                value={modelSourceKindFilter}
-                onChange={(event) =>
-                  setModelSourceKindFilter(event.target.value as SourceKindFilter)
-                }
-                className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
-              >
-                {sourceKindFilters.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="block flex-1">
-              <span className="text-xs font-semibold text-text-subtle">
-                출처 정렬
-              </span>
-              <select
-                value={modelSourceSortMode}
-                onChange={(event) =>
-                  setModelSourceSortMode(event.target.value as ModelSourceSortMode)
-                }
-                className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
-              >
-                  <option value="publisher">출처</option>
-                  <option value="kind">출처 성격</option>
-                  <option value="checked">확인일</option>
-              </select>
-            </label>
-          </div>
+              <option value={0}>전체</option>
+              <option value={5}>5개</option>
+              <option value={10}>10개</option>
+              <option value={20}>20개</option>
+            </select>
+          </label>
+          <label>
+            <span className="text-xs font-semibold text-text-subtle">
+              출처 필터
+            </span>
+            <select
+              value={modelSourceKindFilter}
+              onChange={(event) =>
+                setModelSourceKindFilter(event.target.value as SourceKindFilter)
+              }
+              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+            >
+              {sourceKindFilters.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span className="text-xs font-semibold text-text-subtle">
+              출처 정렬
+            </span>
+            <select
+              value={modelSourceSortMode}
+              onChange={(event) =>
+                setModelSourceSortMode(event.target.value as ModelSourceSortMode)
+              }
+              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+            >
+              <option value="publisher">출처</option>
+              <option value="kind">출처 성격</option>
+              <option value="checked">확인일</option>
+            </select>
+          </label>
+          <button
+            type="button"
+            onClick={() =>
+              setModelSourceSortDirection((current) =>
+                current === "asc" ? "desc" : "asc",
+              )
+            }
+            className="inline-flex h-10 w-full items-center justify-center rounded-md border border-border bg-bg px-3 text-xs font-semibold text-text-subtle transition hover:text-text"
+          >
+            출처 방향{" "}
+            {modelSourceSortDirection === "asc" ? "오름차순" : "내림차순"}
+          </button>
+          <label>
+            <span className="text-xs font-semibold text-text-subtle">
+              출처 표시
+            </span>
+            <select
+              value={sourceLimit}
+              onChange={(event) => setSourceLimit(Number(event.target.value))}
+              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+            >
+              <option value={0}>전체</option>
+              <option value={4}>4개</option>
+              <option value={8}>8개</option>
+              <option value={16}>16개</option>
+            </select>
+          </label>
+        </div>
+        <div className="mt-4 rounded-md border border-border bg-bg p-3">
+          <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
+          <p className="mt-1 text-sm font-semibold text-text">
+            스펙 {visibleSpecs.length}개 / 전체 {sortedSpecs.length}개
+          </p>
+          <p className="mt-1 text-sm font-semibold text-text">
+            출처 {visibleSources.length}개 / 전체 {sortedSources.length}개
+          </p>
+          <button
+            type="button"
+            disabled={isModelDetailResetDisabled}
+            onClick={() => {
+              setModelSpecSortMode("label");
+              setModelSpecSortDirection("asc");
+              setModelSourceSortMode("publisher");
+              setModelSourceKindFilter("all");
+              setModelSourceSortDirection("asc");
+              setSpecLimit(0);
+              setSourceLimit(0);
+            }}
+            className="mt-3 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            초기화
+          </button>
         </div>
         <dl className="mt-4 space-y-2">
-          {sortedSpecs.map((spec) => (
+                {visibleSpecs.map((spec) => (
             <div
               key={spec.label}
               className="flex items-start justify-between gap-4 rounded-md border border-border bg-bg p-3"
@@ -533,7 +638,7 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
           ))}
         </dl>
         <div className="mt-4 flex flex-wrap gap-2">
-          {sortedSources.map((source) => (
+                {visibleSources.map((source) => (
             <a
               key={source.id}
               href={source.url}
@@ -558,6 +663,7 @@ export function BenchmarkBoard() {
   const [sortMode, setSortMode] = useState<BenchmarkSortMode>("score");
   const [sortDirection, setSortDirection] =
     useState<BenchmarkSortDirection>("desc");
+  const [benchmarkLimit, setBenchmarkLimit] = useState<ListLimit>(0);
   const deferredQuery = useDeferredValue(query);
   const searchTerms = useMemo(() => getSearchTerms(deferredQuery), [
     deferredQuery,
@@ -734,6 +840,8 @@ export function BenchmarkBoard() {
     1,
     ...visibleEntries.map((entry) => parseNumericMetric(entry.score) ?? 0),
   );
+  const pagedEntries =
+    benchmarkLimit === 0 ? visibleEntries : visibleEntries.slice(0, benchmarkLimit);
   const coverageItems = useMemo(() => {
     const sources = visibleEntries.flatMap((entry) => getSources(entry.sourceIds));
     return [
@@ -756,7 +864,7 @@ export function BenchmarkBoard() {
         title="벤치마크와 비용"
         description="종합 리더보드, SWE-Bench Pro, SWE-Lancer, PaperBench, MLE-bench, BrowseComp, RE-Bench, EVMbench, Cybench, GDPval, SpreadsheetBench를 분야별 점수·규모·비용·latency와 함께 봅니다."
       />
-      <div className="grid gap-4 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1.4fr_1fr_1fr_1fr]">
+      <div className="grid gap-4 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
         <label className="block xl:col-span-4">
           <span className="text-xs font-semibold text-text-subtle">
             벤치마크 검색
@@ -795,10 +903,10 @@ export function BenchmarkBoard() {
           value={sortDirection}
           onChange={setSortDirection}
         />
-        <label className="block">
-          <span className="text-xs font-semibold text-text-subtle">
-            제공사
-          </span>
+          <label className="block">
+            <span className="text-xs font-semibold text-text-subtle">
+              제공사
+            </span>
           <select
             value={provider}
             onChange={(event) =>
@@ -810,21 +918,41 @@ export function BenchmarkBoard() {
               <option key={item.id} value={item.id}>
                 {item.label}
               </option>
-            ))}
-          </select>
-        </label>
-        <div className="rounded-md border border-border bg-bg p-3 xl:col-span-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap gap-1.5">
-              {coverageItems.map((item) => (
-                <span
-                  key={item.label}
-                  className="rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
-              >
-                {item.label} {item.value}
-              </span>
-            ))}
-          </div>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <span className="text-xs font-semibold text-text-subtle">
+              표시 개수
+            </span>
+            <select
+              value={benchmarkLimit}
+              onChange={(event) =>
+                setBenchmarkLimit(Number(event.target.value))
+              }
+              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+            >
+              <option value={0}>전체</option>
+              <option value={10}>10개</option>
+              <option value={20}>20개</option>
+              <option value={30}>30개</option>
+            </select>
+          </label>
+          <div className="rounded-md border border-border bg-bg p-3 xl:col-span-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap gap-1.5">
+                {coverageItems.map((item) => (
+                  <span
+                    key={item.label}
+                    className="rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
+                  >
+                    {item.label} {item.value}
+                  </span>
+                ))}
+              </div>
+              <p className="text-xs font-semibold text-text-subtle">
+                표시 {pagedEntries.length}개 / 전체 {visibleEntries.length}개
+              </p>
             <button
               type="button"
               onClick={() => {
@@ -834,6 +962,7 @@ export function BenchmarkBoard() {
                 setSortMode("score");
                 setSortDirection("desc");
                 setQuery("");
+                setBenchmarkLimit(0);
               }}
               className="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
             >
@@ -851,7 +980,7 @@ export function BenchmarkBoard() {
           <span className="hidden md:block">Latency</span>
           <span className="text-right">점수/규모</span>
         </div>
-        {visibleEntries.map((entry) => {
+        {pagedEntries.map((entry) => {
           const numericScore = parseNumericMetric(entry.score) ?? 0;
           const width = `${Math.max(4, (numericScore / maxScore) * 100)}%`;
           const entrySources = getSources(entry.sourceIds);
@@ -925,7 +1054,7 @@ export function BenchmarkBoard() {
             </div>
           );
         })}
-        {!visibleEntries.length ? (
+        {!pagedEntries.length ? (
           <div className="px-4 py-4">
             <EmptyState
               title="조건에 맞는 벤치마크가 없습니다"
@@ -944,6 +1073,7 @@ export function ComparisonMatrix() {
     useState<ComparisonMatrixSortMode>("axis");
   const [matrixSortDirection, setMatrixSortDirection] =
     useState<ComparisonMatrixSortDirection>("asc");
+  const [matrixLimit, setMatrixLimit] = useState<ListLimit>(0);
   const matrixSortFilters: Array<{
     id: ComparisonMatrixSortMode;
     label: string;
@@ -994,6 +1124,10 @@ export function ComparisonMatrix() {
       });
     return sortedRows;
   }, [matrixSortDirection, matrixSortMode, rowQuery]);
+  const pagedComparisonRows =
+    matrixLimit === 0
+      ? visibleComparisonRows
+      : visibleComparisonRows.slice(0, matrixLimit);
 
   return (
     <section className="space-y-4">
@@ -1026,6 +1160,27 @@ export function ComparisonMatrix() {
           value={matrixSortDirection}
           onChange={setMatrixSortDirection}
         />
+        <label className="block">
+          <span className="text-xs font-semibold text-text-subtle">
+            표시 개수
+          </span>
+          <select
+            value={matrixLimit}
+            onChange={(event) => setMatrixLimit(Number(event.target.value))}
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+          >
+            <option value={0}>전체</option>
+            <option value={5}>5개</option>
+            <option value={10}>10개</option>
+            <option value={20}>20개</option>
+          </select>
+        </label>
+        <div className="rounded-md border border-border bg-bg p-3 xl:col-span-4">
+          <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
+          <p className="mt-1 text-sm font-semibold text-text">
+            표시 {pagedComparisonRows.length}개 / 전체 {visibleComparisonRows.length}개
+          </p>
+        </div>
       </div>
       <div className="overflow-x-auto rounded-lg border border-border bg-surface">
         <table className="min-w-[112rem] w-full border-collapse text-left">
@@ -1045,7 +1200,7 @@ export function ComparisonMatrix() {
             </tr>
           </thead>
           <tbody>
-            {visibleComparisonRows.map((row) => (
+            {pagedComparisonRows.map((row) => (
               <tr
                 key={row.id}
                 className="border-b border-border last:border-b-0"
