@@ -11670,10 +11670,50 @@ function normalizeText(value: string) {
   return value.toLocaleLowerCase('ko-KR').replace(/\s+/g, ' ').trim()
 }
 
-function matchesQuery(query: string, values: readonly string[]) {
+const queryAliasEntries = [
+  ['커서', ['cursor']],
+  ['코덱스', ['codex']],
+  ['클로드', ['claude']],
+  ['제미니', ['gemini']],
+  ['제미나이', ['gemini']],
+  ['재미나이', ['gemini']],
+  ['그록', ['grok', 'xai']],
+  ['마누스', ['manus']],
+  ['키미', ['kimi']],
+  ['딥시크', ['deepseek']],
+  ['큐웬', ['qwen']],
+  ['큐원', ['qwen']],
+  ['미스트랄', ['mistral']],
+  ['코파일럿', ['copilot']],
+  ['윈드서프', ['windsurf']],
+  ['러버블', ['lovable']],
+  ['볼트', ['bolt']],
+  ['브이제로', ['v0']],
+  ['브이0', ['v0']],
+] as const
+
+export function getSearchTerms(query: string) {
   const normalizedQuery = normalizeText(query)
-  if (!normalizedQuery) return true
-  return values.some((value) => normalizeText(value).includes(normalizedQuery))
+  if (!normalizedQuery) return []
+
+  const terms = new Set([normalizedQuery])
+  for (const [alias, replacements] of queryAliasEntries) {
+    if (!normalizedQuery.includes(alias)) continue
+    for (const replacement of replacements) {
+      terms.add(replacement)
+      terms.add(normalizeText(normalizedQuery.replaceAll(alias, replacement)))
+    }
+  }
+
+  return [...terms]
+}
+
+function matchesQuery(query: string, values: readonly string[]) {
+  const searchTerms = getSearchTerms(query)
+  if (!searchTerms.length) return true
+  return searchTerms.some((searchTerm) =>
+    values.some((value) => normalizeText(value).includes(searchTerm))
+  )
 }
 
 function matchesProvider(

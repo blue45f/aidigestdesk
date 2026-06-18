@@ -121,6 +121,20 @@ describe('catalog search', () => {
     const cursorResults = searchCatalog('Cursor', 'all', 'learning')
     expect(cursorResults.resources.some((resource) => resource.id === 'res-cursor-docs')).toBe(true)
 
+    const koreanCursorResults = searchCatalog('커서 강좌', 'all', 'learning')
+    expect(
+      koreanCursorResults.resources.some(
+        (resource) => resource.id === 'res-cursor-korean-youtube'
+      )
+    ).toBe(true)
+
+    const koreanCodexCliResults = searchCatalog('코덱스 CLI', 'all', 'vibe')
+    expect(
+      koreanCodexCliResults.vibeCodingCommands.some(
+        (command) => command.id === 'cmd-openai-codex'
+      )
+    ).toBe(true)
+
     const educationResults = searchCatalog('원격 교육', 'all', 'learning')
     expect(
       educationResults.resources.some((resource) => resource.id === 'res-korean-remote-bootcamps')

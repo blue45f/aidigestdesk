@@ -1,11 +1,12 @@
 import {
+  getSearchTerms,
   getSources,
   providerCatalog,
   type LearningResource,
   type ProviderId,
 } from "@aidigestdesk/content";
-import { ExternalLink, Library } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ExternalLink, Library, Search } from "lucide-react";
+import { useDeferredValue, useMemo, useState } from "react";
 
 import { SectionHeader, SegmentBar } from "@/components/app/CommonUi";
 import {
@@ -23,16 +24,38 @@ type ResourceFocusFilter =
   | "modelChannels"
   | "koreanCreators"
   | "coursePlatforms"
+  | "inflearn"
+  | "publicTraining"
+  | "bootcamps"
   | "books"
+  | "bookStores"
   | "community"
+  | "events"
+  | "newsletters"
+  | "koreanLLM"
+  | "koreanBenchmarks"
   | "officialKo"
   | "codingTools";
+
+function hasAnyTag(resource: LearningResource, tags: string[]) {
+  return tags.some((tag) => resource.tags.includes(tag));
+}
 
 function matchesResourceFocus(
   resource: LearningResource,
   focus: ResourceFocusFilter,
 ) {
   const tagSet = new Set(resource.tags);
+  const searchable = [
+    resource.id,
+    resource.title,
+    resource.author,
+    resource.summary,
+    ...resource.tags,
+  ]
+    .join(" ")
+    .toLocaleLowerCase("ko-KR");
+
   switch (focus) {
     case "modelChannels":
       return (
@@ -58,10 +81,73 @@ function matchesResourceFocus(
         tagSet.has("원격 교육") ||
         tagSet.has("K-디지털")
       );
+    case "inflearn":
+      return (
+        tagSet.has("인프런") ||
+        searchable.includes("inflearn") ||
+        searchable.includes("인프런")
+      );
+    case "publicTraining":
+      return hasAnyTag(resource, [
+        "K-디지털",
+        "국비지원",
+        "내일배움카드",
+        "공공 교육",
+        "공개강좌",
+        "무료 강좌",
+      ]);
+    case "bootcamps":
+      return hasAnyTag(resource, [
+        "부트캠프",
+        "SSAFY",
+        "SW마에스트로",
+        "SeSAC",
+        "카카오테크",
+        "모집 상태",
+      ]);
     case "books":
       return resource.type === "도서";
+    case "bookStores":
+      return (
+        resource.type === "도서" &&
+        (hasAnyTag(resource, ["도서", "신간", "출판사"]) ||
+          searchable.includes("yes24") ||
+          searchable.includes("알라딘") ||
+          searchable.includes("교보") ||
+          searchable.includes("길벗") ||
+          searchable.includes("위키북스"))
+      );
     case "community":
       return resource.type === "커뮤니티";
+    case "events":
+      return hasAnyTag(resource, ["이벤트", "웨비나", "모집 상태", "학생 혜택"]);
+    case "newsletters":
+      return hasAnyTag(resource, [
+        "뉴스레터",
+        "웹진",
+        "GeekNews",
+        "요즘IT",
+        "Disquiet",
+      ]);
+    case "koreanLLM":
+      return hasAnyTag(resource, [
+        "국내 LLM",
+        "HyperCLOVA X",
+        "Solar Pro 3",
+        "EXAONE",
+        "Kanana",
+        "한국어 성능",
+      ]);
+    case "koreanBenchmarks":
+      return hasAnyTag(resource, [
+        "한국어 벤치마크",
+        "KMMLU",
+        "KMMMU",
+        "KoBALT",
+        "HRET",
+        "KITE",
+        "HAE-RAE",
+      ]);
     case "officialKo":
       return resource.type === "공식 문서" && resource.language === "한국어";
     case "codingTools":
@@ -90,6 +176,12 @@ export function ResourceLibrary({
   const [focus, setFocus] = useState<ResourceFocusFilter>("all");
   const [sourceKind, setSourceKind] = useState<SourceKindFilter>("all");
   const [tag, setTag] = useState("all");
+  const [resourceQuery, setResourceQuery] = useState("");
+  const deferredResourceQuery = useDeferredValue(resourceQuery);
+  const resourceSearchTerms = useMemo(
+    () => getSearchTerms(deferredResourceQuery),
+    [deferredResourceQuery],
+  );
   const languageFilters: Array<{ id: ResourceLanguageFilter; label: string }> =
     [
       { id: "all", label: "전체" },
@@ -125,8 +217,16 @@ export function ResourceLibrary({
     { id: "modelChannels", label: "모델별 채널" },
     { id: "koreanCreators", label: "국내 유튜버" },
     { id: "coursePlatforms", label: "강좌 플랫폼" },
+    { id: "inflearn", label: "인프런" },
+    { id: "publicTraining", label: "국비/공개강좌" },
+    { id: "bootcamps", label: "부트캠프" },
     { id: "books", label: "도서/신간" },
+    { id: "bookStores", label: "서점/출판사" },
     { id: "community", label: "커뮤니티" },
+    { id: "events", label: "이벤트/웨비나" },
+    { id: "newsletters", label: "뉴스레터/웹진" },
+    { id: "koreanLLM", label: "국내 LLM" },
+    { id: "koreanBenchmarks", label: "한국어 벤치마크" },
     { id: "officialKo", label: "한국어 공식" },
     { id: "codingTools", label: "AI 코딩 도구" },
   ];
@@ -152,7 +252,29 @@ export function ResourceLibrary({
               getSources(resource.sourceIds).some(
                 (source) => source.kind === sourceKind,
               )) &&
-            (tag === "all" || resource.tags.includes(tag)),
+            (tag === "all" || resource.tags.includes(tag)) &&
+            (!resourceSearchTerms.length ||
+              resourceSearchTerms.some((searchTerm) =>
+                [
+                  resource.title,
+                  resource.author,
+                  resource.summary,
+                  resource.type,
+                  resource.language,
+                  resource.level,
+                  ...resource.tags,
+                  ...getSources(resource.sourceIds).flatMap((source) => [
+                    source.title,
+                    source.publisher,
+                    source.note,
+                  ]),
+                ]
+                  .join(" ")
+                  .toLocaleLowerCase("ko-KR")
+                  .replace(/\s+/g, " ")
+                  .trim()
+                  .includes(searchTerm),
+              )),
         )
         .toSorted((a, b) =>
           a.language === b.language ? 0 : a.language === "한국어" ? -1 : 1,
@@ -164,6 +286,7 @@ export function ResourceLibrary({
       resourceProvider,
       resourceType,
       resources,
+      resourceSearchTerms,
       sourceKind,
       tag,
     ],
@@ -214,6 +337,20 @@ export function ResourceLibrary({
         description="공식 문서, 한국어 유튜브, 교육기관, 원격 강좌, 기술 블로그, 도서 검색 허브를 언어·형식·난이도·제공사·태그로 좁혀 봅니다."
       />
       <div className="grid gap-4 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1.35fr_1fr_1fr]">
+        <label className="block xl:col-span-2">
+          <span className="text-xs font-semibold text-text-subtle">
+            자료실 검색
+          </span>
+          <span className="relative mt-2 block">
+            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
+            <input
+              value={resourceQuery}
+              onChange={(event) => setResourceQuery(event.target.value)}
+              placeholder="인프런, 국비지원, Cursor, 한국어 벤치마크, 도서 검색"
+              className="h-10 w-full rounded-md border border-border bg-bg pl-9 pr-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+            />
+          </span>
+        </label>
         <SegmentBar
           label="자료 언어"
           items={languageFilters}
@@ -310,6 +447,7 @@ export function ResourceLibrary({
                 setFocus("all");
                 setSourceKind("all");
                 setTag("all");
+                setResourceQuery("");
               }}
               className="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
             >
