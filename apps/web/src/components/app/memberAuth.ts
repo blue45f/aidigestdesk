@@ -1,11 +1,38 @@
-// 회원 인증 — 클라이언트 전용(데모). 백엔드가 없으므로 계정과 세션을
-// localStorage에만 저장하고, 비밀번호는 Web Crypto(SHA-256 + per-user salt)로
-// 해시해 평문을 보관하지 않는다. 어떤 데이터도 브라우저를 벗어나지 않는다.
-//
-// 이 시스템은 포트폴리오/데모용이며 실제 서버 인증을 대체하지 않는다.
+// 회원 인증 — 이중 경로.
+//   1) DeskCloud AuthDesk 연동(VITE_AUTHDESK_URL/PK 설정 시): 실제 서버 인증으로
+//      위임하고 end-user JWT 로 세션을 유지한다.
+//   2) 미설정 시 로컬 데모: 계정·세션을 localStorage 에만 저장하고 비밀번호는
+//      Web Crypto(SHA-256 + per-user salt)로 해시해 평문을 보관하지 않는다.
+// 정적 SPA 라 publishable(pk_) 키만 사용한다. 공개 클라이언트엔 self-delete 가 없어
+// 원격 탈퇴는 로컬 세션 정리 + 로그아웃으로 처리한다(서버 삭제는 관리자 영역).
+
+import { getAuthClient } from "@/components/app/deskcloud";
 
 const ACCOUNTS_KEY = "aidigestdesk.members.v1";
 const SESSION_KEY = "aidigestdesk.memberSession.v1";
+const TOKEN_KEY = "aidigestdesk.memberToken.v1";
+
+function readToken(): string | null {
+  if (!hasWindow()) return null;
+  return window.localStorage.getItem(TOKEN_KEY);
+}
+
+function writeToken(token: string | null) {
+  if (!hasWindow()) return;
+  if (!token) {
+    window.localStorage.removeItem(TOKEN_KEY);
+    return;
+  }
+  window.localStorage.setItem(TOKEN_KEY, token);
+}
+
+function remoteError(err: unknown, fallback: string): string {
+  if (err && typeof err === "object" && "message" in err) {
+    const message = (err as { message?: unknown }).message;
+    if (typeof message === "string" && message.trim()) return message;
+  }
+  return fallback;
+}
 
 export type MemberRole = "member" | "admin";
 
@@ -151,6 +178,26 @@ export async function signUp(input: {
     return { ok: false, error: "비밀번호는 8자 이상이어야 합니다." };
   }
 
+  // DeskCloud AuthDesk 연동 경로.
+  const auth = getAuthClient();
+  if (auth) {
+    try {
+      const result = await auth.register({ email, password: input.password, name: displayName });
+      writeToken(result.token);
+      const session: MemberSession = {
+        id: result.user.id,
+        email: result.user.email,
+        displayName: result.user.name,
+        role: "member",
+        signedInAt: new Date().toISOString(),
+      };
+      saveSession(session);
+      return { ok: true, session };
+    } catch (err) {
+      return { ok: false, error: remoteError(err, "가입에 실패했습니다.") };
+    }
+  }
+
   const accounts = readAccounts();
   if (accounts.some((account) => account.email === email)) {
     return { ok: false, error: "이미 가입된 이메일입니다. 로그인해 주세요." };
@@ -180,6 +227,27 @@ export async function logIn(input: {
   password: string;
 }): Promise<AuthResult> {
   const email = normalizeEmail(input.email);
+
+  // DeskCloud AuthDesk 연동 경로.
+  const auth = getAuthClient();
+  if (auth) {
+    try {
+      const result = await auth.login({ email, password: input.password });
+      writeToken(result.token);
+      const session: MemberSession = {
+        id: result.user.id,
+        email: result.user.email,
+        displayName: result.user.name,
+        role: "member",
+        signedInAt: new Date().toISOString(),
+      };
+      saveSession(session);
+      return { ok: true, session };
+    } catch (err) {
+      return { ok: false, error: remoteError(err, "로그인에 실패했습니다.") };
+    }
+  }
+
   const account = readAccounts().find((item) => item.email === email);
   if (!account) {
     return { ok: false, error: "가입된 계정을 찾을 수 없습니다." };
@@ -194,11 +262,25 @@ export async function logIn(input: {
 }
 
 export function logOut() {
+  // 원격 세션이면 best-effort 로 서버 세션도 폐기.
+  const auth = getAuthClient();
+  const token = readToken();
+  if (auth && token) {
+    void auth.logout(token).catch(() => {
+      /* 비치명적 — 로컬 세션은 아래에서 정리 */
+    });
+  }
+  writeToken(null);
   saveSession(null);
 }
 
-/** 회원 탈퇴 — 계정과 세션을 영구 삭제한다. */
+/** 회원 탈퇴 — 로컬 계정·세션을 삭제한다. 원격(AuthDesk)은 공개 클라이언트에
+ *  self-delete 가 없어 로컬 세션 정리 + 로그아웃으로 처리한다(서버 삭제는 관리자 영역). */
 export function withdraw(memberId: string) {
+  if (getAuthClient()) {
+    logOut();
+    return;
+  }
   const accounts = readAccounts().filter((account) => account.id !== memberId);
   writeAccounts(accounts);
   saveSession(null);

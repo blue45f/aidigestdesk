@@ -16,3 +16,5 @@ allowBuilds:
   "@scarf/scarf": false
   '@sentry/cli': true
   protobufjs: true
+minimumReleaseAgeExclude:
+  - '@heejun/deskcloud@0.1.0'

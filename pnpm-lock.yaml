@@ -81,6 +81,9 @@ importers:
       '@aidigestdesk/content':
         specifier: workspace:*
         version: link:../../packages/content
+      '@heejun/deskcloud':
+        specifier: ^0.1.0
+        version: 0.1.0
       lucide-react:
         specifier: ^1.17.0
         version: 1.18.0(react@19.2.7)
@@ -1910,6 +1913,15 @@ packages:
 
   '@hapi/topo@5.1.0':
     resolution: {integrity: sha512-foQZKJig7Ob0BMAYBfcJk8d77QtOe7Wo4ox7ff1lQYoNNAb6jwcY1ncdoy2e9wQZzvNy7ODZCYJkK8kzmcAnAg==}
+
+  '@heejun/deskcloud@0.1.0':
+    resolution: {integrity: sha512-1MB6mBKqhQ9Qa+hfM1cJH7peqBhdwVeQ6kWJfUkA0Jfoy2278RgNUMelVpFDfrB6zkqnMvLaLP8WppIoiFXWjA==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      socket.io-client: '>=4'
+    peerDependenciesMeta:
+      socket.io-client:
+        optional: true
 
   '@heejun/eslint-config@5.0.0':
     resolution: {integrity: sha512-8XJt3Ue6qgJNUWPGFPFRhR8qUwfI30f4eNCOytlSsoJ7V/0/sX7ljPZl3uEvnsXKGLtexZ5Uz1wscIpzGzVpeQ==}
@@ -11207,6 +11219,8 @@ snapshots:
     dependencies:
       '@hapi/hoek': 9.3.0
 
+  '@heejun/deskcloud@0.1.0': {}
+
   '@heejun/eslint-config@5.0.0(@typescript-eslint/parser@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.9)(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)':
     dependencies:
       '@eslint/js': 10.0.1(eslint@10.5.0(jiti@2.7.0))
@@ -15615,7 +15629,7 @@ snapshots:
       '@babel/register': 7.29.7(@babel/core@7.29.7)
       babel-core: 7.0.0-bridge.0(@babel/core@7.29.7)
       chalk: 4.1.2
-      flow-parser: 0.206.0
+      flow-parser: 0.318.0
       graceful-fs: 4.2.11
       micromatch: 4.0.8
       neo-async: 2.6.2
@@ -17118,7 +17132,7 @@ snapshots:
     dependencies:
       object-assign: 4.1.1
       react: 19.2.7
-      react-is: 17.0.2
+      react-is: 18.3.1
 
   react-stately@3.47.0(react@19.2.7):
     dependencies:

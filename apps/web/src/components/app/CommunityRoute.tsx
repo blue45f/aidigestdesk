@@ -1,8 +1,10 @@
 import {
+  AlertTriangle,
   ClipboardList,
   Coffee,
   Hash,
   Home,
+  Loader2,
   LogIn,
   MessagesSquare,
   Plus,
@@ -10,9 +12,10 @@ import {
   Trash2,
   Users,
 } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import type { AppRoute } from '@/components/app/appRoutes'
+import type { Board, CommunityClient, PostSummary } from '@heejun/deskcloud'
 
 import {
   Chip,
@@ -29,6 +32,7 @@ import {
   deleteBoardPost,
   deletePost,
   getCafeMemberCount,
+  getMemberId,
   getNickname,
   isCafeMember,
   joinCafe,
@@ -42,6 +46,7 @@ import {
   type Channel,
   type Post,
 } from '@/components/app/communityStore'
+import { getCommunityClient } from '@/components/app/deskcloud'
 
 type CommunityTab = 'chat' | 'board' | 'cafe'
 
@@ -590,6 +595,326 @@ function CafeTab({ nickname }: { nickname: string }) {
   )
 }
 
+/* ── DeskCloud(CommunityDesk) 원격 연동 ──────────────────────────────────
+ *
+ * `getCommunityClient()` 가 클라이언트를 돌려주면(= env 설정됨) 게시판/카페 탭은
+ * 실제 CommunityDesk 서비스를 읽고 쓴다. 미설정이면 위의 로컬 데모 탭을 그대로
+ * 쓰므로(아래 CommunityRoute 의 분기 참고), 미설정 상태의 동작은 현재와 동일하다.
+ *
+ * 범위(의도적 한계):
+ *   - 읽기: listBoards()(kind 로 게시판/카페 분리) + listPosts({ boardSlug, sort:'recent' }).
+ *   - 쓰기: createPost({ boardSlug, title, body, authorName, authorMemberId }).
+ *   - 반응(toggleReaction)·댓글(createComment)·삭제는 이 1차 연동에서 노출하지 않는다
+ *     (원격 글은 호스트가 삭제 권한을 갖지 않으므로 삭제 버튼을 숨긴다).
+ *   - 실시간 채팅방 탭은 별도 소켓 서비스가 필요하므로 항상 로컬을 유지한다.
+ */
+
+/** 로딩 스피너 행(접근성: status 라이브 리전). */
+function RemoteLoadingRow({ label }: { label: string }) {
+  return (
+    <div
+      role="status"
+      className="flex items-center gap-2 rounded-md border border-border bg-bg p-3 text-sm text-text-muted"
+    >
+      <Loader2 className="size-4 shrink-0 animate-spin text-accent" aria-hidden />
+      {label}
+    </div>
+  )
+}
+
+/** 친절한 한국어 에러 행(크래시 대신 인라인 표시). */
+function RemoteErrorRow({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  return (
+    <div
+      role="alert"
+      className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border-strong bg-bg p-3 text-sm text-text-muted"
+    >
+      <span className="flex items-center gap-2">
+        <AlertTriangle className="size-4 shrink-0 text-amber-500" aria-hidden />
+        {message}
+      </span>
+      {onRetry ? (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="shrink-0 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
+        >
+          다시 시도
+        </button>
+      ) : null}
+    </div>
+  )
+}
+
+/** 원격 글 요약 행(삭제 불가 — 호스트가 소유권을 갖지 않는다). */
+function RemotePostRow({ post, showBoard }: { post: PostSummary; showBoard?: boolean }) {
+  return (
+    <li className="rounded-md border border-border bg-bg p-3">
+      <div className="flex flex-wrap items-center gap-2">
+        {showBoard ? <Chip tone="accent">{post.boardSlug}</Chip> : null}
+        <h4 className="text-sm font-semibold text-text">{post.title ?? '(제목 없음)'}</h4>
+      </div>
+      <p className="mt-1 text-xs text-text-subtle">
+        <span className="font-semibold text-text-muted">{post.authorName}</span> ·{' '}
+        {formatRelativeTime(post.createdAt)} · 댓글 {post.replyCount}
+      </p>
+      {post.excerpt ? (
+        <p className="mt-2 line-clamp-3 text-sm leading-6 whitespace-pre-wrap text-text-muted">
+          {post.excerpt}
+        </p>
+      ) : null}
+    </li>
+  )
+}
+
+/**
+ * 단일 원격 보드(게시판 또는 카페)의 글 목록 + 작성 폼.
+ * 카페 게시판 작성 폼은 카테고리 셀렉트가 없으므로 boardSlug 를 카테고리로 고정한다.
+ */
+function RemoteBoardPanel({
+  client,
+  board,
+  nickname,
+}: {
+  client: CommunityClient
+  board: Board
+  nickname: string
+}) {
+  const [posts, setPosts] = useState<PostSummary[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [reloadToken, setReloadToken] = useState(0)
+  const reload = useCallback(() => {
+    // 동기 setState 는 이벤트 핸들러에서만(react-hooks/set-state-in-effect 회피).
+    setLoading(true)
+    setError(null)
+    setReloadToken((token) => token + 1)
+  }, [])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    let active = true
+
+    client
+      .listPosts({ boardSlug: board.slug, sort: 'recent', signal: controller.signal })
+      .then((list) => {
+        if (active) setPosts(list.items)
+      })
+      .catch((cause: unknown) => {
+        if (!active || controller.signal.aborted) return
+        setError(cause instanceof Error ? cause.message : '글을 불러오지 못했습니다.')
+      })
+      .finally(() => {
+        if (active) setLoading(false)
+      })
+
+    return () => {
+      active = false
+      controller.abort()
+    }
+  }, [client, board.slug, reloadToken])
+
+  const handleSubmit = (input: { category: string; title: string; body: string }) => {
+    // category 는 폼 UI 호환용 필드라 원격에서는 boardSlug 로 대체한다.
+    void input.category
+    client
+      .createPost({
+        boardSlug: board.slug,
+        title: input.title,
+        body: input.body,
+        authorName: nickname,
+        authorMemberId: getMemberId(),
+      })
+      .then(() => {
+        reload()
+      })
+      .catch((cause: unknown) => {
+        setError(cause instanceof Error ? cause.message : '글을 등록하지 못했습니다.')
+      })
+  }
+
+  return (
+    <div className="space-y-3">
+      {loading ? (
+        <RemoteLoadingRow label="글을 불러오는 중…" />
+      ) : error ? (
+        <RemoteErrorRow message={error} onRetry={reload} />
+      ) : posts.length > 0 ? (
+        <ul className="space-y-2">
+          {posts.map((post) => (
+            <RemotePostRow key={post.id} post={post} />
+          ))}
+        </ul>
+      ) : (
+        <EmptyState
+          title="아직 글이 없습니다"
+          body="이 게시판에는 아직 글이 없습니다. 아래에서 첫 글을 작성해 보세요."
+        />
+      )}
+
+      <BoardComposer
+        nickname={nickname}
+        categoryOptions={[board.slug]}
+        initialCategory={board.slug}
+        onSubmit={handleSubmit}
+      />
+    </div>
+  )
+}
+
+/** boards 를 불러와 kind 로 필터링하는 공통 로더. */
+function useRemoteBoards(client: CommunityClient, kind: Board['kind']) {
+  const [boards, setBoards] = useState<Board[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [reloadToken, setReloadToken] = useState(0)
+  const reload = useCallback(() => {
+    setLoading(true)
+    setError(null)
+    setReloadToken((token) => token + 1)
+  }, [])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    let active = true
+
+    client
+      .listBoards({ signal: controller.signal })
+      .then((all) => {
+        if (active) setBoards(all.filter((board) => board.kind === kind))
+      })
+      .catch((cause: unknown) => {
+        if (!active || controller.signal.aborted) return
+        setError(cause instanceof Error ? cause.message : '목록을 불러오지 못했습니다.')
+      })
+      .finally(() => {
+        if (active) setLoading(false)
+      })
+
+    return () => {
+      active = false
+      controller.abort()
+    }
+  }, [client, kind, reloadToken])
+
+  return { boards, loading, error, reload }
+}
+
+/* ── 게시판 탭(원격) ─────────────────────────────────────────────────── */
+
+function RemoteBoardTab({ client, nickname }: { client: CommunityClient; nickname: string }) {
+  const { boards, loading, error, reload } = useRemoteBoards(client, 'board')
+  const [activeSlug, setActiveSlug] = useState<string>('')
+
+  const activeBoard = boards.find((board) => board.slug === activeSlug) ?? boards[0] ?? null
+
+  const filterItems = useMemo(
+    () => boards.map((board) => ({ id: board.slug, label: board.name })),
+    [boards]
+  )
+
+  return (
+    <section className="rounded-lg border border-border bg-surface p-5">
+      <SectionHeader
+        icon={ClipboardList}
+        title="게시판"
+        description="CommunityDesk 게시판의 글을 최신순으로 보고 새 글을 작성하세요."
+      />
+
+      <div className="mt-5 space-y-4">
+        {loading ? (
+          <RemoteLoadingRow label="게시판을 불러오는 중…" />
+        ) : error ? (
+          <RemoteErrorRow message={error} onRetry={reload} />
+        ) : activeBoard ? (
+          <>
+            {filterItems.length > 1 ? (
+              <SegmentBar
+                label="게시판"
+                items={filterItems}
+                value={activeBoard.slug}
+                onChange={setActiveSlug}
+              />
+            ) : null}
+            <RemoteBoardPanel
+              key={activeBoard.slug}
+              client={client}
+              board={activeBoard}
+              nickname={nickname}
+            />
+          </>
+        ) : (
+          <EmptyState
+            title="게시판이 없습니다"
+            body="CommunityDesk 에 등록된 게시판이 없습니다. 관리자 콘솔에서 게시판을 추가해 주세요."
+          />
+        )}
+      </div>
+    </section>
+  )
+}
+
+/* ── 카페 탭(원격) ───────────────────────────────────────────────────── */
+
+function RemoteCafeTab({ client, nickname }: { client: CommunityClient; nickname: string }) {
+  const { boards, loading, error, reload } = useRemoteBoards(client, 'cafe')
+
+  return (
+    <section className="rounded-lg border border-border bg-surface p-5">
+      <SectionHeader
+        icon={Coffee}
+        title="카페"
+        description="CommunityDesk 카페별 게시판의 글을 보고 새 글을 작성하세요."
+      />
+
+      <div className="mt-5">
+        {loading ? (
+          <RemoteLoadingRow label="카페를 불러오는 중…" />
+        ) : error ? (
+          <RemoteErrorRow message={error} onRetry={reload} />
+        ) : boards.length > 0 ? (
+          <div className="space-y-4">
+            {boards.map((board) => (
+              <article key={board.id} className="rounded-lg border border-border bg-surface p-4">
+                <div className="flex items-start gap-3">
+                  <span
+                    className="grid size-9 shrink-0 place-items-center rounded-md border border-border bg-bg text-lg"
+                    aria-hidden
+                  >
+                    ☕
+                  </span>
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-semibold text-text">{board.name}</h3>
+                    {board.description ? (
+                      <p className="mt-0.5 text-xs leading-5 text-text-muted">
+                        {board.description}
+                      </p>
+                    ) : null}
+                    <p className="mt-1.5 inline-flex items-center gap-1 text-xs text-text-subtle">
+                      <Users className="size-3.5" aria-hidden />글 {board.postCount.toLocaleString(
+                        'ko-KR'
+                      )}
+                      개
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 border-t border-border pt-4">
+                  <RemoteBoardPanel client={client} board={board} nickname={nickname} />
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="카페가 없습니다"
+            body="CommunityDesk 에 등록된 카페가 없습니다. 관리자 콘솔에서 카페를 추가해 주세요."
+          />
+        )}
+      </div>
+    </section>
+  )
+}
+
 /* ── 커뮤니티 허브 ───────────────────────────────────────────────────── */
 
 const tabItems: Array<{ id: CommunityTab; label: string }> = [
@@ -610,14 +935,27 @@ export function CommunityRoute({
 
   const currentNickname = nickname.trim() || '게스트'
 
+  // env 미설정이면 null → 게시판/카페 탭이 기존 로컬 데모로 폴백한다(현재 동작과 동일).
+  // 채팅방 탭은 별도 소켓 서비스 영역이라 원격 여부와 무관하게 항상 로컬을 쓴다.
+  const communityClient = useMemo(() => getCommunityClient(), [])
+  const remote = communityClient !== null
+
   const renderTab = () => {
     switch (tab) {
       case 'chat':
         return <ChatTab nickname={currentNickname} />
       case 'board':
-        return <BoardTab nickname={currentNickname} />
+        return remote ? (
+          <RemoteBoardTab client={communityClient} nickname={currentNickname} />
+        ) : (
+          <BoardTab nickname={currentNickname} />
+        )
       case 'cafe':
-        return <CafeTab nickname={currentNickname} />
+        return remote ? (
+          <RemoteCafeTab client={communityClient} nickname={currentNickname} />
+        ) : (
+          <CafeTab nickname={currentNickname} />
+        )
     }
   }
 
@@ -629,13 +967,23 @@ export function CommunityRoute({
             <div>
               <p className="text-xs font-semibold text-accent">커뮤니티 · /community</p>
               <h1 className="mt-1 text-2xl font-semibold text-text">커뮤니티 · 채팅방·게시판·카페</h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
-                채팅방에서 실시간 대화를, 게시판에서 카테고리별 글을, 카페에서 관심 주제 모임을
-                즐겨 보세요. 이 공간은 데모 단계이며 모든 글과 가입 정보는 백엔드 없이 이
-                브라우저에만 저장됩니다.
-              </p>
+              {remote ? (
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
+                  채팅방에서 실시간 대화를, 게시판에서 카테고리별 글을, 카페에서 관심 주제 모임을
+                  즐겨 보세요. 게시판·카페는 CommunityDesk 서비스에 연결되어 있어 글이 실제로
+                  저장·공유되며, 채팅방은 아직 이 브라우저에만 저장되는 데모입니다.
+                </p>
+              ) : (
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
+                  채팅방에서 실시간 대화를, 게시판에서 카테고리별 글을, 카페에서 관심 주제 모임을
+                  즐겨 보세요. 이 공간은 데모 단계이며 모든 글과 가입 정보는 백엔드 없이 이
+                  브라우저에만 저장됩니다.
+                </p>
+              )}
               <div className="mt-3">
-                <Chip tone="amber">베타 · 브라우저 로컬 저장</Chip>
+                <Chip tone="amber">
+                  {remote ? '베타 · 게시판·카페 연동' : '베타 · 브라우저 로컬 저장'}
+                </Chip>
               </div>
             </div>
             <button

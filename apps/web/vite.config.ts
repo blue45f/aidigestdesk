@@ -25,6 +25,12 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
+  // @heejun/deskcloud 의 realtime/chat 클라이언트는 optional peer(socket.io-client)를
+  // 동적 import 한다. 우리는 auth/community/terms 만 쓰므로 dev 사전번들에서 제외해
+  // 옵셔널 피어 미설치로 인한 dev 최적화 오류를 피한다(프로덕션은 tree-shaking).
+  optimizeDeps: {
+    exclude: ["@heejun/deskcloud"],
+  },
   build: {
     rolldownOptions: {
       output: {

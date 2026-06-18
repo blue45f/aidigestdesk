@@ -1,10 +1,12 @@
-import { FileText, Home, ShieldCheck } from 'lucide-react'
-import { useState } from 'react'
+import { CloudCheck, FileText, Home, ShieldCheck } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 import type { AppRoute } from '@/components/app/appRoutes'
+import type { PublicPolicy } from '@heejun/deskcloud'
 import type { ReactNode } from 'react'
 
-import { SegmentBar } from '@/components/app/CommonUi'
+import { Chip, SegmentBar } from '@/components/app/CommonUi'
+import { getTermsClient } from '@/components/app/deskcloud'
 
 
 const EFFECTIVE_DATE = '2026-06-18'
@@ -15,6 +17,20 @@ const documentTabs: Array<{ id: DocumentId; label: string }> = [
   { id: 'terms', label: '이용약관' },
   { id: 'privacy', label: '개인정보처리방침' },
 ]
+
+/**
+ * 문서 토글 ID → TermsDesk 정책 slug. 'terms'/'privacy'는 TermsDesk의 관례적 slug이며,
+ * 이 매핑으로 활성 문서에 해당하는 게시본을 조회한다.
+ */
+const TERMS_DESK_SLUGS: Record<DocumentId, string> = {
+  terms: 'terms',
+  privacy: 'privacy',
+}
+
+const documentTitles: Record<DocumentId, string> = {
+  terms: '이용약관',
+  privacy: '개인정보처리방침',
+}
 
 /** 데모/포트폴리오 면책을 강조하는 틴티드 콜아웃 박스. */
 function DemoNotice({ children }: { children: ReactNode }) {
@@ -254,8 +270,90 @@ function PrivacyDocument() {
   )
 }
 
+/** 정적 폴백 문서. 원격 클라이언트가 없거나 조회에 실패하면 이 본문을 그대로 보여준다. */
+function StaticDocument({ document }: { document: DocumentId }) {
+  return document === 'terms' ? <TermsDocument /> : <PrivacyDocument />
+}
+
+/**
+ * TermsDesk(DeskCloud) 게시본을 불러와 렌더한다.
+ * - 클라이언트가 null(미설정)이면 즉시 정적 폴백을 보여준다.
+ * - 활성 문서가 바뀔 때마다 AbortController로 이전 요청을 취소하고 다시 조회한다.
+ * - 조회 실패 시에도 정적 폴백으로 폴백하여 회귀가 없도록 한다.
+ * - 본문(body)은 플레인 텍스트로 취급해 whitespace-pre-wrap으로 렌더한다(XSS 방지).
+ */
+function RemoteTermsDocument({ document }: { document: DocumentId }) {
+  const [policy, setPolicy] = useState<PublicPolicy | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [failed, setFailed] = useState(false)
+
+  useEffect(() => {
+    const client = getTermsClient()
+    if (!client) return
+    // 동기 setState 금지(react-hooks/set-state-in-effect): 상태 변경은 비동기
+    // 콜백에서만 한다. 문서 전환 시 초기 상태는 호출부 key 리마운트로 리셋된다.
+    const controller = new AbortController()
+    client
+      .getCurrent({ slug: TERMS_DESK_SLUGS[document], signal: controller.signal })
+      .then((result) => {
+        if (!controller.signal.aborted) {
+          setPolicy(result)
+          setLoading(false)
+        }
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          setFailed(true)
+          setLoading(false)
+        }
+      })
+
+    return () => {
+      controller.abort()
+    }
+  }, [document])
+
+  if (loading) {
+    return (
+      <article className="rounded-lg border border-border bg-surface p-6">
+        <p className="text-sm leading-7 text-text-muted">게시본을 불러오는 중…</p>
+      </article>
+    )
+  }
+
+  // 미설정 또는 조회 실패 → 기존 정적 본문(회귀 없음).
+  if (failed || !policy) {
+    return <StaticDocument document={document} />
+  }
+
+  return (
+    <article className="rounded-lg border border-border bg-surface p-6">
+      <header className="space-y-3 border-b border-border pb-5">
+        <div className="flex flex-wrap items-center gap-2">
+          <Chip tone="blue" icon={CloudCheck}>
+            TermsDesk 게시본 · {policy.versionLabel}
+            {policy.effectiveAt ? ` · 시행 ${policy.effectiveAt}` : ''}
+          </Chip>
+        </div>
+        <h2 className="text-xl font-semibold text-text">
+          {policy.name || documentTitles[document]}
+        </h2>
+        {policy.changeSummary ? (
+          <p className="text-sm leading-7 text-text-muted">{policy.changeSummary}</p>
+        ) : null}
+      </header>
+
+      <div className="mt-6 whitespace-pre-wrap text-sm leading-7 text-text-muted">
+        {policy.body}
+      </div>
+    </article>
+  )
+}
+
 export function TermsRoute({ onNavigate }: { onNavigate: (route: AppRoute) => void }) {
   const [activeDocument, setActiveDocument] = useState<DocumentId>('terms')
+  // env로 게이트: TermsDesk가 설정되면 게시본을, 미설정이면 정적 데모 본문을 렌더한다.
+  const remoteEnabled = getTermsClient() !== null
 
   return (
     <main id="main-content" tabIndex={-1} className="px-4 py-5 outline-none lg:px-6">
@@ -292,7 +390,11 @@ export function TermsRoute({ onNavigate }: { onNavigate: (route: AppRoute) => vo
           </div>
         </section>
 
-        {activeDocument === 'terms' ? <TermsDocument /> : <PrivacyDocument />}
+        {remoteEnabled ? (
+          <RemoteTermsDocument key={activeDocument} document={activeDocument} />
+        ) : (
+          <StaticDocument document={activeDocument} />
+        )}
 
         <p className="flex flex-wrap items-center gap-1.5 border-t border-border pt-5 text-xs text-text-subtle">
           {activeDocument === 'terms' ? (

@@ -13,6 +13,7 @@ const STORAGE_KEY = 'aidigestdesk.community.v2'
 const LEGACY_STORAGE_KEY = 'aidigestdesk.community.v1'
 const NICKNAME_KEY = 'aidigestdesk.community.nickname.v1'
 const CAFE_MEMBERSHIP_KEY = 'aidigestdesk.community.cafeMembership.v1'
+const MEMBER_ID_KEY = 'aidigestdesk.community.memberId.v1'
 const DEFAULT_NICKNAME = '게스트'
 
 export type Channel = {
@@ -481,5 +482,26 @@ export function setNickname(name: string): void {
     }
   } catch {
     // 닉네임 저장 실패는 데모에서 치명적이지 않으므로 무시한다.
+  }
+}
+
+/**
+ * 이 브라우저의 안정적인 익명 멤버 ID(`anon:...`)를 읽거나 생성한다.
+ *
+ * 로컬 데모에서는 쓰이지 않지만, DeskCloud CommunityDesk 연동 시 글/댓글 작성에
+ * 필요한 `authorMemberId`(호스트 앱이 공급하는 최종 사용자 식별자)로 사용한다.
+ * 백엔드가 없거나 로컬 폴백일 때는 호출되지 않으므로 기존 동작에 영향이 없다.
+ * SSR 안전하며, 저장이 불가능한 환경에서는 매번 새 ID를 만들어 돌려준다.
+ */
+export function getMemberId(): string {
+  if (typeof window === 'undefined') return `anon:${createId('member')}`
+  try {
+    const existing = window.localStorage.getItem(MEMBER_ID_KEY)?.trim()
+    if (existing) return existing
+    const generated = `anon:${createId('member')}`
+    window.localStorage.setItem(MEMBER_ID_KEY, generated)
+    return generated
+  } catch {
+    return `anon:${createId('member')}`
   }
 }
