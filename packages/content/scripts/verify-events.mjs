@@ -29,6 +29,7 @@ const errors = [];
 const warnings = [];
 const duplicates = new Map();
 const urlSet = new Map();
+const urlCounts = new Map();
 
 const parseRawField = (entry, key) => {
   const re = new RegExp(`\\b${key}:\\s*([^,\\n]+)`);
@@ -148,11 +149,9 @@ for (const entry of entries) {
 
   if (url) {
     const normalizedUrl = normalizeUrlForCompare(url);
-    if (urlSet.has(normalizedUrl)) {
-      warnings.push(`url 중복: ${url}`);
-    } else {
-      urlSet.set(normalizedUrl, true);
-    }
+    urlSet.set(normalizedUrl, url);
+    const nextCount = (urlCounts.get(normalizedUrl) ?? 0) + 1;
+    urlCounts.set(normalizedUrl, nextCount);
   }
 
   if (status === "진행중" && startAt && startAt > snapshotAt) {
@@ -202,6 +201,12 @@ for (const entry of entries) {
 
 for (const [id, count] of duplicates) {
   if (count > 1) warnings.push(`id 중복: ${id} (${count}건)`);
+}
+
+for (const [normalizedUrl, count] of urlCounts) {
+  if (count <= 1) continue;
+  const rawUrl = urlSet.get(normalizedUrl) ?? normalizedUrl;
+  warnings.push(`url 중복 (${count}건): ${rawUrl}`);
 }
 
 const tecaResult = await compareWithTecaData(tecaMappedEvents);
