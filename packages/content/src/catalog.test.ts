@@ -313,6 +313,34 @@ describe("catalog search", () => {
       reBenchResults.benchmarks.some((entry) => entry.id === "rebench-ai-rd"),
     ).toBe(true);
 
+    const liveSweResults = searchCatalog("SWE-bench Live", "all", "benchmarks");
+    expect(
+      liveSweResults.benchmarks.some(
+        (entry) => entry.id === "swebench-live-fresh-issues",
+      ),
+    ).toBe(true);
+
+    const sweExploreResults = searchCatalog("SWE-Explore", "all", "benchmarks");
+    expect(
+      sweExploreResults.benchmarks.some(
+        (entry) => entry.id === "swe-explore-repo-localization",
+      ),
+    ).toBe(true);
+
+    const utBoostResults = searchCatalog("UTBoost", "all", "benchmarks");
+    expect(
+      utBoostResults.benchmarks.some(
+        (entry) => entry.id === "utboost-test-quality-audit",
+      ),
+    ).toBe(true);
+
+    const codeEloResults = searchCatalog("CodeElo", "all", "benchmarks");
+    expect(
+      codeEloResults.benchmarks.some(
+        (entry) => entry.id === "codeelo-competitive-programming",
+      ),
+    ).toBe(true);
+
     const webAgentResults = searchCatalog("웹 에이전트", "all", "learning");
     expect(
       webAgentResults.resources.some(
@@ -338,6 +366,56 @@ describe("catalog search", () => {
     expect(
       officeResults.resources.some(
         (resource) => resource.id === "res-benchmark-hubs-work-office",
+      ),
+    ).toBe(true);
+
+    const mcpBenchResults = searchCatalog("MCP-Bench", "all", "benchmarks");
+    expect(
+      mcpBenchResults.benchmarks.some(
+        (entry) => entry.id === "mcp-bench-tool-use",
+      ),
+    ).toBe(true);
+
+    const iosWorldResults = searchCatalog("iOSWorld", "all", "benchmarks");
+    expect(
+      iosWorldResults.benchmarks.some(
+        (entry) => entry.id === "iosworld-personal-phone-agent",
+      ),
+    ).toBe(true);
+
+    const pptcResults = searchCatalog("PPTC Benchmark", "all", "benchmarks");
+    expect(
+      pptcResults.benchmarks.some(
+        (entry) => entry.id === "pptc-powerpoint-task-completion",
+      ),
+    ).toBe(true);
+
+    const presentBenchResults = searchCatalog(
+      "PresentBench",
+      "all",
+      "benchmarks",
+    );
+    expect(
+      presentBenchResults.benchmarks.some(
+        (entry) => entry.id === "presentbench-slide-generation",
+      ),
+    ).toBe(true);
+
+    const qualityHubResults = searchCatalog(
+      "벤치마크 신뢰도",
+      "all",
+      "learning",
+    );
+    expect(
+      qualityHubResults.resources.some(
+        (resource) => resource.id === "res-benchmark-freshness-quality-audit",
+      ),
+    ).toBe(true);
+
+    const opsResults = searchCatalog("오염", "all", "ops");
+    expect(
+      opsResults.pipelineItems.some(
+        (item) => item.id === "pipe-benchmark-quality-audit",
       ),
     ).toBe(true);
 
@@ -378,14 +456,14 @@ describe("catalog search", () => {
   it("exposes summary stats", () => {
     expect(getCatalogStats()).toMatchObject({
       providers: 10,
-      updates: 33,
-      benchmarkRows: 60,
+      updates: 37,
+      benchmarkRows: 91,
       vibeCommands: 9,
       aiCodingTools: 14,
       personaGuides: 5,
       taskRecommendations: 8,
-      monitors: 39,
-      pipelineItems: 10,
+      monitors: 44,
+      pipelineItems: 11,
       costProfiles: 10,
     });
   });
