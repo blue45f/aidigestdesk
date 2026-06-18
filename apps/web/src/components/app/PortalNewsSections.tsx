@@ -1,4 +1,5 @@
 import {
+  type ProviderId,
   eventScheduleItems,
   type EventScheduleItem,
   type EventScheduleType,
@@ -27,7 +28,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { EmptyState, SectionHeader } from "@/components/app/CommonUi";
+import { EmptyState, SectionHeader, SegmentBar } from "@/components/app/CommonUi";
 
 const stats = getCatalogStats();
 
@@ -59,6 +60,17 @@ type EventScheduleLanguageFilter = EventScheduleItem["language"] | "all";
 type EventScheduleFormatFilter = EventScheduleItem["format"] | "all";
 type EventScheduleStatusFilter = EventScheduleItem["status"] | "all";
 type EventScheduleAreaScope = "all" | "국내" | "국외";
+type WebzineNewsSortMode = "date" | "title" | "provider" | "category";
+type WebzineNewsSortDirection = "asc" | "desc";
+type WebzineNewsCategoryFilter = "all" | "news" | "events" | "vibe" | "design";
+type WebzineCommunityLanguageFilter = "all" | "한국어" | "영어";
+type WebzineCommunityTypeFilter = "all" | "강좌/영상" | "블로그/글" | "커뮤니티" | "도서";
+type WebzineCommunitySortMode = "language" | "title" | "type" | "provider";
+type WebzineCommunitySortDirection = "asc" | "desc";
+type EventPromotionSortMode = "date" | "title" | "provider" | "type";
+type EventPromotionSortDirection = "asc" | "desc";
+type EventCalendarAgendaSortMode = "date" | "title" | "organizer" | "status";
+type EventCalendarAgendaSortDirection = "asc" | "desc";
 
 const scheduleRegionFilters: Array<{ id: EventScheduleRegionFilter; label: string }> = [
   { id: "all", label: "전체" },
@@ -256,6 +268,28 @@ function statusClass(status: EventScheduleItem["status"]) {
   }
 }
 
+function webzineNewsCategoryLabel(category: string) {
+  switch (category) {
+    case "news":
+      return "뉴스";
+    case "events":
+      return "이벤트";
+    case "vibe":
+      return "바이브 코딩";
+    case "design":
+      return "디자인/PPT";
+    default:
+      return "기타";
+  }
+}
+
+function formatCommunityProviderLabels(resource: { providerIds?: ProviderId[] }) {
+  if (!resource.providerIds?.length) return "공식 출처";
+  return resource.providerIds
+    .map((providerId) => getProviderLabel(providerId) ?? "기타")
+    .join(" · ");
+}
+
 export function Briefing({
   results,
   useFallback,
@@ -391,31 +425,181 @@ export function WebzineSection({
   results: SearchResults;
   useFallback: boolean;
 }) {
-  const magazineUpdates = (
-    results.updates.length || !useFallback
-      ? results.updates
-      : updates.filter((item) =>
+  const [newsCategoryFilter, setNewsCategoryFilter] =
+    useState<WebzineNewsCategoryFilter>("all");
+  const [newsSortMode, setNewsSortMode] =
+    useState<WebzineNewsSortMode>("date");
+  const [newsSortDirection, setNewsSortDirection] =
+    useState<WebzineNewsSortDirection>("desc");
+  const [newsQuery, setNewsQuery] = useState("");
+  const [communityQuery, setCommunityQuery] = useState("");
+  const [communitySortMode, setCommunitySortMode] =
+    useState<WebzineCommunitySortMode>("language");
+  const [communitySortDirection, setCommunitySortDirection] =
+    useState<WebzineCommunitySortDirection>("asc");
+  const [communityLanguageFilter, setCommunityLanguageFilter] =
+    useState<WebzineCommunityLanguageFilter>("한국어");
+  const [communityTypeFilter, setCommunityTypeFilter] =
+    useState<WebzineCommunityTypeFilter>("all");
+
+  const newsCategoryFilters: Array<{
+    id: WebzineNewsCategoryFilter;
+    label: string;
+  }> = [
+    { id: "all", label: "전체" },
+    { id: "news", label: "뉴스" },
+    { id: "events", label: "이벤트" },
+    { id: "vibe", label: "바이브 코딩" },
+    { id: "design", label: "디자인/PPT" },
+  ];
+  const newsSortFilters: Array<{ id: WebzineNewsSortMode; label: string }> = [
+    { id: "date", label: "날짜" },
+    { id: "title", label: "제목" },
+    { id: "provider", label: "제공사" },
+    { id: "category", label: "구분" },
+  ];
+  const newsSortDirectionFilters: Array<{
+    id: WebzineNewsSortDirection;
+    label: string;
+  }> = [
+    { id: "asc", label: "오름차순" },
+    { id: "desc", label: "내림차순" },
+  ];
+  const communityLanguageFilters: Array<{
+    id: WebzineCommunityLanguageFilter;
+    label: string;
+  }> = [
+    { id: "all", label: "전체" },
+    { id: "한국어", label: "한국어" },
+    { id: "영어", label: "영어" },
+  ];
+  const communityTypeFilters: Array<{
+    id: WebzineCommunityTypeFilter;
+    label: string;
+  }> = [
+    { id: "all", label: "전체" },
+    { id: "강좌/영상", label: "강좌/영상" },
+    { id: "블로그/글", label: "블로그/글" },
+    { id: "커뮤니티", label: "커뮤니티" },
+    { id: "도서", label: "도서" },
+  ];
+  const communitySortFilters: Array<{
+    id: WebzineCommunitySortMode;
+    label: string;
+  }> = [
+    { id: "language", label: "언어" },
+    { id: "title", label: "제목" },
+    { id: "type", label: "유형" },
+    { id: "provider", label: "제공사" },
+  ];
+  const communitySortDirectionFilters: Array<{
+    id: WebzineCommunitySortDirection;
+    label: string;
+  }> = [
+    { id: "asc", label: "오름차순" },
+    { id: "desc", label: "내림차순" },
+  ];
+
+  const searchNews = newsQuery.trim().toLocaleLowerCase("ko-KR");
+  const filteredNewsItems = useMemo(
+    () =>
+      (
+        results.updates.length || !useFallback
+          ? results.updates
+          : updates
+      )
+        .filter((item) =>
           ["news", "events", "vibe", "design"].includes(item.category),
         )
-  )
-    .filter((item) =>
-      ["news", "events", "vibe", "design"].includes(item.category),
-    )
-    .slice(0, 5);
-  const lead = magazineUpdates[0];
-  const sideItems = magazineUpdates.slice(1);
-  const communityItems = (
-    results.resources.length || !useFallback
-      ? results.resources
-      : learningResources
-  )
-    .filter((resource) =>
-      ["강좌/영상", "블로그/글", "커뮤니티", "도서"].includes(resource.type),
-    )
-    .toSorted((a, b) =>
-      a.language === b.language ? 0 : a.language === "한국어" ? -1 : 1,
-    )
-    .slice(0, 6);
+        .filter((item) =>
+          newsCategoryFilter === "all" || item.category === newsCategoryFilter,
+        )
+        .filter((item) => {
+          if (!searchNews) return true;
+          return `${item.title} ${item.summary} ${item.impact} ${item.date} ${item.tags.join(" ")} ${webzineNewsCategoryLabel(item.category)}`
+            .toLocaleLowerCase("ko-KR")
+            .includes(searchNews);
+        })
+        .toSorted((left, right) => {
+          const direction = newsSortDirection === "asc" ? 1 : -1;
+          if (newsSortMode === "date") return left.date.localeCompare(right.date) * direction;
+          if (newsSortMode === "title")
+            return left.title.localeCompare(right.title) * direction;
+          if (newsSortMode === "provider")
+            return (
+              (getProviderLabel(left.providerId) ?? "기타").localeCompare(
+                getProviderLabel(right.providerId) ?? "기타",
+              ) * direction
+            );
+          return webzineNewsCategoryLabel(left.category).localeCompare(
+            webzineNewsCategoryLabel(right.category),
+          ) * direction;
+        }),
+    [
+      newsCategoryFilter,
+      searchNews,
+      newsSortDirection,
+      newsSortMode,
+      results.updates,
+      useFallback,
+    ],
+  );
+  const sortedMagazineUpdates = filteredNewsItems.slice(0, 5);
+  const lead = sortedMagazineUpdates[0];
+  const sideItems = sortedMagazineUpdates.slice(1);
+
+  const searchCommunity = communityQuery
+    .trim()
+    .toLocaleLowerCase("ko-KR");
+  const communityItems = useMemo(
+    () =>
+      (
+        results.resources.length || !useFallback
+          ? results.resources
+          : learningResources
+      )
+        .filter((resource) =>
+          ["강좌/영상", "블로그/글", "커뮤니티", "도서"].includes(resource.type),
+        )
+        .filter((resource) =>
+          communityTypeFilter === "all" || resource.type === communityTypeFilter,
+        )
+        .filter(
+          (resource) =>
+            communityLanguageFilter === "all" ||
+            resource.language === communityLanguageFilter,
+        )
+        .filter((resource) => {
+          if (!searchCommunity) return true;
+          return `${resource.title} ${resource.summary} ${resource.author} ${resource.level} ${resource.type} ${resource.language} ${formatCommunityProviderLabels(resource)} ${resource.tags.join(" ")}`
+            .toLocaleLowerCase("ko-KR")
+            .includes(searchCommunity);
+        })
+        .toSorted((left, right) => {
+          const direction = communitySortDirection === "asc" ? 1 : -1;
+          if (communitySortMode === "language")
+            return left.language.localeCompare(right.language) * direction;
+          if (communitySortMode === "provider")
+            return (
+              formatCommunityProviderLabels(left).localeCompare(
+                formatCommunityProviderLabels(right),
+              ) * direction
+            );
+          if (communitySortMode === "type")
+            return left.type.localeCompare(right.type) * direction;
+          return left.title.localeCompare(right.title) * direction;
+        })
+        .slice(0, 6),
+    [
+      communityLanguageFilter,
+      searchCommunity,
+      communitySortDirection,
+      communitySortMode,
+      communityTypeFilter,
+      results.resources,
+      useFallback,
+    ],
+  );
 
   return (
     <section id="webzine" className="space-y-4">
@@ -424,6 +608,85 @@ export function WebzineSection({
         title="AI 뉴스와 커뮤니티 웹진"
         description="모델 릴리스, AI 주권/규제 뉴스, 한국어 유튜브·블로그·도서 자료를 웹진형으로 묶었습니다."
       />
+      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1fr_8rem_8rem_10rem]">
+        <SegmentBar
+          label="웹진 구분"
+          items={newsCategoryFilters}
+          value={newsCategoryFilter}
+          onChange={setNewsCategoryFilter}
+        />
+        <label className="block">
+          <span className="text-xs font-semibold text-text-subtle">웹진 검색</span>
+          <input
+            value={newsQuery}
+            onChange={(event) => setNewsQuery(event.target.value)}
+            placeholder="뉴스, 릴리스, 태스크, 비용 비교"
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+          />
+        </label>
+        <SegmentBar
+          label="정렬"
+          items={newsSortFilters}
+          value={newsSortMode}
+          onChange={setNewsSortMode}
+        />
+        <SegmentBar
+          label="정렬 방향"
+          items={newsSortDirectionFilters}
+          value={newsSortDirection}
+          onChange={setNewsSortDirection}
+        />
+        <div className="rounded-md border border-border bg-bg p-3">
+          <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
+          <p className="mt-1 text-lg font-semibold text-text">
+            {filteredNewsItems.length}개
+          </p>
+        </div>
+      </div>
+      <div className="rounded-lg border border-border bg-surface p-4">
+        <div className="grid gap-3 xl:grid-cols-[1fr_1fr_1fr_1fr]">
+          <SegmentBar
+            label="자료 언어"
+            items={communityLanguageFilters}
+            value={communityLanguageFilter}
+            onChange={setCommunityLanguageFilter}
+          />
+          <SegmentBar
+            label="자료 유형"
+            items={communityTypeFilters}
+            value={communityTypeFilter}
+            onChange={setCommunityTypeFilter}
+          />
+          <div className="rounded-md border border-border bg-bg p-3">
+            <p className="text-xs font-semibold text-text-subtle">정렬</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <SegmentBar
+                label="정렬"
+                items={communitySortFilters}
+                value={communitySortMode}
+                onChange={setCommunitySortMode}
+              />
+              <SegmentBar
+                label="정렬 방향"
+                items={communitySortDirectionFilters}
+                value={communitySortDirection}
+                onChange={setCommunitySortDirection}
+              />
+            </div>
+          </div>
+          <label className="block">
+            <span className="text-xs font-semibold text-text-subtle">
+              자료 검색
+            </span>
+            <input
+              value={communityQuery}
+              onChange={(event) => setCommunityQuery(event.target.value)}
+              placeholder="인프런, 유튜브, 공식 문서, 도서"
+              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+            />
+          </label>
+        </div>
+      </div>
       {lead ? (
         <div className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
           <article className="rounded-lg border border-border bg-surface p-5">
@@ -488,35 +751,45 @@ export function WebzineSection({
         />
       )}
 
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {communityItems.map((resource) => (
-          <a
-            key={resource.id}
-            href={resource.url}
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-lg border border-border bg-surface p-4 transition hover:border-border-strong"
-          >
-            <span className="flex items-start justify-between gap-3">
-              <span>
-                <span className="rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle">
-                  {resource.language} · {resource.type}
+      {communityItems.length ? (
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {communityItems.map((resource) => (
+            <a
+              key={resource.id}
+              href={resource.url}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-lg border border-border bg-surface p-4 transition hover:border-border-strong"
+            >
+              <span className="flex items-start justify-between gap-3">
+                <span>
+                  <span className="rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle">
+                    {resource.language} · {resource.type}
+                  </span>
+                  <span className="mt-3 block text-sm font-semibold text-text">
+                    {resource.title}
+                  </span>
+                  <span className="mt-1 block text-xs text-text-subtle">
+                    {formatCommunityProviderLabels(resource)}
+                  </span>
                 </span>
-                <span className="mt-3 block text-sm font-semibold text-text">
-                  {resource.title}
-                </span>
+                <ExternalLink
+                  className="size-3.5 shrink-0 text-text-subtle"
+                  aria-hidden
+                />
               </span>
-              <ExternalLink
-                className="size-3.5 shrink-0 text-text-subtle"
-                aria-hidden
-              />
-            </span>
-            <span className="mt-2 block text-xs leading-5 text-text-muted">
-              {resource.summary}
-            </span>
-          </a>
-        ))}
-      </div>
+              <span className="mt-2 block text-xs leading-5 text-text-muted">
+                {resource.summary}
+              </span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          title="조건에 맞는 커뮤니티 자료가 없습니다"
+          body="자료 유형·언어·검색어를 바꿔 다시 확인해 보세요."
+        />
+      )}
     </section>
   );
 }
@@ -540,6 +813,27 @@ function EventCalendarBoard() {
   const [selectedStatus, setSelectedStatus] =
     useState<EventScheduleStatusFilter>("all");
   const [query, setQuery] = useState("");
+  const [agendaSortMode, setAgendaSortMode] =
+    useState<EventCalendarAgendaSortMode>("date");
+  const [agendaSortDirection, setAgendaSortDirection] =
+    useState<EventCalendarAgendaSortDirection>("asc");
+
+  const agendaSortFilters: Array<{
+    id: EventCalendarAgendaSortMode;
+    label: string;
+  }> = [
+    { id: "date", label: "일자" },
+    { id: "title", label: "제목" },
+    { id: "organizer", label: "주최" },
+    { id: "status", label: "진행상태" },
+  ];
+  const agendaSortDirectionFilters: Array<{
+    id: EventCalendarAgendaSortDirection;
+    label: string;
+  }> = [
+    { id: "asc", label: "오름차순" },
+    { id: "desc", label: "내림차순" },
+  ];
 
   const queryLower = query.trim().toLowerCase();
 
@@ -595,11 +889,30 @@ function EventCalendarBoard() {
   const monthEvents = filteredEvents.filter((item) =>
     eventTouchesMonth(item, activeMonth),
   );
-  const agendaEvents = (
-    selectedDate
-      ? filteredEvents.filter((item) => eventTouchesDate(item, selectedDate))
-      : monthEvents
-  );
+  const sortedAgendaEvents = useMemo(() => {
+    const list = (
+      selectedDate
+        ? filteredEvents.filter((item) => eventTouchesDate(item, selectedDate))
+        : monthEvents
+    ).toSorted((left, right) => {
+      const direction = agendaSortDirection === "asc" ? 1 : -1;
+      if (agendaSortMode === "date")
+        return left.startDate.localeCompare(right.startDate) * direction;
+      if (agendaSortMode === "title")
+        return left.title.localeCompare(right.title) * direction;
+      if (agendaSortMode === "organizer")
+        return left.organizer.localeCompare(right.organizer) * direction;
+      return left.status.localeCompare(right.status) * direction;
+    });
+    return list;
+  }, [
+    agendaSortDirection,
+    agendaSortMode,
+    filteredEvents,
+    monthEvents,
+    selectedDate,
+  ]);
+  const agendaEvents = sortedAgendaEvents;
   const exportEvents = selectedDate ? agendaEvents : monthEvents;
 
   const leadingBlankCount = (startOfMonth(activeMonth).getDay() + 6) % 7;
@@ -793,18 +1106,32 @@ function EventCalendarBoard() {
             />
           ))}
         </div>
-        <div className="mt-3 flex items-center gap-2 text-xs text-text-subtle">
-          <span className="inline-flex items-center rounded-md border border-border bg-bg px-2 py-1">
-            검색 결과 {filteredEvents.length}건
-          </span>
-          <button
+          <div className="mt-3 flex items-center gap-2 text-xs text-text-subtle">
+            <span className="inline-flex items-center rounded-md border border-border bg-bg px-2 py-1">
+              검색 결과 {filteredEvents.length}건
+            </span>
+            <button
             type="button"
             onClick={resetFilters}
             className="rounded-md border border-border bg-bg px-2 py-1 font-semibold text-text-subtle transition hover:text-text"
           >
-            필터 초기화
-          </button>
-        </div>
+              필터 초기화
+            </button>
+          </div>
+          <div className="mt-3 grid gap-2 md:grid-cols-2">
+            <SegmentBar
+              label="일정 리스트 정렬"
+              items={agendaSortFilters}
+              value={agendaSortMode}
+              onChange={setAgendaSortMode}
+            />
+            <SegmentBar
+              label="정렬 방향"
+              items={agendaSortDirectionFilters}
+              value={agendaSortDirection}
+              onChange={setAgendaSortDirection}
+            />
+          </div>
 
         <div className="mt-4 grid grid-cols-7 gap-1.5 text-center text-[0.6875rem] font-semibold text-text-subtle">
           {weekdayLabels.map((day) => (
@@ -996,6 +1323,69 @@ function EventCalendarBoard() {
 
 export function EventPromotionsSection() {
   const eventItems = updates.filter((item) => item.category === "events");
+  const [eventQuery, setEventQuery] = useState("");
+  const [eventProviderFilter, setEventProviderFilter] = useState("all");
+  const [eventSortMode, setEventSortMode] =
+    useState<EventPromotionSortMode>("date");
+  const [eventSortDirection, setEventSortDirection] =
+    useState<EventPromotionSortDirection>("desc");
+  const eventProviderFilters: Array<{ id: string; label: string }> = useMemo(() => {
+    const providers = Array.from(new Set(eventItems.map((item) => item.providerId))).sort(
+      (left, right) => (getProviderLabel(left) ?? left).localeCompare(getProviderLabel(right) ?? right),
+    );
+    return [
+      { id: "all", label: "전체" },
+      ...providers.map((providerId) => ({
+        id: providerId,
+        label: getProviderLabel(providerId) ?? providerId,
+      })),
+    ];
+  }, [eventItems]);
+  const eventSortFilters: Array<{ id: EventPromotionSortMode; label: string }> = [
+    { id: "date", label: "날짜" },
+    { id: "title", label: "제목" },
+    { id: "provider", label: "제공사" },
+    { id: "type", label: "이벤트 유형" },
+  ];
+  const eventSortDirectionFilters: Array<{
+    id: EventPromotionSortDirection;
+    label: string;
+  }> = [
+    { id: "asc", label: "오름차순" },
+    { id: "desc", label: "내림차순" },
+  ];
+  const normalizedEventQuery = eventQuery.trim().toLocaleLowerCase("ko-KR");
+  const sortedEventItems = useMemo(() => {
+    const direction = eventSortDirection === "asc" ? 1 : -1;
+    return eventItems
+      .filter((item) =>
+        eventProviderFilter === "all" || item.providerId === eventProviderFilter,
+      )
+      .filter((item) => {
+        if (!normalizedEventQuery) return true;
+        return `${item.title} ${item.summary} ${item.impact} ${item.date} ${item.tags.join(" ")} ${getProviderLabel(item.providerId)}`
+          .toLocaleLowerCase("ko-KR")
+          .includes(normalizedEventQuery);
+      })
+      .toSorted((left, right) => {
+        if (eventSortMode === "date") return left.date.localeCompare(right.date) * direction;
+        if (eventSortMode === "title")
+          return left.title.localeCompare(right.title) * direction;
+        if (eventSortMode === "provider")
+          return (
+            (getProviderLabel(left.providerId) ?? "기타").localeCompare(
+              getProviderLabel(right.providerId) ?? "기타",
+            ) * direction
+          );
+        return left.tags.join(",").localeCompare(right.tags.join(",")) * direction;
+      });
+  }, [
+    eventItems,
+    eventProviderFilter,
+    eventSortDirection,
+    eventSortMode,
+    normalizedEventQuery,
+  ]);
 
   return (
     <section id="events" className="space-y-4">
@@ -1005,61 +1395,105 @@ export function EventPromotionsSection() {
         description="해커톤, 컨퍼런스, 웨비나, 학생/교육 혜택, 크레딧 이벤트를 날짜와 공식 확인 링크 기준으로 추적합니다."
       />
       <EventCalendarBoard />
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {eventItems.map((item) => {
-          const eventSources = getSources(item.sourceIds);
-          return (
-            <article
-              key={item.id}
-              className="rounded-lg border border-border border-t-4 border-t-accent bg-surface p-4"
-            >
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p className="text-xs font-semibold text-accent">
-                    {getProviderLabel(item.providerId)}
-                  </p>
-                  <h3 className="mt-1 text-sm font-semibold leading-5 text-text">
-                    {item.title}
-                  </h3>
-                </div>
-                <span className="rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle">
-                  확인일 {item.date}
-                </span>
-              </div>
-              <p className="mt-3 text-xs leading-5 text-text-muted">
-                {item.summary}
-              </p>
-              <p className="mt-2 text-xs leading-5 text-text-subtle">
-                {item.impact}
-              </p>
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {item.tags.slice(0, 4).map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {eventSources.slice(0, 2).map((source) => (
-                  <a
-                    key={source.id}
-                    href={source.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-muted transition hover:text-text"
-                  >
-                    {source.publisher}
-                    <ExternalLink className="size-3" aria-hidden />
-                  </a>
-                ))}
-              </div>
-            </article>
-          );
-        })}
+      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1fr_8rem_8rem_8rem]">
+        <SegmentBar
+          label="제공사"
+          items={eventProviderFilters}
+          value={eventProviderFilter}
+          onChange={setEventProviderFilter}
+        />
+        <label className="block">
+          <span className="text-xs font-semibold text-text-subtle">
+            이벤트 검색
+          </span>
+          <input
+            value={eventQuery}
+            onChange={(event) => setEventQuery(event.target.value)}
+            placeholder="OpenAI, Copilot, Gemini, 학생 혜택"
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+          />
+        </label>
+        <SegmentBar
+          label="정렬"
+          items={eventSortFilters}
+          value={eventSortMode}
+          onChange={setEventSortMode}
+        />
+        <SegmentBar
+          label="정렬 방향"
+          items={eventSortDirectionFilters}
+          value={eventSortDirection}
+          onChange={setEventSortDirection}
+        />
+        <div className="rounded-md border border-border bg-bg p-3">
+          <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
+          <p className="mt-1 text-lg font-semibold text-text">
+            {sortedEventItems.length}개
+          </p>
+        </div>
       </div>
+      {sortedEventItems.length ? (
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {sortedEventItems.map((item) => {
+            const eventSources = getSources(item.sourceIds);
+            return (
+              <article
+                key={item.id}
+                className="rounded-lg border border-border border-t-4 border-t-accent bg-surface p-4"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold text-accent">
+                      {getProviderLabel(item.providerId)}
+                    </p>
+                    <h3 className="mt-1 text-sm font-semibold leading-5 text-text">
+                      {item.title}
+                    </h3>
+                  </div>
+                  <span className="rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle">
+                    확인일 {item.date}
+                  </span>
+                </div>
+                <p className="mt-3 text-xs leading-5 text-text-muted">
+                  {item.summary}
+                </p>
+                <p className="mt-2 text-xs leading-5 text-text-subtle">
+                  {item.impact}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {item.tags.slice(0, 4).map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {eventSources.slice(0, 2).map((source) => (
+                    <a
+                      key={source.id}
+                      href={source.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-muted transition hover:text-text"
+                    >
+                      {source.publisher}
+                      <ExternalLink className="size-3" aria-hidden />
+                    </a>
+                  ))}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      ) : (
+        <EmptyState
+          title="조건에 맞는 이벤트가 없습니다"
+          body="검색어/제공사를 변경해 더 넓게 보세요."
+        />
+      )}
     </section>
   );
 }

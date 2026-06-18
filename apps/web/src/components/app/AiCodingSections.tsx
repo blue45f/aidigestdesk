@@ -27,6 +27,8 @@ import {
 
 type VibeSurfaceFilter = VibeCodingCommand["surface"] | "all";
 type VibeFitFilter = VibeCodingCommand["vibeCodingFit"] | "all";
+type VibeSortMode = "fit" | "model" | "surface" | "provider";
+type VibeSortDirection = "asc" | "desc";
 type AiCodingToolCategoryFilter = AiCodingToolCategory | "all";
 type AiCodingToolPricingFilter =
   | "all"
@@ -36,6 +38,25 @@ type AiCodingToolPricingFilter =
   | "enterprise"
   | "openSource";
 type TaskRecommendationCategoryFilter = TaskRecommendationCategory | "all";
+type TaskRecommendationSortMode =
+  | "title"
+  | "category"
+  | "intent"
+  | "primaryCount"
+  | "alternateCount"
+  | "commandCount"
+  | "resourceCount";
+type TaskRecommendationSortDirection = "asc" | "desc";
+type AiCodingToolSortMode =
+  | "name"
+  | "vendor"
+  | "category"
+  | "provider"
+  | "pricing"
+  | "integration"
+  | "koreanResource"
+  | "source";
+type AiCodingToolSortDirection = "asc" | "desc";
 
 export function TaskRecommendationSection({
   recommendations,
@@ -45,6 +66,10 @@ export function TaskRecommendationSection({
   const [category, setCategory] =
     useState<TaskRecommendationCategoryFilter>("all");
   const [intentQuery, setIntentQuery] = useState("");
+  const [sortMode, setSortMode] =
+    useState<TaskRecommendationSortMode>("title");
+  const [sortDirection, setSortDirection] =
+    useState<TaskRecommendationSortDirection>("asc");
   const categoryItems: Array<{
     id: TaskRecommendationCategoryFilter;
     label: string;
@@ -63,22 +88,79 @@ export function TaskRecommendationSection({
       id as TaskRecommendationCategoryFilter,
     ),
   }));
-  const normalizedQuery = intentQuery.toLocaleLowerCase("ko-KR").trim();
-  const visibleRecommendations = recommendations.filter(
-    (recommendation) =>
-      (category === "all" || recommendation.category === category) &&
-      (!normalizedQuery ||
-        [
-          recommendation.title,
-          recommendation.userIntent,
-          recommendation.promptStarter,
-          ...recommendation.rationale,
-          ...recommendation.tradeoffs,
-        ]
-          .join(" ")
-          .toLocaleLowerCase("ko-KR")
-          .includes(normalizedQuery)),
-  );
+  const sortFilters: Array<{ id: TaskRecommendationSortMode; label: string }> = [
+    { id: "title", label: "제목" },
+    { id: "category", label: "카테고리" },
+    { id: "intent", label: "작업 의도" },
+    { id: "primaryCount", label: "우선 추천 수" },
+    { id: "alternateCount", label: "대체 후보 수" },
+    { id: "commandCount", label: "명령어 수" },
+    { id: "resourceCount", label: "자료 수" },
+  ];
+  const sortDirectionFilters: Array<{
+    id: TaskRecommendationSortDirection;
+    label: string;
+  }> = [
+    { id: "asc", label: "오름차순" },
+    { id: "desc", label: "내림차순" },
+  ];
+  const visibleRecommendations = useMemo(() => {
+    const direction = sortDirection === "asc" ? 1 : -1;
+    const normalizedQuery = intentQuery.toLocaleLowerCase("ko-KR").trim();
+
+    return recommendations
+      .filter(
+        (recommendation) =>
+          (category === "all" || recommendation.category === category) &&
+          (!normalizedQuery ||
+            [
+              recommendation.title,
+              recommendation.userIntent,
+              recommendation.promptStarter,
+              ...recommendation.rationale,
+              ...recommendation.tradeoffs,
+            ]
+              .join(" ")
+              .toLocaleLowerCase("ko-KR")
+              .includes(normalizedQuery)),
+      )
+      .toSorted((left, right) => {
+        switch (sortMode) {
+          case "title":
+            return left.title.localeCompare(right.title) * direction;
+          case "category":
+            return left.category.localeCompare(right.category) * direction;
+          case "intent":
+            return left.userIntent.localeCompare(right.userIntent) * direction;
+          case "primaryCount": {
+            const leftPrimaryCount = left.primaryModelIds.length;
+            const rightPrimaryCount = right.primaryModelIds.length;
+            if (leftPrimaryCount === rightPrimaryCount) return 0;
+            return (leftPrimaryCount - rightPrimaryCount) * direction;
+          }
+          case "alternateCount": {
+            const leftAlternateCount = left.alternateModelIds.length;
+            const rightAlternateCount = right.alternateModelIds.length;
+            if (leftAlternateCount === rightAlternateCount) return 0;
+            return (leftAlternateCount - rightAlternateCount) * direction;
+          }
+          case "commandCount": {
+            const leftCommandCount = left.commandIds.length;
+            const rightCommandCount = right.commandIds.length;
+            if (leftCommandCount === rightCommandCount) return 0;
+            return (leftCommandCount - rightCommandCount) * direction;
+          }
+          case "resourceCount": {
+            const leftResourceCount = left.resourceIds.length;
+            const rightResourceCount = right.resourceIds.length;
+            if (leftResourceCount === rightResourceCount) return 0;
+            return (leftResourceCount - rightResourceCount) * direction;
+          }
+          default:
+            return 0;
+        }
+      });
+  }, [category, intentQuery, recommendations, sortDirection, sortMode]);
 
   return (
     <section id="task-recommendations" className="space-y-4">
@@ -94,6 +176,27 @@ export function TaskRecommendationSection({
           value={category}
           onChange={setCategory}
         />
+        <div className="rounded-md border border-border bg-bg p-3">
+          <p className="text-xs font-semibold text-text-subtle">정렬</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <div className="min-w-0 flex-1">
+              <SegmentBar
+                label="정렬"
+                items={sortFilters}
+                value={sortMode}
+                onChange={setSortMode}
+              />
+            </div>
+            <div className="min-w-0 flex-1">
+              <SegmentBar
+                label="정렬 방향"
+                items={sortDirectionFilters}
+                value={sortDirection}
+                onChange={setSortDirection}
+              />
+            </div>
+          </div>
+        </div>
         <label className="block">
           <span className="text-xs font-semibold text-text-subtle">
             하고 싶은 작업 검색
@@ -309,6 +412,9 @@ export function CodingToolDirectorySection({
   const [pricingMode, setPricingMode] =
     useState<AiCodingToolPricingFilter>("all");
   const [query, setQuery] = useState("");
+  const [sortMode, setSortMode] = useState<AiCodingToolSortMode>("name");
+  const [sortDirection, setSortDirection] =
+    useState<AiCodingToolSortDirection>("asc");
 
   const toolCategoryFilters: Array<{
     id: AiCodingToolCategoryFilter;
@@ -337,33 +443,94 @@ export function CodingToolDirectorySection({
     { id: "enterprise", label: "팀/엔터프라이즈" },
     { id: "openSource", label: "오픈소스/자체" },
   ];
+  const sortFilters: Array<{ id: AiCodingToolSortMode; label: string }> = [
+    { id: "name", label: "도구명" },
+    { id: "vendor", label: "벤더" },
+    { id: "category", label: "유형" },
+    { id: "provider", label: "제공사" },
+    { id: "pricing", label: "가격/혜택" },
+    { id: "integration", label: "연동 항목 수" },
+    { id: "koreanResource", label: "한국어 자료 수" },
+    { id: "source", label: "출처 수" },
+  ];
+  const sortDirectionFilters: Array<{
+    id: AiCodingToolSortDirection;
+    label: string;
+  }> = [
+    { id: "asc", label: "오름차순" },
+    { id: "desc", label: "내림차순" },
+  ];
 
   const filteredTools = useMemo(() => {
     const normalizedQuery = query.toLocaleLowerCase("ko-KR").trim();
+    const direction = sortDirection === "asc" ? 1 : -1;
 
-    return tools.filter((tool) => {
-      const searchable = [
-        tool.toolName,
-        tool.vendor,
-        tool.category,
-        tool.pricing,
-        tool.eventSignal,
-        ...tool.bestFor,
-        ...tool.integrations,
-        ...tool.koreanResources,
-        ...tool.caveats,
-        ...tool.tags,
-      ]
-        .join(" ")
-        .toLocaleLowerCase("ko-KR");
+    return tools
+      .filter((tool) => {
+        const searchable = [
+          tool.toolName,
+          tool.vendor,
+          tool.category,
+          tool.pricing,
+          tool.eventSignal,
+          ...tool.bestFor,
+          ...tool.integrations,
+          ...tool.koreanResources,
+          ...tool.caveats,
+          ...tool.tags,
+        ]
+          .join(" ")
+          .toLocaleLowerCase("ko-KR");
 
-      return (
-        (category === "all" || tool.category === category) &&
-        matchesToolPricing(tool, pricingMode) &&
-        (!normalizedQuery || searchable.includes(normalizedQuery))
-      );
-    });
-  }, [category, pricingMode, query, tools]);
+        return (
+          (category === "all" || tool.category === category) &&
+          matchesToolPricing(tool, pricingMode) &&
+          (!normalizedQuery || searchable.includes(normalizedQuery))
+        );
+      })
+      .toSorted((left, right) => {
+        switch (sortMode) {
+          case "name":
+            return left.toolName.localeCompare(right.toolName) * direction;
+          case "vendor":
+            return left.vendor.localeCompare(right.vendor) * direction;
+          case "category":
+            return left.category.localeCompare(right.category) * direction;
+          case "provider": {
+            const leftProvider = left.providerIds?.length
+              ? left.providerIds.map(getProviderLabel).join(" · ")
+              : "도구 독립";
+            const rightProvider = right.providerIds?.length
+              ? right.providerIds.map(getProviderLabel).join(" · ")
+              : "도구 독립";
+            if (leftProvider === rightProvider) return 0;
+            return leftProvider.localeCompare(rightProvider) * direction;
+          }
+          case "pricing":
+            return left.pricing.localeCompare(right.pricing) * direction;
+          case "integration": {
+            const leftCount = left.integrations.length;
+            const rightCount = right.integrations.length;
+            if (leftCount === rightCount) return 0;
+            return (leftCount - rightCount) * direction;
+          }
+          case "koreanResource": {
+            const leftCount = left.koreanResources.length;
+            const rightCount = right.koreanResources.length;
+            if (leftCount === rightCount) return 0;
+            return (leftCount - rightCount) * direction;
+          }
+          case "source": {
+            const leftCount = left.sourceIds.length;
+            const rightCount = right.sourceIds.length;
+            if (leftCount === rightCount) return 0;
+            return (leftCount - rightCount) * direction;
+          }
+          default:
+            return 0;
+        }
+      });
+  }, [category, pricingMode, query, sortDirection, sortMode, tools]);
 
   return (
     <section id="ai-tools" className="space-y-4">
@@ -385,6 +552,23 @@ export function CodingToolDirectorySection({
           value={pricingMode}
           onChange={setPricingMode}
         />
+        <div className="rounded-md border border-border bg-bg p-3">
+          <p className="text-xs font-semibold text-text-subtle">정렬</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <SegmentBar
+              label="정렬 항목"
+              items={sortFilters}
+              value={sortMode}
+              onChange={setSortMode}
+            />
+            <SegmentBar
+              label="정렬 방향"
+              items={sortDirectionFilters}
+              value={sortDirection}
+              onChange={setSortDirection}
+            />
+          </div>
+        </div>
         <label className="block min-w-0">
           <span className="text-xs font-semibold text-text-subtle">
             도구 검색
@@ -508,6 +692,13 @@ function fitClass(fit: VibeCodingCommand["vibeCodingFit"]) {
   }
 }
 
+const vibeFitOrder: Record<VibeCodingCommand["vibeCodingFit"], number> = {
+  "매우 높음": 3,
+  높음: 2,
+  보통: 1,
+  제한적: 0,
+};
+
 export function VibeCodingSection({
   commands,
 }: {
@@ -515,6 +706,8 @@ export function VibeCodingSection({
 }) {
   const [surface, setSurface] = useState<VibeSurfaceFilter>("all");
   const [fit, setFit] = useState<VibeFitFilter>("all");
+  const [sortMode, setSortMode] = useState<VibeSortMode>("fit");
+  const [sortDirection, setSortDirection] = useState<VibeSortDirection>("desc");
   const surfaceFilters: Array<{ id: VibeSurfaceFilter; label: string }> = [
     { id: "all", label: "전체" },
     { id: "전용 CLI", label: "전용 CLI" },
@@ -531,11 +724,59 @@ export function VibeCodingSection({
     { id: "보통", label: "보통" },
     { id: "제한적", label: "제한적" },
   ];
-  const filteredCommands = commands.filter(
-    (command) =>
-      (surface === "all" || command.surface === surface) &&
-      (fit === "all" || command.vibeCodingFit === fit),
-  );
+  const sortFilters: Array<{ id: VibeSortMode; label: string }> = [
+    { id: "fit", label: "적합도" },
+    { id: "model", label: "모델명" },
+    { id: "surface", label: "실행 표면" },
+    { id: "provider", label: "제공사" },
+  ];
+  const sortDirectionFilters: Array<{
+    id: VibeSortDirection;
+    label: string;
+  }> = [
+    { id: "asc", label: "오름차순" },
+    { id: "desc", label: "내림차순" },
+  ];
+  const commandGoal = (command: VibeCodingCommand) =>
+    command.goal?.trim() ??
+    (command.useCase?.trim() || "요청한 목표 달성을 위한 코드베이스 작업형 프롬프트를 실행합니다.");
+  const commandLoop = (command: VibeCodingCommand) =>
+    command.loop?.trim() ??
+    "요구 파악 → 실행 명령 전달 → 변경 제안 생성 → 검증/리뷰 → 반복 개선";
+
+  const filteredCommands = useMemo(() => {
+    const direction = sortDirection === "asc" ? 1 : -1;
+    return commands
+      .filter(
+        (command) =>
+          (surface === "all" || command.surface === surface) &&
+          (fit === "all" || command.vibeCodingFit === fit),
+      )
+      .toSorted((a, b) => {
+        switch (sortMode) {
+          case "fit": {
+            const byFit =
+              (vibeFitOrder[a.vibeCodingFit] ?? 0) -
+              (vibeFitOrder[b.vibeCodingFit] ?? 0);
+            if (byFit !== 0) return byFit * direction;
+            return a.modelName.localeCompare(b.modelName) * direction;
+          }
+          case "model":
+            return a.modelName.localeCompare(b.modelName) * direction;
+          case "surface":
+            if (a.surface === b.surface) return 0;
+            return a.surface.localeCompare(b.surface) * direction;
+          case "provider":
+            return (
+              (getProviderLabel(a.providerId) ?? "미지정").localeCompare(
+                getProviderLabel(b.providerId) ?? "미지정",
+              ) * direction
+            );
+          default:
+            return 0;
+        }
+      });
+    }, [commands, fit, surface, sortDirection, sortMode]);
 
   return (
     <section id="vibe-coding" className="space-y-4">
@@ -556,6 +797,18 @@ export function VibeCodingSection({
           items={fitFilters}
           value={fit}
           onChange={setFit}
+        />
+        <SegmentBar
+          label="정렬"
+          items={sortFilters}
+          value={sortMode}
+          onChange={setSortMode}
+        />
+        <SegmentBar
+          label="정렬 방향"
+          items={sortDirectionFilters}
+          value={sortDirection}
+          onChange={setSortDirection}
         />
         <div className="rounded-md border border-border bg-bg p-3">
           <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
@@ -592,6 +845,52 @@ export function VibeCodingSection({
                 {command.useCase}
               </p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
+                <div className="min-w-0">
+                  <p className="mb-1 text-xs font-semibold text-text-subtle">
+                    목표
+                  </p>
+                  <p className="rounded-md border border-border bg-bg p-3 text-xs leading-5 text-text-muted">
+                    {commandGoal(command)}
+                  </p>
+                </div>
+                <div className="min-w-0">
+                  <p className="mb-1 text-xs font-semibold text-text-subtle">
+                    작업 루프
+                  </p>
+                  <p className="rounded-md border border-border bg-bg p-3 text-xs leading-5 text-text-muted">
+                    {commandLoop(command)}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-3">
+                <p className="mb-1 text-xs font-semibold text-text-subtle">
+                  매뉴얼/설명 링크
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {(() => {
+                    const sources = getSources(command.sourceIds);
+                    const officialSources = sources.filter(
+                      (source) => source.kind === "official",
+                    );
+                    const renderedSources =
+                      officialSources.length > 0 ? officialSources : sources;
+
+                    return renderedSources.slice(0, 3).map((source) => (
+                      <a
+                        key={source.id}
+                        href={source.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+                      >
+                        {source.title}
+                        <ExternalLink className="size-3" aria-hidden />
+                      </a>
+                    ));
+                  })()}
+                </div>
+              </div>
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
                 <div className="min-w-0">
                   <p className="mb-1 text-xs font-semibold text-text-subtle">
                     설치/준비

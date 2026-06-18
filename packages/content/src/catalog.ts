@@ -145,6 +145,8 @@ export type VibeCodingCommand = {
   installCommand: string
   command: string
   useCase: string
+  goal?: string
+  loop?: string
   vibeCodingFit: '매우 높음' | '높음' | '보통' | '제한적'
   setupNotes: string[]
   caveats: string[]

@@ -2,7 +2,17 @@ import { calculateModelCosts, getProviderLabel } from "@aidigestdesk/content";
 import { Calculator } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { SectionHeader } from "@/components/app/CommonUi";
+import { SectionHeader, SegmentBar } from "@/components/app/CommonUi";
+
+type ModelCostSortMode =
+  | "model"
+  | "input"
+  | "output"
+  | "total"
+  | "provider";
+type ModelCostSortDirection = "asc" | "desc";
+type EventCostSortMode = "model" | "normal" | "event" | "saved";
+type EventCostSortDirection = "asc" | "desc";
 
 export function ModelCostCalculator() {
   const [scenario, setScenario] = useState({
@@ -11,7 +21,51 @@ export function ModelCostCalculator() {
     runsPerMonth: 1000,
   });
   const estimates = useMemo(() => calculateModelCosts(scenario), [scenario]);
+  const [costSortMode, setCostSortMode] = useState<ModelCostSortMode>("total");
+  const [costSortDirection, setCostSortDirection] =
+    useState<ModelCostSortDirection>("asc");
   const cheapest = estimates[0];
+  const costSortModeFilters: Array<{
+    id: ModelCostSortMode;
+    label: string;
+  }> = [
+    { id: "model", label: "모델" },
+    { id: "provider", label: "제공사" },
+    { id: "input", label: "입력" },
+    { id: "output", label: "출력" },
+    { id: "total", label: "월 합계" },
+  ];
+  const costSortDirectionFilters: Array<{
+    id: ModelCostSortDirection;
+    label: string;
+  }> = [
+    { id: "asc", label: "오름차순" },
+    { id: "desc", label: "내림차순" },
+  ];
+  const sortedEstimates = useMemo(() => {
+    const direction = costSortDirection === "asc" ? 1 : -1;
+    return estimates.toSorted((left, right) => {
+      switch (costSortMode) {
+        case "model":
+          return left.profile.modelName.localeCompare(right.profile.modelName) * direction;
+        case "provider":
+          return (getProviderLabel(left.profile.providerId) ?? "미지정").localeCompare(
+            getProviderLabel(right.profile.providerId) ?? "미지정",
+          ) * direction;
+        case "input":
+          if (left.inputCost === right.inputCost) return 0;
+          return (left.inputCost - right.inputCost) * direction;
+        case "output":
+          if (left.outputCost === right.outputCost) return 0;
+          return (left.outputCost - right.outputCost) * direction;
+        case "total":
+          if (left.totalCost === right.totalCost) return 0;
+          return (left.totalCost - right.totalCost) * direction;
+        default:
+          return 0;
+      }
+    });
+  }, [costSortDirection, costSortMode, estimates]);
 
   const updateScenario = (key: keyof typeof scenario, value: string) => {
     const parsed = Number(value);
@@ -62,6 +116,23 @@ export function ModelCostCalculator() {
         </article>
 
         <article className="overflow-hidden rounded-lg border border-border bg-surface">
+          <div className="grid gap-2 border-b border-border px-4 py-3 md:grid-cols-3">
+            <SegmentBar
+              label="정렬"
+              items={costSortModeFilters}
+              value={costSortMode}
+              onChange={setCostSortMode}
+            />
+            <SegmentBar
+              label="정렬 방향"
+              items={costSortDirectionFilters}
+              value={costSortDirection}
+              onChange={setCostSortDirection}
+            />
+            <div className="rounded-md border border-border bg-bg px-3 py-2 text-xs font-semibold text-text-subtle">
+              <span>표시 {sortedEstimates.length}개</span>
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <div className="min-w-[42rem]">
               <div className="grid grid-cols-[1fr_6rem_6rem_6rem] gap-3 border-b border-border px-4 py-3 text-xs font-semibold text-text-subtle">
@@ -70,7 +141,7 @@ export function ModelCostCalculator() {
                 <span className="text-right">출력</span>
                 <span className="text-right">월 합계</span>
               </div>
-              {estimates.map((estimate) => (
+              {sortedEstimates.map((estimate) => (
                 <div
                   key={estimate.profile.id}
                   className="grid grid-cols-[1fr_6rem_6rem_6rem] gap-3 border-b border-border px-4 py-3 last:border-b-0"
@@ -139,21 +210,60 @@ export function EventCostComparisonSection() {
   const [scenarioId, setScenarioId] =
     useState<(typeof eventCostScenarios)[number]["id"]>("webinar");
   const [creditMode, setCreditMode] = useState<EventCreditMode>("none");
+  const [eventSortMode, setEventSortMode] =
+    useState<EventCostSortMode>("saved");
+  const [eventSortDirection, setEventSortDirection] =
+    useState<EventCostSortDirection>("desc");
+  const eventSortModeFilters: Array<{
+    id: EventCostSortMode;
+    label: string;
+  }> = [
+    { id: "model", label: "모델" },
+    { id: "normal", label: "일반" },
+    { id: "event", label: "이벤트" },
+    { id: "saved", label: "절감" },
+  ];
+  const eventSortDirectionFilters: Array<{
+    id: EventCostSortDirection;
+    label: string;
+  }> = [
+    { id: "asc", label: "오름차순" },
+    { id: "desc", label: "내림차순" },
+  ];
   const scenario =
     eventCostScenarios.find((item) => item.id === scenarioId) ??
     eventCostScenarios[0];
   const discountFactor =
     creditMode === "double-credit" || creditMode === "half-price" ? 0.5 : 1;
-  const estimates = useMemo(
-    () =>
-      calculateModelCosts(scenario)
-        .slice(0, 6)
-        .map((estimate) => ({
-          ...estimate,
-          adjustedTotal: estimate.totalCost * discountFactor,
-        })),
-    [discountFactor, scenario],
-  );
+  const sortedEventEstimates = useMemo(() => {
+    const estimates = calculateModelCosts(scenario)
+      .slice(0, 6)
+      .map((estimate) => ({
+        ...estimate,
+        adjustedTotal: estimate.totalCost * discountFactor,
+      }));
+    const direction = eventSortDirection === "asc" ? 1 : -1;
+
+    return estimates.toSorted((left, right) => {
+      const leftSaved = left.totalCost - left.adjustedTotal;
+      const rightSaved = right.totalCost - right.adjustedTotal;
+      switch (eventSortMode) {
+        case "model":
+          return left.profile.modelName.localeCompare(right.profile.modelName) * direction;
+        case "normal":
+          if (left.totalCost === right.totalCost) return 0;
+          return (left.totalCost - right.totalCost) * direction;
+        case "event":
+          if (left.adjustedTotal === right.adjustedTotal) return 0;
+          return (left.adjustedTotal - right.adjustedTotal) * direction;
+        case "saved":
+          if (leftSaved === rightSaved) return 0;
+          return (leftSaved - rightSaved) * direction;
+        default:
+          return 0;
+      }
+    });
+  }, [discountFactor, eventSortDirection, eventSortMode, scenario]);
 
   return (
     <section id="event-costs" className="space-y-4">
@@ -216,14 +326,28 @@ export function EventCostComparisonSection() {
         </article>
 
         <article className="overflow-hidden rounded-lg border border-border bg-surface">
+          <div className="grid gap-2 border-b border-border px-4 py-3 md:grid-cols-2">
+            <SegmentBar
+              label="정렬"
+              items={eventSortModeFilters}
+              value={eventSortMode}
+              onChange={setEventSortMode}
+            />
+            <SegmentBar
+              label="정렬 방향"
+              items={eventSortDirectionFilters}
+              value={eventSortDirection}
+              onChange={setEventSortDirection}
+            />
+          </div>
           <div className="grid grid-cols-[1fr_6rem_6rem] gap-3 border-b border-border px-4 py-3 text-xs font-semibold text-text-subtle md:grid-cols-[1.4fr_7rem_7rem_7rem]">
             <span>모델</span>
             <span className="text-right">일반</span>
             <span className="text-right">이벤트</span>
             <span className="hidden text-right md:block">절감</span>
           </div>
-          {estimates.map((estimate) => {
-            const saved = estimate.totalCost - estimate.adjustedTotal;
+            {sortedEventEstimates.map((estimate) => {
+              const saved = estimate.totalCost - estimate.adjustedTotal;
             return (
               <div
                 key={estimate.profile.id}

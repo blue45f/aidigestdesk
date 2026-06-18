@@ -21,7 +21,7 @@ import { useMemo, useState } from "react";
 
 import type { ComponentType } from "react";
 
-import { SectionHeader } from "@/components/app/CommonUi";
+import { SectionHeader, SegmentBar } from "@/components/app/CommonUi";
 
 type ExportBundle = {
   id: string;
@@ -33,6 +33,14 @@ type ExportBundle = {
   preview: string;
   icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
 };
+
+type ExportSortMode = "title" | "metric" | "filename";
+type ExportSortDirection = "asc" | "desc";
+
+function parseMetricCount(metric: string) {
+  const match = metric.match(/\d+/);
+  return match ? Number(match[0]) : 0;
+}
 
 function downloadTextFile(bundle: ExportBundle) {
   const blob = new Blob([bundle.content], {
@@ -72,6 +80,10 @@ async function copyText(text: string) {
 
 export function ExportDeskSection() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [bundleQuery, setBundleQuery] = useState("");
+  const [sortMode, setSortMode] = useState<ExportSortMode>("title");
+  const [sortDirection, setSortDirection] =
+    useState<ExportSortDirection>("asc");
   const snapshotCandidates = useMemo(() => getSourceSnapshotCandidates(), []);
   const exportBundles = useMemo<ExportBundle[]>(
     () => [
@@ -121,6 +133,48 @@ export function ExportDeskSection() {
     ],
     [snapshotCandidates],
   );
+  const sortFilters: Array<{ id: ExportSortMode; label: string }> = [
+    { id: "title", label: "제목" },
+    { id: "metric", label: "항목 수" },
+    { id: "filename", label: "파일명" },
+  ];
+  const sortDirectionFilters: Array<{
+    id: ExportSortDirection;
+    label: string;
+  }> = [
+    { id: "asc", label: "오름차순" },
+    { id: "desc", label: "내림차순" },
+  ];
+
+  const filteredBundles = useMemo(() => {
+    const direction = sortDirection === "asc" ? 1 : -1;
+    const normalizedQuery = bundleQuery.trim().toLocaleLowerCase("ko-KR");
+
+    return exportBundles
+      .filter((bundle) =>
+        normalizedQuery
+          ? `${bundle.title} ${bundle.metric} ${bundle.filename}`
+              .toLocaleLowerCase("ko-KR")
+              .includes(normalizedQuery)
+          : true,
+      )
+      .toSorted((left, right) => {
+        switch (sortMode) {
+          case "title":
+            return left.title.localeCompare(right.title) * direction;
+          case "filename":
+            return left.filename.localeCompare(right.filename) * direction;
+          case "metric": {
+            const leftMetric = parseMetricCount(left.metric);
+            const rightMetric = parseMetricCount(right.metric);
+            if (leftMetric === rightMetric) return 0;
+            return (leftMetric - rightMetric) * direction;
+          }
+          default:
+            return 0;
+        }
+      });
+  }, [bundleQuery, exportBundles, sortDirection, sortMode]);
 
   const handleCopy = async (bundle: ExportBundle) => {
     const copied = await copyText(bundle.content).catch(() => false);
@@ -134,9 +188,41 @@ export function ExportDeskSection() {
         title="내보내기와 스냅샷 실행"
         description="포털 업데이트를 뉴스레터, 소스 점검표, 편집 파이프라인, 공식 소스 스냅샷 실행 계획으로 재사용합니다."
       />
-
+      <div className="grid gap-4 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_18rem_12rem_12rem]">
+        <label className="block">
+          <span className="text-xs font-semibold text-text-subtle">
+            번들 검색
+          </span>
+          <input
+            value={bundleQuery}
+            onChange={(event) => setBundleQuery(event.target.value)}
+            placeholder="뉴스레터, CSV, JSON, Runbook"
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+          />
+        </label>
+        <SegmentBar
+          label="정렬"
+          items={sortFilters}
+          value={sortMode}
+          onChange={setSortMode}
+        />
+        <SegmentBar
+          label="정렬 방향"
+          items={sortDirectionFilters}
+          value={sortDirection}
+          onChange={setSortDirection}
+        />
+        <div className="rounded-md border border-border bg-bg p-3">
+          <p className="text-xs font-semibold text-text-subtle">
+            검색/정렬 결과
+          </p>
+          <p className="mt-1 text-lg font-semibold text-text">
+            {filteredBundles.length}개
+          </p>
+        </div>
+      </div>
       <div className="grid min-w-0 gap-4 xl:grid-cols-2">
-        {exportBundles.map((bundle) => {
+        {filteredBundles.map((bundle) => {
           const Icon = bundle.icon;
           const copied = copiedId === bundle.id;
           const failed = copiedId === `${bundle.id}-failed`;

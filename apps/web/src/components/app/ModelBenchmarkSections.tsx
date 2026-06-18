@@ -28,6 +28,50 @@ import {
 
 type BenchmarkDomainFilter = BenchmarkDomain | "all";
 type BenchmarkProviderFilter = BenchmarkEntry["providerId"] | "all";
+type BenchmarkSortMode =
+  | "rank"
+  | "model"
+  | "domain"
+  | "provider"
+  | "score"
+  | "price"
+  | "speed"
+  | "latency"
+  | "lastChecked";
+type BenchmarkSortDirection = "asc" | "desc";
+
+function parseNumericMetric(value: string) {
+  const normalized = value.replace(/,/g, "").trim();
+  const match = normalized.match(/-?\d+(?:\.\d+)?/);
+  return match ? Number(match[0]) : null;
+}
+
+function compareNumericWithDirection(
+  a: number | null,
+  b: number | null,
+  direction: BenchmarkSortDirection,
+) {
+  if (a == null && b == null) return 0;
+  if (a == null) return 1;
+  if (b == null) return -1;
+  return (a - b) * (direction === "asc" ? 1 : -1);
+}
+
+function parseRankValue(rankLabel: string) {
+  const hashMatch = rankLabel.match(/#\s*(\d+(?:\.\d+)?)/);
+  if (hashMatch) return Number(hashMatch[1]);
+  const topMatch = rankLabel.match(/Top\s*(\d+(?:\.\d+)?)/i);
+  if (topMatch) return Number(topMatch[1]);
+  const plainMatch = rankLabel.match(/(\d+(?:\.\d+)?)/);
+  return plainMatch ? Number(plainMatch[1]) : null;
+}
+
+function getLatestSourceCheckedAt(entry: BenchmarkEntry) {
+  return getSources(entry.sourceIds)
+    .map((source) => source.lastChecked)
+    .filter(Boolean)
+    .toSorted((a, b) => b.localeCompare(a))[0];
+}
 
 function accentBorder(profile: ModelProfile) {
   switch (profile.accent) {
@@ -197,6 +241,9 @@ export function BenchmarkBoard() {
   const [provider, setProvider] = useState<BenchmarkProviderFilter>("all");
   const [sourceKind, setSourceKind] = useState<SourceKindFilter>("all");
   const [query, setQuery] = useState("");
+  const [sortMode, setSortMode] = useState<BenchmarkSortMode>("score");
+  const [sortDirection, setSortDirection] =
+    useState<BenchmarkSortDirection>("desc");
   const deferredQuery = useDeferredValue(query);
   const searchTerms = useMemo(() => getSearchTerms(deferredQuery), [
     deferredQuery,
@@ -228,48 +275,150 @@ export function BenchmarkBoard() {
     })),
     { id: "other", label: "기타" },
   ];
+  const sortFilters: Array<{ id: BenchmarkSortMode; label: string }> = [
+    { id: "rank", label: "순위" },
+    { id: "model", label: "모델" },
+    { id: "provider", label: "제공사" },
+    { id: "domain", label: "분야" },
+    { id: "score", label: "점수" },
+    { id: "price", label: "가격" },
+    { id: "speed", label: "속도" },
+    { id: "latency", label: "Latency" },
+    { id: "lastChecked", label: "최근 확인일" },
+  ];
+  const sortDirectionFilters: Array<{
+    id: BenchmarkSortDirection;
+    label: string;
+  }> = [
+    { id: "asc", label: "오름차순" },
+    { id: "desc", label: "내림차순" },
+  ];
   const visibleEntries = useMemo(
     () =>
-      benchmarkEntries.filter((entry) => {
-        const entrySources = getSources(entry.sourceIds);
-        const searchableText = [
-          entry.id,
-          entry.rankLabel,
-          entry.modelName,
-          getProviderLabel(entry.providerId),
-          getBenchmarkDomainLabel(entry.domain),
-          entry.metric,
-          entry.score,
-          entry.price,
-          entry.speed,
-          entry.latency,
-          entry.context,
-          ...entrySources.flatMap((source) => [
-            source.title,
-            source.publisher,
-            source.note,
-            sourceKindLabel(source.kind),
-          ]),
-        ]
-          .join(" ")
-          .toLocaleLowerCase("ko-KR")
-          .replace(/\s+/g, " ")
-          .trim();
+      benchmarkEntries
+        .filter((entry) => {
+          const entrySources = getSources(entry.sourceIds);
+          const searchableText = [
+            entry.id,
+            entry.rankLabel,
+            entry.modelName,
+            getProviderLabel(entry.providerId),
+            getBenchmarkDomainLabel(entry.domain),
+            entry.metric,
+            entry.score,
+            entry.price,
+            entry.speed,
+            entry.latency,
+            entry.context,
+            ...entrySources.flatMap((source) => [
+              source.title,
+              source.publisher,
+              source.note,
+              sourceKindLabel(source.kind),
+            ]),
+          ]
+            .join(" ")
+            .toLocaleLowerCase("ko-KR")
+            .replace(/\s+/g, " ")
+            .trim();
 
-        return (
-          (domain === "all" || entry.domain === domain) &&
-          (provider === "all" || entry.providerId === provider) &&
-          (sourceKind === "all" ||
-            entrySources.some((source) => source.kind === sourceKind)) &&
-          (!searchTerms.length ||
-            searchTerms.some((searchTerm) => searchableText.includes(searchTerm)))
-        );
-      }),
-    [domain, provider, searchTerms, sourceKind],
+          return (
+            (domain === "all" || entry.domain === domain) &&
+            (provider === "all" || entry.providerId === provider) &&
+            (sourceKind === "all" ||
+              entrySources.some((source) => source.kind === sourceKind)) &&
+            (!searchTerms.length ||
+              searchTerms.some((searchTerm) => searchableText.includes(searchTerm)))
+          );
+        })
+        .toSorted((a, b) => {
+          const directionOrder = sortDirection === "asc" ? 1 : -1;
+          switch (sortMode) {
+            case "rank": {
+              const rankA = parseRankValue(a.rankLabel);
+              const rankB = parseRankValue(b.rankLabel);
+              if (rankA == null && rankB == null) {
+                return a.rankLabel.localeCompare(b.rankLabel) * directionOrder;
+              }
+              if (rankA == null) return 1;
+              if (rankB == null) return -1;
+              return (rankA - rankB) * directionOrder;
+            }
+            case "model":
+              return a.modelName.localeCompare(b.modelName) * directionOrder;
+            case "provider": {
+              const providerA = getProviderLabel(a.providerId) ?? "미지정";
+              const providerB = getProviderLabel(b.providerId) ?? "미지정";
+              if (providerA === providerB) return 0;
+              return providerA.localeCompare(providerB) * directionOrder;
+            }
+            case "domain": {
+              const domainA = getBenchmarkDomainLabel(a.domain);
+              const domainB = getBenchmarkDomainLabel(b.domain);
+              if (domainA === domainB) return 0;
+              return domainA.localeCompare(domainB) * directionOrder;
+            }
+            case "score": {
+              const scoreA = parseNumericMetric(a.score);
+              const scoreB = parseNumericMetric(b.score);
+              const byNumeric = compareNumericWithDirection(
+                scoreA,
+                scoreB,
+                sortDirection,
+              );
+              if (byNumeric !== 0) return byNumeric;
+              return a.modelName.localeCompare(b.modelName) * directionOrder;
+            }
+            case "price": {
+              const priceA = parseNumericMetric(a.price);
+              const priceB = parseNumericMetric(b.price);
+              const byNumeric = compareNumericWithDirection(
+                priceA,
+                priceB,
+                sortDirection,
+              );
+              if (byNumeric !== 0) return byNumeric;
+              return a.modelName.localeCompare(b.modelName) * directionOrder;
+            }
+            case "speed": {
+              const speedA = parseNumericMetric(a.speed);
+              const speedB = parseNumericMetric(b.speed);
+              const byNumeric = compareNumericWithDirection(
+                speedA,
+                speedB,
+                sortDirection,
+              );
+              if (byNumeric !== 0) return byNumeric;
+              return a.modelName.localeCompare(b.modelName) * directionOrder;
+            }
+            case "latency": {
+              const latencyA = parseNumericMetric(a.latency);
+              const latencyB = parseNumericMetric(b.latency);
+              const byNumeric = compareNumericWithDirection(
+                latencyA,
+                latencyB,
+                sortDirection,
+              );
+              if (byNumeric !== 0) return byNumeric;
+              return a.modelName.localeCompare(b.modelName) * directionOrder;
+            }
+            case "lastChecked": {
+              const latestA = getLatestSourceCheckedAt(a);
+              const latestB = getLatestSourceCheckedAt(b);
+              if (!latestA && !latestB) return 0;
+              if (!latestA) return 1;
+              if (!latestB) return -1;
+              return latestB.localeCompare(latestA) * directionOrder;
+            }
+            default:
+              return 0;
+          }
+        }),
+    [domain, provider, searchTerms, sourceKind, sortDirection, sortMode],
   );
   const maxScore = Math.max(
     1,
-    ...visibleEntries.map((entry) => Number(entry.score.replace("*", "")) || 0),
+    ...visibleEntries.map((entry) => parseNumericMetric(entry.score) ?? 0),
   );
   const coverageItems = useMemo(() => {
     const sources = visibleEntries.flatMap((entry) => getSources(entry.sourceIds));
@@ -293,8 +442,8 @@ export function BenchmarkBoard() {
         title="벤치마크와 비용"
         description="종합 리더보드, SWE-Bench Pro, SWE-Lancer, PaperBench, MLE-bench, BrowseComp, RE-Bench, EVMbench, Cybench, GDPval, SpreadsheetBench를 분야별 점수·규모·비용·latency와 함께 봅니다."
       />
-      <div className="grid gap-4 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1.4fr_1fr_1fr]">
-        <label className="block xl:col-span-3">
+      <div className="grid gap-4 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <label className="block xl:col-span-4">
           <span className="text-xs font-semibold text-text-subtle">
             벤치마크 검색
           </span>
@@ -320,6 +469,18 @@ export function BenchmarkBoard() {
           value={sourceKind}
           onChange={setSourceKind}
         />
+        <SegmentBar
+          label="정렬"
+          items={sortFilters}
+          value={sortMode}
+          onChange={setSortMode}
+        />
+        <SegmentBar
+          label="정렬 방향"
+          items={sortDirectionFilters}
+          value={sortDirection}
+          onChange={setSortDirection}
+        />
         <label className="block">
           <span className="text-xs font-semibold text-text-subtle">
             제공사
@@ -338,24 +499,26 @@ export function BenchmarkBoard() {
             ))}
           </select>
         </label>
-        <div className="rounded-md border border-border bg-bg p-3 xl:col-span-3">
+        <div className="rounded-md border border-border bg-bg p-3 xl:col-span-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap gap-1.5">
               {coverageItems.map((item) => (
                 <span
                   key={item.label}
                   className="rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
-                >
-                  {item.label} {item.value}
-                </span>
-              ))}
-            </div>
+              >
+                {item.label} {item.value}
+              </span>
+            ))}
+          </div>
             <button
               type="button"
               onClick={() => {
                 setDomain("all");
                 setProvider("all");
                 setSourceKind("all");
+                setSortMode("score");
+                setSortDirection("desc");
                 setQuery("");
               }}
               className="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
@@ -375,15 +538,13 @@ export function BenchmarkBoard() {
           <span className="text-right">점수/규모</span>
         </div>
         {visibleEntries.map((entry) => {
-          const numericScore = Number(entry.score.replace("*", "")) || 0;
+          const numericScore = parseNumericMetric(entry.score) ?? 0;
           const width = `${Math.max(4, (numericScore / maxScore) * 100)}%`;
           const entrySources = getSources(entry.sourceIds);
           const sourceKinds = [
             ...new Set(entrySources.map((source) => sourceKindLabel(source.kind))),
           ];
-          const lastChecked = entrySources
-            .map((source) => source.lastChecked)
-            .toSorted((a, b) => b.localeCompare(a))[0];
+          const lastChecked = getLatestSourceCheckedAt(entry);
           return (
             <div
               key={entry.id}
