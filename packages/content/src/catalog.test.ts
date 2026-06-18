@@ -40,6 +40,16 @@ describe("catalog search", () => {
       true,
     );
 
+    const cursorResults = searchCatalog("Cursor", "cursor");
+    expect(
+      cursorResults.models.some((model) => model.id === "cursor-ai-ide"),
+    ).toBe(true);
+    expect(
+      cursorResults.vibeCodingCommands.some(
+        (command) => command.id === "cmd-cursor-agent",
+      ),
+    ).toBe(true);
+
     const vibeResults = searchCatalog("aider", "all", "vibe");
     expect(vibeResults.vibeCodingCommands.length).toBeGreaterThan(0);
 
@@ -92,6 +102,49 @@ describe("catalog search", () => {
         (resource) => resource.id === "res-dev-dongsaeng-ai-coding",
       ),
     ).toBe(true);
+
+    const cursorResults = searchCatalog("Cursor", "all", "learning");
+    expect(
+      cursorResults.resources.some(
+        (resource) => resource.id === "res-cursor-docs",
+      ),
+    ).toBe(true);
+
+    const educationResults = searchCatalog("원격 교육", "all", "learning");
+    expect(
+      educationResults.resources.some(
+        (resource) => resource.id === "res-korean-remote-bootcamps",
+      ),
+    ).toBe(true);
+  });
+
+  it("finds LLM event and promotion watch items", () => {
+    const results = searchCatalog("초대", "all", "events");
+
+    expect(results.updates.length).toBeGreaterThan(0);
+    expect(
+      results.updates.some((update) => update.id === "event-manus-promotions"),
+    ).toBe(true);
+  });
+
+  it("finds task recommendations by user intent", () => {
+    const cursorResults = searchCatalog(
+      "버그 수정",
+      "cursor",
+      "recommendations",
+    );
+    expect(
+      cursorResults.taskRecommendations.some(
+        (recommendation) => recommendation.id === "task-repo-fix",
+      ),
+    ).toBe(true);
+
+    const costResults = searchCatalog("저비용", "all", "recommendations");
+    expect(
+      costResults.taskRecommendations.some(
+        (recommendation) => recommendation.id === "task-low-cost-bulk",
+      ),
+    ).toBe(true);
   });
 
   it("resolves source references", () => {
@@ -102,13 +155,14 @@ describe("catalog search", () => {
 
   it("exposes summary stats", () => {
     expect(getCatalogStats()).toMatchObject({
-      providers: 9,
-      updates: 15,
-      benchmarkRows: 12,
-      vibeCommands: 8,
+      providers: 10,
+      updates: 30,
+      benchmarkRows: 13,
+      vibeCommands: 9,
       personaGuides: 5,
-      monitors: 17,
-      pipelineItems: 6,
+      taskRecommendations: 8,
+      monitors: 25,
+      pipelineItems: 8,
       costProfiles: 10,
     });
   });

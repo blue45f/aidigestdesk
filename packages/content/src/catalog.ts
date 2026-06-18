@@ -7,11 +7,14 @@ export type ProviderId =
   | "kimi"
   | "deepseek"
   | "qwen"
-  | "mistral";
+  | "mistral"
+  | "cursor";
 
 export type ContentCategory =
   | "news"
+  | "events"
   | "updates"
+  | "recommendations"
   | "vibe"
   | "design"
   | "comparison"
@@ -48,7 +51,7 @@ export type ModelProfile = {
   productName: string;
   modelName: string;
   modelId: string;
-  status: "일반 제공" | "프리뷰" | "제한 제공" | "서비스/API";
+  status: "일반 제공" | "프리뷰" | "제한 제공" | "서비스/API" | "서비스/IDE";
   lastUpdate: string;
   verifiedAt: string;
   oneLine: string;
@@ -105,6 +108,7 @@ export type VibeCodingCommand = {
   modelName: string;
   surface:
     | "전용 CLI"
+    | "IDE/에이전트"
     | "OpenAI 호환 API"
     | "공식 SDK"
     | "서드파티 CLI"
@@ -242,9 +246,35 @@ export type ModelCostEstimate = {
   formattedTotal: string;
 };
 
+export type TaskRecommendationCategory =
+  | "coding"
+  | "ppt"
+  | "research"
+  | "automation"
+  | "cost"
+  | "learning"
+  | "security";
+
+export type TaskRecommendation = {
+  id: string;
+  category: TaskRecommendationCategory;
+  title: string;
+  userIntent: string;
+  primaryModelIds: string[];
+  alternateModelIds: string[];
+  commandIds: string[];
+  benchmarkDomains: BenchmarkDomain[];
+  resourceIds: string[];
+  rationale: string[];
+  tradeoffs: string[];
+  promptStarter: string;
+  sourceIds: string[];
+};
+
 export type SearchResults = {
   models: ModelProfile[];
   updates: UpdateItem[];
+  taskRecommendations: TaskRecommendation[];
   benchmarks: BenchmarkEntry[];
   manuals: ManualGuide[];
   personaGuides: PersonaGuide[];
@@ -317,6 +347,12 @@ export const providerCatalog: Array<{
     label: "Mistral AI",
     shortLabel: "Mistral",
     productLabel: "Mistral / Ministral",
+  },
+  {
+    id: "cursor",
+    label: "Cursor",
+    shortLabel: "Cursor",
+    productLabel: "Cursor AI IDE",
   },
 ];
 
@@ -551,6 +587,114 @@ export const sources: SourceRef[] = [
     note: "Mistral Chat Completions API, TypeScript/Python SDK와 curl 호출 예시, model/messages/tools 파라미터 출처.",
   },
   {
+    id: "anthropic-pricing",
+    title: "Anthropic Pricing",
+    publisher: "Anthropic",
+    kind: "official",
+    url: "https://www.anthropic.com/pricing",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Claude API/플랜 가격과 프로모션성 가격 변경 여부를 확인하는 공식 가격 페이지.",
+  },
+  {
+    id: "anthropic-news",
+    title: "Anthropic News",
+    publisher: "Anthropic",
+    kind: "official",
+    url: "https://www.anthropic.com/news",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Claude 제품, 플랜, 정책, 이벤트성 공지 후보를 확인하는 공식 뉴스 페이지.",
+  },
+  {
+    id: "google-gemini-pricing",
+    title: "Gemini API Pricing",
+    publisher: "Google AI for Developers",
+    kind: "official",
+    url: "https://ai.google.dev/gemini-api/docs/pricing",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Gemini API 가격, free tier, batch/캐시 등 비용 이벤트성 변경을 확인하는 공식 가격 문서.",
+  },
+  {
+    id: "google-ai-blog",
+    title: "Google AI Blog",
+    publisher: "Google",
+    kind: "official",
+    url: "https://blog.google/technology/ai/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Gemini, AI Pro, 학생/교육/제품 이벤트 소식을 확인하는 Google AI 공식 블로그.",
+  },
+  {
+    id: "manus-pricing",
+    title: "Manus Pricing",
+    publisher: "Manus",
+    kind: "official",
+    url: "https://manus.im/pricing",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Manus 플랜, 크레딧, 초대/추천 이벤트 후보를 확인하는 가격 페이지.",
+  },
+  {
+    id: "kimi-pricing",
+    title: "Kimi API Pricing",
+    publisher: "Moonshot AI",
+    kind: "official",
+    url: "https://platform.kimi.ai/docs/pricing",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Kimi API 가격, 무료/할인/크레딧성 이벤트 변경 여부를 확인하는 공식 가격 문서.",
+  },
+  {
+    id: "qwen-billing",
+    title: "Alibaba Model Studio Billing",
+    publisher: "Alibaba Cloud",
+    kind: "official",
+    url: "https://help.aliyun.com/zh/model-studio/billing",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Qwen/Model Studio 과금, 무료 quota, 할인 이벤트 후보를 확인하는 Alibaba Cloud 문서.",
+  },
+  {
+    id: "mistral-news",
+    title: "Mistral AI News",
+    publisher: "Mistral AI",
+    kind: "official",
+    url: "https://mistral.ai/news",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Mistral 모델, 제품, La Plateforme, 이벤트성 공지를 확인하는 공식 뉴스 페이지.",
+  },
+  {
+    id: "mistral-pricing",
+    title: "Mistral Pricing",
+    publisher: "Mistral AI",
+    kind: "official",
+    url: "https://docs.mistral.ai/getting-started/pricing/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Mistral API 가격, 무료/할인/플랜 변경 여부를 확인하는 공식 가격 문서.",
+  },
+  {
+    id: "openai-academy-events",
+    title: "OpenAI Academy Events",
+    publisher: "OpenAI Academy",
+    kind: "official",
+    url: "https://academy.openai.com/public/events",
+    lastChecked: SNAPSHOT_DATE,
+    note: "OpenAI와 커뮤니티 파트너가 진행하는 온라인/라이브 학습 이벤트, Builder Bootcamp, Codex/Agents 세션을 확인하는 공식 이벤트 허브.",
+  },
+  {
+    id: "anthropic-claude-corps",
+    title: "Introducing Claude Corps",
+    publisher: "Anthropic",
+    kind: "official",
+    url: "https://www.anthropic.com/news/claude-corps",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Claude Corps 2026 펠로십, 비영리 호스트 조직, Claude 교육/토큰 예산, 신청 일정 정보를 확인한 공식 발표.",
+  },
+  {
+    id: "google-gemini-students",
+    title: "Gemini for Students",
+    publisher: "Google Gemini",
+    kind: "official",
+    url: "https://gemini.google/students/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "대학생 대상 Gemini 학습 파트너와 국가/언어별 학생 혜택 페이지를 확인하는 공식 Gemini 학생 허브.",
+  },
+  {
     id: "google-gemini-docs-ko",
     title: "Gemini API Korean Docs",
     publisher: "Google AI for Developers",
@@ -686,6 +830,150 @@ export const sources: SourceRef[] = [
     note: "LLM agents, AI engineering, agentic application development 관련 해외 도서 후보 검색 허브.",
   },
   {
+    id: "cursor-docs",
+    title: "Cursor Documentation",
+    publisher: "Cursor",
+    kind: "official",
+    url: "https://docs.cursor.com",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Cursor AI IDE, agent, rules, MCP, model 설정, 팀 운영 문서를 확인하는 공식 문서.",
+  },
+  {
+    id: "cursor-pricing",
+    title: "Cursor Pricing",
+    publisher: "Cursor",
+    kind: "official",
+    url: "https://cursor.com/pricing",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Cursor Hobby, Pro, Teams, Enterprise 플랜과 Agent, Tab, MCP, Cloud agents, Bugbot, 사용량 기반 과금을 확인하는 공식 가격 페이지.",
+  },
+  {
+    id: "cursor-changelog",
+    title: "Cursor Changelog",
+    publisher: "Cursor",
+    kind: "official",
+    url: "https://cursor.com/changelog",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Cursor Cloud agents, Bugbot, Design Mode, SDK, CLI, agent 기능 변경을 추적하는 공식 변경 로그.",
+  },
+  {
+    id: "cursor-students",
+    title: "Cursor Students",
+    publisher: "Cursor",
+    kind: "official",
+    url: "https://cursor.com/students",
+    lastChecked: SNAPSHOT_DATE,
+    note: "대학 이메일 인증 기반 Cursor Pro 학생 혜택과 포함 사용량을 확인하는 공식 학생 페이지.",
+  },
+  {
+    id: "windsurf-docs",
+    title: "Windsurf Documentation",
+    publisher: "Windsurf",
+    kind: "official",
+    url: "https://docs.windsurf.com",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Windsurf AI IDE, Cascade, context, MCP, enterprise 설정을 확인하는 공식 문서.",
+  },
+  {
+    id: "cline-github",
+    title: "Cline GitHub",
+    publisher: "Cline",
+    kind: "official",
+    url: "https://github.com/cline/cline",
+    lastChecked: SNAPSHOT_DATE,
+    note: "VS Code 기반 오픈소스 코딩 에이전트 Cline의 설치, 기능, 이슈, 릴리스를 확인하는 저장소.",
+  },
+  {
+    id: "roo-code-docs",
+    title: "Roo Code Documentation",
+    publisher: "Roo Code",
+    kind: "official",
+    url: "https://docs.roocode.com",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Roo Code의 모드, MCP, 커스텀 지시, 모델 연결, VS Code 확장 설정을 확인하는 문서.",
+  },
+  {
+    id: "aider-docs",
+    title: "Aider Documentation",
+    publisher: "Aider",
+    kind: "official",
+    url: "https://aider.chat",
+    lastChecked: SNAPSHOT_DATE,
+    note: "터미널 기반 pair programming 도구 Aider의 모델 연결, Git 워크플로, 명령어 문서.",
+  },
+  {
+    id: "continue-docs",
+    title: "Continue Documentation",
+    publisher: "Continue",
+    kind: "official",
+    url: "https://docs.continue.dev",
+    lastChecked: SNAPSHOT_DATE,
+    note: "오픈소스 AI code assistant Continue의 IDE 확장, 모델/provider 설정, context 문서.",
+  },
+  {
+    id: "openhands-docs",
+    title: "OpenHands Documentation",
+    publisher: "All Hands AI",
+    kind: "official",
+    url: "https://docs.all-hands.dev",
+    lastChecked: SNAPSHOT_DATE,
+    note: "OpenHands 에이전트 개발 환경, 로컬/클라우드 실행, LLM 설정을 확인하는 공식 문서.",
+  },
+  {
+    id: "lovable-docs",
+    title: "Lovable Documentation",
+    publisher: "Lovable",
+    kind: "official",
+    url: "https://docs.lovable.dev",
+    lastChecked: SNAPSHOT_DATE,
+    note: "프롬프트 기반 웹 앱 제작 도구 Lovable의 프로젝트, 배포, 데이터 연동 문서.",
+  },
+  {
+    id: "bolt-docs",
+    title: "Bolt Support",
+    publisher: "Bolt",
+    kind: "official",
+    url: "https://support.bolt.new",
+    lastChecked: SNAPSHOT_DATE,
+    note: "StackBlitz Bolt의 앱 생성, 프롬프트, 배포, 문제 해결 자료를 확인하는 지원 문서.",
+  },
+  {
+    id: "v0-docs",
+    title: "v0 Documentation",
+    publisher: "Vercel",
+    kind: "official",
+    url: "https://v0.dev/docs",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Vercel v0의 UI 생성, 프로젝트, 배포, 프롬프트 워크플로를 확인하는 공식 문서.",
+  },
+  {
+    id: "replit-agent-docs",
+    title: "Replit Agent Documentation",
+    publisher: "Replit",
+    kind: "official",
+    url: "https://docs.replit.com/replitai/agent",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Replit Agent의 앱 생성, 계획, 실행, 배포 흐름을 확인하는 공식 문서.",
+  },
+  {
+    id: "github-copilot-docs",
+    title: "GitHub Copilot Documentation",
+    publisher: "GitHub Docs",
+    kind: "official",
+    url: "https://docs.github.com/en/copilot",
+    lastChecked: SNAPSHOT_DATE,
+    note: "GitHub Copilot, Copilot Chat, agent mode, CLI/IDE 설정과 조직 정책을 확인하는 공식 문서.",
+  },
+  {
+    id: "devin-docs",
+    title: "Devin Documentation",
+    publisher: "Cognition",
+    kind: "official",
+    url: "https://docs.devin.ai",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Devin AI software engineer의 작업 환경, 지식, Slack/GitHub 연동, 운영 문서를 확인하는 공식 문서.",
+  },
+  {
     id: "youtube-teddynote",
     title: "테디노트 TeddyNote",
     publisher: "YouTube",
@@ -738,6 +1026,96 @@ export const sources: SourceRef[] = [
     url: "https://www.youtube.com/results?search_query=%EA%B0%9C%EB%B0%9C%EB%8F%99%EC%83%9D+AI+%EC%BD%94%EB%94%A9",
     lastChecked: SNAPSHOT_DATE,
     note: "개발동생, AI 코딩, 개발 자동화, 실무 코딩 강좌 후보를 찾는 한국어 유튜브 검색 링크.",
+  },
+  {
+    id: "youtube-cursor-korean-search",
+    title: "Cursor Korean YouTube Search",
+    publisher: "YouTube",
+    kind: "community",
+    url: "https://www.youtube.com/results?search_query=Cursor+AI+%EC%BD%94%EB%94%A9+%ED%95%9C%EA%B5%AD%EC%96%B4",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Cursor AI IDE, AI 코딩, 바이브 코딩 관련 한국어 유튜브 강좌 후보를 찾는 검색 링크.",
+  },
+  {
+    id: "youtube-windsurf-korean-search",
+    title: "Windsurf Korean YouTube Search",
+    publisher: "YouTube",
+    kind: "community",
+    url: "https://www.youtube.com/results?search_query=Windsurf+AI+%EC%BD%94%EB%94%A9+%ED%95%9C%EA%B5%AD%EC%96%B4",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Windsurf, Cascade, AI IDE 관련 한국어 유튜브 강좌 후보를 찾는 검색 링크.",
+  },
+  {
+    id: "youtube-cline-roo-korean-search",
+    title: "Cline Roo Code Korean YouTube Search",
+    publisher: "YouTube",
+    kind: "community",
+    url: "https://www.youtube.com/results?search_query=Cline+Roo+Code+%ED%95%9C%EA%B5%AD%EC%96%B4",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Cline, Roo Code, VS Code 코딩 에이전트 관련 한국어 유튜브 강좌 후보 검색 링크.",
+  },
+  {
+    id: "youtube-copilot-korean-search",
+    title: "GitHub Copilot Korean YouTube Search",
+    publisher: "YouTube",
+    kind: "community",
+    url: "https://www.youtube.com/results?search_query=GitHub+Copilot+%ED%95%9C%EA%B5%AD%EC%96%B4+%EA%B0%95%EC%A2%8C",
+    lastChecked: SNAPSHOT_DATE,
+    note: "GitHub Copilot, Copilot Chat, agent mode 관련 한국어 유튜브 강좌 후보 검색 링크.",
+  },
+  {
+    id: "youtube-v0-lovable-bolt-korean-search",
+    title: "v0 Lovable Bolt Korean YouTube Search",
+    publisher: "YouTube",
+    kind: "community",
+    url: "https://www.youtube.com/results?search_query=v0+Lovable+Bolt+AI+%ED%95%9C%EA%B5%AD%EC%96%B4",
+    lastChecked: SNAPSHOT_DATE,
+    note: "v0, Lovable, Bolt 기반 프롬프트 웹 앱 제작 한국어 유튜브 강좌 후보 검색 링크.",
+  },
+  {
+    id: "youtube-nomadcoders-ai-search",
+    title: "Nomad Coders AI Coding Search",
+    publisher: "YouTube",
+    kind: "community",
+    url: "https://www.youtube.com/results?search_query=%EB%85%B8%EB%A7%88%EB%93%9C%EC%BD%94%EB%8D%94+AI+%EC%BD%94%EB%94%A9",
+    lastChecked: SNAPSHOT_DATE,
+    note: "노마드 코더의 AI 코딩, 프론트엔드 생산성, 앱 제작 관련 영상 후보를 찾는 검색 링크.",
+  },
+  {
+    id: "youtube-dreamcoding-ai-search",
+    title: "Dream Coding AI Coding Search",
+    publisher: "YouTube",
+    kind: "community",
+    url: "https://www.youtube.com/results?search_query=%EB%93%9C%EB%A6%BC%EC%BD%94%EB%94%A9+AI+%EC%BD%94%EB%94%A9",
+    lastChecked: SNAPSHOT_DATE,
+    note: "드림코딩의 AI 코딩, 개발 생산성, 프론트엔드 실무 영상 후보 검색 링크.",
+  },
+  {
+    id: "youtube-yalco-ai-search",
+    title: "Yalco AI Coding Search",
+    publisher: "YouTube",
+    kind: "community",
+    url: "https://www.youtube.com/results?search_query=%EC%96%84%EC%BD%94+AI+%EC%BD%94%EB%94%A9",
+    lastChecked: SNAPSHOT_DATE,
+    note: "얄코의 AI 코딩, 개발 도구, 개념 설명 영상 후보 검색 링크.",
+  },
+  {
+    id: "youtube-codingapple-ai-search",
+    title: "Coding Apple AI Coding Search",
+    publisher: "YouTube",
+    kind: "community",
+    url: "https://www.youtube.com/results?search_query=%EC%BD%94%EB%94%A9%EC%95%A0%ED%94%8C+AI+%EC%BD%94%EB%94%A9",
+    lastChecked: SNAPSHOT_DATE,
+    note: "코딩애플의 AI 코딩, 웹 개발 자동화, 실무 개발 영상 후보 검색 링크.",
+  },
+  {
+    id: "youtube-nadocoding-ai-search",
+    title: "Nado Coding AI Search",
+    publisher: "YouTube",
+    kind: "community",
+    url: "https://www.youtube.com/results?search_query=%EB%82%98%EB%8F%84%EC%BD%94%EB%94%A9+AI+%EC%BD%94%EB%94%A9",
+    lastChecked: SNAPSHOT_DATE,
+    note: "나도코딩의 AI 코딩, 자동화, 입문 개발 영상 후보 검색 링크.",
   },
   {
     id: "youtube-openai",
@@ -965,6 +1343,132 @@ export const sources: SourceRef[] = [
     note: "Google 개발자 블로그의 한국어 글과 Gemini/AI 개발자 뉴스 확인 출처.",
   },
   {
+    id: "upstage-blog",
+    title: "Upstage Blog",
+    publisher: "Upstage",
+    kind: "publisher",
+    url: "https://www.upstage.ai/blog",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Upstage의 LLM, Document AI, Solar, AI 제품/연구 업데이트를 확인하는 블로그.",
+  },
+  {
+    id: "naver-cloud-blog",
+    title: "NAVER Cloud Platform Blog",
+    publisher: "NAVER Cloud",
+    kind: "publisher",
+    url: "https://blog.naver.com/n_cloudplatform",
+    lastChecked: SNAPSHOT_DATE,
+    note: "NAVER Cloud, HyperCLOVA X, 클라우드 AI 제품과 기술 자료를 확인하는 공식 블로그.",
+  },
+  {
+    id: "lycorp-tech-ko",
+    title: "LY Corporation Tech Blog Korean",
+    publisher: "LY Corporation",
+    kind: "publisher",
+    url: "https://techblog.lycorp.co.jp/ko",
+    lastChecked: SNAPSHOT_DATE,
+    note: "LINE/Yahoo 계열의 AI, 검색, 데이터, 플랫폼 기술 글을 한국어로 확인하는 기술 블로그.",
+  },
+  {
+    id: "superb-ai-blog-ko",
+    title: "Superb AI Korean Blog",
+    publisher: "Superb AI",
+    kind: "publisher",
+    url: "https://blog-ko.superb-ai.com",
+    lastChecked: SNAPSHOT_DATE,
+    note: "비전 AI, 데이터셋, 모델 운영, AI 제품 사례를 한국어로 확인하는 블로그.",
+  },
+  {
+    id: "kmooc-ai",
+    title: "K-MOOC AI Courses",
+    publisher: "K-MOOC",
+    kind: "publisher",
+    url: "https://www.kmooc.kr",
+    lastChecked: SNAPSHOT_DATE,
+    note: "국내 대학·기관의 AI, 데이터, 컴퓨터공학 온라인 공개강좌를 찾는 공공 원격 교육 허브.",
+  },
+  {
+    id: "boostcourse-ai",
+    title: "Boostcourse AI Courses",
+    publisher: "NAVER Connect Foundation",
+    kind: "publisher",
+    url: "https://www.boostcourse.org",
+    lastChecked: SNAPSHOT_DATE,
+    note: "부스트코스의 AI, 데이터, 웹/앱 개발 무료·온라인 강좌를 찾는 교육 허브.",
+  },
+  {
+    id: "elice-ai",
+    title: "Elice AI Education",
+    publisher: "Elice",
+    kind: "publisher",
+    url: "https://elice.io/ko",
+    lastChecked: SNAPSHOT_DATE,
+    note: "엘리스의 AI, 데이터, 개발자 교육과 기업 원격 교육 프로그램을 찾는 허브.",
+  },
+  {
+    id: "programmers-school-ai",
+    title: "Programmers School",
+    publisher: "Programmers",
+    kind: "publisher",
+    url: "https://school.programmers.co.kr",
+    lastChecked: SNAPSHOT_DATE,
+    note: "프로그래머스 스쿨의 개발자 교육, 데브코스, 코딩 테스트, AI/데이터 강좌 후보를 찾는 허브.",
+  },
+  {
+    id: "goorm-edu-ai",
+    title: "goormEDU",
+    publisher: "goorm",
+    kind: "publisher",
+    url: "https://edu.goorm.io",
+    lastChecked: SNAPSHOT_DATE,
+    note: "구름EDU의 AI, 데이터, 개발자 원격 강좌 후보를 찾는 교육 허브.",
+  },
+  {
+    id: "fastcampus-ai",
+    title: "Fast Campus",
+    publisher: "Fast Campus",
+    kind: "publisher",
+    url: "https://fastcampus.co.kr",
+    lastChecked: SNAPSHOT_DATE,
+    note: "패스트캠퍼스의 AI, 데이터, 개발, 자동화 실무 강좌 후보를 찾는 원격 교육 허브.",
+  },
+  {
+    id: "codeit-ai",
+    title: "Codeit",
+    publisher: "Codeit",
+    kind: "publisher",
+    url: "https://www.codeit.kr",
+    lastChecked: SNAPSHOT_DATE,
+    note: "코드잇의 개발 입문, 데이터, AI 활용 학습 경로를 찾는 온라인 교육 허브.",
+  },
+  {
+    id: "spartacoding-ai",
+    title: "Sparta Coding Club",
+    publisher: "Sparta Coding Club",
+    kind: "publisher",
+    url: "https://spartacodingclub.kr",
+    lastChecked: SNAPSHOT_DATE,
+    note: "스파르타코딩클럽의 AI, 웹/앱 개발, 업무 자동화 원격 강좌 후보를 찾는 교육 허브.",
+  },
+  {
+    id: "modulabs-ai",
+    title: "모두의연구소",
+    publisher: "모두의연구소",
+    kind: "community",
+    url: "https://modulabs.co.kr",
+    lastChecked: SNAPSHOT_DATE,
+    note: "AI 연구 커뮤니티, 풀잎스쿨, 랩, 세미나와 학습 모임을 찾는 국내 커뮤니티 교육 허브.",
+  },
+  {
+    id: "aihub",
+    title: "AI Hub",
+    publisher: "AI Hub",
+    kind: "publisher",
+    url: "https://www.aihub.or.kr",
+    lastChecked: SNAPSHOT_DATE,
+    note: "국내 AI 학습용 데이터, 활용 사례, 교육 자료 후보를 확인하는 공공 AI 데이터 허브.",
+  },
+  {
     id: "inflearn-langchain",
     title: "Inflearn LangChain Search",
     publisher: "Inflearn",
@@ -1037,6 +1541,51 @@ export const sources: SourceRef[] = [
     note: "개발동생 강좌와 실무 개발/AI 코딩 관련 한국어 강좌 후보를 찾는 인프런 검색 링크.",
   },
   {
+    id: "inflearn-github-copilot",
+    title: "Inflearn GitHub Copilot Search",
+    publisher: "Inflearn",
+    kind: "publisher",
+    url: "https://www.inflearn.com/search?s=GitHub%20Copilot",
+    lastChecked: SNAPSHOT_DATE,
+    note: "GitHub Copilot, Copilot Chat, AI pair programming 관련 한국어 강좌 후보를 찾는 인프런 검색 링크.",
+  },
+  {
+    id: "inflearn-windsurf",
+    title: "Inflearn Windsurf Search",
+    publisher: "Inflearn",
+    kind: "publisher",
+    url: "https://www.inflearn.com/search?s=Windsurf",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Windsurf, Cascade, AI IDE 관련 한국어 강좌 후보를 찾는 인프런 검색 링크.",
+  },
+  {
+    id: "inflearn-cline",
+    title: "Inflearn Cline Search",
+    publisher: "Inflearn",
+    kind: "publisher",
+    url: "https://www.inflearn.com/search?s=Cline",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Cline, Roo Code, VS Code 에이전트 관련 한국어 강좌 후보를 찾는 인프런 검색 링크.",
+  },
+  {
+    id: "inflearn-v0",
+    title: "Inflearn v0 Search",
+    publisher: "Inflearn",
+    kind: "publisher",
+    url: "https://www.inflearn.com/search?s=v0",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Vercel v0, 프롬프트 UI 생성, AI 웹앱 제작 강좌 후보를 찾는 인프런 검색 링크.",
+  },
+  {
+    id: "inflearn-lovable",
+    title: "Inflearn Lovable Search",
+    publisher: "Inflearn",
+    kind: "publisher",
+    url: "https://www.inflearn.com/search?s=Lovable",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Lovable, 노코드/프롬프트 기반 웹앱 제작 강좌 후보를 찾는 인프런 검색 링크.",
+  },
+  {
     id: "yes24-llm-books",
     title: "YES24 LLM Book Search",
     publisher: "YES24",
@@ -1098,6 +1647,42 @@ export const sources: SourceRef[] = [
     url: "https://wikibook.co.kr/?s=LLM",
     lastChecked: SNAPSHOT_DATE,
     note: "위키북스의 LLM, 생성형 AI, 개발 실무 도서 후보를 찾는 검색 링크.",
+  },
+  {
+    id: "hanbit-llm-books",
+    title: "Hanbit LLM Book Search",
+    publisher: "Hanbit Media",
+    kind: "publisher",
+    url: "https://www.hanbit.co.kr/search/search_list.html?keyword=LLM",
+    lastChecked: SNAPSHOT_DATE,
+    note: "한빛미디어의 LLM, 생성형 AI, 데이터/개발 실무 신간 후보를 찾는 검색 링크.",
+  },
+  {
+    id: "jpub-llm-books",
+    title: "JPub LLM Book Search",
+    publisher: "JPub",
+    kind: "publisher",
+    url: "https://jpub.tistory.com/search/LLM",
+    lastChecked: SNAPSHOT_DATE,
+    note: "제이펍의 LLM, AI, 데이터/개발 도서와 신간 후보를 찾는 검색 링크.",
+  },
+  {
+    id: "acornpub-llm-books",
+    title: "Acorn Publishing LLM Search",
+    publisher: "Acorn Publishing",
+    kind: "publisher",
+    url: "https://www.acornpub.co.kr/search?keyword=LLM",
+    lastChecked: SNAPSHOT_DATE,
+    note: "에이콘출판사의 LLM, 생성형 AI, 개발/데이터 도서 후보를 찾는 검색 링크.",
+  },
+  {
+    id: "packt-llm-agent-books",
+    title: "Packt LLM Agents Search",
+    publisher: "Packt",
+    kind: "publisher",
+    url: "https://www.packtpub.com/search?query=LLM%20agents",
+    lastChecked: SNAPSHOT_DATE,
+    note: "LLM agents, AI coding, LangChain/LangGraph 등 해외 실무 도서 후보를 찾는 Packt 검색 허브.",
   },
   {
     id: "wikidocs",
@@ -1571,6 +2156,52 @@ export const modelProfiles: ModelProfile[] = [
     sourceIds: ["mistral-models", "mistral-ministral-3-14b"],
     accent: "ink",
   },
+  {
+    id: "cursor-ai-ide",
+    providerId: "cursor",
+    providerName: "Cursor",
+    productName: "Cursor AI IDE",
+    modelName: "Cursor AI IDE / Agents",
+    modelId: "cursor",
+    status: "서비스/IDE",
+    lastUpdate: "2026-06-17",
+    verifiedAt: SNAPSHOT_DATE,
+    oneLine:
+      "기저 모델보다 개발 환경, Agent, Tab, Cloud agents, Bugbot, CLI가 핵심인 AI 코딩 IDE.",
+    summary:
+      "Cursor는 모델 API가 아니라 VS Code 계열 개발 경험 위에 Agent, Tab 완성, MCP/skills/hooks, Cloud agents, Bugbot 리뷰, CLI와 팀 관리 기능을 얹은 AI IDE다. 바이브 코딩 비교에서는 GPT/Claude/Gemini 같은 기저 LLM과 별도 축으로 보되, 실제 개발 생산성 평가에는 함께 넣는 것이 정확하다.",
+    strengths: [
+      "IDE 안에서 repo 맥락 활용",
+      "Agent와 Tab 자동완성",
+      "Cloud agents와 병렬 작업",
+      "Bugbot/보안 리뷰",
+    ],
+    caveats: [
+      "기저 모델 품질과 Cursor 실행 표면 품질을 분리 평가해야 함",
+      "팀/엔터프라이즈 사용은 repo, model, MCP 접근 제어와 privacy mode를 함께 검토",
+    ],
+    bestFor: [
+      "프론트엔드/풀스택 구현",
+      "장시간 바이브 코딩",
+      "PR 리뷰와 버그 탐지",
+      "학생/팀 개발 학습",
+    ],
+    specs: [
+      { label: "무료 플랜", value: "Hobby, 제한 Agent/Tab" },
+      { label: "Pro", value: "$20 / mo", tone: "good" },
+      { label: "Teams", value: "$40 / user / mo" },
+      { label: "학생", value: "eligible students 1년 Pro 무료" },
+      { label: "핵심 기능", value: "Agents, CLI, Cloud, Bugbot, MCP" },
+    ],
+    aliases: ["Cursor", "커서", "Anysphere", "AI IDE", "Composer", "Bugbot"],
+    sourceIds: [
+      "cursor-docs",
+      "cursor-pricing",
+      "cursor-changelog",
+      "cursor-students",
+    ],
+    accent: "ink",
+  },
 ];
 
 export const modelCostProfiles: ModelCostProfile[] = [
@@ -1852,6 +2483,206 @@ export const updates: UpdateItem[] = [
     ],
   },
   {
+    id: "update-cursor-comparison",
+    providerId: "cursor",
+    category: "vibe",
+    title: "Cursor를 AI 바이브 코딩 비교군에 추가",
+    date: SNAPSHOT_DATE,
+    summary:
+      "Cursor는 Hobby 무료, Pro/Teams 플랜, Agent/Tab, MCP·skills·hooks, Cloud agents, Bugbot, CLI와 학생 Pro 혜택을 갖춘 AI IDE라 모델 표면과 별도 비교가 필요하다.",
+    impact:
+      "실제 코딩 생산성 비교에서는 GPT/Claude/Gemini 같은 기저 모델뿐 아니라 Cursor처럼 repo와 IDE를 직접 다루는 실행 표면을 함께 필터링해야 한다.",
+    tags: ["Cursor", "AI IDE", "바이브 코딩", "Bugbot", "Cloud agents"],
+    sourceIds: [
+      "cursor-docs",
+      "cursor-pricing",
+      "cursor-changelog",
+      "cursor-students",
+    ],
+  },
+  {
+    id: "event-openai-academy",
+    providerId: "openai",
+    category: "events",
+    title: "OpenAI Academy 온라인 학습 이벤트",
+    date: SNAPSHOT_DATE,
+    summary:
+      "OpenAI Academy는 Builder Bootcamp, Agents, SME Accelerator 등 온라인 학습 이벤트를 공개 이벤트 허브에서 운영한다.",
+    impact:
+      "Codex/Agents 학습 이벤트는 강좌 리소스와 뉴스레터 후보로 연결하고, 등록 마감·언어·대상자 조건을 편집 큐에서 확인한다.",
+    tags: ["이벤트", "OpenAI Academy", "Agents", "Codex", "온라인"],
+    sourceIds: ["openai-academy-events", "openai-codex-cli"],
+  },
+  {
+    id: "event-claude-corps",
+    providerId: "anthropic",
+    category: "events",
+    title: "Claude Corps 2026 펠로십과 비영리 AI 활용 프로그램",
+    date: "2026-06-11",
+    summary:
+      "Anthropic은 Claude Corps를 통해 초기 경력 인재를 비영리 조직에 배치하고 Claude 교육, 토큰 예산, 멘토링을 제공하는 프로그램을 발표했다.",
+    impact:
+      "Claude 이벤트는 단순 할인보다 교육/비영리/AI 역량 확산 관점의 혜택으로 분류하고, 신청 마감과 참여 조건을 별도 표시한다.",
+    tags: ["이벤트", "Claude", "교육", "비영리", "펠로십"],
+    sourceIds: ["anthropic-claude-corps", "anthropic-news"],
+  },
+  {
+    id: "event-gemini-students",
+    providerId: "google",
+    category: "events",
+    title: "Gemini 학생/교육 혜택 확인",
+    date: SNAPSHOT_DATE,
+    summary:
+      "Gemini 공식 학생 허브는 국가·언어별 학생용 Gemini 학습 파트너와 교육 혜택 진입점을 제공한다.",
+    impact:
+      "학생 혜택은 국가와 인증 조건이 바뀔 수 있으므로 한국어 포털에서는 공식 학생 페이지, AI 블로그, 가격 문서를 함께 연결한다.",
+    tags: ["이벤트", "Gemini", "학생 혜택", "교육", "Google AI"],
+    sourceIds: ["google-gemini-students", "google-ai-blog"],
+  },
+  {
+    id: "event-cursor-students",
+    providerId: "cursor",
+    category: "events",
+    title: "Cursor 학생 1년 Pro 무료 혜택",
+    date: SNAPSHOT_DATE,
+    summary:
+      "Cursor는 자격을 갖춘 대학생에게 Cursor Pro 1년 무료 혜택을 제공하며, Pro 기능과 월 $20 상당 포함 사용량을 안내한다.",
+    impact:
+      "학생·부트캠프·동아리 대상 AI 코딩 교육 자료에서는 Cursor 혜택을 공식 학생 페이지와 함께 우선 노출할 수 있다.",
+    tags: ["이벤트", "Cursor", "학생 혜택", "Pro", "AI 코딩"],
+    sourceIds: ["cursor-students", "cursor-pricing"],
+  },
+  {
+    id: "event-qwen-free-quota",
+    providerId: "qwen",
+    category: "events",
+    title: "Qwen/Alibaba Model Studio 무료 quota와 Batch 반값 확인",
+    date: SNAPSHOT_DATE,
+    summary:
+      "Alibaba Model Studio 과금 문서는 일부 Qwen 모델에 지역별 무료 quota와 Batch 호출 50% 과금, 컨텍스트 캐시 할인 조건을 안내한다.",
+    impact:
+      "Qwen API와 자체 배포를 비교할 때 무료 quota, Batch 반값, 캐시 할인은 이벤트성 비용 절감 축으로 따로 표시한다.",
+    tags: ["이벤트", "Qwen", "무료 quota", "Batch 50%", "캐시 할인"],
+    sourceIds: ["qwen-billing", "qwen-docs"],
+  },
+  {
+    id: "event-openai-promotions",
+    providerId: "openai",
+    category: "events",
+    title: "OpenAI 이벤트/크레딧/초대 혜택 확인 루프",
+    date: SNAPSHOT_DATE,
+    summary:
+      "OpenAI는 모델 가격, API 크레딧, ChatGPT 플랜/팀/교육 혜택, Codex 관련 이벤트가 수시로 바뀔 수 있으므로 공식 모델·가격 문서와 뉴스 페이지를 분리 감시한다.",
+    impact:
+      "2배 크레딧, 친구 초대, 신규 플랜 할인, 교육 혜택이 확인되면 이벤트 카드로 승격하고 만료일과 적용 국가를 별도 표시한다.",
+    tags: ["이벤트", "크레딧", "초대", "가격", "OpenAI"],
+    sourceIds: ["openai-models", "openai-gpt55", "openai-codex-cli"],
+  },
+  {
+    id: "event-claude-promotions",
+    providerId: "anthropic",
+    category: "events",
+    title: "Claude 플랜/크레딧/추천 이벤트 확인 루프",
+    date: SNAPSHOT_DATE,
+    summary:
+      "Claude API 가격, Pro/Team/Enterprise 플랜, Claude Code 관련 행사·할인·초대 혜택은 Anthropic pricing/news와 Claude Code 문서를 함께 확인한다.",
+    impact:
+      "친구 초대, 팀 플랜 프로모션, Claude Code 사용량 이벤트는 공식 근거가 확인된 경우에만 게시한다.",
+    tags: ["이벤트", "Claude", "Claude Code", "추천", "가격"],
+    sourceIds: ["anthropic-pricing", "anthropic-news", "claude-code-setup"],
+  },
+  {
+    id: "event-gemini-promotions",
+    providerId: "google",
+    category: "events",
+    title: "Gemini 무료 quota, 학생/교육, AI Pro 이벤트 확인 루프",
+    date: SNAPSHOT_DATE,
+    summary:
+      "Gemini API pricing, free tier, batch/caching 비용, Google AI Pro/교육 이벤트를 공식 가격 문서와 Google AI 블로그에서 확인한다.",
+    impact:
+      "학생/교육 혜택, 무료 quota 확대, 2배 크레딧성 이벤트는 지역·계정 조건이 달라질 수 있어 조건 필터를 함께 표시한다.",
+    tags: ["이벤트", "Gemini", "무료 quota", "학생 혜택", "가격"],
+    sourceIds: ["google-gemini-pricing", "google-ai-blog"],
+  },
+  {
+    id: "event-grok-promotions",
+    providerId: "xai",
+    category: "events",
+    title: "Grok/X Premium/API 이벤트 확인 루프",
+    date: SNAPSHOT_DATE,
+    summary:
+      "Grok은 API 가격, X Premium 연계, 검색/사용량 이벤트가 제품 플랜과 함께 움직일 수 있어 xAI 모델 문서와 가격 정보를 분리 감시한다.",
+    impact:
+      "무료 사용량, X Premium 번들, API 할인 이벤트는 적용 지역과 플랜 조건을 확인한 뒤 게시한다.",
+    tags: ["이벤트", "Grok", "X Premium", "API", "가격"],
+    sourceIds: ["xai-models", "xai-grok43"],
+  },
+  {
+    id: "event-manus-promotions",
+    providerId: "manus",
+    category: "events",
+    title: "Manus 크레딧/초대/플랜 이벤트 확인 루프",
+    date: SNAPSHOT_DATE,
+    summary:
+      "Manus는 태스크형 서비스라 친구 초대, 크레딧, 플랜 이벤트가 실제 사용 비용에 직접 영향을 주므로 pricing과 API 문서를 함께 감시한다.",
+    impact:
+      "초대 보상, 신규 가입 크레딧, 태스크 크레딧 2배 이벤트가 확인되면 이벤트 카드와 비용 계산기에 반영한다.",
+    tags: ["이벤트", "Manus", "초대", "크레딧", "태스크"],
+    sourceIds: ["manus-pricing", "manus-api"],
+  },
+  {
+    id: "event-kimi-promotions",
+    providerId: "kimi",
+    category: "events",
+    title: "Kimi/Moonshot API 무료·할인 이벤트 확인 루프",
+    date: SNAPSHOT_DATE,
+    summary:
+      "Kimi API pricing과 K2.7 Code 문서를 기준으로 무료 quota, 신규 개발자 크레딧, 고속 모델 할인 이벤트를 확인한다.",
+    impact:
+      "Kimi K2.7 Code를 aider/Cursor류 도구에 붙일 때 프로모션 여부가 초기 실험 비용에 영향을 줄 수 있다.",
+    tags: ["이벤트", "Kimi", "Moonshot", "무료 quota", "가격"],
+    sourceIds: ["kimi-pricing", "kimi-k27-code"],
+  },
+  {
+    id: "event-deepseek-promotions",
+    providerId: "deepseek",
+    category: "events",
+    title: "DeepSeek 캐시/할인/모델 전환 이벤트 확인 루프",
+    date: SNAPSHOT_DATE,
+    summary:
+      "DeepSeek은 이미 cache hit/miss 가격 차이가 크므로, 추가 할인·무료 quota보다 캐시 정책과 레거시 모델 중단 일정까지 함께 감시한다.",
+    impact:
+      "저비용 장문 처리 캠페인에서는 이벤트보다 cache hit율이 더 큰 비용 변수일 수 있어 이벤트 카드와 비용 계산기를 같이 갱신한다.",
+    tags: ["이벤트", "DeepSeek", "캐시", "할인", "가격"],
+    sourceIds: ["deepseek-pricing", "deepseek-updates"],
+  },
+  {
+    id: "event-qwen-promotions",
+    providerId: "qwen",
+    category: "events",
+    title: "Qwen/DashScope 무료 quota·할인 이벤트 확인 루프",
+    date: SNAPSHOT_DATE,
+    summary:
+      "Qwen/Model Studio 과금 문서에서 무료 quota, 모델별 과금, 할인 이벤트, 개발자 크레딧 변동을 확인한다.",
+    impact:
+      "오픈웨이트 자체 배포와 API 사용 비용을 비교할 때 무료 quota와 이벤트성 크레딧을 분리해야 한다.",
+    tags: ["이벤트", "Qwen", "DashScope", "무료 quota", "가격"],
+    sourceIds: ["qwen-billing", "qwen-docs"],
+  },
+  {
+    id: "event-mistral-promotions",
+    providerId: "mistral",
+    category: "events",
+    title: "Mistral La Plateforme 가격/크레딧 이벤트 확인 루프",
+    date: SNAPSHOT_DATE,
+    summary:
+      "Mistral pricing과 news를 기준으로 La Plateforme, Devstral, 오픈웨이트/호스팅 이벤트, 가격 변경을 감시한다.",
+    impact:
+      "유럽/오픈웨이트 전략에서는 프로모션보다 자체 배포 비용과 API 할인 이벤트를 함께 비교해야 한다.",
+    tags: ["이벤트", "Mistral", "La Plateforme", "크레딧", "가격"],
+    sourceIds: ["mistral-pricing", "mistral-news"],
+  },
+  {
     id: "update-vibe-coding-focus",
     providerId: "market",
     category: "vibe",
@@ -1866,6 +2697,8 @@ export const updates: UpdateItem[] = [
       "openai-codex-cli",
       "claude-code-docs",
       "claude-code-setup",
+      "cursor-docs",
+      "cursor-changelog",
       "gemini-cli-github",
       "kimi-k27-code",
       "deepseek-pricing",
@@ -2049,6 +2882,20 @@ export const benchmarkEntries: BenchmarkEntry[] = [
     sourceIds: ["qwen-docs", "qwen-quickstart"],
   },
   {
+    id: "cursor-agent-surface",
+    rankLabel: "Tooling",
+    modelName: "Cursor Agents / Bugbot",
+    providerId: "cursor",
+    domain: "agent",
+    metric: "IDE agent surface marker",
+    score: "3.7",
+    price: "Hobby free, Pro $20/mo, Teams $40/user/mo",
+    speed: "Cloud subagents, Bugbot ~90s review marker",
+    latency: "task dependent",
+    context: "repo, IDE, terminal, cloud agents",
+    sourceIds: ["cursor-pricing", "cursor-changelog"],
+  },
+  {
     id: "gemini-ppt-docs",
     rankLabel: "PPT/Docs",
     modelName: "Gemini 3.1 Pro Preview",
@@ -2130,6 +2977,30 @@ export const vibeCodingCommands: VibeCodingCommand[] = [
       "anthropic-docs-ko",
       "youtube-anthropic",
     ],
+  },
+  {
+    id: "cmd-cursor-agent",
+    providerId: "cursor",
+    modelId: "cursor-ai-ide",
+    modelName: "Cursor Agents / Bugbot",
+    surface: "IDE/에이전트",
+    installCommand:
+      "cursor . # Cursor 데스크톱/CLI 설치 후 현재 repo를 열어 Agent, Tab, Rules, MCP를 설정",
+    command:
+      '/review-bugbot 또는 Agent: "이 브랜치의 실패 테스트를 재현하고 최소 수정 PR을 준비해줘"',
+    useCase:
+      "IDE 안에서 파일 탐색, 코드 생성, Tab 자동완성, Bugbot 리뷰, Cloud agents 병렬 작업까지 묶는 실전 바이브 코딩.",
+    vibeCodingFit: "매우 높음",
+    setupNotes: [
+      "Pro/Teams 플랜의 포함 사용량, on-demand usage, privacy mode를 팀 정책으로 먼저 정한다.",
+      "Cursor rules, MCP, skills, hooks를 repo 규칙에 맞춰 고정하면 반복 작업 품질이 안정된다.",
+      "Cloud subagent와 /in-cloud는 장시간 CI 수정, 병렬 탐색, PR babysit 같은 작업에 적합하다.",
+    ],
+    caveats: [
+      "Cursor는 기저 모델이 아니라 실행 표면이므로 GPT/Claude/Gemini 품질과 별도 평가한다.",
+      "자동 리뷰와 agent 실행은 repo 권한, 네트워크, 브라우저, destructive command 정책을 함께 제한해야 한다.",
+    ],
+    sourceIds: ["cursor-docs", "cursor-pricing", "cursor-changelog"],
   },
   {
     id: "cmd-gemini-cli",
@@ -2300,6 +3171,7 @@ export const comparisonRows: ComparisonRow[] = [
       deepseek: "1M 컨텍스트와 매우 낮은 공식 단가의 장문/대량 처리 후보",
       qwen: "오픈웨이트, 로컬 실행, 다국어 생태계가 강한 모델군",
       mistral: "유럽 기반 오픈웨이트·자체 배포·문서/OCR 워크로드 후보",
+      cursor: "모델 API가 아니라 IDE/Agent/Cloud/Bugbot 기반 코딩 실행 표면",
     },
   },
   {
@@ -2315,6 +3187,7 @@ export const comparisonRows: ComparisonRow[] = [
       deepseek: "텍스트 중심 Chat/API",
       qwen: "텍스트, 비전/오디오 등 모델군별 멀티모달",
       mistral: "텍스트, 이미지, 문서/OCR 중심 멀티모달",
+      cursor: "로컬 repo, diff, 터미널, 브라우저, IDE 상태, 팀 컨텍스트",
     },
   },
   {
@@ -2330,6 +3203,7 @@ export const comparisonRows: ComparisonRow[] = [
       deepseek: "JSON output, Tool Calls, Prefix Completion, FIM",
       qwen: "Qwen-Agent, Function Calling, LangChain/LlamaIndex",
       mistral: "Function Calling, Agents, Built-In Tools, OCR, FIM",
+      cursor: "Agents, Tab, Rules, MCP, Skills, Hooks, Cloud agents, Bugbot",
     },
   },
   {
@@ -2345,6 +3219,8 @@ export const comparisonRows: ComparisonRow[] = [
       deepseek: "대량 한국어 요약, 로그/문서 장문 처리, 비용 절감",
       qwen: "한국어 포함 다국어 로컬 모델 실험과 자체 호스팅",
       mistral: "보안 민감 문서 QnA, 유럽/온프레미스 전략, OCR",
+      cursor:
+        "실제 repo 수정, 프론트엔드 화면 보정, PR 리뷰, 학생/팀 바이브 코딩",
     },
   },
   {
@@ -2360,6 +3236,7 @@ export const comparisonRows: ComparisonRow[] = [
       deepseek: "레거시 모델명 지원 중단과 캐시 hit/miss 가격 구분",
       qwen: "모델 크기·양자화·서빙 환경별 품질 편차",
       mistral: "오픈웨이트 라이선스와 자체 배포 운영 비용 검토",
+      cursor: "기저 모델 비용·품질과 IDE/Agent 권한·보안 정책을 분리 평가",
     },
   },
 ];
@@ -2694,6 +3571,313 @@ export const personaGuides: PersonaGuide[] = [
   },
 ];
 
+export const taskRecommendations: TaskRecommendation[] = [
+  {
+    id: "task-repo-fix",
+    category: "coding",
+    title: "기존 레포 버그 수정과 테스트 통과",
+    userIntent:
+      "이미 있는 코드베이스에서 실패 테스트, 타입 오류, 런타임 버그를 최소 수정으로 고치고 싶다.",
+    primaryModelIds: ["cursor-ai-ide", "gpt-55", "claude-fable-5"],
+    alternateModelIds: [
+      "kimi-k27-code",
+      "deepseek-v4-flash",
+      "mistral-medium-35",
+    ],
+    commandIds: [
+      "cmd-cursor-agent",
+      "cmd-openai-codex",
+      "cmd-claude-code",
+      "cmd-kimi-openai-compatible",
+    ],
+    benchmarkDomains: ["coding", "agent"],
+    resourceIds: [
+      "res-cursor-docs",
+      "res-aider-docs",
+      "res-inflearn-ai-coding",
+      "res-cursor-korean-youtube",
+    ],
+    rationale: [
+      "Cursor는 IDE 안에서 파일·diff·터미널·리뷰 흐름을 붙이기 좋아 1차 실행 표면으로 적합하다.",
+      "GPT와 Claude는 복잡한 수정과 리뷰/검증 루프의 기준선으로 둔다.",
+      "Kimi, DeepSeek, Mistral은 OpenAI 호환 API 또는 공식 SDK로 비용/속도 실험 후보가 된다.",
+    ],
+    tradeoffs: [
+      "Cursor는 기저 모델이 아니므로 품질 문제를 모델 탓과 IDE 실행 탓으로 분리해야 한다.",
+      "장시간 자동 수정은 테스트 명령, 금지 리팩터링, destructive command 제한을 먼저 지정해야 한다.",
+    ],
+    promptStarter:
+      "이 저장소에서 실패하는 테스트를 재현하고, 원인을 파일 단위로 좁힌 뒤 최소 수정 패치와 재검증 명령을 제안해줘.",
+    sourceIds: [
+      "cursor-docs",
+      "cursor-changelog",
+      "openai-codex-cli",
+      "claude-code-docs",
+      "kimi-k27-code",
+      "mistral-medium-35",
+    ],
+  },
+  {
+    id: "task-new-vibe-app",
+    category: "coding",
+    title: "새 웹앱을 바이브 코딩으로 빠르게 만들기",
+    userIntent:
+      "기획은 대략 있고, 실제 화면과 라우팅, 데이터 흐름까지 빠르게 동작하는 앱을 만들고 싶다.",
+    primaryModelIds: ["cursor-ai-ide", "gpt-55", "claude-fable-5"],
+    alternateModelIds: ["gemini-31-pro", "manus-api-v2", "kimi-k27-code"],
+    commandIds: [
+      "cmd-cursor-agent",
+      "cmd-openai-codex",
+      "cmd-claude-code",
+      "cmd-gemini-cli",
+    ],
+    benchmarkDomains: ["coding", "ppt", "agent"],
+    resourceIds: [
+      "res-lovable-bolt-v0-docs",
+      "res-v0-lovable-bolt-korean-youtube",
+      "res-inflearn-vibe-coding",
+      "res-korean-creator-ai-youtube",
+    ],
+    rationale: [
+      "Cursor와 Codex는 실제 repo 변경과 테스트 검증을 붙이기 쉽다.",
+      "Claude는 긴 요구사항을 구조화하고 리팩터링 범위를 나누는 데 강하다.",
+      "Gemini와 Manus는 이미지/PDF/브라우저 기반 산출물 검토와 태스크형 제작 후보로 둔다.",
+    ],
+    tradeoffs: [
+      "처음부터 큰 화면을 한 번에 만들기보다 라우터, 핵심 상태, 검증 명령을 먼저 고정해야 한다.",
+      "Lovable, Bolt, v0는 빠른 초안에는 좋지만 코드 소유권과 배포 구조를 별도 검수해야 한다.",
+    ],
+    promptStarter:
+      "이 요구사항을 실제 사용 가능한 첫 화면으로 구현해줘. 라우터, 모바일 반응형, 빈 상태, 검증 명령까지 포함해줘.",
+    sourceIds: [
+      "cursor-docs",
+      "openai-codex-cli",
+      "claude-code-docs",
+      "gemini-cli-github",
+      "lovable-docs",
+      "bolt-docs",
+      "v0-docs",
+    ],
+  },
+  {
+    id: "task-ppt-webzine",
+    category: "ppt",
+    title: "PPT·웹진·문서 산출물 만들기",
+    userIntent:
+      "자료를 요약해 발표자료, 웹진형 페이지, 보고서 초안처럼 사람이 읽는 산출물로 만들고 싶다.",
+    primaryModelIds: ["gemini-31-pro", "gpt-55", "manus-api-v2"],
+    alternateModelIds: ["claude-fable-5", "mistral-medium-35"],
+    commandIds: ["cmd-gemini-cli", "cmd-manus-task", "cmd-openai-codex"],
+    benchmarkDomains: ["ppt", "multimodal", "research"],
+    resourceIds: [
+      "res-gemini-docs-ko",
+      "res-hermes-agent-video",
+      "res-google-dev-korea-youtube",
+      "res-korean-ai-company-blogs",
+    ],
+    rationale: [
+      "Gemini는 PDF, 이미지, 영상, 오디오 입력을 함께 보는 문서형 작업에 강점이 있다.",
+      "GPT는 구조화된 글과 웹진형 UI/카피 초안의 기준선으로 쓰기 좋다.",
+      "Manus는 브라우저 조작과 산출물 제작을 태스크로 맡기는 후보가 된다.",
+    ],
+    tradeoffs: [
+      "PPT/웹진은 모델 점수보다 원자료 충실도와 사람이 보는 레이아웃 검수가 더 중요하다.",
+      "자동 생성한 숫자, 인용, 이미지 설명은 원문과 대조해야 한다.",
+    ],
+    promptStarter:
+      "첨부 자료를 발표용 구조로 재정리하고, 핵심 메시지, 슬라이드 흐름, 검증해야 할 사실 목록을 나눠줘.",
+    sourceIds: [
+      "google-gemini31",
+      "google-gemini-docs-ko",
+      "openai-gpt55",
+      "manus-api",
+      "mistral-medium-35",
+    ],
+  },
+  {
+    id: "task-latest-research",
+    category: "research",
+    title: "최신 뉴스·시장·커뮤니티 리서치",
+    userIntent:
+      "모델 업데이트, 가격 이벤트, 최신 뉴스, 커뮤니티 반응을 출처와 날짜 기준으로 조사하고 싶다.",
+    primaryModelIds: ["gemini-31-pro", "grok-43", "gpt-55"],
+    alternateModelIds: ["claude-fable-5", "mistral-medium-35"],
+    commandIds: ["cmd-gemini-cli", "cmd-openai-codex"],
+    benchmarkDomains: ["research", "multimodal"],
+    resourceIds: [
+      "res-google-dev-blog-ko",
+      "res-korean-ai-company-blogs",
+      "res-devocean-youtube",
+      "res-teddynote-blog",
+    ],
+    rationale: [
+      "Gemini는 검색 grounding과 멀티모달 자료 확인이 필요한 리서치에 맞다.",
+      "Grok은 X/Web Search 축의 실시간 이슈 탐색 후보로 둔다.",
+      "GPT와 Claude는 근거 정리, 반론 정리, 최종 한국어 요약에 적합하다.",
+    ],
+    tradeoffs: [
+      "최신 이벤트는 지역·계정·만료일 조건이 바뀌므로 공식 링크 확인이 필수다.",
+      "뉴스와 커뮤니티 제보는 출처 성격을 분리하고 자동 게시하지 않아야 한다.",
+    ],
+    promptStarter:
+      "이 주제의 최신 업데이트를 공식 문서, 뉴스, 커뮤니티로 나눠 정리하고 각 항목에 발행일과 확인일을 붙여줘.",
+    sourceIds: [
+      "google-gemini31",
+      "xai-grok43",
+      "openai-models",
+      "anthropic-news",
+      "google-ai-blog",
+      "mistral-news",
+    ],
+  },
+  {
+    id: "task-office-automation",
+    category: "automation",
+    title: "반복 업무·브라우저·파일 자동화",
+    userIntent:
+      "파일 정리, 웹 조작, 폼 입력, 보고서 생성 같은 반복 업무를 에이전트에게 맡기고 싶다.",
+    primaryModelIds: ["manus-api-v2", "claude-fable-5", "gpt-55"],
+    alternateModelIds: ["cursor-ai-ide", "gemini-31-pro"],
+    commandIds: ["cmd-manus-task", "cmd-claude-code", "cmd-openai-codex"],
+    benchmarkDomains: ["agent", "ppt", "research"],
+    resourceIds: [
+      "res-manus-api",
+      "res-hermes-agent-video",
+      "res-jocoding",
+      "res-modulabs-aihub",
+    ],
+    rationale: [
+      "Manus는 모델 호출이 아니라 Tasks, Files, Webhooks, Skills, Agents를 다루는 태스크형 플랫폼이다.",
+      "Claude와 GPT는 절차 분해, 권한 설계, fallback 로직 설명에 강하다.",
+      "Cursor는 개발 자동화와 코드 기반 운영 스크립트 제작에 보조 후보가 된다.",
+    ],
+    tradeoffs: [
+      "브라우저 조작형 자동화는 권한, 개인정보, 감사 로그, 실패 복구 절차가 품질만큼 중요하다.",
+      "기저 모델 스펙을 알 수 없는 태스크형 서비스는 SLA와 검수 기준을 별도로 봐야 한다.",
+    ],
+    promptStarter:
+      "이 반복 업무를 태스크 단위로 쪼개고, 필요한 파일/권한/웹훅/실패 복구 조건을 체크리스트로 만들어줘.",
+    sourceIds: [
+      "manus-api",
+      "manus-home",
+      "anthropic-fable5",
+      "openai-gpt55",
+      "youtube-hermes-agent-video",
+    ],
+  },
+  {
+    id: "task-low-cost-bulk",
+    category: "cost",
+    title: "저비용 대량 요약·분류·로그 처리",
+    userIntent:
+      "많은 문서, 로그, 고객 문의를 낮은 월 비용으로 요약하고 분류하고 싶다.",
+    primaryModelIds: ["deepseek-v4-flash", "grok-43", "ministral-3-14b"],
+    alternateModelIds: ["gemini-31-pro", "qwen3-2507", "mistral-medium-35"],
+    commandIds: [
+      "cmd-deepseek-openai-compatible",
+      "cmd-qwen-local-vllm",
+      "cmd-mistral-api",
+    ],
+    benchmarkDomains: ["cost", "research"],
+    resourceIds: [
+      "res-deepseek-api-docs",
+      "res-qwen-docs",
+      "res-mistral-docs",
+      "res-packt-llm-agent-books",
+    ],
+    rationale: [
+      "DeepSeek V4 Flash는 cache miss 기준도 낮고 cache hit 입력 단가가 매우 낮아 반복 워크로드 후보가 된다.",
+      "Grok은 빠른 출력과 낮은 토큰 단가 후보로, Ministral은 경량/로컬 전략 후보로 둔다.",
+      "Qwen과 Mistral은 자체 배포 가능성이 있어 데이터 반출 제한이 있는 팀에 유리할 수 있다.",
+    ],
+    tradeoffs: [
+      "저비용 모델은 품질 검수 샘플링과 fallback 규칙을 더 촘촘하게 둬야 한다.",
+      "자체 배포는 토큰 단가가 아니라 GPU, 운영, 모니터링 비용이 지배할 수 있다.",
+    ],
+    promptStarter:
+      "월 실행량 기준으로 입력/출력 토큰, 캐시 hit 가능성, fallback 필요성을 나눠 가장 낮은 비용 후보 3개를 추천해줘.",
+    sourceIds: [
+      "deepseek-pricing",
+      "xai-grok43",
+      "mistral-ministral-3-14b",
+      "qwen-docs",
+      "qwen-billing",
+    ],
+  },
+  {
+    id: "task-korean-learning",
+    category: "learning",
+    title: "한국어 강좌·유튜브·도서 학습 경로",
+    userIntent:
+      "AI 코딩과 LLM 앱 개발을 한국어 자료 위주로 빠르게 따라가고 싶다.",
+    primaryModelIds: ["cursor-ai-ide", "gpt-55", "claude-fable-5"],
+    alternateModelIds: ["gemini-31-pro", "qwen3-2507"],
+    commandIds: ["cmd-cursor-agent", "cmd-openai-codex", "cmd-claude-code"],
+    benchmarkDomains: ["coding", "agent"],
+    resourceIds: [
+      "res-cursor-korean-youtube",
+      "res-inflearn-ai-coding-tools",
+      "res-korean-remote-bootcamps",
+      "res-korean-publisher-llm-books",
+    ],
+    rationale: [
+      "Cursor와 Codex/Claude Code는 강좌를 보면서 바로 repo에 적용하기 좋은 표면이다.",
+      "한국어 공식 문서와 유튜브, 인프런, 도서 검색 허브를 같이 보면 최신성과 실습성이 보완된다.",
+      "Gemini와 Qwen은 한국어 문서/다국어·로컬 모델 학습 경로 보조 후보가 된다.",
+    ],
+    tradeoffs: [
+      "검색 허브는 후보 링크라서 개별 강좌명, 강사, 출간일은 수동 확인이 필요하다.",
+      "입문자는 IDE 자동수정만 따라가기보다 Git diff와 테스트 실행을 함께 익혀야 한다.",
+    ],
+    promptStarter:
+      "내 수준은 입문/실무 사이야. 한국어 영상, 공식 문서, 도서, 실습 프로젝트 순서로 4주 학습 경로를 짜줘.",
+    sourceIds: [
+      "cursor-students",
+      "youtube-cursor-korean-search",
+      "inflearn-ai-coding",
+      "elice-ai",
+      "hanbit-llm-books",
+      "anthropic-docs-ko",
+      "google-gemini-docs-ko",
+    ],
+  },
+  {
+    id: "task-private-self-hosted",
+    category: "security",
+    title: "보안 민감 코드·문서와 자체 배포",
+    userIntent:
+      "민감 데이터가 있어 외부 API와 자체 호스팅 후보를 나눠 평가하고 싶다.",
+    primaryModelIds: ["qwen3-2507", "mistral-medium-35", "ministral-3-14b"],
+    alternateModelIds: ["deepseek-v4-flash", "cursor-ai-ide"],
+    commandIds: ["cmd-qwen-local-vllm", "cmd-mistral-api", "cmd-cursor-agent"],
+    benchmarkDomains: ["agent", "coding", "cost"],
+    resourceIds: [
+      "res-qwen-docs",
+      "res-mistral-docs",
+      "res-continue-openhands-docs",
+      "res-aws-bedrock-ko",
+    ],
+    rationale: [
+      "Qwen과 Mistral/Ministral은 오픈웨이트와 자체 배포 검토 축을 제공한다.",
+      "Cursor Teams/Enterprise는 privacy mode, repo/model/MCP 접근 제어, 감사 로그 확인이 중요하다.",
+      "DeepSeek은 외부 API지만 저비용 장문 처리 후보로 별도 격리 평가할 수 있다.",
+    ],
+    tradeoffs: [
+      "오픈웨이트라고 해서 자동으로 보안 문제가 해결되는 것은 아니며 서빙 로그와 권한 통제가 필요하다.",
+      "IDE형 도구는 코드가 외부 모델 제공사로 나가는 경로와 팀 정책을 확인해야 한다.",
+    ],
+    promptStarter:
+      "이 업무를 외부 API 가능, 자체 배포 필요, IDE 사용 가능으로 나누고 보안/비용/운영 책임을 표로 비교해줘.",
+    sourceIds: [
+      "qwen-docs",
+      "mistral-models",
+      "mistral-ministral-3-14b",
+      "cursor-pricing",
+      "aws-bedrock-ko",
+    ],
+  },
+];
+
 export const learningResources: LearningResource[] = [
   {
     id: "res-openai-videos",
@@ -2813,6 +3997,104 @@ export const learningResources: LearningResource[] = [
     tags: ["Mistral", "Ministral", "Open Weight", "OCR"],
   },
   {
+    id: "res-cursor-docs",
+    type: "공식 문서",
+    title: "Cursor 공식 문서",
+    author: "Cursor",
+    language: "영어",
+    level: "실무",
+    summary:
+      "Cursor AI IDE의 agent, rules, MCP, model 설정, 팀 운영 방식을 확인하는 공식 문서.",
+    url: "https://docs.cursor.com",
+    sourceIds: ["cursor-docs"],
+    providerIds: ["cursor", "openai", "anthropic", "google"],
+    tags: ["Cursor", "AI IDE", "바이브 코딩", "MCP"],
+  },
+  {
+    id: "res-windsurf-docs",
+    type: "공식 문서",
+    title: "Windsurf 공식 문서",
+    author: "Windsurf",
+    language: "영어",
+    level: "실무",
+    summary:
+      "Windsurf AI IDE와 Cascade, context, MCP, enterprise 설정을 확인하는 공식 문서.",
+    url: "https://docs.windsurf.com",
+    sourceIds: ["windsurf-docs"],
+    providerIds: ["cursor", "openai", "anthropic", "google"],
+    tags: ["Windsurf", "AI IDE", "Cascade", "바이브 코딩"],
+  },
+  {
+    id: "res-cline-roo-docs",
+    type: "공식 문서",
+    title: "Cline / Roo Code 문서",
+    author: "Cline, Roo Code",
+    language: "영어",
+    level: "고급",
+    summary:
+      "VS Code 기반 코딩 에이전트 Cline과 Roo Code의 오픈소스 에이전트, MCP, 모드 설정 자료.",
+    url: "https://github.com/cline/cline",
+    sourceIds: ["cline-github", "roo-code-docs"],
+    providerIds: ["openai", "anthropic", "google", "qwen", "mistral"],
+    tags: ["Cline", "Roo Code", "VS Code", "MCP"],
+  },
+  {
+    id: "res-aider-docs",
+    type: "공식 문서",
+    title: "Aider 공식 문서",
+    author: "Aider",
+    language: "영어",
+    level: "실무",
+    summary:
+      "터미널 기반 pair programming, Git diff 중심 코딩, OpenAI 호환 모델 연결을 확인하는 Aider 문서.",
+    url: "https://aider.chat",
+    sourceIds: ["aider-docs"],
+    providerIds: ["openai", "anthropic", "deepseek", "kimi", "qwen", "mistral"],
+    tags: ["Aider", "CLI", "Git", "OpenAI 호환"],
+  },
+  {
+    id: "res-continue-openhands-docs",
+    type: "공식 문서",
+    title: "Continue / OpenHands 문서",
+    author: "Continue, All Hands AI",
+    language: "영어",
+    level: "고급",
+    summary:
+      "오픈소스 IDE assistant Continue와 개발 에이전트 OpenHands의 모델/provider 설정, context, 실행 환경 문서.",
+    url: "https://docs.continue.dev",
+    sourceIds: ["continue-docs", "openhands-docs"],
+    providerIds: ["openai", "anthropic", "google", "qwen", "mistral"],
+    tags: ["Continue", "OpenHands", "오픈소스", "Agent"],
+  },
+  {
+    id: "res-lovable-bolt-v0-docs",
+    type: "공식 문서",
+    title: "Lovable / Bolt / v0 문서",
+    author: "Lovable, Bolt, Vercel",
+    language: "영어",
+    level: "입문",
+    summary:
+      "프롬프트 기반 웹 앱 제작, UI 생성, 배포와 프로젝트 운영을 확인하는 Lovable, Bolt, v0 공식 자료.",
+    url: "https://docs.lovable.dev",
+    sourceIds: ["lovable-docs", "bolt-docs", "v0-docs"],
+    providerIds: ["cursor", "openai", "anthropic", "google"],
+    tags: ["Lovable", "Bolt", "v0", "웹앱 제작"],
+  },
+  {
+    id: "res-replit-devin-copilot-docs",
+    type: "공식 문서",
+    title: "Replit Agent / Devin / GitHub Copilot 문서",
+    author: "Replit, Cognition, GitHub",
+    language: "영어",
+    level: "실무",
+    summary:
+      "Replit Agent, Devin, GitHub Copilot의 에이전트형 개발, IDE/CLI/조직 정책, GitHub 연동 문서.",
+    url: "https://docs.github.com/en/copilot",
+    sourceIds: ["replit-agent-docs", "devin-docs", "github-copilot-docs"],
+    providerIds: ["cursor", "openai", "anthropic", "google"],
+    tags: ["GitHub Copilot", "Devin", "Replit Agent", "Agent"],
+  },
+  {
     id: "res-claude-docs-ko",
     type: "공식 문서",
     title: "Claude API 한국어 공식 문서",
@@ -2921,7 +4203,7 @@ export const learningResources: LearningResource[] = [
       "바이브 코딩, Claude Code, Codex, Cursor 관련 한국어 유튜브 강좌 후보를 계속 찾는 검색 허브.",
     url: "https://www.youtube.com/results?search_query=%EB%B0%94%EC%9D%B4%EB%B8%8C+%EC%BD%94%EB%94%A9+Claude+Code+Codex+Cursor",
     sourceIds: ["youtube-vibe-coding-search"],
-    providerIds: ["openai", "anthropic", "google"],
+    providerIds: ["cursor", "openai", "anthropic", "google"],
     tags: ["한국어", "유튜브", "바이브 코딩", "Claude Code", "Codex"],
   },
   {
@@ -2935,7 +4217,7 @@ export const learningResources: LearningResource[] = [
       "코드팩토리 이름으로 AI 코딩, 앱 개발, 개발 생산성 강좌 후보를 찾는 유튜브·인프런 검색 허브.",
     url: "https://www.youtube.com/results?search_query=%EC%BD%94%EB%93%9C%ED%8C%A9%ED%86%A0%EB%A6%AC+AI+%EC%BD%94%EB%94%A9",
     sourceIds: ["youtube-codefactory-search", "inflearn-codefactory"],
-    providerIds: ["openai", "anthropic", "google"],
+    providerIds: ["cursor", "openai", "anthropic", "google"],
     tags: ["한국어", "코드팩토리", "AI 코딩", "강좌"],
   },
   {
@@ -2949,8 +4231,98 @@ export const learningResources: LearningResource[] = [
       "개발동생 이름으로 AI 코딩, 개발 자동화, 실무 개발 강좌 후보를 찾는 유튜브·인프런 검색 허브.",
     url: "https://www.youtube.com/results?search_query=%EA%B0%9C%EB%B0%9C%EB%8F%99%EC%83%9D+AI+%EC%BD%94%EB%94%A9",
     sourceIds: ["youtube-dev-dongsaeng-search", "inflearn-dev-dongsaeng"],
-    providerIds: ["openai", "anthropic", "google"],
+    providerIds: ["cursor", "openai", "anthropic", "google"],
     tags: ["한국어", "개발동생", "AI 코딩", "강좌"],
+  },
+  {
+    id: "res-cursor-korean-youtube",
+    type: "강좌/영상",
+    title: "Cursor 한국어 유튜브 강좌 검색",
+    author: "YouTube",
+    language: "한국어",
+    level: "입문",
+    summary:
+      "Cursor AI IDE, Composer/Agent, rules, MCP, 바이브 코딩 관련 한국어 영상 후보를 찾는 검색 허브.",
+    url: "https://www.youtube.com/results?search_query=Cursor+AI+%EC%BD%94%EB%94%A9+%ED%95%9C%EA%B5%AD%EC%96%B4",
+    sourceIds: ["youtube-cursor-korean-search"],
+    providerIds: ["cursor", "openai", "anthropic", "google"],
+    tags: ["한국어", "Cursor", "AI IDE", "바이브 코딩"],
+  },
+  {
+    id: "res-windsurf-korean-youtube",
+    type: "강좌/영상",
+    title: "Windsurf 한국어 유튜브 강좌 검색",
+    author: "YouTube",
+    language: "한국어",
+    level: "입문",
+    summary:
+      "Windsurf, Cascade, AI IDE, 바이브 코딩 관련 한국어 영상 후보를 찾는 검색 허브.",
+    url: "https://www.youtube.com/results?search_query=Windsurf+AI+%EC%BD%94%EB%94%A9+%ED%95%9C%EA%B5%AD%EC%96%B4",
+    sourceIds: ["youtube-windsurf-korean-search"],
+    providerIds: ["openai", "anthropic", "google"],
+    tags: ["한국어", "Windsurf", "AI IDE", "Cascade"],
+  },
+  {
+    id: "res-cline-roo-korean-youtube",
+    type: "강좌/영상",
+    title: "Cline / Roo Code 한국어 유튜브 검색",
+    author: "YouTube",
+    language: "한국어",
+    level: "실무",
+    summary:
+      "Cline, Roo Code, VS Code 에이전트, MCP 기반 코딩 자동화 영상 후보를 찾는 검색 허브.",
+    url: "https://www.youtube.com/results?search_query=Cline+Roo+Code+%ED%95%9C%EA%B5%AD%EC%96%B4",
+    sourceIds: ["youtube-cline-roo-korean-search"],
+    providerIds: ["openai", "anthropic", "google", "qwen", "mistral"],
+    tags: ["한국어", "Cline", "Roo Code", "MCP"],
+  },
+  {
+    id: "res-copilot-korean-youtube",
+    type: "강좌/영상",
+    title: "GitHub Copilot 한국어 유튜브 검색",
+    author: "YouTube",
+    language: "한국어",
+    level: "입문",
+    summary:
+      "GitHub Copilot, Copilot Chat, agent mode, IDE/CLI 활용 강좌 후보를 찾는 한국어 유튜브 검색 허브.",
+    url: "https://www.youtube.com/results?search_query=GitHub+Copilot+%ED%95%9C%EA%B5%AD%EC%96%B4+%EA%B0%95%EC%A2%8C",
+    sourceIds: ["youtube-copilot-korean-search"],
+    providerIds: ["openai", "anthropic"],
+    tags: ["한국어", "GitHub Copilot", "AI 코딩", "강좌"],
+  },
+  {
+    id: "res-v0-lovable-bolt-korean-youtube",
+    type: "강좌/영상",
+    title: "v0 / Lovable / Bolt 한국어 유튜브 검색",
+    author: "YouTube",
+    language: "한국어",
+    level: "입문",
+    summary:
+      "프롬프트 기반 웹앱 제작, UI 생성, 배포 자동화 도구의 한국어 영상 후보를 찾는 검색 허브.",
+    url: "https://www.youtube.com/results?search_query=v0+Lovable+Bolt+AI+%ED%95%9C%EA%B5%AD%EC%96%B4",
+    sourceIds: ["youtube-v0-lovable-bolt-korean-search"],
+    providerIds: ["openai", "anthropic", "google"],
+    tags: ["한국어", "v0", "Lovable", "Bolt"],
+  },
+  {
+    id: "res-korean-creator-ai-youtube",
+    type: "강좌/영상",
+    title: "국내 개발 유튜버 AI 코딩 검색 묶음",
+    author: "Nomad Coders, Dream Coding, Yalco, Coding Apple, Nado Coding",
+    language: "한국어",
+    level: "입문",
+    summary:
+      "노마드 코더, 드림코딩, 얄코, 코딩애플, 나도코딩의 AI 코딩/개발 생산성 영상 후보를 묶어 추적한다.",
+    url: "https://www.youtube.com/results?search_query=%EB%85%B8%EB%A7%88%EB%93%9C%EC%BD%94%EB%8D%94+AI+%EC%BD%94%EB%94%A9",
+    sourceIds: [
+      "youtube-nomadcoders-ai-search",
+      "youtube-dreamcoding-ai-search",
+      "youtube-yalco-ai-search",
+      "youtube-codingapple-ai-search",
+      "youtube-nadocoding-ai-search",
+    ],
+    providerIds: ["openai", "anthropic", "google"],
+    tags: ["한국어", "유튜버", "AI 코딩", "개발 생산성"],
   },
   {
     id: "res-openai-youtube",
@@ -3232,6 +4604,74 @@ export const learningResources: LearningResource[] = [
     tags: ["한국어", "Gemini", "Google", "블로그"],
   },
   {
+    id: "res-korean-ai-company-blogs",
+    type: "블로그/글",
+    title: "국내 AI 기업/플랫폼 블로그 묶음",
+    author: "Upstage, NAVER Cloud, LY Corporation, Superb AI",
+    language: "한국어",
+    level: "실무",
+    summary:
+      "Upstage, NAVER Cloud, LY Corporation, Superb AI의 LLM, 클라우드 AI, 비전 AI, 제품/연구 업데이트를 묶어 추적한다.",
+    url: "https://www.upstage.ai/blog",
+    sourceIds: [
+      "upstage-blog",
+      "naver-cloud-blog",
+      "lycorp-tech-ko",
+      "superb-ai-blog-ko",
+    ],
+    providerIds: ["openai", "anthropic", "google", "qwen", "mistral"],
+    tags: ["한국어", "블로그", "최신 업데이트", "AI 기업"],
+  },
+  {
+    id: "res-kmooc-boostcourse-ai",
+    type: "강좌/영상",
+    title: "K-MOOC / 부스트코스 AI 온라인 강좌",
+    author: "K-MOOC, NAVER Connect Foundation",
+    language: "한국어",
+    level: "입문",
+    summary:
+      "국내 대학·기관 공개강좌와 부스트코스의 AI, 데이터, 컴퓨터공학 온라인 강좌를 찾는 공공/무료 교육 허브.",
+    url: "https://www.kmooc.kr",
+    sourceIds: ["kmooc-ai", "boostcourse-ai"],
+    providerIds: ["openai", "google", "qwen"],
+    tags: ["한국어", "교육기관", "원격 교육", "무료 강좌"],
+  },
+  {
+    id: "res-korean-remote-bootcamps",
+    type: "강좌/영상",
+    title: "국내 원격 교육기관 AI 강좌 허브",
+    author: "Elice, Programmers, goorm, Fast Campus, Codeit, Sparta",
+    language: "한국어",
+    level: "입문",
+    summary:
+      "엘리스, 프로그래머스, 구름EDU, 패스트캠퍼스, 코드잇, 스파르타코딩클럽의 AI/개발/자동화 강좌 후보를 추적한다.",
+    url: "https://elice.io/ko",
+    sourceIds: [
+      "elice-ai",
+      "programmers-school-ai",
+      "goorm-edu-ai",
+      "fastcampus-ai",
+      "codeit-ai",
+      "spartacoding-ai",
+    ],
+    providerIds: ["openai", "anthropic", "google"],
+    tags: ["한국어", "교육기관", "원격 교육", "부트캠프"],
+  },
+  {
+    id: "res-modulabs-aihub",
+    type: "커뮤니티",
+    title: "모두의연구소 / AI Hub",
+    author: "모두의연구소, AI Hub",
+    language: "한국어",
+    level: "실무",
+    summary:
+      "AI 학습 모임, 연구 커뮤니티, 데이터셋, 공공 AI 자료를 찾는 국내 커뮤니티·공공 데이터 허브.",
+    url: "https://modulabs.co.kr",
+    sourceIds: ["modulabs-ai", "aihub"],
+    providerIds: ["openai", "anthropic", "google", "qwen", "mistral"],
+    tags: ["한국어", "커뮤니티", "교육기관", "데이터셋"],
+  },
+  {
     id: "res-inflearn-langchain",
     type: "강좌/영상",
     title: "인프런 LangChain 강좌 검색",
@@ -3256,7 +4696,7 @@ export const learningResources: LearningResource[] = [
       "바이브 코딩, AI 코딩 도구, Cursor/Claude Code/Codex류 강좌 후보를 계속 찾는 한국어 강좌 허브.",
     url: "https://www.inflearn.com/search?s=%EB%B0%94%EC%9D%B4%EB%B8%8C%20%EC%BD%94%EB%94%A9",
     sourceIds: ["inflearn-vibe-coding"],
-    providerIds: ["openai", "anthropic", "google"],
+    providerIds: ["cursor", "openai", "anthropic", "google"],
     tags: ["한국어", "강좌", "바이브 코딩", "AI 코딩"],
   },
   {
@@ -3312,8 +4752,29 @@ export const learningResources: LearningResource[] = [
       "Cursor, AI IDE, AI pair programming 강좌 후보를 찾는 인프런 검색 링크.",
     url: "https://www.inflearn.com/search?s=Cursor",
     sourceIds: ["inflearn-cursor"],
-    providerIds: ["openai", "anthropic", "google"],
+    providerIds: ["cursor", "openai", "anthropic", "google"],
     tags: ["한국어", "Cursor", "AI IDE", "강좌"],
+  },
+  {
+    id: "res-inflearn-ai-coding-tools",
+    type: "강좌/영상",
+    title: "인프런 AI 코딩 도구 강좌 검색 묶음",
+    author: "Inflearn",
+    language: "한국어",
+    level: "입문",
+    summary:
+      "GitHub Copilot, Cursor, Windsurf, Cline, v0, Lovable 관련 한국어 강좌 후보를 묶어 추적한다.",
+    url: "https://www.inflearn.com/search?s=GitHub%20Copilot",
+    sourceIds: [
+      "inflearn-github-copilot",
+      "inflearn-cursor",
+      "inflearn-windsurf",
+      "inflearn-cline",
+      "inflearn-v0",
+      "inflearn-lovable",
+    ],
+    providerIds: ["cursor", "openai", "anthropic", "google"],
+    tags: ["한국어", "AI IDE", "Copilot", "프롬프트 웹앱"],
   },
   {
     id: "res-ai-engineering-book",
@@ -3508,6 +4969,34 @@ export const learningResources: LearningResource[] = [
     sourceIds: ["wikibook-llm-books"],
     providerIds: ["openai", "anthropic", "google", "qwen", "mistral"],
     tags: ["한국어", "도서", "LLM", "개발 실무"],
+  },
+  {
+    id: "res-korean-publisher-llm-books",
+    type: "도서",
+    title: "국내 출판사 LLM/AI 신간 검색",
+    author: "Hanbit, JPub, Acorn Publishing",
+    language: "한국어",
+    level: "입문",
+    summary:
+      "한빛미디어, 제이펍, 에이콘출판사의 LLM, 생성형 AI, 데이터/개발 실무 신간 후보를 계속 찾는 검색 허브.",
+    url: "https://www.hanbit.co.kr/search/search_list.html?keyword=LLM",
+    sourceIds: ["hanbit-llm-books", "jpub-llm-books", "acornpub-llm-books"],
+    providerIds: ["openai", "anthropic", "google", "qwen", "mistral"],
+    tags: ["한국어", "도서", "신간", "출판사"],
+  },
+  {
+    id: "res-packt-llm-agent-books",
+    type: "도서",
+    title: "Packt LLM Agent 도서 검색",
+    author: "Packt",
+    language: "영어",
+    level: "실무",
+    summary:
+      "LLM agents, AI coding, LangChain/LangGraph, agentic development 관련 해외 실무 도서 후보를 찾는 검색 허브.",
+    url: "https://www.packtpub.com/search?query=LLM%20agents",
+    sourceIds: ["packt-llm-agent-books"],
+    providerIds: ["openai", "anthropic", "google", "qwen", "mistral"],
+    tags: ["English", "Books", "LLM Agents", "신간"],
   },
   {
     id: "res-wikidocs-ai",
@@ -3736,6 +5225,118 @@ export const curationMonitors: CurationMonitor[] = [
       "서점 검색 허브는 ISBN/제목/출간일이 확인된 항목만 도서 리소스로 승격한다.",
   },
   {
+    id: "monitor-ai-coding-tool-docs",
+    sourceId: "cursor-docs",
+    providerId: "market",
+    cadence: "주 1회",
+    priority: "P1",
+    status: "자동화 후보",
+    owner: "학습 리소스",
+    nextCheck: "2026-06-24",
+    nextAction:
+      "Cursor, Windsurf, Cline, Roo Code, Aider, Continue, OpenHands, Lovable, Bolt, v0, Replit Agent, Copilot, Devin 문서 변경 확인",
+    automationHint:
+      "도구 공식 문서의 릴리스/설정/MCP/agent mode 변경을 감지해 바이브 코딩 도구 섹션 후보로 보낸다.",
+  },
+  {
+    id: "monitor-cursor-changelog",
+    sourceId: "cursor-changelog",
+    providerId: "cursor",
+    cadence: "주 2회",
+    priority: "P1",
+    status: "자동화 후보",
+    owner: "학습 리소스",
+    nextCheck: "2026-06-20",
+    nextAction:
+      "Cursor Cloud agents, Bugbot, CLI, Design Mode, SDK 변경과 바이브 코딩 추천 영향 확인",
+    automationHint:
+      "Cursor changelog에서 Agent, Bugbot, CLI, Cloud, MCP, pricing 키워드를 추출해 추천 매트릭스와 이벤트 카드 후보로 보낸다.",
+  },
+  {
+    id: "monitor-cursor-students",
+    sourceId: "cursor-students",
+    providerId: "cursor",
+    cadence: "주 2회",
+    priority: "P2",
+    status: "확인 필요",
+    owner: "학습 리소스",
+    nextCheck: "2026-06-20",
+    nextAction:
+      "Cursor 학생 1년 Pro 무료 혜택, .edu 인증, 포함 사용량, 지역/학교 조건 변경 확인",
+    automationHint:
+      "학생 혜택 페이지의 free year, Pro features, included usage, verification 조건을 구조화해 이벤트 섹션에 반영한다.",
+  },
+  {
+    id: "monitor-korean-education-hubs",
+    sourceId: "kmooc-ai",
+    providerId: "market",
+    cadence: "주 1회",
+    priority: "P2",
+    status: "자동화 후보",
+    owner: "학습 리소스",
+    nextCheck: "2026-06-24",
+    nextAction:
+      "K-MOOC, 부스트코스, 엘리스, 프로그래머스, 구름EDU, 패스트캠퍼스, 코드잇, 스파르타 신규 AI 강좌 후보 확인",
+    automationHint:
+      "교육기관 허브는 강좌명, 운영기관, 온라인/오프라인, 무료/유료, 시작일을 수동 검토 큐에 넣는다.",
+  },
+  {
+    id: "monitor-korean-ai-blogs",
+    sourceId: "upstage-blog",
+    providerId: "market",
+    cadence: "주 1회",
+    priority: "P2",
+    status: "자동화 후보",
+    owner: "학습 리소스",
+    nextCheck: "2026-06-24",
+    nextAction:
+      "Upstage, NAVER Cloud, LY Corporation, Superb AI 블로그의 LLM/AI 최신 글 후보 확인",
+    automationHint:
+      "블로그 후보는 발행일, 제품명, 모델명, 한국어 여부를 추출해 웹진 섹션 후보로 만든다.",
+  },
+  {
+    id: "monitor-korean-new-books",
+    sourceId: "hanbit-llm-books",
+    providerId: "market",
+    cadence: "월 1회",
+    priority: "P2",
+    status: "자동화 후보",
+    owner: "학습 리소스",
+    nextCheck: "2026-07-01",
+    nextAction:
+      "한빛, 제이펍, 에이콘, Packt의 LLM/AI agent/AI coding 신간 후보 확인",
+    automationHint:
+      "신간 후보는 ISBN, 출간일, 저자, 원서/번역서 여부를 확인한 뒤 도서 카드로 승격한다.",
+  },
+  {
+    id: "monitor-llm-event-promotions",
+    sourceId: "google-gemini-pricing",
+    providerId: "market",
+    cadence: "주 2회",
+    priority: "P1",
+    status: "확인 필요",
+    owner: "모델 스펙",
+    nextCheck: "2026-06-20",
+    nextAction:
+      "OpenAI, Claude, Gemini, Grok, Manus, Kimi, DeepSeek, Qwen, Mistral의 2배 크레딧, 무료 quota, 할인 이벤트 확인",
+    automationHint:
+      "가격/뉴스 페이지에서 credit, referral, invite, free, discount, student, promo 키워드를 추출하되 자동 게시하지 않는다.",
+  },
+  {
+    id: "monitor-referral-events",
+    sourceId: "manus-pricing",
+    providerId: "market",
+    cadence: "주 2회",
+    priority: "P1",
+    status: "확인 필요",
+    owner: "에이전트",
+    nextCheck: "2026-06-20",
+    nextAction:
+      "친구 초대, 추천 보상, 신규 가입 크레딧, 팀 플랜 이벤트 후보 확인",
+    automationHint:
+      "추천 이벤트는 적용 국가, 계정 조건, 만료일, 보상 단위를 확인한 뒤 이벤트 섹션에 게시한다.",
+  },
+  {
     id: "monitor-ai-news",
     sourceId: "ap-g7-ai-sovereignty",
     providerId: "market",
@@ -3824,8 +5425,19 @@ export const updatePipeline: UpdatePipelineItem[] = [
       "inflearn-ai-coding",
       "inflearn-codefactory",
       "inflearn-dev-dongsaeng",
+      "inflearn-github-copilot",
+      "inflearn-cursor",
+      "inflearn-windsurf",
+      "youtube-cursor-korean-search",
+      "youtube-windsurf-korean-search",
+      "youtube-cline-roo-korean-search",
+      "kmooc-ai",
+      "boostcourse-ai",
+      "elice-ai",
+      "modulabs-ai",
       "yes24-llm-books",
       "yes24-vibe-coding-books",
+      "hanbit-llm-books",
       "openai-videos",
       "anthropic-courses",
     ],
@@ -3859,6 +5471,57 @@ export const updatePipeline: UpdatePipelineItem[] = [
       "전용 CLI, OpenAI 호환 API, 공식 SDK, 로컬 배포를 같은 축으로 분류한다.",
       "각 명령어 옆에 설정 변수, 적합 업무, 주의점을 붙인다.",
       "공식 문서에서 확인되지 않은 커뮤니티 채널은 '확인 필요'로 표시한다.",
+    ],
+  },
+  {
+    id: "pipe-task-recommendation-matrix",
+    title: "사용자 작업별 LLM/도구 추천 매트릭스",
+    providerId: "market",
+    stage: "게시 준비",
+    priority: "높음",
+    sourceIds: [
+      "cursor-docs",
+      "cursor-pricing",
+      "openai-codex-cli",
+      "claude-code-docs",
+      "google-gemini31",
+      "manus-api",
+      "deepseek-pricing",
+      "qwen-docs",
+      "mistral-models",
+    ],
+    summary:
+      "사용자가 하려는 작업을 코딩, PPT/문서, 최신 리서치, 업무 자동화, 저비용, 학습, 보안/자체배포로 분류해 추천 모델과 CLI를 연결한다.",
+    acceptance: [
+      "추천 이유와 tradeoff가 모델 광고처럼 보이지 않게 같이 표시된다.",
+      "Cursor 같은 IDE/도구는 기저 LLM과 별도 축으로 설명한다.",
+      "각 추천은 관련 명령어, 벤치마크 분야, 학습 자료 링크를 함께 제공한다.",
+    ],
+  },
+  {
+    id: "pipe-llm-event-watch",
+    title: "LLM 이벤트/프로모션 확인 큐",
+    providerId: "market",
+    stage: "수집",
+    priority: "높음",
+    sourceIds: [
+      "anthropic-pricing",
+      "anthropic-news",
+      "google-gemini-pricing",
+      "google-ai-blog",
+      "manus-pricing",
+      "kimi-pricing",
+      "deepseek-pricing",
+      "qwen-billing",
+      "mistral-pricing",
+      "mistral-news",
+    ],
+    summary:
+      "2배 크레딧, 친구 초대, 무료 quota, 학생/교육 혜택, 플랜 할인 이벤트 후보를 제공사별로 수집한다.",
+    acceptance: [
+      "이벤트명, 제공사, 적용 국가, 시작일/만료일, 보상 단위가 확인된다.",
+      "공식 근거 없는 커뮤니티 제보는 자동 게시하지 않는다.",
+      "확정 이벤트는 비용 계산기의 이벤트 비용 비교 섹션에 반영한다.",
     ],
   },
   {
@@ -3993,6 +5656,19 @@ export const featureBacklog: FeatureBacklogItem[] = [
       "사이트맵에서 바이브 코딩과 디자인/PPT 섹션으로 바로 이동할 수 있다.",
     ],
   },
+  {
+    id: "feature-task-recommendations",
+    title: "사용자 작업별 LLM 추천",
+    priority: "P0",
+    status: "구현됨",
+    rationale:
+      "사용자는 모델명을 먼저 고르기보다 “내가 하려는 작업”에 맞는 모델, 도구, 명령어, 비용 tradeoff를 알고 싶어 한다.",
+    acceptance: [
+      "코딩, PPT/문서, 최신 리서치, 자동화, 저비용, 학습, 보안/자체배포 프리셋을 제공한다.",
+      "각 프리셋은 추천 모델, 대체 모델, CLI/IDE 명령어, 관련 강좌/문서를 연결한다.",
+      "Cursor 같은 도구형 실행 표면은 LLM 제공사와 별도로 표시한다.",
+    ],
+  },
 ];
 
 const sourceById = new Map(sources.map((source) => [source.id, source]));
@@ -4085,6 +5761,8 @@ function collectReferencedSourceIds() {
   for (const command of vibeCodingCommands) addMany(command.sourceIds);
   for (const guide of manualGuides) addMany(guide.sourceIds);
   for (const guide of personaGuides) addMany(guide.sourceIds);
+  for (const recommendation of taskRecommendations)
+    addMany(recommendation.sourceIds);
   for (const resource of learningResources) addMany(resource.sourceIds);
   for (const monitor of curationMonitors) referenced.add(monitor.sourceId);
   for (const item of updatePipeline) addMany(item.sourceIds);
@@ -4104,6 +5782,7 @@ export function runContentAudit(): ContentAuditResult {
   const duplicateUpdateIds = duplicateIds(updates);
   const duplicateCommandIds = duplicateIds(vibeCodingCommands);
   const duplicatePersonaIds = duplicateIds(personaGuides);
+  const duplicateTaskRecommendationIds = duplicateIds(taskRecommendations);
   const duplicateResourceIds = duplicateIds(learningResources);
   const monitoredP0Count = curationMonitors.filter(
     (monitor) => monitor.priority === "P0",
@@ -4137,6 +5816,7 @@ export function runContentAudit(): ContentAuditResult {
           duplicateUpdateIds.length +
           duplicateCommandIds.length +
           duplicatePersonaIds.length +
+          duplicateTaskRecommendationIds.length +
           duplicateResourceIds.length ===
         0
           ? "pass"
@@ -4147,6 +5827,7 @@ export function runContentAudit(): ContentAuditResult {
           duplicateUpdateIds.length +
           duplicateCommandIds.length +
           duplicatePersonaIds.length +
+          duplicateTaskRecommendationIds.length +
           duplicateResourceIds.length ===
         0
           ? "핵심 카탈로그 ID에 중복이 없습니다."
@@ -4156,6 +5837,7 @@ export function runContentAudit(): ContentAuditResult {
               ...duplicateUpdateIds,
               ...duplicateCommandIds,
               ...duplicatePersonaIds,
+              ...duplicateTaskRecommendationIds,
               ...duplicateResourceIds,
             ].join(", ")}`,
     },
@@ -4234,6 +5916,29 @@ export function getBenchmarkDomainLabel(domain: BenchmarkDomain | "all") {
   }
 }
 
+export function getTaskRecommendationCategoryLabel(
+  category: TaskRecommendationCategory | "all",
+) {
+  switch (category) {
+    case "all":
+      return "전체";
+    case "coding":
+      return "코딩";
+    case "ppt":
+      return "PPT/문서";
+    case "research":
+      return "최신 리서치";
+    case "automation":
+      return "업무 자동화";
+    case "cost":
+      return "저비용";
+    case "learning":
+      return "학습";
+    case "security":
+      return "보안/자체배포";
+  }
+}
+
 export function getModelById(id: string) {
   return modelProfiles.find((profile) => profile.id === id);
 }
@@ -4283,6 +5988,8 @@ export function searchCatalog(
   const filteredUpdates =
     selectedCategory === "all" ||
     selectedCategory === "news" ||
+    selectedCategory === "events" ||
+    selectedCategory === "recommendations" ||
     selectedCategory === "updates" ||
     selectedCategory === "vibe" ||
     selectedCategory === "design" ||
@@ -4298,6 +6005,40 @@ export function searchCatalog(
               update.summary,
               update.impact,
               ...update.tags,
+            ]),
+        )
+      : [];
+
+  const filteredTaskRecommendations =
+    selectedCategory === "all" ||
+    selectedCategory === "recommendations" ||
+    selectedCategory === "vibe" ||
+    selectedCategory === "design" ||
+    selectedCategory === "benchmarks" ||
+    selectedCategory === "learning"
+      ? taskRecommendations.filter(
+          (recommendation) =>
+            (selectedProvider === "all" ||
+              recommendation.primaryModelIds.some(
+                (modelId) =>
+                  getModelById(modelId)?.providerId === selectedProvider,
+              ) ||
+              recommendation.alternateModelIds.some(
+                (modelId) =>
+                  getModelById(modelId)?.providerId === selectedProvider,
+              )) &&
+            matchesQuery(query, [
+              recommendation.title,
+              recommendation.userIntent,
+              recommendation.category,
+              recommendation.promptStarter,
+              ...recommendation.rationale,
+              ...recommendation.tradeoffs,
+              ...recommendation.primaryModelIds,
+              ...recommendation.alternateModelIds,
+              ...recommendation.commandIds,
+              ...recommendation.benchmarkDomains,
+              ...recommendation.resourceIds,
             ]),
         )
       : [];
@@ -4442,6 +6183,7 @@ export function searchCatalog(
   for (const item of [
     ...models,
     ...filteredUpdates,
+    ...filteredTaskRecommendations,
     ...benchmarks,
     ...filteredVibeCodingCommands,
     ...manuals,
@@ -4470,6 +6212,7 @@ export function searchCatalog(
   return {
     models,
     updates: filteredUpdates,
+    taskRecommendations: filteredTaskRecommendations,
     benchmarks,
     manuals,
     personaGuides: filteredPersonaGuides,
@@ -4490,6 +6233,7 @@ export function getCatalogStats() {
     benchmarkRows: benchmarkEntries.length,
     vibeCommands: vibeCodingCommands.length,
     personaGuides: personaGuides.length,
+    taskRecommendations: taskRecommendations.length,
     resources: learningResources.length,
     sources: sources.length,
     monitors: curationMonitors.length,

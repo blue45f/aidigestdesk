@@ -52,6 +52,7 @@ import {
   getModelById,
   getProviderLabel,
   getSources,
+  getTaskRecommendationCategoryLabel,
   getSourceSnapshotCandidates,
   learningResources,
   manualGuides,
@@ -63,6 +64,7 @@ import {
   searchCatalog,
   SNAPSHOT_DATE,
   sources,
+  taskRecommendations,
   updatePipeline,
   updates,
   vibeCodingCommands,
@@ -78,6 +80,8 @@ import {
   type ProviderId,
   type SearchResults,
   type SourceRef,
+  type TaskRecommendation,
+  type TaskRecommendationCategory,
   type UpdatePipelineItem,
   type VibeCodingCommand,
 } from "@aidigestdesk/content";
@@ -86,7 +90,13 @@ type ProviderFilter = ProviderId | "all";
 type CategoryFilter = ContentCategory | "all";
 type ResourceLanguageFilter = LearningResource["language"] | "all";
 type ResourceTypeFilter = LearningResource["type"] | "all";
+type ResourceLevelFilter = LearningResource["level"] | "all";
+type ResourceProviderFilter = ProviderId | "all";
 type BenchmarkDomainFilter = BenchmarkDomain | "all";
+type VibeSurfaceFilter = VibeCodingCommand["surface"] | "all";
+type VibeFitFilter = VibeCodingCommand["vibeCodingFit"] | "all";
+type SourceKindFilter = SourceRef["kind"] | "all";
+type TaskRecommendationCategoryFilter = TaskRecommendationCategory | "all";
 
 const providerFilters: Array<{ id: ProviderFilter; label: string }> = [
   { id: "all", label: "전체" },
@@ -99,7 +109,9 @@ const providerFilters: Array<{ id: ProviderFilter; label: string }> = [
 const categoryFilters: Array<{ id: CategoryFilter; label: string }> = [
   { id: "all", label: "전체" },
   { id: "news", label: "뉴스" },
+  { id: "events", label: "이벤트" },
   { id: "updates", label: "업데이트" },
+  { id: "recommendations", label: "추천" },
   { id: "vibe", label: "바이브 코딩" },
   { id: "design", label: "디자인/PPT" },
   { id: "comparison", label: "모델 비교" },
@@ -114,6 +126,8 @@ const categoryFilters: Array<{ id: CategoryFilter; label: string }> = [
 
 const navItems = [
   { href: "#updates", label: "업데이트", icon: Newspaper },
+  { href: "#events", label: "이벤트", icon: Sparkles },
+  { href: "#task-recommendations", label: "작업 추천", icon: Sparkles },
   { href: "#webzine", label: "웹진", icon: Newspaper },
   { href: "#vibe-coding", label: "바이브 코딩", icon: Code2 },
   { href: "#design", label: "디자인/PPT", icon: Palette },
@@ -125,6 +139,7 @@ const navItems = [
   { href: "#ops", label: "편집실", icon: Gauge },
   { href: "#exports", label: "내보내기", icon: Download },
   { href: "#costs", label: "비용 계산기", icon: Calculator },
+  { href: "#event-costs", label: "이벤트 비용", icon: Calculator },
   { href: "#sources", label: "소스", icon: FileText },
 ] as const;
 
@@ -133,7 +148,7 @@ const contentAudit = runContentAudit();
 const WORKBENCH_STORAGE_KEY = "aidigestdesk.editorWorkbench.v1";
 const ADMIN_SESSION_STORAGE_KEY = "aidigestdesk.adminSession.v1";
 
-type AppRoute = "portal" | "admin";
+type AppRoute = "portal" | "resources" | "admin";
 
 type AdminSession = {
   email: string;
@@ -154,6 +169,7 @@ type WorkbenchStorage = {
 
 function getCurrentRoute(): AppRoute {
   if (typeof window === "undefined") return "portal";
+  if (window.location.pathname.startsWith("/resources")) return "resources";
   return window.location.pathname.startsWith("/admin") ? "admin" : "portal";
 }
 
@@ -340,6 +356,15 @@ function Header({
     route === targetRoute
       ? "inline-flex h-9 items-center gap-1.5 rounded-md border border-ink bg-ink px-3 text-xs font-semibold text-ink-fg"
       : "inline-flex h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-3 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text";
+  const routeItems: Array<{
+    id: AppRoute;
+    label: string;
+    icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
+  }> = [
+    { id: "portal", label: "포털", icon: Home },
+    { id: "resources", label: "자료", icon: Library },
+    { id: "admin", label: "Admin", icon: LayoutDashboard },
+  ];
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-bg/90 backdrop-blur">
@@ -347,7 +372,7 @@ function Header({
         <a
           href={route === "portal" ? "#main" : "/"}
           onClick={(event) => {
-            if (route === "admin") {
+            if (route !== "portal") {
               event.preventDefault();
               onNavigate("portal");
             }
@@ -367,13 +392,17 @@ function Header({
           </span>
         </a>
         <div className="relative ml-auto hidden w-full max-w-xl md:block">
-          {route === "portal" ? (
+          {route !== "admin" ? (
             <>
               <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
               <input
                 value={query}
                 onChange={(event) => onQueryChange(event.target.value)}
-                placeholder="모델, 기능, 벤치마크, 강좌 검색"
+                placeholder={
+                  route === "resources"
+                    ? "강좌, 유튜브, 교육기관, 도서, 블로그 검색"
+                    : "모델, 기능, 벤치마크, 강좌 검색"
+                }
                 className="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
               />
             </>
@@ -388,22 +417,17 @@ function Header({
           )}
         </div>
         <div className="hidden items-center gap-1 sm:flex">
-          <button
-            type="button"
-            onClick={() => onNavigate("portal")}
-            className={routeButtonClass("portal")}
-          >
-            <Home className="size-3.5" aria-hidden />
-            포털
-          </button>
-          <button
-            type="button"
-            onClick={() => onNavigate("admin")}
-            className={routeButtonClass("admin")}
-          >
-            <LayoutDashboard className="size-3.5" aria-hidden />
-            Admin
-          </button>
+          {routeItems.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onNavigate(item.id)}
+              className={routeButtonClass(item.id)}
+            >
+              <item.icon className="size-3.5" aria-hidden />
+              {item.label}
+            </button>
+          ))}
         </div>
         <IconButton label="사이드바">
           <PanelLeft className="size-4" aria-hidden />
@@ -430,13 +454,13 @@ function Header({
         </IconButton>
       </div>
       <div className="border-t border-border px-4 py-3 md:hidden">
-        {route === "portal" ? (
+        {route !== "admin" ? (
           <div className="relative">
             <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
             <input
               value={query}
               onChange={(event) => onQueryChange(event.target.value)}
-              placeholder="검색"
+              placeholder={route === "resources" ? "자료 검색" : "검색"}
               className="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-3 text-sm text-text outline-none focus:border-accent"
             />
           </div>
@@ -454,13 +478,26 @@ function Header({
             </span>
             <button
               type="button"
-              onClick={() => onNavigate("portal")}
+              onClick={() => onNavigate(route === "admin" ? "portal" : "admin")}
               className="shrink-0 text-xs font-semibold text-accent"
             >
-              포털
+              {route === "admin" ? "포털" : "Admin"}
             </button>
           </div>
         )}
+        <div className="mt-2 flex gap-1 sm:hidden">
+          {routeItems.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onNavigate(item.id)}
+              className={`${routeButtonClass(item.id)} flex-1 justify-center`}
+            >
+              <item.icon className="size-3.5" aria-hidden />
+              {item.label}
+            </button>
+          ))}
+        </div>
       </div>
     </header>
   );
@@ -666,10 +703,12 @@ function WebzineSection({
     results.updates.length || !useFallback
       ? results.updates
       : updates.filter((item) =>
-          ["news", "vibe", "design"].includes(item.category),
+          ["news", "events", "vibe", "design"].includes(item.category),
         )
   )
-    .filter((item) => ["news", "vibe", "design"].includes(item.category))
+    .filter((item) =>
+      ["news", "events", "vibe", "design"].includes(item.category),
+    )
     .slice(0, 5);
   const lead = magazineUpdates[0];
   const sideItems = magazineUpdates.slice(1);
@@ -700,9 +739,11 @@ function WebzineSection({
               <span className="rounded-md border border-border bg-bg px-2 py-1 text-xs font-semibold text-accent">
                 {lead.category === "news"
                   ? "뉴스"
-                  : lead.category === "vibe"
-                    ? "바이브 코딩"
-                    : "디자인/PPT"}
+                  : lead.category === "events"
+                    ? "이벤트"
+                    : lead.category === "vibe"
+                      ? "바이브 코딩"
+                      : "디자인/PPT"}
               </span>
               <span className="text-xs font-semibold text-text-subtle">
                 {lead.date} · {getProviderLabel(lead.providerId)}
@@ -788,6 +829,309 @@ function WebzineSection({
   );
 }
 
+function EventPromotionsSection() {
+  const eventItems = updates.filter((item) => item.category === "events");
+
+  return (
+    <section id="events" className="space-y-4">
+      <SectionHeader
+        icon={Sparkles}
+        title="LLM 이벤트와 프로모션 워치"
+        description="2배 크레딧, 친구 초대, 무료 quota, 학생/교육 혜택, 플랜 할인은 공식 확인 링크와 만료 조건을 분리해 추적합니다."
+      />
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {eventItems.map((item) => {
+          const eventSources = getSources(item.sourceIds);
+          return (
+            <article
+              key={item.id}
+              className="rounded-lg border border-border border-t-4 border-t-accent bg-surface p-4"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold text-accent">
+                    {getProviderLabel(item.providerId)}
+                  </p>
+                  <h3 className="mt-1 text-sm font-semibold leading-5 text-text">
+                    {item.title}
+                  </h3>
+                </div>
+                <span className="rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle">
+                  확인일 {item.date}
+                </span>
+              </div>
+              <p className="mt-3 text-xs leading-5 text-text-muted">
+                {item.summary}
+              </p>
+              <p className="mt-2 text-xs leading-5 text-text-subtle">
+                {item.impact}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {item.tags.slice(0, 4).map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {eventSources.slice(0, 2).map((source) => (
+                  <a
+                    key={source.id}
+                    href={source.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-muted transition hover:text-text"
+                  >
+                    {source.publisher}
+                    <ExternalLink className="size-3" aria-hidden />
+                  </a>
+                ))}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function TaskRecommendationSection({
+  recommendations,
+}: {
+  recommendations: TaskRecommendation[];
+}) {
+  const [category, setCategory] =
+    useState<TaskRecommendationCategoryFilter>("all");
+  const [intentQuery, setIntentQuery] = useState("");
+  const categoryItems: Array<{
+    id: TaskRecommendationCategoryFilter;
+    label: string;
+  }> = [
+    "all",
+    "coding",
+    "ppt",
+    "research",
+    "automation",
+    "cost",
+    "learning",
+    "security",
+  ].map((id) => ({
+    id: id as TaskRecommendationCategoryFilter,
+    label: getTaskRecommendationCategoryLabel(
+      id as TaskRecommendationCategoryFilter,
+    ),
+  }));
+  const normalizedQuery = intentQuery.toLocaleLowerCase("ko-KR").trim();
+  const visibleRecommendations = recommendations.filter(
+    (recommendation) =>
+      (category === "all" || recommendation.category === category) &&
+      (!normalizedQuery ||
+        [
+          recommendation.title,
+          recommendation.userIntent,
+          recommendation.promptStarter,
+          ...recommendation.rationale,
+          ...recommendation.tradeoffs,
+        ]
+          .join(" ")
+          .toLocaleLowerCase("ko-KR")
+          .includes(normalizedQuery)),
+  );
+
+  return (
+    <section id="task-recommendations" className="space-y-4">
+      <SectionHeader
+        icon={Sparkles}
+        title="작업별 LLM·도구 추천"
+        description="사용자가 하려는 일을 먼저 고르고, 추천 모델·대체 모델·CLI/IDE 명령어·학습 자료를 한 번에 비교합니다."
+      />
+      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1.4fr_1fr_8rem]">
+        <SegmentBar
+          label="작업 유형"
+          items={categoryItems}
+          value={category}
+          onChange={setCategory}
+        />
+        <label className="block">
+          <span className="text-xs font-semibold text-text-subtle">
+            하고 싶은 작업 검색
+          </span>
+          <input
+            value={intentQuery}
+            onChange={(event) => setIntentQuery(event.target.value)}
+            placeholder="버그 수정, PPT, 최신 뉴스, 비용, 보안"
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+          />
+        </label>
+        <div className="rounded-md border border-border bg-bg p-3">
+          <p className="text-xs font-semibold text-text-subtle">추천 결과</p>
+          <p className="mt-1 text-lg font-semibold text-text">
+            {visibleRecommendations.length}개
+          </p>
+        </div>
+      </div>
+
+      {visibleRecommendations.length ? (
+        <div className="grid gap-4 xl:grid-cols-2">
+          {visibleRecommendations.map((recommendation) => {
+            const primaryModels = recommendation.primaryModelIds
+              .map(getModelById)
+              .filter((model): model is ModelProfile => Boolean(model));
+            const alternateModels = recommendation.alternateModelIds
+              .map(getModelById)
+              .filter((model): model is ModelProfile => Boolean(model));
+            const commands = recommendation.commandIds
+              .map((id) =>
+                vibeCodingCommands.find((command) => command.id === id),
+              )
+              .filter((command): command is VibeCodingCommand =>
+                Boolean(command),
+              );
+            const relatedResources = recommendation.resourceIds
+              .map((id) =>
+                learningResources.find((resource) => resource.id === id),
+              )
+              .filter((resource): resource is LearningResource =>
+                Boolean(resource),
+              );
+
+            return (
+              <article
+                key={recommendation.id}
+                className="rounded-lg border border-border bg-surface p-5"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-accent">
+                      {getTaskRecommendationCategoryLabel(
+                        recommendation.category,
+                      )}
+                    </p>
+                    <h3 className="mt-1 text-base font-semibold text-text">
+                      {recommendation.title}
+                    </h3>
+                  </div>
+                  <span className="rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-subtle">
+                    {recommendation.benchmarkDomains
+                      .map(getBenchmarkDomainLabel)
+                      .join(" · ")}
+                  </span>
+                </div>
+                <p className="mt-3 text-sm leading-6 text-text-muted">
+                  {recommendation.userIntent}
+                </p>
+
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <div>
+                    <p className="text-xs font-semibold text-text-subtle">
+                      우선 추천
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {primaryModels.map((model) => (
+                        <span
+                          key={model.id}
+                          className="rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text"
+                        >
+                          {model.modelName}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-text-subtle">
+                      대체 후보
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {alternateModels.map((model) => (
+                        <span
+                          key={model.id}
+                          className="rounded-md border border-dashed border-border-strong px-2.5 py-1.5 text-xs font-semibold text-text-subtle"
+                        >
+                          {model.modelName}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <TextList
+                    title="추천 이유"
+                    items={recommendation.rationale}
+                  />
+                  <TextList
+                    title="주의할 점"
+                    items={recommendation.tradeoffs}
+                  />
+                </div>
+
+                <div className="mt-4">
+                  <p className="mb-1 text-xs font-semibold text-text-subtle">
+                    바로 넣을 프롬프트
+                  </p>
+                  <pre className="overflow-x-auto rounded-md border border-border bg-bg p-3 text-xs leading-5 text-text">
+                    <code>{recommendation.promptStarter}</code>
+                  </pre>
+                </div>
+
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  <div>
+                    <p className="text-xs font-semibold text-text-subtle">
+                      연결 명령어
+                    </p>
+                    <div className="mt-2 space-y-2">
+                      {commands.map((command) => (
+                        <div
+                          key={command.id}
+                          className="rounded-md border border-border bg-bg p-3"
+                        >
+                          <p className="text-xs font-semibold text-text">
+                            {command.modelName}
+                          </p>
+                          <p className="mt-1 text-xs text-text-subtle">
+                            {command.surface} · {command.vibeCodingFit}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-text-subtle">
+                      관련 자료
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {relatedResources.map((resource) => (
+                        <a
+                          key={resource.id}
+                          href={resource.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+                        >
+                          {resource.title}
+                          <ExternalLink className="size-3" aria-hidden />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      ) : (
+        <EmptyState
+          title="조건에 맞는 추천이 없습니다"
+          body="작업 유형을 전체로 바꾸거나 검색어를 줄이면 추천이 다시 표시됩니다."
+        />
+      )}
+    </section>
+  );
+}
+
 function fitClass(fit: VibeCodingCommand["vibeCodingFit"]) {
   switch (fit) {
     case "매우 높음":
@@ -802,6 +1146,30 @@ function fitClass(fit: VibeCodingCommand["vibeCodingFit"]) {
 }
 
 function VibeCodingSection({ commands }: { commands: VibeCodingCommand[] }) {
+  const [surface, setSurface] = useState<VibeSurfaceFilter>("all");
+  const [fit, setFit] = useState<VibeFitFilter>("all");
+  const surfaceFilters: Array<{ id: VibeSurfaceFilter; label: string }> = [
+    { id: "all", label: "전체" },
+    { id: "전용 CLI", label: "전용 CLI" },
+    { id: "IDE/에이전트", label: "IDE/에이전트" },
+    { id: "OpenAI 호환 API", label: "호환 API" },
+    { id: "공식 SDK", label: "공식 SDK" },
+    { id: "서드파티 CLI", label: "서드파티 CLI" },
+    { id: "웹/에이전트", label: "웹/에이전트" },
+  ];
+  const fitFilters: Array<{ id: VibeFitFilter; label: string }> = [
+    { id: "all", label: "전체" },
+    { id: "매우 높음", label: "매우 높음" },
+    { id: "높음", label: "높음" },
+    { id: "보통", label: "보통" },
+    { id: "제한적", label: "제한적" },
+  ];
+  const filteredCommands = commands.filter(
+    (command) =>
+      (surface === "all" || command.surface === surface) &&
+      (fit === "all" || command.vibeCodingFit === fit),
+  );
+
   return (
     <section id="vibe-coding" className="space-y-4">
       <SectionHeader
@@ -809,9 +1177,29 @@ function VibeCodingSection({ commands }: { commands: VibeCodingCommand[] }) {
         title="AI 바이브 코딩 허브"
         description="전용 CLI, OpenAI 호환 API, 공식 SDK, 로컬 배포를 모델별 명령어와 운영 주의점으로 비교합니다."
       />
-      {commands.length ? (
+      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1.3fr_1fr_8rem]">
+        <SegmentBar
+          label="실행 표면"
+          items={surfaceFilters}
+          value={surface}
+          onChange={setSurface}
+        />
+        <SegmentBar
+          label="바이브 코딩 적합도"
+          items={fitFilters}
+          value={fit}
+          onChange={setFit}
+        />
+        <div className="rounded-md border border-border bg-bg p-3">
+          <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
+          <p className="mt-1 text-lg font-semibold text-text">
+            {filteredCommands.length}개
+          </p>
+        </div>
+      </div>
+      {filteredCommands.length ? (
         <div className="grid gap-4 xl:grid-cols-2">
-          {commands.map((command) => (
+          {filteredCommands.map((command) => (
             <article
               key={command.id}
               className="rounded-lg border border-border bg-surface p-4"
@@ -864,7 +1252,7 @@ function VibeCodingSection({ commands }: { commands: VibeCodingCommand[] }) {
       ) : (
         <EmptyState
           title="조건에 맞는 바이브 코딩 명령어가 없습니다"
-          body="제공사 필터를 전체로 바꾸거나 바이브 코딩 카테고리에서 다시 확인하세요."
+          body="실행 표면이나 적합도 필터를 전체로 바꾸면 명령어가 다시 표시됩니다."
         />
       )}
     </section>
@@ -1439,6 +1827,10 @@ function PersonaPlaybooks({ guides }: { guides: PersonaGuide[] }) {
 function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
   const [language, setLanguage] = useState<ResourceLanguageFilter>("all");
   const [resourceType, setResourceType] = useState<ResourceTypeFilter>("all");
+  const [level, setLevel] = useState<ResourceLevelFilter>("all");
+  const [resourceProvider, setResourceProvider] =
+    useState<ResourceProviderFilter>("all");
+  const [tag, setTag] = useState("all");
   const languageFilters: Array<{ id: ResourceLanguageFilter; label: string }> =
     [
       { id: "all", label: "전체" },
@@ -1453,18 +1845,45 @@ function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
     { id: "도서", label: "도서" },
     { id: "커뮤니티", label: "커뮤니티" },
   ];
+  const levelFilters: Array<{ id: ResourceLevelFilter; label: string }> = [
+    { id: "all", label: "전체" },
+    { id: "입문", label: "입문" },
+    { id: "실무", label: "실무" },
+    { id: "고급", label: "고급" },
+  ];
+  const providerResourceFilters: Array<{
+    id: ResourceProviderFilter;
+    label: string;
+  }> = [
+    { id: "all", label: "전체 제공사" },
+    ...providerCatalog.map((provider) => ({
+      id: provider.id,
+      label: provider.label,
+    })),
+  ];
+  const tagFilters = useMemo(() => {
+    const tags = new Set<string>();
+    for (const resource of resources) {
+      for (const resourceTag of resource.tags) tags.add(resourceTag);
+    }
+    return ["all", ...[...tags].toSorted((a, b) => a.localeCompare(b, "ko"))];
+  }, [resources]);
   const filteredResources = useMemo(
     () =>
       resources
         .filter(
           (resource) =>
             (language === "all" || resource.language === language) &&
-            (resourceType === "all" || resource.type === resourceType),
+            (resourceType === "all" || resource.type === resourceType) &&
+            (level === "all" || resource.level === level) &&
+            (resourceProvider === "all" ||
+              resource.providerIds?.includes(resourceProvider)) &&
+            (tag === "all" || resource.tags.includes(tag)),
         )
         .toSorted((a, b) =>
           a.language === b.language ? 0 : a.language === "한국어" ? -1 : 1,
         ),
-    [language, resourceType, resources],
+    [language, level, resourceProvider, resourceType, resources, tag],
   );
   const grouped = useMemo(() => {
     return {
@@ -1489,9 +1908,9 @@ function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
       <SectionHeader
         icon={Library}
         title="강좌와 도서"
-        description="공식 문서, 한국어 유튜브, 기술 블로그, 도서 검색 허브를 언어와 자료 형식으로 좁혀 봅니다."
+        description="공식 문서, 한국어 유튜브, 교육기관, 원격 강좌, 기술 블로그, 도서 검색 허브를 언어·형식·난이도·제공사·태그로 좁혀 봅니다."
       />
-      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-2">
+      <div className="grid gap-4 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1.35fr_1fr]">
         <SegmentBar
           label="자료 언어"
           items={languageFilters}
@@ -1504,6 +1923,67 @@ function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
           value={resourceType}
           onChange={setResourceType}
         />
+        <SegmentBar
+          label="난이도"
+          items={levelFilters}
+          value={level}
+          onChange={setLevel}
+        />
+        <label className="block">
+          <span className="text-xs font-semibold text-text-subtle">
+            관련 제공사
+          </span>
+          <select
+            value={resourceProvider}
+            onChange={(event) =>
+              setResourceProvider(event.target.value as ResourceProviderFilter)
+            }
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+          >
+            {providerResourceFilters.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="block xl:col-span-2">
+          <span className="text-xs font-semibold text-text-subtle">
+            세부 태그
+          </span>
+          <select
+            value={tag}
+            onChange={(event) => setTag(event.target.value)}
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+          >
+            {tagFilters.map((item) => (
+              <option key={item} value={item}>
+                {item === "all" ? "전체 태그" : item}
+              </option>
+            ))}
+          </select>
+        </label>
+        <div className="flex items-end justify-between gap-3 rounded-md border border-border bg-bg p-3">
+          <div>
+            <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
+            <p className="mt-1 text-lg font-semibold text-text">
+              {filteredResources.length}개
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setLanguage("all");
+              setResourceType("all");
+              setLevel("all");
+              setResourceProvider("all");
+              setTag("all");
+            }}
+            className="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+          >
+            초기화
+          </button>
+        </div>
       </div>
       <div className="grid gap-3 xl:grid-cols-5">
         <ResourceColumn title="공식 문서" resources={grouped.official} />
@@ -2169,6 +2649,156 @@ function ModelCostCalculator() {
   );
 }
 
+type EventCreditMode = "none" | "double-credit" | "half-price";
+
+const eventCostScenarios = [
+  {
+    id: "webinar",
+    title: "온라인 세미나 Q&A",
+    summary: "참가자 질문 요약, 후속 메일 초안, 세션별 하이라이트 생성",
+    inputTokensPerRun: 6000,
+    outputTokensPerRun: 1200,
+    runsPerMonth: 600,
+  },
+  {
+    id: "hackathon",
+    title: "해커톤/부트캠프 멘토링",
+    summary: "코드 리뷰, README 초안, 에러 로그 분석, 발표 자료 피드백",
+    inputTokensPerRun: 14000,
+    outputTokensPerRun: 3000,
+    runsPerMonth: 1200,
+  },
+  {
+    id: "launch",
+    title: "제품 런칭 이벤트",
+    summary: "랜딩 카피, FAQ, 고객 문의 분류, 커뮤니티 댓글 요약",
+    inputTokensPerRun: 9000,
+    outputTokensPerRun: 1800,
+    runsPerMonth: 2400,
+  },
+] as const;
+
+function EventCostComparisonSection() {
+  const [scenarioId, setScenarioId] =
+    useState<(typeof eventCostScenarios)[number]["id"]>("webinar");
+  const [creditMode, setCreditMode] = useState<EventCreditMode>("none");
+  const scenario =
+    eventCostScenarios.find((item) => item.id === scenarioId) ??
+    eventCostScenarios[0];
+  const discountFactor =
+    creditMode === "double-credit" || creditMode === "half-price" ? 0.5 : 1;
+  const estimates = useMemo(
+    () =>
+      calculateModelCosts(scenario)
+        .slice(0, 6)
+        .map((estimate) => ({
+          ...estimate,
+          adjustedTotal: estimate.totalCost * discountFactor,
+        })),
+    [discountFactor, scenario],
+  );
+
+  return (
+    <section id="event-costs" className="space-y-4">
+      <SectionHeader
+        icon={Calculator}
+        title="이벤트 비용 비교"
+        description="2배 크레딧, 50% 할인, 친구 초대 크레딧 같은 이벤트를 가정해 행사성 AI 운영 비용을 별도로 비교합니다."
+      />
+      <div className="grid gap-4 xl:grid-cols-[24rem_1fr]">
+        <article className="rounded-lg border border-border bg-surface p-4">
+          <h3 className="text-sm font-semibold text-text">행사 시나리오</h3>
+          <label className="mt-4 block">
+            <span className="text-xs font-semibold text-text-subtle">
+              이벤트 유형
+            </span>
+            <select
+              value={scenarioId}
+              onChange={(event) =>
+                setScenarioId(
+                  event.target
+                    .value as (typeof eventCostScenarios)[number]["id"],
+                )
+              }
+              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+            >
+              {eventCostScenarios.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.title}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="mt-3 block">
+            <span className="text-xs font-semibold text-text-subtle">
+              프로모션 효과
+            </span>
+            <select
+              value={creditMode}
+              onChange={(event) =>
+                setCreditMode(event.target.value as EventCreditMode)
+              }
+              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+            >
+              <option value="none">이벤트 없음</option>
+              <option value="double-credit">2배 크레딧 적용</option>
+              <option value="half-price">50% 할인 적용</option>
+            </select>
+          </label>
+          <div className="mt-4 rounded-md border border-border bg-bg p-3">
+            <p className="text-sm font-semibold text-text">{scenario.title}</p>
+            <p className="mt-1 text-xs leading-5 text-text-muted">
+              {scenario.summary}
+            </p>
+            <p className="mt-2 text-xs text-text-subtle">
+              {scenario.runsPerMonth.toLocaleString("ko-KR")}회 실행 · 입력{" "}
+              {scenario.inputTokensPerRun.toLocaleString("ko-KR")} · 출력{" "}
+              {scenario.outputTokensPerRun.toLocaleString("ko-KR")} tokens
+            </p>
+          </div>
+        </article>
+
+        <article className="overflow-hidden rounded-lg border border-border bg-surface">
+          <div className="grid grid-cols-[1fr_6rem_6rem] gap-3 border-b border-border px-4 py-3 text-xs font-semibold text-text-subtle md:grid-cols-[1.4fr_7rem_7rem_7rem]">
+            <span>모델</span>
+            <span className="text-right">일반</span>
+            <span className="text-right">이벤트</span>
+            <span className="hidden text-right md:block">절감</span>
+          </div>
+          {estimates.map((estimate) => {
+            const saved = estimate.totalCost - estimate.adjustedTotal;
+            return (
+              <div
+                key={estimate.profile.id}
+                className="grid grid-cols-[1fr_6rem_6rem] gap-3 border-b border-border px-4 py-3 last:border-b-0 md:grid-cols-[1.4fr_7rem_7rem_7rem]"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-text">
+                    {estimate.profile.modelName}
+                  </p>
+                  <p className="mt-1 text-xs text-text-subtle">
+                    {getProviderLabel(estimate.profile.providerId)} ·{" "}
+                    {estimate.profile.pricingBasis}
+                  </p>
+                </div>
+                <p className="text-right text-xs font-semibold text-text-muted">
+                  ${estimate.totalCost.toFixed(2)}
+                </p>
+                <p className="text-right text-sm font-semibold text-text">
+                  ${estimate.adjustedTotal.toFixed(2)}
+                </p>
+                <p className="hidden text-right text-xs font-semibold text-accent md:block">
+                  ${saved.toFixed(2)}
+                </p>
+              </div>
+            );
+          })}
+        </article>
+      </div>
+    </section>
+  );
+}
+
 function NumberField({
   label,
   value,
@@ -2193,16 +2823,59 @@ function NumberField({
 }
 
 function SourcesSection({ sourceItems }: { sourceItems: SourceRef[] }) {
+  const [kind, setKind] = useState<SourceKindFilter>("all");
+  const [publisherQuery, setPublisherQuery] = useState("");
+  const sourceKindFilters: Array<{ id: SourceKindFilter; label: string }> = [
+    { id: "all", label: "전체" },
+    { id: "official", label: "공식" },
+    { id: "benchmark", label: "벤치마크" },
+    { id: "publisher", label: "출판사/기관" },
+    { id: "community", label: "커뮤니티" },
+  ];
+  const filteredSources = sourceItems.filter(
+    (source) =>
+      (kind === "all" || source.kind === kind) &&
+      (!publisherQuery.trim() ||
+        `${source.publisher} ${source.title} ${source.note}`
+          .toLocaleLowerCase("ko-KR")
+          .includes(publisherQuery.toLocaleLowerCase("ko-KR").trim())),
+  );
+
   return (
     <section id="sources" className="space-y-4">
       <SectionHeader
         icon={FileText}
         title="출처"
-        description="제품 스펙은 공식 문서, 성능 비교는 벤치마크, 학습 자료는 발행 주체별로 구분합니다."
+        description="제품 스펙은 공식 문서, 성능 비교는 벤치마크, 학습 자료는 발행 주체별로 구분하고 출처 성격과 발행처로 좁힙니다."
       />
-      {sourceItems.length ? (
+      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1fr_8rem]">
+        <SegmentBar
+          label="출처 성격"
+          items={sourceKindFilters}
+          value={kind}
+          onChange={setKind}
+        />
+        <label className="block">
+          <span className="text-xs font-semibold text-text-subtle">
+            발행처/제목 검색
+          </span>
+          <input
+            value={publisherQuery}
+            onChange={(event) => setPublisherQuery(event.target.value)}
+            placeholder="OpenAI, 인프런, 도서, 이벤트"
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+          />
+        </label>
+        <div className="rounded-md border border-border bg-bg p-3">
+          <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
+          <p className="mt-1 text-lg font-semibold text-text">
+            {filteredSources.length}개
+          </p>
+        </div>
+      </div>
+      {filteredSources.length ? (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {sourceItems.map((source) => (
+          {filteredSources.map((source) => (
             <a
               key={source.id}
               href={source.url}
@@ -2237,7 +2910,7 @@ function SourcesSection({ sourceItems }: { sourceItems: SourceRef[] }) {
       ) : (
         <EmptyState
           title="조건에 맞는 출처가 없습니다"
-          body="검색어를 바꾸거나 전체 소스 목록을 확인하세요."
+          body="출처 성격을 전체로 바꾸거나 발행처 검색어를 줄이세요."
         />
       )}
     </section>
@@ -2629,6 +3302,90 @@ function AdminRoute({
   );
 }
 
+function ResourcesRoute({
+  resources,
+  recommendations,
+  vibeCommands,
+  sourceItems,
+  onNavigate,
+}: {
+  resources: LearningResource[];
+  recommendations: TaskRecommendation[];
+  vibeCommands: VibeCodingCommand[];
+  sourceItems: SourceRef[];
+  onNavigate: (route: AppRoute) => void;
+}) {
+  const koreanResourceCount = resources.filter(
+    (resource) => resource.language === "한국어",
+  ).length;
+  const bookCount = resources.filter(
+    (resource) => resource.type === "도서",
+  ).length;
+
+  return (
+    <main id="resources-main" className="px-4 py-5 lg:px-6">
+      <div className="mx-auto max-w-[96rem] space-y-6">
+        <section className="rounded-lg border border-border bg-surface p-5">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold text-accent">
+                자료 라우트 · /resources
+              </p>
+              <h1 className="mt-1 text-2xl font-semibold text-text">
+                AI 바이브 코딩 자료실
+              </h1>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
+                한국어 유튜브, 교육기관, 원격 강좌, 신간 도서, 블로그, CLI
+                자료를 한 화면에서 세밀하게 필터링합니다.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => onNavigate("portal")}
+              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-3 py-2 text-xs font-semibold text-text-muted transition hover:text-text"
+            >
+              <Home className="size-3.5" aria-hidden />
+              포털로
+            </button>
+          </div>
+          <div className="mt-5 grid gap-3 md:grid-cols-4">
+            <AdminMetricCard
+              label="자료"
+              value={`${resources.length}`}
+              detail="현재 검색/필터 조건"
+              icon={Library}
+            />
+            <AdminMetricCard
+              label="한국어"
+              value={`${koreanResourceCount}`}
+              detail="문서, 영상, 블로그, 도서"
+              icon={BookOpen}
+            />
+            <AdminMetricCard
+              label="도서"
+              value={`${bookCount}`}
+              detail="국내외 검색 허브 포함"
+              icon={FileText}
+            />
+            <AdminMetricCard
+              label="출처"
+              value={`${sourceItems.length}`}
+              detail="공식/출판사/커뮤니티"
+              icon={ExternalLink}
+            />
+          </div>
+        </section>
+
+        <TaskRecommendationSection recommendations={recommendations} />
+        <ResourceLibrary resources={resources} />
+        <VibeCodingSection commands={vibeCommands} />
+        <BenchmarkBoard />
+        <SourcesSection sourceItems={sourceItems} />
+      </div>
+    </main>
+  );
+}
+
 function EmptyState({ title, body }: { title: string; body: string }) {
   return (
     <div className="rounded-lg border border-dashed border-border-strong bg-surface p-5">
@@ -2686,7 +3443,12 @@ export default function App() {
   }, []);
 
   const navigateToRoute = (nextRoute: AppRoute) => {
-    const nextPath = nextRoute === "admin" ? "/admin" : "/";
+    const nextPath =
+      nextRoute === "admin"
+        ? "/admin"
+        : nextRoute === "resources"
+          ? "/resources"
+          : "/";
     if (window.location.pathname !== nextPath) {
       window.history.pushState(null, "", nextPath);
     }
@@ -2743,6 +3505,12 @@ export default function App() {
       : hasActiveFilter
         ? []
         : vibeCodingCommands;
+  const visibleTaskRecommendations =
+    results.taskRecommendations.length > 0
+      ? results.taskRecommendations
+      : hasActiveFilter
+        ? []
+        : taskRecommendations;
   const visibleMonitors =
     results.curationMonitors.length > 0
       ? results.curationMonitors
@@ -2795,6 +3563,14 @@ export default function App() {
           onLogout={handleAdminLogout}
           onNavigate={navigateToRoute}
         />
+      ) : route === "resources" ? (
+        <ResourcesRoute
+          resources={visibleResources}
+          recommendations={visibleTaskRecommendations}
+          vibeCommands={visibleVibeCommands}
+          sourceItems={visibleSources}
+          onNavigate={navigateToRoute}
+        />
       ) : (
         <div className="grid lg:grid-cols-[15rem_1fr]">
           <Sidebar />
@@ -2820,6 +3596,10 @@ export default function App() {
                 results={results}
                 useFallback={!hasActiveFilter}
               />
+              <EventPromotionsSection />
+              <TaskRecommendationSection
+                recommendations={visibleTaskRecommendations}
+              />
               <VibeCodingSection commands={visibleVibeCommands} />
               <DesignWorkflowSection />
               <ModelCards
@@ -2840,6 +3620,7 @@ export default function App() {
               />
               <ExportDeskSection />
               <ModelCostCalculator />
+              <EventCostComparisonSection />
               <SourcesSection sourceItems={visibleSources} />
 
               <footer className="flex flex-col gap-2 border-t border-border py-6 text-xs text-text-subtle sm:flex-row sm:items-center sm:justify-between">
