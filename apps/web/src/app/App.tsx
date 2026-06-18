@@ -338,6 +338,19 @@ function sourceUrl(sourceId: string) {
   return getSources([sourceId])[0]?.url ?? "#";
 }
 
+function sourceKindLabel(kind: SourceRef["kind"]) {
+  switch (kind) {
+    case "official":
+      return "공식";
+    case "benchmark":
+      return "벤치마크";
+    case "publisher":
+      return "출판사/기관";
+    case "community":
+      return "커뮤니티";
+  }
+}
+
 function accentBorder(profile: ModelProfile) {
   switch (profile.accent) {
     case "green":
@@ -2163,6 +2176,26 @@ function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
       ),
     };
   }, [filteredResources]);
+  const coverageItems = useMemo(() => {
+    const countByType = (type: LearningResource["type"]) =>
+      filteredResources.filter((resource) => resource.type === type).length;
+    const sourceCount = new Set(
+      filteredResources.flatMap((resource) => resource.sourceIds),
+    ).size;
+
+    return [
+      {
+        label: "한국어",
+        value: filteredResources.filter(
+          (resource) => resource.language === "한국어",
+        ).length,
+      },
+      { label: "영상", value: countByType("강좌/영상") },
+      { label: "도서", value: countByType("도서") },
+      { label: "공식", value: countByType("공식 문서") },
+      { label: "출처", value: sourceCount },
+    ];
+  }, [filteredResources]);
 
   return (
     <section id="learning" className="space-y-4">
@@ -2242,27 +2275,41 @@ function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
             ))}
           </select>
         </label>
-        <div className="flex items-end justify-between gap-3 rounded-md border border-border bg-bg p-3">
-          <div>
-            <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
-            <p className="mt-1 text-lg font-semibold text-text">
-              {filteredResources.length}개
-            </p>
+        <div className="rounded-md border border-border bg-bg p-3">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold text-text-subtle">
+                필터 결과
+              </p>
+              <p className="mt-1 text-lg font-semibold text-text">
+                {filteredResources.length}개
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setLanguage("all");
+                setResourceType("all");
+                setLevel("all");
+                setResourceProvider("all");
+                setFocus("all");
+                setTag("all");
+              }}
+              className="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+            >
+              초기화
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              setLanguage("all");
-              setResourceType("all");
-              setLevel("all");
-              setResourceProvider("all");
-              setFocus("all");
-              setTag("all");
-            }}
-            className="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
-          >
-            초기화
-          </button>
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {coverageItems.map((item) => (
+              <span
+                key={item.label}
+                className="rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
+              >
+                {item.label} {item.value}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
       <div className="grid gap-3 xl:grid-cols-5">
@@ -2288,43 +2335,77 @@ function ResourceColumn({
       <h3 className="text-sm font-semibold text-text">{title}</h3>
       <div className="mt-3 space-y-3">
         {resources.length ? (
-          resources.map((resource) => (
-            <a
-              key={resource.id}
-              href={resource.url}
-              target="_blank"
-              rel="noreferrer"
-              className="block rounded-md border border-border bg-bg p-3 transition hover:border-border-strong"
-            >
-              <span className="flex items-start justify-between gap-3">
-                <span>
-                  <span className="block text-sm font-semibold text-text">
-                    {resource.title}
+          resources.map((resource) => {
+            const resourceSources = getSources(resource.sourceIds);
+            const primarySource = resourceSources[0];
+            const sourceKinds = [
+              ...new Set(
+                resourceSources.map((source) => sourceKindLabel(source.kind)),
+              ),
+            ];
+            const lastChecked = resourceSources
+              .map((source) => source.lastChecked)
+              .toSorted((a, b) => b.localeCompare(a))[0];
+
+            return (
+              <a
+                key={resource.id}
+                href={resource.url}
+                target="_blank"
+                rel="noreferrer"
+                className="block rounded-md border border-border bg-bg p-3 transition hover:border-border-strong"
+              >
+                <span className="flex items-start justify-between gap-3">
+                  <span>
+                    <span className="block text-sm font-semibold text-text">
+                      {resource.title}
+                    </span>
+                    <span className="mt-1 block text-xs text-text-subtle">
+                      {resource.author} · {resource.language} ·{" "}
+                      {resource.level}
+                    </span>
                   </span>
-                  <span className="mt-1 block text-xs text-text-subtle">
-                    {resource.author} · {resource.language} · {resource.level}
-                  </span>
+                  <ExternalLink
+                    className="size-3.5 shrink-0 text-text-subtle"
+                    aria-hidden
+                  />
                 </span>
-                <ExternalLink
-                  className="size-3.5 shrink-0 text-text-subtle"
-                  aria-hidden
-                />
-              </span>
-              <span className="mt-2 block text-xs leading-5 text-text-muted">
-                {resource.summary}
-              </span>
-              <span className="mt-3 flex flex-wrap gap-1.5">
-                {resource.tags.slice(0, 3).map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </span>
-            </a>
-          ))
+                <span className="mt-2 block text-xs leading-5 text-text-muted">
+                  {resource.summary}
+                </span>
+                <span className="mt-3 flex flex-wrap gap-1.5">
+                  {primarySource ? (
+                    <span className="rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle">
+                      {primarySource.publisher}
+                    </span>
+                  ) : null}
+                  {sourceKinds.map((kind) => (
+                    <span
+                      key={kind}
+                      className="rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
+                    >
+                      {kind}
+                    </span>
+                  ))}
+                  {lastChecked ? (
+                    <span className="rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle">
+                      확인 {lastChecked}
+                    </span>
+                  ) : null}
+                </span>
+                <span className="mt-2 flex flex-wrap gap-1.5">
+                  {resource.tags.slice(0, 3).map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </span>
+              </a>
+            );
+          })
         ) : (
           <p className="rounded-md border border-border bg-bg p-3 text-xs leading-5 text-text-subtle">
             현재 필터에 맞는 항목이 없습니다.
@@ -3165,7 +3246,7 @@ function SourcesSection({ sourceItems }: { sourceItems: SourceRef[] }) {
             >
               <span className="flex items-center justify-between gap-3">
                 <span className="rounded-md border border-border bg-bg px-2 py-1 text-xs font-semibold text-text-subtle">
-                  {source.kind}
+                  {sourceKindLabel(source.kind)}
                 </span>
                 <ExternalLink
                   className="size-3.5 text-text-subtle"
