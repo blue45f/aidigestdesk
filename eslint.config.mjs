@@ -23,6 +23,7 @@ export default defineConfig(
     // 단일 파일로 벤더링된 위젯 — 설계상 react-compiler/jsx-a11y 를 위반한다.
     // 위젯 소스는 고치지 않고 lint 대상에서 제외한다.
     '**/apps-vendor/**',
+    'apps/toss/**',
   ]),
 
   // 공유 베이스(TS + import 위생 + 커스텀 규칙 + prettier 충돌 비활성).
