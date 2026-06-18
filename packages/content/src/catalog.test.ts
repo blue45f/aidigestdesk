@@ -445,7 +445,7 @@ describe('catalog search', () => {
       providers: 10,
       updates: 46,
       benchmarkRows: 97,
-      vibeCommands: 10,
+      vibeCommands: 16,
       aiCodingTools: 14,
       personaGuides: 5,
       taskRecommendations: 8,

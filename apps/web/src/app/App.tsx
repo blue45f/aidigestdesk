@@ -95,13 +95,21 @@ import { RouteAnnouncer } from "@/components/layout/RouteAnnouncer";
 import { SkipLink } from "@/components/layout/SkipLink";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
-
 type ProviderFilter = ProviderId | "all";
 type CategoryFilter = ContentCategory | "all";
 type ResourceLanguageFilter = LearningResource["language"] | "all";
 type ResourceTypeFilter = LearningResource["type"] | "all";
 type ResourceLevelFilter = LearningResource["level"] | "all";
 type ResourceProviderFilter = ProviderId | "all";
+type ResourceFocusFilter =
+  | "all"
+  | "modelChannels"
+  | "koreanCreators"
+  | "coursePlatforms"
+  | "books"
+  | "community"
+  | "officialKo"
+  | "codingTools";
 type BenchmarkDomainFilter = BenchmarkDomain | "all";
 type VibeSurfaceFilter = VibeCodingCommand["surface"] | "all";
 type VibeFitFilter = VibeCodingCommand["vibeCodingFit"] | "all";
@@ -2087,12 +2095,62 @@ function PersonaPlaybooks({ guides }: { guides: PersonaGuide[] }) {
   );
 }
 
+function matchesResourceFocus(
+  resource: LearningResource,
+  focus: ResourceFocusFilter,
+) {
+  const tagSet = new Set(resource.tags);
+  switch (focus) {
+    case "modelChannels":
+      return (
+        tagSet.has("모델별") ||
+        tagSet.has("공식 채널") ||
+        tagSet.has("후보 채널") ||
+        resource.id.includes("model-")
+      );
+    case "koreanCreators":
+      return (
+        resource.language === "한국어" &&
+        (tagSet.has("유튜브") ||
+          tagSet.has("유튜버") ||
+          tagSet.has("코드팩토리") ||
+          tagSet.has("개발동생") ||
+          resource.id.includes("youtube"))
+      );
+    case "coursePlatforms":
+      return (
+        tagSet.has("강좌 플랫폼") ||
+        tagSet.has("인프런") ||
+        tagSet.has("인프런 대체") ||
+        tagSet.has("원격 교육") ||
+        tagSet.has("K-디지털")
+      );
+    case "books":
+      return resource.type === "도서";
+    case "community":
+      return resource.type === "커뮤니티";
+    case "officialKo":
+      return resource.type === "공식 문서" && resource.language === "한국어";
+    case "codingTools":
+      return (
+        tagSet.has("AI 코딩") ||
+        tagSet.has("AI 코딩 도구") ||
+        tagSet.has("AI IDE") ||
+        tagSet.has("CLI") ||
+        tagSet.has("바이브 코딩")
+      );
+    default:
+      return true;
+  }
+}
+
 function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
   const [language, setLanguage] = useState<ResourceLanguageFilter>("all");
   const [resourceType, setResourceType] = useState<ResourceTypeFilter>("all");
   const [level, setLevel] = useState<ResourceLevelFilter>("all");
   const [resourceProvider, setResourceProvider] =
     useState<ResourceProviderFilter>("all");
+  const [focus, setFocus] = useState<ResourceFocusFilter>("all");
   const [tag, setTag] = useState("all");
   const languageFilters: Array<{ id: ResourceLanguageFilter; label: string }> =
     [
@@ -2124,6 +2182,16 @@ function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
       label: provider.label,
     })),
   ];
+  const focusFilters: Array<{ id: ResourceFocusFilter; label: string }> = [
+    { id: "all", label: "전체 묶음" },
+    { id: "modelChannels", label: "모델별 채널" },
+    { id: "koreanCreators", label: "국내 유튜버" },
+    { id: "coursePlatforms", label: "강좌 플랫폼" },
+    { id: "books", label: "도서/신간" },
+    { id: "community", label: "커뮤니티" },
+    { id: "officialKo", label: "한국어 공식" },
+    { id: "codingTools", label: "AI 코딩 도구" },
+  ];
   const tagFilters = useMemo(() => {
     const tags = new Set<string>();
     for (const resource of resources) {
@@ -2141,12 +2209,13 @@ function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
             (level === "all" || resource.level === level) &&
             (resourceProvider === "all" ||
               resource.providerIds?.includes(resourceProvider)) &&
+            matchesResourceFocus(resource, focus) &&
             (tag === "all" || resource.tags.includes(tag)),
         )
         .toSorted((a, b) =>
           a.language === b.language ? 0 : a.language === "한국어" ? -1 : 1,
         ),
-    [language, level, resourceProvider, resourceType, resources, tag],
+    [focus, language, level, resourceProvider, resourceType, resources, tag],
   );
   const grouped = useMemo(() => {
     return {
@@ -2173,7 +2242,7 @@ function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
         title="강좌와 도서"
         description="공식 문서, 한국어 유튜브, 교육기관, 원격 강좌, 기술 블로그, 도서 검색 허브를 언어·형식·난이도·제공사·태그로 좁혀 봅니다."
       />
-      <div className="grid gap-4 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1.35fr_1fr]">
+      <div className="grid gap-4 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1.35fr_1fr_1fr]">
         <SegmentBar
           label="자료 언어"
           items={languageFilters}
@@ -2192,6 +2261,24 @@ function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
           value={level}
           onChange={setLevel}
         />
+        <label className="block">
+          <span className="text-xs font-semibold text-text-subtle">
+            자료 묶음
+          </span>
+          <select
+            value={focus}
+            onChange={(event) =>
+              setFocus(event.target.value as ResourceFocusFilter)
+            }
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+          >
+            {focusFilters.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.label}
+              </option>
+            ))}
+          </select>
+        </label>
         <label className="block">
           <span className="text-xs font-semibold text-text-subtle">
             관련 제공사
@@ -2240,6 +2327,7 @@ function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
               setResourceType("all");
               setLevel("all");
               setResourceProvider("all");
+              setFocus("all");
               setTag("all");
             }}
             className="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
