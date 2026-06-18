@@ -7,12 +7,13 @@ import {
   getProviderLabel,
   getSources,
   providerCatalog,
+  type ProviderId,
   type BenchmarkEntry,
   type BenchmarkDomain,
   type ModelProfile,
 } from "@aidigestdesk/content";
 import { BarChart3, Boxes, ExternalLink, Search, Table2 } from "lucide-react";
-import { useDeferredValue, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 
 import {
   EmptyState,
@@ -39,6 +40,14 @@ type BenchmarkSortMode =
   | "latency"
   | "lastChecked";
 type BenchmarkSortDirection = "asc" | "desc";
+type ModelCardSortMode = "model" | "provider" | "status" | "lastUpdate" | "verified";
+type ModelCardSortDirection = "asc" | "desc";
+type ModelCardStatusFilter = "all" | ModelProfile["status"];
+type ModelCardProviderFilter = "all" | ProviderId;
+type ModelSpecSortMode = "label" | "value";
+type ModelSourceSortMode = "publisher" | "kind" | "checked";
+type ComparisonMatrixSortMode = "axis" | "filled" | "coverage";
+type ComparisonMatrixSortDirection = "asc" | "desc";
 
 function parseNumericMetric(value: string) {
   const normalized = value.replace(/,/g, "").trim();
@@ -112,6 +121,119 @@ export function ModelCards({
   selectedModelId: string;
   onSelectModel: (id: string) => void;
 }) {
+  const [statusFilter, setStatusFilter] =
+    useState<ModelCardStatusFilter>("all");
+  const [providerFilter, setProviderFilter] =
+    useState<ModelCardProviderFilter>("all");
+  const [modelQuery, setModelQuery] = useState("");
+  const [cardSortMode, setCardSortMode] =
+    useState<ModelCardSortMode>("model");
+  const [cardSortDirection, setCardSortDirection] =
+    useState<ModelCardSortDirection>("asc");
+  const modelQueryTerms = useMemo(() => getSearchTerms(modelQuery), [modelQuery]);
+
+  const modelSortDirectionFilters: Array<{
+    id: ModelCardSortDirection;
+    label: string;
+  }> = [
+    { id: "asc", label: "오름차순" },
+    { id: "desc", label: "내림차순" },
+  ];
+  const modelSortFilters: Array<{ id: ModelCardSortMode; label: string }> = [
+    { id: "model", label: "모델명" },
+    { id: "provider", label: "제공사" },
+    { id: "status", label: "상태" },
+    { id: "lastUpdate", label: "최근 업데이트" },
+    { id: "verified", label: "확인일" },
+  ];
+  const providerOptions = useMemo<Array<ModelCardProviderFilter>>(() => {
+    const options = Array.from(
+      new Set(models.map((model) => model.providerId)),
+    ).toSorted((a, b) => a.localeCompare(b, "ko"));
+    return ["all", ...options] as Array<ModelCardProviderFilter>;
+  }, [models]);
+  const statusOptions = useMemo<Array<ModelCardStatusFilter>>(() => {
+    const options = Array.from(new Set(models.map((model) => model.status))).toSorted(
+      (a, b) => a.localeCompare(b, "ko"),
+    );
+    return ["all", ...options] as Array<ModelCardStatusFilter>;
+  }, [models]);
+
+  const filteredCards = useMemo(
+    () =>
+      models
+        .filter((profile) => {
+          const searchableText = [
+            profile.id,
+            profile.modelName,
+            profile.productName,
+            profile.providerName,
+            profile.oneLine,
+            profile.summary,
+            ...profile.strengths,
+            ...profile.bestFor,
+            ...profile.caveats,
+            ...profile.specs.flatMap((spec) => [spec.label, spec.value]),
+          ]
+            .join(" ")
+            .toLocaleLowerCase("ko-KR")
+            .replace(/\s+/g, " ")
+            .trim();
+
+          if (
+            modelQueryTerms.length &&
+            !modelQueryTerms.some((searchTerm) => searchableText.includes(searchTerm))
+          ) {
+            return false;
+          }
+          if (statusFilter !== "all" && profile.status !== statusFilter) {
+            return false;
+          }
+          if (providerFilter !== "all" && profile.providerId !== providerFilter) {
+            return false;
+          }
+          return true;
+        })
+        .toSorted((left, right) => {
+          const direction = cardSortDirection === "asc" ? 1 : -1;
+          if (cardSortMode === "model") {
+            return left.modelName.localeCompare(right.modelName) * direction;
+          }
+          if (cardSortMode === "provider") {
+            return left.providerName.localeCompare(right.providerName) * direction;
+          }
+          if (cardSortMode === "status") {
+            return left.status.localeCompare(right.status) * direction;
+          }
+          if (cardSortMode === "lastUpdate") {
+            if (left.lastUpdate === right.lastUpdate) return 0;
+            return left.lastUpdate.localeCompare(right.lastUpdate) * direction;
+          }
+          if (left.verifiedAt === right.verifiedAt) return 0;
+          return left.verifiedAt.localeCompare(right.verifiedAt) * direction;
+        }),
+    [
+      cardSortDirection,
+      cardSortMode,
+      modelQueryTerms,
+      models,
+      providerFilter,
+      statusFilter,
+    ],
+  );
+
+  useEffect(() => {
+    const selectedInList = filteredCards.some(
+      (profile) => profile.id === selectedModelId,
+    );
+    if (!selectedInList && filteredCards.length > 0) {
+      const nextModel = filteredCards[0];
+      if (nextModel) {
+        onSelectModel(nextModel.id);
+      }
+    }
+  }, [filteredCards, onSelectModel, selectedModelId]);
+
   return (
     <section id="comparison" className="space-y-4">
       <SectionHeader
@@ -119,9 +241,83 @@ export function ModelCards({
         title="현재 주요 모델"
         description="상용 LLM과 에이전트 서비스를 같은 표면에서 보되, Manus는 모델보다 태스크 플랫폼으로 분리했습니다."
       />
-      {models.length ? (
+      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1fr_1fr_1.2fr_1.2fr_1fr]">
+        <label className="block xl:col-span-2">
+          <span className="text-xs font-semibold text-text-subtle">모델 검색</span>
+          <input
+            value={modelQuery}
+            onChange={(event) => setModelQuery(event.target.value)}
+            placeholder="모델명, 강점, 추천 업무"
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+          />
+        </label>
+        <label className="block xl:col-span-2">
+          <span className="text-xs font-semibold text-text-subtle">제공사</span>
+          <select
+            value={providerFilter}
+            onChange={(event) =>
+              setProviderFilter(event.target.value as ModelCardProviderFilter)
+            }
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+          >
+            {providerOptions.map((item) => (
+              <option key={item} value={item}>
+                {item === "all" ? "전체" : item}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="block xl:col-span-2">
+          <span className="text-xs font-semibold text-text-subtle">상태</span>
+          <select
+            value={statusFilter}
+            onChange={(event) =>
+              setStatusFilter(event.target.value as ModelCardStatusFilter)
+            }
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+          >
+            {statusOptions.map((item) => (
+              <option key={item} value={item}>
+                {item === "all" ? "전체" : item}
+              </option>
+            ))}
+          </select>
+        </label>
+        <SegmentBar
+          label="정렬"
+          items={modelSortFilters}
+          value={cardSortMode}
+          onChange={setCardSortMode}
+        />
+        <SegmentBar
+          label="정렬 방향"
+          items={modelSortDirectionFilters}
+          value={cardSortDirection}
+          onChange={setCardSortDirection}
+        />
+        <div className="rounded-md border border-border bg-bg p-3">
+          <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
+          <p className="mt-1 text-lg font-semibold text-text">
+            {filteredCards.length}개
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setProviderFilter("all");
+            setStatusFilter("all");
+            setModelQuery("");
+            setCardSortMode("model");
+            setCardSortDirection("asc");
+            }}
+            className="mt-3 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+          >
+            초기화
+          </button>
+        </div>
+      </div>
+      {filteredCards.length ? (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-          {models.map((profile) => (
+          {filteredCards.map((profile) => (
             <button
               key={profile.id}
               type="button"
@@ -147,8 +343,8 @@ export function ModelCards({
               </span>
               <span className="mt-3 block text-sm leading-6 text-text-muted">
                 {profile.oneLine}
-              </span>
-              <span className="mt-4 grid gap-2">
+                </span>
+                <span className="mt-4 grid gap-2">
                 {profile.specs.slice(0, 3).map((spec) => (
                   <span
                     key={spec.label}
@@ -178,6 +374,60 @@ export function ModelCards({
 
 export function ModelDetail({ profile }: { profile: ModelProfile }) {
   const profileSources = getSources(profile.sourceIds);
+  const [modelSpecSortMode, setModelSpecSortMode] =
+    useState<ModelSpecSortMode>("label");
+  const [modelSortDirection, setModelSortDirection] =
+    useState<ModelCardSortDirection>("asc");
+  const [modelSourceSortMode, setModelSourceSortMode] =
+    useState<ModelSourceSortMode>("publisher");
+  const [modelSourceKindFilter, setModelSourceKindFilter] =
+    useState<SourceKindFilter>("all");
+  const sortedSpecs = useMemo(
+    () =>
+      [...profile.specs].toSorted((left, right) => {
+        const direction = modelSortDirection === "asc" ? 1 : -1;
+        if (modelSpecSortMode === "label") {
+          return left.label.localeCompare(right.label, "ko") * direction;
+        }
+        const leftNumeric = parseNumericMetric(left.value);
+        const rightNumeric = parseNumericMetric(right.value);
+        const numericDiff =
+          (leftNumeric ?? Number.MIN_SAFE_INTEGER) -
+          (rightNumeric ?? Number.MIN_SAFE_INTEGER);
+        if (Number.isFinite(numericDiff) && numericDiff !== 0) {
+          return numericDiff * direction;
+        }
+        return left.value.localeCompare(right.value, "ko") * direction;
+      }),
+    [modelSortDirection, modelSpecSortMode, profile.specs],
+  );
+  const sortedSources = useMemo(() => {
+    return profileSources
+      .filter(
+        (source) =>
+          modelSourceKindFilter === "all" || source.kind === modelSourceKindFilter,
+      )
+      .toSorted((left, right) => {
+        const direction = modelSortDirection === "asc" ? 1 : -1;
+        if (modelSourceSortMode === "publisher") {
+          return left.publisher.localeCompare(right.publisher, "ko") * direction;
+        }
+        if (modelSourceSortMode === "kind") {
+          return sourceKindLabel(left.kind).localeCompare(
+            sourceKindLabel(right.kind),
+            "ko",
+          ) * direction;
+        }
+        return (
+          left.lastChecked.localeCompare(right.lastChecked) * direction
+        );
+      });
+  }, [
+    modelSourceKindFilter,
+    modelSourceSortMode,
+    modelSortDirection,
+    profileSources,
+  ]);
   return (
     <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
       <article className="rounded-lg border border-border bg-surface p-5">
@@ -205,8 +455,72 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
       </article>
       <article className="rounded-lg border border-border bg-surface p-5">
         <h3 className="text-sm font-semibold text-text">스펙 요약</h3>
+        <div className="mt-4 grid gap-2 border-t border-border pt-3 xl:grid-cols-2">
+          <label>
+            <span className="text-xs font-semibold text-text-subtle">
+              스펙 정렬
+            </span>
+            <select
+              value={modelSpecSortMode}
+              onChange={(event) =>
+                setModelSpecSortMode(event.target.value as ModelSpecSortMode)
+              }
+              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+            >
+              <option value="label">항목명</option>
+              <option value="value">값</option>
+            </select>
+          </label>
+          <div className="flex items-end gap-2">
+            <button
+              type="button"
+              onClick={() =>
+                setModelSortDirection((current) =>
+                  current === "asc" ? "desc" : "asc",
+                )
+              }
+              className="inline-flex h-10 w-full items-center justify-center rounded-md border border-border bg-bg px-3 text-xs font-semibold text-text-subtle transition hover:text-text"
+            >
+              방향 {modelSortDirection === "asc" ? "오름차순" : "내림차순"}
+            </button>
+            <label className="block flex-1">
+              <span className="text-xs font-semibold text-text-subtle">
+                출처 필터
+              </span>
+              <select
+                value={modelSourceKindFilter}
+                onChange={(event) =>
+                  setModelSourceKindFilter(event.target.value as SourceKindFilter)
+                }
+                className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+              >
+                {sourceKindFilters.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block flex-1">
+              <span className="text-xs font-semibold text-text-subtle">
+                출처 정렬
+              </span>
+              <select
+                value={modelSourceSortMode}
+                onChange={(event) =>
+                  setModelSourceSortMode(event.target.value as ModelSourceSortMode)
+                }
+                className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+              >
+                  <option value="publisher">출처</option>
+                  <option value="kind">출처 성격</option>
+                  <option value="checked">확인일</option>
+              </select>
+            </label>
+          </div>
+        </div>
         <dl className="mt-4 space-y-2">
-          {profile.specs.map((spec) => (
+          {sortedSpecs.map((spec) => (
             <div
               key={spec.label}
               className="flex items-start justify-between gap-4 rounded-md border border-border bg-bg p-3"
@@ -219,7 +533,7 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
           ))}
         </dl>
         <div className="mt-4 flex flex-wrap gap-2">
-          {profileSources.map((source) => (
+          {sortedSources.map((source) => (
             <a
               key={source.id}
               href={source.url}
@@ -625,6 +939,62 @@ export function BenchmarkBoard() {
 }
 
 export function ComparisonMatrix() {
+  const [rowQuery, setRowQuery] = useState("");
+  const [matrixSortMode, setMatrixSortMode] =
+    useState<ComparisonMatrixSortMode>("axis");
+  const [matrixSortDirection, setMatrixSortDirection] =
+    useState<ComparisonMatrixSortDirection>("asc");
+  const matrixSortFilters: Array<{
+    id: ComparisonMatrixSortMode;
+    label: string;
+  }> = [
+    { id: "axis", label: "축명" },
+    { id: "filled", label: "채워진 항목" },
+    { id: "coverage", label: "내용 길이" },
+  ];
+  const matrixSortDirectionFilters: Array<{
+    id: ComparisonMatrixSortDirection;
+    label: string;
+  }> = [
+    { id: "asc", label: "오름차순" },
+    { id: "desc", label: "내림차순" },
+  ];
+  const visibleComparisonRows = useMemo(() => {
+    const normalizedQuery = rowQuery
+      .trim()
+      .toLocaleLowerCase("ko-KR");
+    const sortedRows = comparisonRows
+      .filter((row) =>
+        normalizedQuery
+          ? row.axis
+              .toLocaleLowerCase("ko-KR")
+              .includes(normalizedQuery)
+          : true,
+      )
+      .map((row) => ({
+        ...row,
+        filledCount: Object.values(row.cells)
+          .filter((value) => value && value !== "-").length,
+        valueLength: Object.values(row.cells).reduce(
+          (total, value) => total + value.length,
+          0,
+        ),
+      }))
+      .toSorted((left, right) => {
+        const direction = matrixSortDirection === "asc" ? 1 : -1;
+        if (matrixSortMode === "axis") {
+          return left.axis.localeCompare(right.axis, "ko") * direction;
+        }
+        if (matrixSortMode === "filled") {
+          const byFilled = left.filledCount - right.filledCount;
+          if (byFilled !== 0) return byFilled * direction;
+        }
+        const byLength = left.valueLength - right.valueLength;
+        return byLength * direction;
+      });
+    return sortedRows;
+  }, [matrixSortDirection, matrixSortMode, rowQuery]);
+
   return (
     <section className="space-y-4">
       <SectionHeader
@@ -632,6 +1002,31 @@ export function ComparisonMatrix() {
         title="기능 비교"
         description="최신 모델 스펙과 제품 성격이 다른 항목은 같은 축에 놓되 해석 기준을 분리했습니다."
       />
+      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1.2fr_1fr_1fr_0.8fr]">
+        <label className="block xl:col-span-2">
+          <span className="text-xs font-semibold text-text-subtle">
+            축 검색
+          </span>
+          <input
+            value={rowQuery}
+            onChange={(event) => setRowQuery(event.target.value)}
+            placeholder="토큰 수, 멀티모달, 코드 생성, 추론"
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 py-2 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+          />
+        </label>
+        <SegmentBar
+          label="행 정렬"
+          items={matrixSortFilters}
+          value={matrixSortMode}
+          onChange={setMatrixSortMode}
+        />
+        <SegmentBar
+          label="정렬 방향"
+          items={matrixSortDirectionFilters}
+          value={matrixSortDirection}
+          onChange={setMatrixSortDirection}
+        />
+      </div>
       <div className="overflow-x-auto rounded-lg border border-border bg-surface">
         <table className="min-w-[112rem] w-full border-collapse text-left">
           <thead>
@@ -650,7 +1045,7 @@ export function ComparisonMatrix() {
             </tr>
           </thead>
           <tbody>
-            {comparisonRows.map((row) => (
+            {visibleComparisonRows.map((row) => (
               <tr
                 key={row.id}
                 className="border-b border-border last:border-b-0"
