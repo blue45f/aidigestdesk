@@ -159,6 +159,55 @@ describe("catalog search", () => {
     ).toBe(true);
   });
 
+  it("finds official status, release, and cost optimization monitors", () => {
+    const statusResults = searchCatalog("SLA", "all", "events");
+    expect(
+      statusResults.updates.some(
+        (update) => update.id === "event-ai-status-outage-watch",
+      ),
+    ).toBe(true);
+
+    const batchResults = searchCatalog("Batch", "all", "events");
+    expect(
+      batchResults.updates.some(
+        (update) => update.id === "event-openai-cost-optimization-watch",
+      ),
+    ).toBe(true);
+
+    const releaseResults = searchCatalog("릴리스 노트", "all", "news");
+    expect(
+      releaseResults.updates.some(
+        (update) => update.id === "update-official-release-note-watch",
+      ),
+    ).toBe(true);
+
+    const statusHubResults = searchCatalog("상태/릴리스", "all", "learning");
+    expect(
+      statusHubResults.resources.some(
+        (resource) => resource.id === "res-ai-service-status-release-hub",
+      ),
+    ).toBe(true);
+
+    const costHubResults = searchCatalog("Flex", "all", "learning");
+    expect(
+      costHubResults.resources.some(
+        (resource) => resource.id === "res-cost-optimization-official-hub",
+      ),
+    ).toBe(true);
+
+    const opsResults = searchCatalog("상태/릴리스/비용", "all", "ops");
+    expect(
+      opsResults.pipelineItems.some(
+        (item) => item.id === "pipe-status-release-cost-watch",
+      ),
+    ).toBe(true);
+
+    const sourceResults = searchCatalog("OpenAI Status", "all", "sources");
+    expect(
+      sourceResults.sources.some((source) => source.id === "openai-status"),
+    ).toBe(true);
+  });
+
   it("finds expanded AI coding tool profiles", () => {
     const jetBrainsResults = searchCatalog("JetBrains", "all", "tools");
     expect(
@@ -456,14 +505,14 @@ describe("catalog search", () => {
   it("exposes summary stats", () => {
     expect(getCatalogStats()).toMatchObject({
       providers: 10,
-      updates: 37,
+      updates: 40,
       benchmarkRows: 91,
       vibeCommands: 9,
       aiCodingTools: 14,
       personaGuides: 5,
       taskRecommendations: 8,
-      monitors: 44,
-      pipelineItems: 11,
+      monitors: 47,
+      pipelineItems: 12,
       costProfiles: 10,
     });
   });
