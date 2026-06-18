@@ -3,14 +3,16 @@ import {
   comparisonProviderOrder,
   comparisonRows,
   getBenchmarkDomainLabel,
+  getSearchTerms,
   getProviderLabel,
   getSources,
   providerCatalog,
+  type BenchmarkEntry,
   type BenchmarkDomain,
   type ModelProfile,
 } from "@aidigestdesk/content";
-import { BarChart3, Boxes, ExternalLink, Table2 } from "lucide-react";
-import { useState } from "react";
+import { BarChart3, Boxes, ExternalLink, Search, Table2 } from "lucide-react";
+import { useDeferredValue, useMemo, useState } from "react";
 
 import {
   EmptyState,
@@ -18,8 +20,14 @@ import {
   SegmentBar,
   TextList,
 } from "@/components/app/CommonUi";
+import {
+  sourceKindFilters,
+  sourceKindLabel,
+  type SourceKindFilter,
+} from "@/components/app/sourceLabels";
 
 type BenchmarkDomainFilter = BenchmarkDomain | "all";
+type BenchmarkProviderFilter = BenchmarkEntry["providerId"] | "all";
 
 function accentBorder(profile: ModelProfile) {
   switch (profile.accent) {
@@ -186,6 +194,13 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
 
 export function BenchmarkBoard() {
   const [domain, setDomain] = useState<BenchmarkDomainFilter>("all");
+  const [provider, setProvider] = useState<BenchmarkProviderFilter>("all");
+  const [sourceKind, setSourceKind] = useState<SourceKindFilter>("all");
+  const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
+  const searchTerms = useMemo(() => getSearchTerms(deferredQuery), [
+    deferredQuery,
+  ]);
   const benchmarkDomainFilters: Array<{
     id: BenchmarkDomainFilter;
     label: string;
@@ -202,13 +217,75 @@ export function BenchmarkBoard() {
     id: id as BenchmarkDomainFilter,
     label: getBenchmarkDomainLabel(id as BenchmarkDomainFilter),
   }));
-  const visibleEntries = benchmarkEntries.filter(
-    (entry) => domain === "all" || entry.domain === domain,
+  const benchmarkProviderFilters: Array<{
+    id: BenchmarkProviderFilter;
+    label: string;
+  }> = [
+    { id: "all", label: "전체 제공사" },
+    ...providerCatalog.map((item) => ({
+      id: item.id,
+      label: item.label,
+    })),
+    { id: "other", label: "기타" },
+  ];
+  const visibleEntries = useMemo(
+    () =>
+      benchmarkEntries.filter((entry) => {
+        const entrySources = getSources(entry.sourceIds);
+        const searchableText = [
+          entry.id,
+          entry.rankLabel,
+          entry.modelName,
+          getProviderLabel(entry.providerId),
+          getBenchmarkDomainLabel(entry.domain),
+          entry.metric,
+          entry.score,
+          entry.price,
+          entry.speed,
+          entry.latency,
+          entry.context,
+          ...entrySources.flatMap((source) => [
+            source.title,
+            source.publisher,
+            source.note,
+            sourceKindLabel(source.kind),
+          ]),
+        ]
+          .join(" ")
+          .toLocaleLowerCase("ko-KR")
+          .replace(/\s+/g, " ")
+          .trim();
+
+        return (
+          (domain === "all" || entry.domain === domain) &&
+          (provider === "all" || entry.providerId === provider) &&
+          (sourceKind === "all" ||
+            entrySources.some((source) => source.kind === sourceKind)) &&
+          (!searchTerms.length ||
+            searchTerms.some((searchTerm) => searchableText.includes(searchTerm)))
+        );
+      }),
+    [domain, provider, searchTerms, sourceKind],
   );
   const maxScore = Math.max(
     1,
     ...visibleEntries.map((entry) => Number(entry.score.replace("*", "")) || 0),
   );
+  const coverageItems = useMemo(() => {
+    const sources = visibleEntries.flatMap((entry) => getSources(entry.sourceIds));
+    return [
+      { label: "항목", value: visibleEntries.length },
+      { label: "출처", value: new Set(sources.map((source) => source.id)).size },
+      {
+        label: "공식",
+        value: sources.filter((source) => source.kind === "official").length,
+      },
+      {
+        label: "논문/벤치",
+        value: sources.filter((source) => source.kind === "benchmark").length,
+      },
+    ];
+  }, [visibleEntries]);
   return (
     <section id="benchmarks" className="space-y-4">
       <SectionHeader
@@ -216,12 +293,78 @@ export function BenchmarkBoard() {
         title="벤치마크와 비용"
         description="종합 리더보드, SWE-Bench Pro, SWE-Lancer, PaperBench, MLE-bench, BrowseComp, RE-Bench, EVMbench, Cybench, GDPval, SpreadsheetBench를 분야별 점수·규모·비용·latency와 함께 봅니다."
       />
-      <SegmentBar
-        label="분야"
-        items={benchmarkDomainFilters}
-        value={domain}
-        onChange={setDomain}
-      />
+      <div className="grid gap-4 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1.4fr_1fr_1fr]">
+        <label className="block xl:col-span-3">
+          <span className="text-xs font-semibold text-text-subtle">
+            벤치마크 검색
+          </span>
+          <span className="relative mt-2 block">
+            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="SWE-bench, PPT, 한국어, MCP, 비용, Cursor, GDPval"
+              className="h-10 w-full rounded-md border border-border bg-bg pl-9 pr-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+            />
+          </span>
+        </label>
+        <SegmentBar
+          label="분야"
+          items={benchmarkDomainFilters}
+          value={domain}
+          onChange={setDomain}
+        />
+        <SegmentBar
+          label="출처 성격"
+          items={sourceKindFilters}
+          value={sourceKind}
+          onChange={setSourceKind}
+        />
+        <label className="block">
+          <span className="text-xs font-semibold text-text-subtle">
+            제공사
+          </span>
+          <select
+            value={provider}
+            onChange={(event) =>
+              setProvider(event.target.value as BenchmarkProviderFilter)
+            }
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+          >
+            {benchmarkProviderFilters.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <div className="rounded-md border border-border bg-bg p-3 xl:col-span-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap gap-1.5">
+              {coverageItems.map((item) => (
+                <span
+                  key={item.label}
+                  className="rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
+                >
+                  {item.label} {item.value}
+                </span>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setDomain("all");
+                setProvider("all");
+                setSourceKind("all");
+                setQuery("");
+              }}
+              className="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+            >
+              초기화
+            </button>
+          </div>
+        </div>
+      </div>
       <div className="rounded-lg border border-border bg-surface">
         <div className="grid grid-cols-[4.5rem_1fr_5rem] gap-3 border-b border-border px-4 py-3 text-xs font-semibold text-text-subtle md:grid-cols-[5rem_1.4fr_1fr_1fr_1fr_5rem]">
           <span>순위</span>
@@ -234,6 +377,13 @@ export function BenchmarkBoard() {
         {visibleEntries.map((entry) => {
           const numericScore = Number(entry.score.replace("*", "")) || 0;
           const width = `${Math.max(4, (numericScore / maxScore) * 100)}%`;
+          const entrySources = getSources(entry.sourceIds);
+          const sourceKinds = [
+            ...new Set(entrySources.map((source) => sourceKindLabel(source.kind))),
+          ];
+          const lastChecked = entrySources
+            .map((source) => source.lastChecked)
+            .toSorted((a, b) => b.localeCompare(a))[0];
           return (
             <div
               key={entry.id}
@@ -251,6 +401,33 @@ export function BenchmarkBoard() {
                   {getBenchmarkDomainLabel(entry.domain)} · {entry.context}
                 </p>
                 <p className="mt-1 text-xs text-text-muted">{entry.metric}</p>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {entrySources.slice(0, 2).map((source) => (
+                    <a
+                      key={source.id}
+                      href={source.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle transition hover:text-text"
+                    >
+                      {source.publisher}
+                      <ExternalLink className="size-3" aria-hidden />
+                    </a>
+                  ))}
+                  {sourceKinds.map((kind) => (
+                    <span
+                      key={kind}
+                      className="rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
+                    >
+                      {kind}
+                    </span>
+                  ))}
+                  {lastChecked ? (
+                    <span className="rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle">
+                      확인 {lastChecked}
+                    </span>
+                  ) : null}
+                </div>
                 <div className="mt-2 h-1.5 rounded-md bg-surface-2">
                   <div
                     className="h-1.5 rounded-md bg-accent"

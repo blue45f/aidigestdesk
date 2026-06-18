@@ -93,6 +93,16 @@
     text-decoration: none;
   }
 
+  :where(section[id], [id="main-content"]) {
+    scroll-margin-top: 9.5rem;
+  }
+
+  @media (min-width: 768px) {
+    :where(section[id], [id="main-content"]) {
+      scroll-margin-top: 5.5rem;
+    }
+  }
+
   button,
   input {
     font: inherit;
