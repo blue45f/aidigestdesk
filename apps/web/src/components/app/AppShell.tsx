@@ -1,13 +1,15 @@
 import { SNAPSHOT_DATE } from "@aidigestdesk/content";
 import {
+  BadgePercent,
   BookOpen,
   Boxes,
   Calculator,
   Code2,
   FileText,
+  Flame,
   Home,
-  Library,
   MapPin,
+  MessagesSquare,
   Moon,
   Newspaper,
   Search,
@@ -16,35 +18,60 @@ import {
   Sparkles,
   Sun,
   Table2,
+  UserRound,
 } from "lucide-react";
 
 import type { AdminSession } from "@/components/app/adminSession";
 import type { AppRoute } from "@/components/app/appRoutes";
+import type { MemberSession } from "@/components/app/memberAuth";
+import type { ComponentType } from "react";
 
 import { IconButton } from "@/components/app/CommonUi";
 
-const routeItems = [
-  { id: "portal", label: "홈", icon: Home },
-  { id: "resources", label: "자료", icon: Library },
-  { id: "sitemap", label: "사이트맵", icon: MapPin },
-] satisfies Array<{
-  id: AppRoute;
-  label: string;
-  icon: typeof Home;
-}>;
+type NavIcon = ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
 
-const navItems = [
-  { href: "#updates", label: "브리핑", icon: Newspaper },
-  { href: "#events", label: "일정/이벤트", icon: Sparkles },
-  { href: "#task-recommendations", label: "작업 추천", icon: Sparkles },
-  { href: "#ai-tools", label: "AI 도구", icon: Boxes },
-  { href: "#vibe-coding", label: "CLI 명령어", icon: Code2 },
-  { href: "#comparison", label: "모델/벤치마크", icon: Table2 },
-  { href: "#learning", label: "강좌/자료", icon: BookOpen },
-  { href: "#webzine", label: "뉴스 웹진", icon: Newspaper },
-  { href: "#costs", label: "비용", icon: Calculator },
-  { href: "#sources", label: "소스", icon: FileText },
-] as const;
+// 전역 내비게이션(GNB) — 라우트 전환. 디자인 시스템은 사이트맵에서만 노출한다.
+const primaryNav: Array<{ id: AppRoute; label: string; icon: NavIcon }> = [
+  { id: "portal", label: "홈", icon: Home },
+  { id: "models", label: "모델·벤치마크", icon: Table2 },
+  { id: "tools", label: "도구·확장", icon: Boxes },
+  { id: "deals", label: "할인·혜택", icon: BadgePercent },
+  { id: "resources", label: "강좌·자료", icon: BookOpen },
+  { id: "community", label: "커뮤니티", icon: MessagesSquare },
+];
+
+// 라우트별 섹션 목차 — 사이드바(데스크톱)에서 현재 페이지 내 이동을 돕는다.
+const routeSections: Partial<Record<AppRoute, Array<{ href: string; label: string; icon: NavIcon }>>> =
+  {
+    portal: [
+      { href: "#updates", label: "브리핑", icon: Newspaper },
+      { href: "#fresh", label: "신규 등록", icon: Flame },
+    ],
+    models: [
+      { href: "#comparison", label: "모델 카드", icon: Table2 },
+      { href: "#benchmarks", label: "벤치마크", icon: Table2 },
+      { href: "#costs", label: "비용", icon: Calculator },
+    ],
+    tools: [
+      { href: "#task-recommendations", label: "작업 추천", icon: Sparkles },
+      { href: "#ai-tools", label: "AI 도구", icon: Boxes },
+      { href: "#extensions", label: "확장 디렉터리", icon: Boxes },
+      { href: "#vibe-coding", label: "CLI 명령어", icon: Code2 },
+      { href: "#cli-manual", label: "CLI 비교·매뉴얼", icon: Code2 },
+    ],
+    deals: [
+      { href: "#deals", label: "할인·혜택", icon: BadgePercent },
+      { href: "#events", label: "일정/이벤트", icon: Sparkles },
+    ],
+    resources: [
+      { href: "#learning", label: "강좌/자료", icon: BookOpen },
+      { href: "#glossary", label: "용어 사전", icon: BookOpen },
+      { href: "#manuals", label: "사용법", icon: FileText },
+      { href: "#webzine", label: "뉴스 웹진", icon: Newspaper },
+      { href: "#translated", label: "해외 소식(번역)", icon: Newspaper },
+      { href: "#sources", label: "출처", icon: FileText },
+    ],
+  };
 
 export function Header({
   query,
@@ -52,6 +79,7 @@ export function Header({
   route,
   onNavigate,
   adminSession,
+  memberSession,
   dark,
   onToggleDark,
 }: {
@@ -60,13 +88,16 @@ export function Header({
   route: AppRoute;
   onNavigate: (route: AppRoute) => void;
   adminSession: AdminSession | null;
+  memberSession: MemberSession | null;
   dark: boolean;
   onToggleDark: () => void;
 }) {
-  const routeButtonClass = (targetRoute: AppRoute) =>
+  const navButtonClass = (targetRoute: AppRoute) =>
     route === targetRoute
-      ? "inline-flex h-9 items-center gap-1.5 rounded-md border border-ink bg-ink px-3 text-xs font-semibold text-ink-fg"
-      : "inline-flex h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-3 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text";
+      ? "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-ink bg-ink px-3 text-xs font-semibold text-ink-fg"
+      : "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-transparent px-3 text-xs font-semibold text-text-muted transition hover:bg-surface-2 hover:text-text";
+
+  const showSearch = route !== "admin";
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-bg/90 backdrop-blur">
@@ -85,26 +116,25 @@ export function Header({
             <Sparkles className="size-4" aria-hidden />
           </span>
           <span className="min-w-0">
-            <span className="block text-sm font-semibold text-text">
+            <span className="flex items-center gap-1.5 text-sm font-semibold text-text">
               AI Digest Desk
+              <span className="rounded-full border border-accent-3/40 bg-accent-3/10 px-1.5 py-px text-[0.625rem] font-bold tracking-wide text-accent-3 uppercase">
+                beta
+              </span>
             </span>
             <span className="block truncate text-xs text-text-subtle">
               {SNAPSHOT_DATE} 기준
             </span>
           </span>
         </a>
-        <div className="relative ml-auto hidden w-full max-w-xl md:block">
-          {route !== "admin" ? (
+        <div className="relative ml-auto hidden w-full max-w-md md:block">
+          {showSearch ? (
             <>
               <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
               <input
                 value={query}
                 onChange={(event) => onQueryChange(event.target.value)}
-                placeholder={
-                  route === "resources"
-                    ? "강좌, 유튜브, 교육기관, 도서, 블로그 검색"
-                    : "모델, 기능, 벤치마크, 강좌 검색"
-                }
+                placeholder="모델, 기능, 벤치마크, 강좌, 할인 검색"
                 className="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
               />
             </>
@@ -118,30 +148,46 @@ export function Header({
             </div>
           )}
         </div>
-        <div className="hidden items-center gap-1 sm:flex">
-          {routeItems.map((item) => (
+        <div className="ml-auto flex items-center gap-1.5 md:ml-0">
+          <IconButton
+            label={dark ? "라이트 모드" : "다크 모드"}
+            onClick={onToggleDark}
+          >
+            {dark ? (
+              <Sun className="size-4" aria-hidden />
+            ) : (
+              <Moon className="size-4" aria-hidden />
+            )}
+          </IconButton>
+          {memberSession ? (
             <button
-              key={item.id}
               type="button"
-              onClick={() => onNavigate(item.id)}
-              className={routeButtonClass(item.id)}
+              onClick={() => onNavigate("account")}
+              title="내 계정"
+              className={`hidden h-9 items-center gap-1.5 rounded-md border px-2.5 text-xs font-semibold transition sm:inline-flex ${
+                route === "account"
+                  ? "border-ink bg-ink text-ink-fg"
+                  : "border-border bg-surface text-text-muted hover:border-border-strong hover:text-text"
+              }`}
             >
-              <item.icon className="size-3.5" aria-hidden />
-              {item.label}
+              <UserRound className="size-3.5" aria-hidden />
+              <span className="max-w-24 truncate">{memberSession.displayName}</span>
             </button>
-          ))}
-        </div>
-        <IconButton
-          label={dark ? "라이트 모드" : "다크 모드"}
-          onClick={onToggleDark}
-        >
-          {dark ? (
-            <Sun className="size-4" aria-hidden />
           ) : (
-            <Moon className="size-4" aria-hidden />
+            <button
+              type="button"
+              onClick={() => onNavigate("account")}
+              className="hidden h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text sm:inline-flex"
+            >
+              <UserRound className="size-3.5" aria-hidden />
+              로그인
+            </button>
           )}
-        </IconButton>
-        {adminSession || route === "admin" ? (
+          <span className="sm:hidden">
+            <IconButton label="내 계정" onClick={() => onNavigate("account")}>
+              <UserRound className="size-4" aria-hidden />
+            </IconButton>
+          </span>
           <IconButton
             label={route === "admin" ? "포털로 이동" : "관리자 콘솔"}
             onClick={() => onNavigate(route === "admin" ? "portal" : "admin")}
@@ -152,79 +198,90 @@ export function Header({
               <Settings2 className="size-4" aria-hidden />
             )}
           </IconButton>
-        ) : null}
+        </div>
       </div>
-      <div className="border-t border-border px-4 py-3 md:hidden">
-        {route !== "admin" ? (
+
+      {/* GNB — 라우트 전환 */}
+      <nav
+        aria-label="주요 메뉴"
+        className="flex items-center gap-1 overflow-x-auto border-t border-border px-3 py-2 lg:px-4"
+      >
+        {primaryNav.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => onNavigate(item.id)}
+            aria-current={route === item.id ? "page" : undefined}
+            className={navButtonClass(item.id)}
+          >
+            <item.icon className="size-3.5" aria-hidden />
+            {item.label}
+          </button>
+        ))}
+      </nav>
+
+      {/* 모바일 검색 */}
+      {showSearch ? (
+        <div className="border-t border-border px-4 py-3 md:hidden">
           <div className="relative">
             <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
             <input
               value={query}
               onChange={(event) => onQueryChange(event.target.value)}
-              placeholder={route === "resources" ? "자료 검색" : "검색"}
+              placeholder="검색"
               className="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-3 text-sm text-text outline-none focus:border-accent"
             />
           </div>
-        ) : (
-          <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-surface px-3 py-2 text-sm text-text-muted">
-            <span className="inline-flex min-w-0 items-center gap-2">
-              <ShieldCheck
-                className="size-4 shrink-0 text-accent"
-                aria-hidden
-              />
-              <span className="truncate">
-                관리자 콘솔
-                {adminSession ? ` · ${adminSession.email}` : " · 로그인 필요"}
-              </span>
-            </span>
-            <button
-              type="button"
-              onClick={() => onNavigate(route === "admin" ? "portal" : "admin")}
-              className="shrink-0 text-xs font-semibold text-accent"
-            >
-              {route === "admin" ? "포털" : "Admin"}
-            </button>
-          </div>
-        )}
-        <div className="mt-2 flex gap-1 sm:hidden">
-          {routeItems.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => onNavigate(item.id)}
-              className={`${routeButtonClass(item.id)} flex-1 justify-center`}
-            >
-              <item.icon className="size-3.5" aria-hidden />
-              {item.label}
-            </button>
-          ))}
         </div>
-      </div>
+      ) : null}
     </header>
   );
 }
 
-export function Sidebar() {
+export function Sidebar({
+  route,
+  onNavigate,
+}: {
+  route: AppRoute;
+  onNavigate: (route: AppRoute) => void;
+}) {
+  const sections = routeSections[route] ?? [];
+
   return (
     <aside className="hidden border-r border-border bg-surface/70 lg:block">
-      <div className="sticky top-16 flex h-[calc(100vh-4rem)] w-60 flex-col px-3 py-4">
-        <nav className="space-y-1">
-          {navItems.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-text-muted transition hover:bg-surface-2 hover:text-text"
-            >
-              <item.icon className="size-4" aria-hidden />
-              {item.label}
-            </a>
-          ))}
-        </nav>
-        <div className="mt-auto rounded-md border border-border bg-bg p-3">
-          <p className="text-xs font-semibold text-text">소스 워치</p>
-          <p className="mt-1 text-xs leading-5 text-text-muted">
-            공식 문서, 벤치마크, 출판사, 한국어 커뮤니티 링크를 분리 보관합니다.
-          </p>
+      <div className="sticky top-[7.25rem] flex h-[calc(100vh-7.25rem)] w-60 flex-col px-3 py-4">
+        {sections.length ? (
+          <>
+            <p className="px-3 pb-2 text-xs font-semibold text-text-subtle">이 페이지 목차</p>
+            <nav className="space-y-1">
+              {sections.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-text-muted transition hover:bg-surface-2 hover:text-text"
+                >
+                  <item.icon className="size-4" aria-hidden />
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+          </>
+        ) : null}
+        <div className="mt-auto space-y-2">
+          <button
+            type="button"
+            onClick={() => onNavigate("sitemap")}
+            className="flex w-full items-center gap-3 rounded-md border border-border bg-bg px-3 py-2 text-sm font-medium text-text-muted transition hover:border-border-strong hover:text-text"
+          >
+            <MapPin className="size-4" aria-hidden />
+            전체 사이트맵
+          </button>
+          <div className="rounded-md border border-border bg-bg p-3">
+            <p className="text-xs font-semibold text-text">소스 워치</p>
+            <p className="mt-1 text-xs leading-5 text-text-muted">
+              공식 문서, 벤치마크, 출판사, 한국어 커뮤니티 링크를 분리 보관합니다.
+            </p>
+          </div>
         </div>
       </div>
     </aside>

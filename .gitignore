@@ -6,7 +6,10 @@ dist
 .vercel
 *.tsbuildinfo
 .tmp
+.tmp-*
+packages/content/.tmp-*
 apps/web/playwright-report
 apps/web/test-results
 apps/toss/.granite
 apps/toss/*.ait
+PRODUCT.md

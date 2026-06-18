@@ -39,7 +39,7 @@ import {
   MetadataChips,
   MultiSegmentBar,
   SectionHeader,
-  SegmentBar,
+  SortSelect,
 } from '@/components/app/CommonUi'
 import { type LocaleAwareFilterDefaults, getLocaleAwareFilterDefaults } from '@/utils/environment'
 
@@ -309,6 +309,17 @@ function formatCommunityProviderLabels(resource: { providerIds?: ProviderId[] })
     .join(' · ')
 }
 
+/** "<mode>-<direction>" 결합값을 마지막 '-' 기준으로 분리한다. */
+function splitSortValue<Mode extends string, Direction extends string>(
+  value: string
+): { mode: Mode; direction: Direction } {
+  const splitIndex = value.lastIndexOf('-')
+  return {
+    mode: value.slice(0, splitIndex) as Mode,
+    direction: value.slice(splitIndex + 1) as Direction,
+  }
+}
+
 export function Briefing({
   results,
   useFallback,
@@ -329,19 +340,17 @@ export function Briefing({
     ).toSorted((left, right) => (left || '기타').localeCompare(right || '기타'))
     return ['all', ...providers] as BriefingProviderFilter[]
   }, [briefingSourceData])
-  const briefSortFilters: Array<{ id: BriefingSortMode; label: string }> = [
-    { id: 'date', label: '날짜' },
-    { id: 'title', label: '제목' },
-    { id: 'provider', label: '제공사' },
-    { id: 'category', label: '카테고리' },
-    { id: 'impact', label: '임팩트' },
-  ]
-  const briefSortDirectionFilters: Array<{
-    id: BriefingSortDirection
-    label: string
-  }> = [
-    { id: 'asc', label: '오름차순' },
-    { id: 'desc', label: '내림차순' },
+  const briefingSortOptions: Array<{ value: string; label: string }> = [
+    { value: 'date-desc', label: '날짜 최신순' },
+    { value: 'date-asc', label: '날짜 오래된순' },
+    { value: 'title-asc', label: '제목 A→Z' },
+    { value: 'title-desc', label: '제목 Z→A' },
+    { value: 'provider-asc', label: '제공사 오름차순' },
+    { value: 'provider-desc', label: '제공사 내림차순' },
+    { value: 'category-asc', label: '카테고리 오름차순' },
+    { value: 'category-desc', label: '카테고리 내림차순' },
+    { value: 'impact-asc', label: '임팩트 오름차순' },
+    { value: 'impact-desc', label: '임팩트 내림차순' },
   ]
   const searchBriefing = briefingQuery.trim().toLocaleLowerCase('ko-KR')
   const filteredBriefingUpdates = useMemo(() => {
@@ -411,7 +420,7 @@ export function Briefing({
             벤치마크 원문 <ExternalLink className="size-3.5" aria-hidden />
           </a>
         </div>
-        <div className="mt-4 grid gap-2 xl:grid-cols-[1.4fr_1fr_1fr_1fr_1.1fr]">
+        <div className="mt-4 grid gap-2 xl:grid-cols-[1.4fr_1fr_1fr_1.1fr]">
           <label className="block xl:col-span-2">
             <span className="text-xs font-semibold text-text-subtle">브리핑 검색</span>
             <div className="relative mt-2">
@@ -440,36 +449,18 @@ export function Briefing({
               ))}
             </select>
           </label>
-          <label className="block">
-            <span className="text-xs font-semibold text-text-subtle">정렬</span>
-            <select
-              value={briefingSortMode}
-              onChange={(event) => setBriefingSortMode(event.target.value as BriefingSortMode)}
-              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
-            >
-              {briefSortFilters.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className="text-xs font-semibold text-text-subtle">정렬 방향</span>
-            <select
-              value={briefingSortDirection}
-              onChange={(event) =>
-                setBriefingSortDirection(event.target.value as BriefingSortDirection)
-              }
-              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
-            >
-              {briefSortDirectionFilters.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <SortSelect
+            value={`${briefingSortMode}-${briefingSortDirection}`}
+            onChange={(next) => {
+              const { mode, direction } = splitSortValue<
+                BriefingSortMode,
+                BriefingSortDirection
+              >(next)
+              setBriefingSortMode(mode)
+              setBriefingSortDirection(direction)
+            }}
+            options={briefingSortOptions}
+          />
           <label className="block">
             <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
             <select
@@ -563,24 +554,22 @@ function SourceWatch({ sources: visibleSources }: { sources: SourceRef[] }) {
   const [sourceWatchSortDirection, setSourceWatchSortDirection] =
     useState<SourceWatchSortDirection>('desc')
   const [sourceWatchLimit, setSourceWatchLimit] = useState<WebzineListLimit>(3)
-  const sourceWatchSortFilters: Array<{ id: SourceWatchSortMode; label: string }> = [
-    { id: 'publisher', label: '출처' },
-    { id: 'title', label: '제목' },
-    { id: 'kind', label: '출처 성격' },
-    { id: 'note', label: '메모' },
-    { id: 'checked', label: '확인일' },
+  const sourceWatchSortOptions: Array<{ value: string; label: string }> = [
+    { value: 'checked-desc', label: '확인일 최신순' },
+    { value: 'checked-asc', label: '확인일 오래된순' },
+    { value: 'publisher-asc', label: '출처 A→Z' },
+    { value: 'publisher-desc', label: '출처 Z→A' },
+    { value: 'title-asc', label: '제목 A→Z' },
+    { value: 'title-desc', label: '제목 Z→A' },
+    { value: 'kind-asc', label: '출처 성격 오름차순' },
+    { value: 'kind-desc', label: '출처 성격 내림차순' },
+    { value: 'note-asc', label: '메모 오름차순' },
+    { value: 'note-desc', label: '메모 내림차순' },
   ]
   const sourceWatchKindFilters = useMemo(() => {
     const kindValues = Array.from(new Set(visibleSources.map((source) => source.kind)))
     return ['all', ...kindValues] as SourceWatchKindFilter[]
   }, [visibleSources])
-  const sourceWatchDirectionFilters: Array<{
-    id: SourceWatchSortDirection
-    label: string
-  }> = [
-    { id: 'asc', label: '오름차순' },
-    { id: 'desc', label: '내림차순' },
-  ]
   const sourceWatchSearch = sourceWatchQuery.trim().toLocaleLowerCase('ko-KR')
   const filteredSourceWatch = useMemo(
     () =>
@@ -661,40 +650,20 @@ function SourceWatch({ sources: visibleSources }: { sources: SourceRef[] }) {
                 ))}
               </select>
             </label>
-            <label className="block">
-              <span className="text-xs font-semibold text-text-subtle">정렬</span>
-              <select
-                value={sourceWatchSortMode}
-                onChange={(event) =>
-                  setSourceWatchSortMode(event.target.value as SourceWatchSortMode)
-                }
-                className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
-              >
-                {sourceWatchSortFilters.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <SortSelect
+              value={`${sourceWatchSortMode}-${sourceWatchSortDirection}`}
+              onChange={(next) => {
+                const { mode, direction } = splitSortValue<
+                  SourceWatchSortMode,
+                  SourceWatchSortDirection
+                >(next)
+                setSourceWatchSortMode(mode)
+                setSourceWatchSortDirection(direction)
+              }}
+              options={sourceWatchSortOptions}
+            />
           </div>
-          <div className="grid gap-2 xl:grid-cols-3">
-            <label className="block">
-              <span className="text-xs font-semibold text-text-subtle">정렬 방향</span>
-              <select
-                value={sourceWatchSortDirection}
-                onChange={(event) =>
-                  setSourceWatchSortDirection(event.target.value as SourceWatchSortDirection)
-                }
-                className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
-              >
-                {sourceWatchDirectionFilters.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+          <div className="grid gap-2 xl:grid-cols-2">
             <label className="block">
               <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
               <select
@@ -803,18 +772,15 @@ export function WebzineSection({
     { id: 'vibe', label: '바이브 코딩' },
     { id: 'design', label: '디자인/PPT' },
   ]
-  const newsSortFilters: Array<{ id: WebzineNewsSortMode; label: string }> = [
-    { id: 'date', label: '날짜' },
-    { id: 'title', label: '제목' },
-    { id: 'provider', label: '제공사' },
-    { id: 'category', label: '구분' },
-  ]
-  const newsSortDirectionFilters: Array<{
-    id: WebzineNewsSortDirection
-    label: string
-  }> = [
-    { id: 'asc', label: '오름차순' },
-    { id: 'desc', label: '내림차순' },
+  const newsSortOptions: Array<{ value: string; label: string }> = [
+    { value: 'date-desc', label: '날짜 최신순' },
+    { value: 'date-asc', label: '날짜 오래된순' },
+    { value: 'title-asc', label: '제목 A→Z' },
+    { value: 'title-desc', label: '제목 Z→A' },
+    { value: 'provider-asc', label: '제공사 오름차순' },
+    { value: 'provider-desc', label: '제공사 내림차순' },
+    { value: 'category-asc', label: '구분 오름차순' },
+    { value: 'category-desc', label: '구분 내림차순' },
   ]
   const communityLanguageFilters: Array<{
     id: WebzineCommunityLanguageFilter
@@ -834,21 +800,15 @@ export function WebzineSection({
     { id: '커뮤니티', label: '커뮤니티' },
     { id: '도서', label: '도서' },
   ]
-  const communitySortFilters: Array<{
-    id: WebzineCommunitySortMode
-    label: string
-  }> = [
-    { id: 'language', label: '언어' },
-    { id: 'title', label: '제목' },
-    { id: 'type', label: '유형' },
-    { id: 'provider', label: '제공사' },
-  ]
-  const communitySortDirectionFilters: Array<{
-    id: WebzineCommunitySortDirection
-    label: string
-  }> = [
-    { id: 'asc', label: '오름차순' },
-    { id: 'desc', label: '내림차순' },
+  const communitySortOptions: Array<{ value: string; label: string }> = [
+    { value: 'language-asc', label: '언어 오름차순' },
+    { value: 'language-desc', label: '언어 내림차순' },
+    { value: 'title-asc', label: '제목 A→Z' },
+    { value: 'title-desc', label: '제목 Z→A' },
+    { value: 'type-asc', label: '유형 오름차순' },
+    { value: 'type-desc', label: '유형 내림차순' },
+    { value: 'provider-asc', label: '제공사 오름차순' },
+    { value: 'provider-desc', label: '제공사 내림차순' },
   ]
 
   const searchNews = newsQuery.trim().toLocaleLowerCase('ko-KR')
@@ -958,7 +918,7 @@ export function WebzineSection({
         title="AI 뉴스와 커뮤니티 웹진"
         description="모델 릴리스, AI 주권/규제 뉴스, 한국어 유튜브·블로그·도서 자료를 웹진형으로 묶었습니다."
       />
-      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1fr_8rem_8rem_8rem_auto]">
+      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1fr_10rem_8rem_auto]">
         <MultiSegmentBar
           label="웹진 구분"
           items={newsCategoryFilterItems}
@@ -974,17 +934,17 @@ export function WebzineSection({
             className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
           />
         </label>
-        <SegmentBar
-          label="정렬"
-          items={newsSortFilters}
-          value={newsSortMode}
-          onChange={setNewsSortMode}
-        />
-        <SegmentBar
-          label="정렬 방향"
-          items={newsSortDirectionFilters}
-          value={newsSortDirection}
-          onChange={setNewsSortDirection}
+        <SortSelect
+          value={`${newsSortMode}-${newsSortDirection}`}
+          onChange={(next) => {
+            const { mode, direction } = splitSortValue<
+              WebzineNewsSortMode,
+              WebzineNewsSortDirection
+            >(next)
+            setNewsSortMode(mode)
+            setNewsSortDirection(direction)
+          }}
+          options={newsSortOptions}
         />
         <label className="block">
           <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
@@ -1033,23 +993,18 @@ export function WebzineSection({
             value={communityTypeFiltersActive}
             onChange={setCommunityTypeFiltersActive}
           />
-          <div className="rounded-md border border-border bg-bg p-3">
-            <p className="text-xs font-semibold text-text-subtle">정렬</p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              <SegmentBar
-                label="정렬"
-                items={communitySortFilters}
-                value={communitySortMode}
-                onChange={setCommunitySortMode}
-              />
-              <SegmentBar
-                label="정렬 방향"
-                items={communitySortDirectionFilters}
-                value={communitySortDirection}
-                onChange={setCommunitySortDirection}
-              />
-            </div>
-          </div>
+          <SortSelect
+            value={`${communitySortMode}-${communitySortDirection}`}
+            onChange={(next) => {
+              const { mode, direction } = splitSortValue<
+                WebzineCommunitySortMode,
+                WebzineCommunitySortDirection
+              >(next)
+              setCommunitySortMode(mode)
+              setCommunitySortDirection(direction)
+            }}
+            options={communitySortOptions}
+          />
           <label className="block">
             <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
             <select
@@ -1255,21 +1210,15 @@ function EventCalendarBoard() {
   const [agendaSortDirection, setAgendaSortDirection] =
     useState<EventCalendarAgendaSortDirection>('asc')
 
-  const agendaSortFilters: Array<{
-    id: EventCalendarAgendaSortMode
-    label: string
-  }> = [
-    { id: 'date', label: '일자' },
-    { id: 'title', label: '제목' },
-    { id: 'organizer', label: '주최' },
-    { id: 'status', label: '진행상태' },
-  ]
-  const agendaSortDirectionFilters: Array<{
-    id: EventCalendarAgendaSortDirection
-    label: string
-  }> = [
-    { id: 'asc', label: '오름차순' },
-    { id: 'desc', label: '내림차순' },
+  const agendaSortOptions: Array<{ value: string; label: string }> = [
+    { value: 'date-asc', label: '일자 오래된순' },
+    { value: 'date-desc', label: '일자 최신순' },
+    { value: 'title-asc', label: '제목 A→Z' },
+    { value: 'title-desc', label: '제목 Z→A' },
+    { value: 'organizer-asc', label: '주최 오름차순' },
+    { value: 'organizer-desc', label: '주최 내림차순' },
+    { value: 'status-asc', label: '진행상태 오름차순' },
+    { value: 'status-desc', label: '진행상태 내림차순' },
   ]
 
   const queryLower = query.trim().toLowerCase()
@@ -1538,18 +1487,19 @@ function EventCalendarBoard() {
             필터 초기화
           </button>
         </div>
-        <div className="mt-3 grid gap-2 md:grid-cols-2">
-          <SegmentBar
+        <div className="mt-3">
+          <SortSelect
             label="일정 리스트 정렬"
-            items={agendaSortFilters}
-            value={agendaSortMode}
-            onChange={setAgendaSortMode}
-          />
-          <SegmentBar
-            label="정렬 방향"
-            items={agendaSortDirectionFilters}
-            value={agendaSortDirection}
-            onChange={setAgendaSortDirection}
+            value={`${agendaSortMode}-${agendaSortDirection}`}
+            onChange={(next) => {
+              const { mode, direction } = splitSortValue<
+                EventCalendarAgendaSortMode,
+                EventCalendarAgendaSortDirection
+              >(next)
+              setAgendaSortMode(mode)
+              setAgendaSortDirection(direction)
+            }}
+            options={agendaSortOptions}
           />
         </div>
 
@@ -1760,18 +1710,15 @@ export function EventPromotionsSection() {
       })),
     ]
   }, [eventItems])
-  const eventSortFilters: Array<{ id: EventPromotionSortMode; label: string }> = [
-    { id: 'date', label: '날짜' },
-    { id: 'title', label: '제목' },
-    { id: 'provider', label: '제공사' },
-    { id: 'type', label: '이벤트 유형' },
-  ]
-  const eventSortDirectionFilters: Array<{
-    id: EventPromotionSortDirection
-    label: string
-  }> = [
-    { id: 'asc', label: '오름차순' },
-    { id: 'desc', label: '내림차순' },
+  const eventSortOptions: Array<{ value: string; label: string }> = [
+    { value: 'date-desc', label: '날짜 최신순' },
+    { value: 'date-asc', label: '날짜 오래된순' },
+    { value: 'title-asc', label: '제목 A→Z' },
+    { value: 'title-desc', label: '제목 Z→A' },
+    { value: 'provider-asc', label: '제공사 오름차순' },
+    { value: 'provider-desc', label: '제공사 내림차순' },
+    { value: 'type-asc', label: '이벤트 유형 오름차순' },
+    { value: 'type-desc', label: '이벤트 유형 내림차순' },
   ]
   const normalizedEventQuery = eventQuery.trim().toLocaleLowerCase('ko-KR')
   const sortedEventItems = useMemo(() => {
@@ -1816,7 +1763,7 @@ export function EventPromotionsSection() {
         description="해커톤, 컨퍼런스, 웨비나, 학생/교육 혜택, 크레딧 이벤트를 날짜와 공식 확인 링크 기준으로 추적합니다."
       />
       <EventCalendarBoard />
-      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1fr_8rem_8rem_8rem]">
+      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1fr_10rem_8rem]">
         <MultiSegmentBar
           label="제공사"
           items={eventProviderFilters}
@@ -1832,17 +1779,17 @@ export function EventPromotionsSection() {
             className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
           />
         </label>
-        <SegmentBar
-          label="정렬"
-          items={eventSortFilters}
-          value={eventSortMode}
-          onChange={setEventSortMode}
-        />
-        <SegmentBar
-          label="정렬 방향"
-          items={eventSortDirectionFilters}
-          value={eventSortDirection}
-          onChange={setEventSortDirection}
+        <SortSelect
+          value={`${eventSortMode}-${eventSortDirection}`}
+          onChange={(next) => {
+            const { mode, direction } = splitSortValue<
+              EventPromotionSortMode,
+              EventPromotionSortDirection
+            >(next)
+            setEventSortMode(mode)
+            setEventSortDirection(direction)
+          }}
+          options={eventSortOptions}
         />
         <div className="rounded-md border border-border bg-bg p-3">
           <p className="text-xs font-semibold text-text-subtle">필터 결과</p>

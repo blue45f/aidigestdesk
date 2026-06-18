@@ -10,17 +10,21 @@ import {
   sources,
   taskRecommendations,
   vibeCodingCommands,
-  type AiCodingToolProfile,
-  type ContentCategory,
-  type LearningResource,
   type ProviderId,
-  type SourceRef,
-  type TaskRecommendation,
-  type VibeCodingCommand,
 } from '@aidigestdesk/content'
-import { BookOpen, Boxes, ChevronRight, ExternalLink, FileText, Home, Library } from 'lucide-react'
+import {
+  BadgePercent,
+  BookOpen,
+  Boxes,
+  ChevronRight,
+  MessagesSquare,
+  RotateCcw,
+  Table2,
+} from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 
+import { AboutRoute } from '@/components/app/AboutRoute'
+import { AccountRoute } from '@/components/app/AccountRoute'
 import { AdminRoute } from '@/components/app/AdminRoute'
 import {
   getInitialAdminSession,
@@ -34,13 +38,21 @@ import {
 } from '@/components/app/AiCodingSections'
 import { getCurrentRoute, routePath, routeTitles, type AppRoute } from '@/components/app/appRoutes'
 import { Header, Sidebar } from '@/components/app/AppShell'
-import { MetricCard, MultiSegmentBar } from '@/components/app/CommonUi'
+import { CliComparisonSection } from '@/components/app/CliComparisonSection'
+import { ActiveFilterChips, MultiSegmentBar } from '@/components/app/CommonUi'
+import { CommunityRoute } from '@/components/app/CommunityRoute'
 import { EventCostComparisonSection, ModelCostCalculator } from '@/components/app/CostSections'
+import { DealsSection } from '@/components/app/DealsSection'
+import { DesignRoute } from '@/components/app/DesignRoute'
+import { ExtensionsSection } from '@/components/app/ExtensionsSection'
+import { FreshRail } from '@/components/app/FreshRail'
+import { GlossarySection } from '@/components/app/GlossarySection'
 import {
   DesignWorkflowSection,
   ManualGuides,
   PersonaPlaybooks,
 } from '@/components/app/LearningWorkflowSections'
+import { getInitialMemberSession, logOut, type MemberSession } from '@/components/app/memberAuth'
 import {
   BenchmarkBoard,
   ComparisonMatrix,
@@ -55,6 +67,8 @@ import {
 import { ResourceLibrary } from '@/components/app/ResourceLibrary'
 import { SitemapRoute } from '@/components/app/SitemapRoute'
 import { SourcesSection } from '@/components/app/SourcesSection'
+import { TermsRoute } from '@/components/app/TermsRoute'
+import { TranslatedNewsSection } from '@/components/app/TranslatedNewsSection'
 import { RouteAnnouncer } from '@/components/layout/RouteAnnouncer'
 import { SkipLink } from '@/components/layout/SkipLink'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
@@ -67,110 +81,128 @@ const providerFilters: Array<{ id: ProviderId | 'all'; label: string }> = [
   })),
 ]
 
-const categoryFilters: Array<{ id: ContentCategory | 'all'; label: string }> = [
-  { id: 'all', label: '전체' },
-  { id: 'news', label: '뉴스' },
-  { id: 'events', label: '일정/이벤트' },
-  { id: 'recommendations', label: '작업 추천' },
-  { id: 'tools', label: 'AI 도구' },
-  { id: 'vibe', label: 'CLI/코딩' },
-  { id: 'comparison', label: '모델 비교' },
-  { id: 'benchmarks', label: '벤치마크' },
-  { id: 'learning', label: '강좌/자료' },
+type ContentRoute = 'portal' | 'models' | 'tools' | 'deals' | 'resources'
+
+const routeMeta: Record<ContentRoute, { eyebrow: string; title: string; description: string }> = {
+  portal: {
+    eyebrow: '홈 · /',
+    title: '오늘의 AI 다이제스트',
+    description: '최신 브리핑과 새로 등록된 정보를 먼저 확인하고, 필요한 섹션으로 이동하세요.',
+  },
+  models: {
+    eyebrow: '모델 · /models',
+    title: '모델·벤치마크·비용',
+    description: '제공사별 모델 스펙, 분야별 벤치마크, 비교표, 토큰 비용을 한 화면에서 비교합니다.',
+  },
+  tools: {
+    eyebrow: '도구 · /tools',
+    title: 'AI 도구·확장·CLI',
+    description:
+      '작업별 추천부터 IDE·CLI 도구, 플러그인·훅·스킬·MCP 확장 디렉터리, LLM별 CLI 명령어 비교·매뉴얼까지 모았습니다.',
+  },
+  deals: {
+    eyebrow: '할인 · /deals',
+    title: 'LLM 할인·혜택과 일정',
+    description: '학생/교육, 무료 크레딧, API 가격 인하, 국내 혜택과 해커톤·컨퍼런스 일정을 추적합니다.',
+  },
+  resources: {
+    eyebrow: '자료 · /resources',
+    title: '강좌·자료·용어·해외 소식',
+    description:
+      '한국어 강좌·도서·블로그·사용법, AI/LLM 용어 사전, 해외 소식 번역, 직군별 플레이북과 출처를 세밀하게 탐색합니다.',
+  },
+}
+
+const exploreCards: Array<{
+  route: AppRoute
+  title: string
+  description: string
+  icon: typeof Table2
+}> = [
+  {
+    route: 'models',
+    title: '모델·벤치마크·비용',
+    description: '제공사별 스펙·점수·토큰 단가 비교',
+    icon: Table2,
+  },
+  {
+    route: 'tools',
+    title: 'AI 도구·확장',
+    description: 'IDE·CLI·플러그인·훅·스킬·MCP 디렉터리',
+    icon: Boxes,
+  },
+  {
+    route: 'deals',
+    title: 'LLM 할인·혜택',
+    description: '학생·크레딧·가격 인하·국내 우선',
+    icon: BadgePercent,
+  },
+  {
+    route: 'resources',
+    title: '강좌·자료',
+    description: '한국어 강좌·도서·블로그·사용법',
+    icon: BookOpen,
+  },
+  {
+    route: 'community',
+    title: '커뮤니티',
+    description: '토론 채팅방 · 닉네임 참여',
+    icon: MessagesSquare,
+  },
 ]
 
-function ResourcesRoute({
-  resources,
-  recommendations,
-  toolProfiles,
-  vibeCommands,
-  sourceItems,
-  onNavigate,
-}: {
-  resources: LearningResource[]
-  recommendations: TaskRecommendation[]
-  toolProfiles: AiCodingToolProfile[]
-  vibeCommands: VibeCodingCommand[]
-  sourceItems: SourceRef[]
-  onNavigate: (route: AppRoute) => void
-}) {
-  const koreanResourceCount = resources.filter((resource) => resource.language === '한국어').length
-  const bookCount = resources.filter((resource) => resource.type === '도서').length
-
+function PageHeader({ route }: { route: ContentRoute }) {
+  const meta = routeMeta[route]
   return (
-    <main id="main-content" tabIndex={-1} className="px-4 py-5 outline-none lg:px-6">
-      <div className="mx-auto max-w-[96rem] space-y-6">
-        <section className="rounded-lg border border-border bg-surface p-5">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold text-accent">자료 라우트 · /resources</p>
-              <h1 className="mt-1 text-2xl font-semibold text-text">AI 바이브 코딩 자료실</h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
-                한국어 유튜브, 교육기관, 원격 강좌, 신간 도서, 블로그, CLI 자료를 한 화면에서
-                세밀하게 필터링합니다.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => onNavigate('portal')}
-              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-3 py-2 text-xs font-semibold text-text-muted transition hover:text-text"
-            >
-              <Home className="size-3.5" aria-hidden />
-              포털로
-            </button>
-          </div>
-          <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-            <MetricCard
-              label="자료"
-              value={`${resources.length}`}
-              detail="현재 검색/필터 조건"
-              icon={Library}
-            />
-            <MetricCard
-              label="한국어"
-              value={`${koreanResourceCount}`}
-              detail="문서, 영상, 블로그, 도서"
-              icon={BookOpen}
-            />
-            <MetricCard
-              label="도서"
-              value={`${bookCount}`}
-              detail="국내외 검색 허브 포함"
-              icon={FileText}
-            />
-            <MetricCard
-              label="AI 도구"
-              value={`${toolProfiles.length}`}
-              detail="IDE, CLI, PR 리뷰, 에이전트"
-              icon={Boxes}
-            />
-            <MetricCard
-              label="출처"
-              value={`${sourceItems.length}`}
-              detail="공식/출판사/커뮤니티"
-              icon={ExternalLink}
-            />
-          </div>
-        </section>
+    <section className="rounded-lg border border-border bg-surface p-5">
+      <p className="text-xs font-semibold text-accent">{meta.eyebrow}</p>
+      <h1 className="mt-1 text-2xl font-semibold text-text">{meta.title}</h1>
+      <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">{meta.description}</p>
+    </section>
+  )
+}
 
-        <TaskRecommendationSection recommendations={recommendations} />
-        <CodingToolDirectorySection tools={toolProfiles} />
-        <ResourceLibrary resources={resources} />
-        <VibeCodingSection commands={vibeCommands} />
-        <BenchmarkBoard />
-        <SourcesSection sourceItems={sourceItems} />
+function ExploreGrid({ onNavigate }: { onNavigate: (route: AppRoute) => void }) {
+  return (
+    <section className="space-y-3">
+      <h2 className="text-lg font-semibold text-text">둘러보기</h2>
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {exploreCards.map((card) => (
+          <button
+            key={card.route}
+            type="button"
+            onClick={() => onNavigate(card.route)}
+            className="group flex items-start gap-3 rounded-lg border border-border bg-surface p-4 text-left transition hover:border-border-strong"
+          >
+            <span className="grid size-10 shrink-0 place-items-center rounded-md border border-border bg-bg text-accent">
+              <card.icon className="size-5" aria-hidden />
+            </span>
+            <span className="min-w-0">
+              <span className="flex items-center gap-1 text-sm font-semibold text-text">
+                {card.title}
+                <ChevronRight
+                  className="size-3.5 -translate-x-0.5 text-text-subtle transition group-hover:translate-x-0"
+                  aria-hidden
+                />
+              </span>
+              <span className="mt-1 block text-xs leading-5 text-text-muted">
+                {card.description}
+              </span>
+            </span>
+          </button>
+        ))}
       </div>
-    </main>
+    </section>
   )
 }
 
 export default function App() {
   const [query, setQuery] = useState('')
   const [providers, setProviders] = useState<ProviderId[]>([])
-  const [categories, setCategories] = useState<ContentCategory[]>([])
   const [selectedModelId, setSelectedModelId] = useState(modelProfiles[0]?.id ?? '')
   const [route, setRoute] = useState<AppRoute>(getCurrentRoute)
   const [adminSession, setAdminSession] = useState<AdminSession | null>(getInitialAdminSession)
+  const [memberSession, setMemberSession] = useState<MemberSession | null>(getInitialMemberSession)
   const [dark, setDark] = useState(false)
 
   useDocumentTitle(routeTitles[route])
@@ -191,23 +223,25 @@ export default function App() {
       window.history.pushState(null, '', nextPath)
     }
     setRoute(nextRoute)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleAdminLogin = (session: AdminSession) => {
     saveAdminSession(session)
     setAdminSession(session)
   }
-
   const handleAdminLogout = () => {
     saveAdminSession(null)
     setAdminSession(null)
   }
+  const handleMemberLogout = () => {
+    logOut()
+    setMemberSession(null)
+  }
 
-  const results = useMemo(
-    () => searchCatalog(query, providers, categories),
-    [query, providers, categories]
-  )
-  const hasActiveFilter = query.trim() !== '' || providers.length > 0 || categories.length > 0
+  const results = useMemo(() => searchCatalog(query, providers, []), [query, providers])
+  const hasActiveFilter = query.trim() !== '' || providers.length > 0
+
   const visibleModels =
     results.models.length > 0 ? results.models : hasActiveFilter ? [] : modelProfiles
   const selectedModel =
@@ -232,16 +266,128 @@ export default function App() {
       : hasActiveFilter
         ? []
         : taskRecommendations
-  const visibleSources =
-    categories.includes('sources') || results.sources.length > 0
-      ? results.sources
-      : hasActiveFilter
-        ? []
-        : sources
+  const visibleSources = results.sources.length > 0 ? results.sources : hasActiveFilter ? [] : sources
 
-  // selectedModel 은 렌더 중 visibleModels[0] 로 폴백하고, 소비처는 selectedModel?.id
-  // 를 쓴다. 따라서 필터로 현재 선택이 빠져도 effect 로 state 를 되돌릴 필요가 없다
-  // (https://react.dev/learn/you-might-not-need-an-effect).
+  const activeChips = [
+    ...(query.trim()
+      ? [{ key: 'q', label: `검색: ${query.trim()}`, onRemove: () => setQuery('') }]
+      : []),
+    ...providers.map((providerId) => ({
+      key: `p-${providerId}`,
+      label: providerFilters.find((filter) => filter.id === providerId)?.label ?? providerId,
+      onRemove: () => setProviders((prev) => prev.filter((value) => value !== providerId)),
+    })),
+  ]
+  const clearFilters = () => {
+    setQuery('')
+    setProviders([])
+  }
+
+  const renderFilterBar = () => (
+    <div className="sticky top-[7.25rem] z-30 -mx-4 border-b border-border bg-bg/85 px-4 py-3 backdrop-blur lg:-mx-6 lg:px-6">
+      <div className="mx-auto flex max-w-[96rem] flex-wrap items-center gap-x-4 gap-y-2">
+        <MultiSegmentBar
+          label="제공사"
+          items={providerFilters}
+          value={providers}
+          onChange={setProviders}
+        />
+        <div className="ml-auto flex flex-wrap items-center gap-x-3 gap-y-2">
+          {hasActiveFilter ? <ActiveFilterChips chips={activeChips} /> : null}
+          <button
+            type="button"
+            onClick={clearFilters}
+            disabled={!hasActiveFilter}
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <RotateCcw className="size-3.5" aria-hidden />
+            필터 초기화
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+
+  const renderSections = (contentRoute: ContentRoute) => {
+    switch (contentRoute) {
+      case 'models':
+        return (
+          <>
+            {renderFilterBar()}
+            <PageHeader route="models" />
+            <ModelCards
+              models={visibleModels}
+              selectedModelId={selectedModel?.id ?? ''}
+              onSelectModel={setSelectedModelId}
+            />
+            {selectedModel ? <ModelDetail profile={selectedModel} /> : null}
+            <BenchmarkBoard />
+            <ComparisonMatrix />
+            <ModelCostCalculator />
+            <EventCostComparisonSection />
+          </>
+        )
+      case 'tools':
+        return (
+          <>
+            {renderFilterBar()}
+            <PageHeader route="tools" />
+            <TaskRecommendationSection recommendations={visibleTaskRecommendations} />
+            <CodingToolDirectorySection tools={visibleAiCodingTools} />
+            <ExtensionsSection />
+            <VibeCodingSection commands={visibleVibeCommands} />
+            <CliComparisonSection commands={visibleVibeCommands} />
+            <DesignWorkflowSection />
+          </>
+        )
+      case 'deals':
+        return (
+          <>
+            <PageHeader route="deals" />
+            <DealsSection />
+            <EventPromotionsSection />
+          </>
+        )
+      case 'resources':
+        return (
+          <>
+            {renderFilterBar()}
+            <PageHeader route="resources" />
+            <ResourceLibrary resources={visibleResources} />
+            <GlossarySection />
+            <ManualGuides guides={visibleGuides} />
+            <PersonaPlaybooks guides={visiblePersonaGuides} />
+            <WebzineSection results={results} useFallback={!hasActiveFilter} />
+            <TranslatedNewsSection />
+            <SourcesSection sourceItems={visibleSources} />
+          </>
+        )
+      case 'portal':
+      default:
+        return (
+          <>
+            <PageHeader route="portal" />
+            <button
+              type="button"
+              onClick={() => navigateToRoute('about')}
+              className="flex w-full items-center justify-between gap-3 rounded-lg border border-accent/30 bg-accent/5 px-4 py-3 text-left transition hover:bg-accent/10"
+            >
+              <span className="text-sm text-text-muted">
+                <strong className="font-semibold text-text">처음 오셨나요?</strong> 사이트 소개와 사용
+                가이드를 먼저 둘러보세요.
+              </span>
+              <span className="shrink-0 text-xs font-semibold text-accent">소개·가이드 →</span>
+            </button>
+            <Briefing results={results} useFallback={!hasActiveFilter} />
+            <FreshRail />
+            <ExploreGrid onNavigate={navigateToRoute} />
+          </>
+        )
+    }
+  }
+
+  const contentRoutes: ContentRoute[] = ['portal', 'models', 'tools', 'deals', 'resources']
+  const isContentRoute = (contentRoutes as AppRoute[]).includes(route)
 
   return (
     <div className="min-h-screen bg-bg text-text">
@@ -253,6 +399,7 @@ export default function App() {
         route={route}
         onNavigate={navigateToRoute}
         adminSession={adminSession}
+        memberSession={memberSession}
         dark={dark}
         onToggleDark={() => setDark((value) => !value)}
       />
@@ -263,67 +410,72 @@ export default function App() {
           onLogout={handleAdminLogout}
           onNavigate={navigateToRoute}
         />
-      ) : route === 'resources' ? (
-        <ResourcesRoute
-          resources={visibleResources}
-          recommendations={visibleTaskRecommendations}
-          toolProfiles={visibleAiCodingTools}
-          vibeCommands={visibleVibeCommands}
-          sourceItems={visibleSources}
+      ) : route === 'account' ? (
+        <AccountRoute
+          session={memberSession}
+          onAuthed={(session) => setMemberSession(session)}
+          onLogout={handleMemberLogout}
+          onWithdraw={() => setMemberSession(null)}
           onNavigate={navigateToRoute}
         />
+      ) : route === 'community' ? (
+        <CommunityRoute
+          onNavigate={navigateToRoute}
+          memberName={memberSession?.displayName ?? null}
+        />
+      ) : route === 'terms' ? (
+        <TermsRoute onNavigate={navigateToRoute} />
+      ) : route === 'about' ? (
+        <AboutRoute onNavigate={navigateToRoute} />
+      ) : route === 'design' ? (
+        <DesignRoute onNavigate={navigateToRoute} />
       ) : route === 'sitemap' ? (
         <SitemapRoute onNavigate={navigateToRoute} />
       ) : (
         <div className="grid lg:grid-cols-[15rem_1fr]">
-          <Sidebar />
+          <Sidebar route={route} onNavigate={navigateToRoute} />
           <main id="main-content" tabIndex={-1} className="min-w-0 px-4 py-5 outline-none lg:px-6">
             <div className="mx-auto max-w-[96rem] space-y-6">
-              <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1.25fr]">
-                <MultiSegmentBar
-                  label="제공사"
-                  items={providerFilters}
-                  value={providers}
-                  onChange={setProviders}
-                />
-                <MultiSegmentBar
-                  label="카테고리"
-                  items={categoryFilters}
-                  value={categories}
-                  onChange={setCategories}
-                />
-              </div>
+              {renderSections(isContentRoute ? (route as ContentRoute) : 'portal')}
 
-              <Briefing results={results} useFallback={!hasActiveFilter} />
-              <EventPromotionsSection />
-              <TaskRecommendationSection recommendations={visibleTaskRecommendations} />
-              <CodingToolDirectorySection tools={visibleAiCodingTools} />
-              <VibeCodingSection commands={visibleVibeCommands} />
-              <DesignWorkflowSection />
-              <ModelCards
-                models={visibleModels}
-                selectedModelId={selectedModel?.id ?? ''}
-                onSelectModel={setSelectedModelId}
-              />
-              {selectedModel ? <ModelDetail profile={selectedModel} /> : null}
-              <BenchmarkBoard />
-              <ComparisonMatrix />
-              <ResourceLibrary resources={visibleResources} />
-              <WebzineSection results={results} useFallback={!hasActiveFilter} />
-              <ManualGuides guides={visibleGuides} />
-              <PersonaPlaybooks guides={visiblePersonaGuides} />
-              <ModelCostCalculator />
-              <EventCostComparisonSection />
-              <SourcesSection sourceItems={visibleSources} />
-
-              <footer className="flex flex-col gap-2 border-t border-border py-6 text-xs text-text-subtle sm:flex-row sm:items-center sm:justify-between">
+              <footer className="flex flex-col gap-3 border-t border-border py-6 text-xs text-text-subtle sm:flex-row sm:items-center sm:justify-between">
                 <span>AIDigestDesk · {SNAPSHOT_DATE} 스냅샷</span>
-                <a
-                  href="#main-content"
-                  className="inline-flex items-center gap-1 font-semibold text-text-muted hover:text-text"
-                >
-                  맨 위로 <ChevronRight className="size-3.5 -rotate-90" aria-hidden />
-                </a>
+                <nav className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+                  <button
+                    type="button"
+                    onClick={() => navigateToRoute('about')}
+                    className="font-semibold text-text-muted transition hover:text-text"
+                  >
+                    소개·가이드
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigateToRoute('community')}
+                    className="font-semibold text-text-muted transition hover:text-text"
+                  >
+                    커뮤니티
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigateToRoute('terms')}
+                    className="font-semibold text-text-muted transition hover:text-text"
+                  >
+                    약관·정책
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigateToRoute('sitemap')}
+                    className="font-semibold text-text-muted transition hover:text-text"
+                  >
+                    사이트맵
+                  </button>
+                  <a
+                    href="#main-content"
+                    className="inline-flex items-center gap-1 font-semibold text-text-muted hover:text-text"
+                  >
+                    맨 위로 <ChevronRight className="size-3.5 -rotate-90" aria-hidden />
+                  </a>
+                </nav>
               </footer>
             </div>
           </main>

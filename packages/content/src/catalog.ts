@@ -1,3 +1,6 @@
+import { agentExtensions, getExtensionSearchText, type AgentExtension } from './extensions'
+import { llmDeals, type LlmDeal } from './promotions'
+
 export type ProviderId =
   | 'openai'
   | 'anthropic'
@@ -13,10 +16,12 @@ export type ProviderId =
 export type ContentCategory =
   | 'news'
   | 'events'
+  | 'deals'
   | 'updates'
   | 'recommendations'
   | 'vibe'
   | 'tools'
+  | 'extensions'
   | 'design'
   | 'comparison'
   | 'benchmarks'
@@ -251,6 +256,10 @@ export type LearningResource = {
   level: '입문' | '실무' | '고급'
   summary: string
   url: string
+  /** 명시 썸네일/표지 이미지(선택). 없으면 url에서 유도(유튜브) 또는 isbn으로 표지 생성. */
+  imageUrl?: string
+  /** 도서 표지 유도를 위한 ISBN(10/13, 하이픈 허용, 선택). */
+  isbn?: string
   sourceIds: string[]
   providerIds?: ProviderId[]
   tags: string[]
@@ -371,6 +380,8 @@ export type SearchResults = {
   curationMonitors: CurationMonitor[]
   pipelineItems: UpdatePipelineItem[]
   featureBacklog: FeatureBacklogItem[]
+  deals: LlmDeal[]
+  extensions: AgentExtension[]
   sources: SourceRef[]
 }
 
@@ -713,7 +724,7 @@ export const sources: SourceRef[] = [
     title: 'Anthropic Pricing',
     publisher: 'Anthropic',
     kind: 'official',
-    url: 'https://www.anthropic.com/pricing',
+    url: 'https://claude.com/pricing',
     lastChecked: SNAPSHOT_DATE,
     note: 'Claude API/플랜 가격과 프로모션성 가격 변경 여부를 확인하는 공식 가격 페이지.',
   },
@@ -740,7 +751,7 @@ export const sources: SourceRef[] = [
     title: 'Google AI Blog',
     publisher: 'Google',
     kind: 'official',
-    url: 'https://blog.google/technology/ai/',
+    url: 'https://blog.google/innovation-and-ai/technology/ai/',
     lastChecked: SNAPSHOT_DATE,
     note: 'Gemini, AI Pro, 학생/교육/제품 이벤트 소식을 확인하는 Google AI 공식 블로그.',
   },
@@ -767,7 +778,7 @@ export const sources: SourceRef[] = [
     title: 'Alibaba Model Studio Billing',
     publisher: 'Alibaba Cloud',
     kind: 'official',
-    url: 'https://help.aliyun.com/zh/model-studio/billing',
+    url: 'https://help.aliyun.com/zh/model-studio/model-pricing',
     lastChecked: SNAPSHOT_DATE,
     note: 'Qwen/Model Studio 과금, 무료 quota, 할인 이벤트 후보를 확인하는 Alibaba Cloud 문서.',
   },
@@ -785,7 +796,7 @@ export const sources: SourceRef[] = [
     title: 'Mistral Pricing',
     publisher: 'Mistral AI',
     kind: 'official',
-    url: 'https://docs.mistral.ai/getting-started/pricing/',
+    url: 'https://mistral.ai/pricing/',
     lastChecked: SNAPSHOT_DATE,
     note: 'Mistral API 가격, 무료/할인/플랜 변경 여부를 확인하는 공식 가격 문서.',
   },
@@ -1829,7 +1840,7 @@ export const sources: SourceRef[] = [
     title: 'Cursor Documentation',
     publisher: 'Cursor',
     kind: 'official',
-    url: 'https://docs.cursor.com',
+    url: 'https://cursor.com/docs',
     lastChecked: SNAPSHOT_DATE,
     note: 'Cursor AI IDE, agent, rules, MCP, model 설정, 팀 운영 문서를 확인하는 공식 문서.',
   },
@@ -1910,7 +1921,7 @@ export const sources: SourceRef[] = [
     title: 'OpenHands Documentation',
     publisher: 'All Hands AI',
     kind: 'official',
-    url: 'https://docs.all-hands.dev',
+    url: 'https://docs.openhands.dev/overview/introduction',
     lastChecked: SNAPSHOT_DATE,
     note: 'OpenHands 에이전트 개발 환경, 로컬/클라우드 실행, LLM 설정을 확인하는 공식 문서.',
   },
@@ -1937,7 +1948,7 @@ export const sources: SourceRef[] = [
     title: 'v0 Documentation',
     publisher: 'Vercel',
     kind: 'official',
-    url: 'https://v0.dev/docs',
+    url: 'https://v0.app/docs',
     lastChecked: SNAPSHOT_DATE,
     note: 'Vercel v0의 UI 생성, 프로젝트, 배포, 프롬프트 워크플로를 확인하는 공식 문서.',
   },
@@ -1946,7 +1957,7 @@ export const sources: SourceRef[] = [
     title: 'Replit Agent Documentation',
     publisher: 'Replit',
     kind: 'official',
-    url: 'https://docs.replit.com/replitai/agent',
+    url: 'https://docs.replit.com/references/agent/overview',
     lastChecked: SNAPSHOT_DATE,
     note: 'Replit Agent의 앱 생성, 계획, 실행, 배포 흐름을 확인하는 공식 문서.',
   },
@@ -2252,7 +2263,7 @@ export const sources: SourceRef[] = [
     title: 'LlamaIndex Developer Documentation',
     publisher: 'LlamaIndex',
     kind: 'official',
-    url: 'https://docs.llamaindex.ai/',
+    url: 'https://developers.llamaindex.ai/python/framework/',
     lastChecked: SNAPSHOT_DATE,
     note: 'RAG, agents, data connectors, structured extraction, evaluation, MCP 연동을 다루는 LlamaIndex 공식 문서.',
   },
@@ -2306,7 +2317,7 @@ export const sources: SourceRef[] = [
     title: 'Pydantic AI Documentation',
     publisher: 'Pydantic',
     kind: 'official',
-    url: 'https://ai.pydantic.dev/',
+    url: 'https://pydantic.dev/docs/ai/overview/',
     lastChecked: SNAPSHOT_DATE,
     note: 'type-safe Python agent framework, model/provider abstraction, tools, MCP, evals, observability를 확인하는 Pydantic AI 공식 문서.',
   },
@@ -3035,7 +3046,7 @@ export const sources: SourceRef[] = [
     title: 'Google Cloud Certification',
     publisher: 'Google Cloud',
     kind: 'official',
-    url: 'https://cloud.google.com/certification',
+    url: 'https://cloud.google.com/learn/certification',
     lastChecked: SNAPSHOT_DATE,
     note: 'Google Cloud AI/ML, 데이터 엔지니어링 자격증 항목과 준비 과정을 확인하는 공식 페이지.',
   },
@@ -3332,7 +3343,7 @@ export const sources: SourceRef[] = [
     title: 'Sparta Coding Club',
     publisher: 'Sparta Coding Club',
     kind: 'publisher',
-    url: 'https://spartacodingclub.kr',
+    url: 'https://spartaclub.kr',
     lastChecked: SNAPSHOT_DATE,
     note: '스파르타코딩클럽의 AI, 웹/앱 개발, 업무 자동화 원격 강좌 후보를 찾는 교육 허브.',
   },
@@ -9069,7 +9080,7 @@ export const learningResources: LearningResource[] = [
     level: '실무',
     summary:
       'Grok 모델 API 스펙, OpenAI 호환 엔드포인트, 가격 정책, quickstart까지 한 번에 확인하는 xAI 공식 문서 출처 묶음.',
-    url: 'https://docs.x.ai/developers/overview',
+    url: 'https://docs.x.ai/docs/overview',
     sourceIds: [
       'xai-models',
       'xai-api-overview',
@@ -9149,7 +9160,7 @@ export const learningResources: LearningResource[] = [
     language: '영어',
     level: '실무',
     summary: 'Cursor AI IDE의 agent, rules, MCP, model 설정, 팀 운영 방식을 확인하는 공식 문서.',
-    url: 'https://docs.cursor.com',
+    url: 'https://cursor.com/docs',
     sourceIds: ['cursor-docs'],
     providerIds: ['cursor', 'openai', 'anthropic', 'google'],
     tags: ['Cursor', 'AI IDE', '바이브 코딩', 'MCP'],
@@ -9931,7 +9942,7 @@ export const learningResources: LearningResource[] = [
     level: '입문',
     summary:
       'Microsoft AI Fundamentals, AI Engineer 문서와 실습형 학습 경로를 한글로 확인할 수 있는 공식 페이지 집합.',
-    url: 'https://learn.microsoft.com/ko-kr/learn/certifications/certification-aliases',
+    url: 'https://learn.microsoft.com/ko-kr/credentials/',
     sourceIds: ['ms-certifications-kr', 'ms-azure-ai-fundamentals', 'ms-azure-ai-engineer'],
     providerIds: ['google'],
     tags: ['한국어', '공식 문서', 'Microsoft', 'AI-900', 'AI-102', '학습 가이드'],
@@ -10475,7 +10486,7 @@ export const learningResources: LearningResource[] = [
     level: '실무',
     summary:
       'AI IDE, IDE 확장, CLI, PR 리뷰, 클라우드 에이전트 도구의 공식 문서를 한 번에 추적하는 리소스 묶음.',
-    url: 'https://docs.cursor.com',
+    url: 'https://cursor.com/docs',
     sourceIds: [
       'cursor-docs',
       'github-copilot-docs',
@@ -12840,8 +12851,38 @@ function collectReferencedSourceIds() {
   for (const monitor of curationMonitors) referenced.add(monitor.sourceId)
   for (const item of updatePipeline) addMany(item.sourceIds)
   for (const profile of modelCostProfiles) addMany(profile.sourceIds)
+  for (const deal of llmDeals) addMany(deal.sourceIds)
+  for (const extension of agentExtensions) addMany(extension.sourceIds)
 
   return [...referenced]
+}
+
+/** 스냅샷 기준 두 ISO 날짜(yyyy-mm-dd) 사이의 일수. 파싱 실패 시 null. */
+export function daysBetween(fromIso: string, toIso: string = SNAPSHOT_DATE): number | null {
+  const from = Date.parse(fromIso)
+  const to = Date.parse(toIso)
+  if (Number.isNaN(from) || Number.isNaN(to)) return null
+  return Math.round((to - from) / 86_400_000)
+}
+
+/** 등록/발행일이 스냅샷 기준 withinDays 이내면 true(신규 강조용). */
+export function isRecent(iso: string | undefined | null, withinDays = 21): boolean {
+  if (!iso) return false
+  const diff = daysBetween(iso, SNAPSHOT_DATE)
+  return diff !== null && diff >= 0 && diff <= withinDays
+}
+
+/** 메타데이터에서 "등록/발행/수집/검증" 중 가장 이른 날짜를 신규 판정 기준으로 고른다. */
+export function getEffectiveDate(metadata: ContentMetadata | undefined): string | undefined {
+  if (!metadata) return undefined
+  return (
+    metadata.registeredAt ??
+    metadata.publishedAt ??
+    metadata.createdAt ??
+    metadata.collectedAt ??
+    metadata.verifiedAt ??
+    metadata.lastCheckedAt
+  )
 }
 
 export function getMissingSourceReferences() {
@@ -13701,6 +13742,31 @@ export function searchCatalog(
       )
     : []
 
+  const deals = matchesAnyCategory(selectedCategory, ['deals', 'events'])
+    ? llmDeals.filter(
+        (deal) =>
+          matchesProvider(deal.provider, selectedProvider) &&
+          matchesQuery(query, [
+            deal.title,
+            deal.summary,
+            deal.providerName,
+            deal.dealType,
+            deal.audience,
+            deal.region,
+            deal.discountLabel,
+            deal.eligibility,
+            deal.howToClaim,
+            deal.koreanNote ?? '',
+            ...deal.tags,
+            getSourceMetadataSearchText(deal.sourceIds),
+          ])
+      )
+    : []
+
+  const extensions = matchesAnyCategory(selectedCategory, ['extensions', 'tools', 'vibe'])
+    ? agentExtensions.filter((extension) => matchesQuery(query, [getExtensionSearchText(extension)]))
+    : []
+
   const matchedSourceIds = new Set<string>()
   for (const item of [
     ...models,
@@ -13714,6 +13780,7 @@ export function searchCatalog(
     ...filteredPersonaGuides,
     ...resources,
     ...filteredPipelineItems,
+    ...deals,
   ]) {
     for (const sourceId of item.sourceIds) matchedSourceIds.add(sourceId)
   }
@@ -13746,6 +13813,8 @@ export function searchCatalog(
     curationMonitors: filteredCurationMonitors,
     pipelineItems: filteredPipelineItems,
     featureBacklog: filteredFeatureBacklog,
+    deals,
+    extensions,
     sources: matchedSources,
   }
 }
@@ -13767,6 +13836,8 @@ export function getCatalogStats() {
     pipelineItems: updatePipeline.length,
     backlogItems: featureBacklog.length,
     costProfiles: modelCostProfiles.length,
+    deals: llmDeals.length,
+    extensions: agentExtensions.length,
     auditChecks: audit.checks.length,
     auditPassed: audit.passed,
   }

@@ -21,15 +21,22 @@ import {
   LogOut,
   ShieldCheck,
   Search,
+  Trash2,
+  Users,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import type { AdminSession } from "@/components/app/adminSession";
 import type { FormEvent } from "react";
 
-import { MetricCard } from "@/components/app/CommonUi";
+import { Chip, MetricCard, SectionHeader } from "@/components/app/CommonUi";
 import { EditorialOpsSection } from "@/components/app/EditorialOpsSection";
 import { ExportDeskSection } from "@/components/app/ExportDeskSection";
+import {
+  getMemberCount,
+  listMembers,
+  removeMember,
+} from "@/components/app/memberAuth";
 import { SourcesSection } from "@/components/app/SourcesSection";
 
 const stats = getCatalogStats();
@@ -203,6 +210,101 @@ function AdminLogin({
         </form>
       </div>
     </main>
+  );
+}
+
+function MemberManagementSection() {
+  const [refreshToken, setRefreshToken] = useState(0);
+  const [memberQuery, setMemberQuery] = useState("");
+  const members = useMemo(() => {
+    void refreshToken;
+    return listMembers();
+  }, [refreshToken]);
+  const total = useMemo(() => {
+    void refreshToken;
+    return getMemberCount();
+  }, [refreshToken]);
+
+  const terms = getSearchTerms(memberQuery);
+  const visible = members.filter((member) =>
+    matchSearchTerms(
+      `${member.email} ${member.displayName} ${member.role}`.toLocaleLowerCase("ko-KR"),
+      terms,
+    ),
+  );
+
+  return (
+    <section className="space-y-4">
+      <SectionHeader
+        icon={Users}
+        title="회원 관리"
+        description="회원가입(데모) 계정 목록입니다. 계정은 각 브라우저의 localStorage에만 저장되므로, 여기 표시되는 회원은 현재 브라우저에 가입된 계정입니다."
+        badge={<Chip tone="blue">{total}명</Chip>}
+      />
+      <div className="rounded-lg border border-border bg-surface p-4">
+        <label className="block max-w-sm">
+          <span className="text-xs font-semibold text-text-subtle">회원 검색</span>
+          <input
+            value={memberQuery}
+            onChange={(event) => setMemberQuery(event.target.value)}
+            placeholder="이메일, 닉네임, 권한"
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+          />
+        </label>
+        {visible.length ? (
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[40rem] text-left text-sm">
+              <thead>
+                <tr className="border-b border-border text-xs font-semibold text-text-subtle">
+                  <th className="px-2 py-2">닉네임</th>
+                  <th className="px-2 py-2">이메일</th>
+                  <th className="px-2 py-2">권한</th>
+                  <th className="px-2 py-2">가입일</th>
+                  <th className="px-2 py-2 text-right">관리</th>
+                </tr>
+              </thead>
+              <tbody>
+                {visible.map((member) => (
+                  <tr key={member.id} className="border-b border-border/60">
+                    <td className="px-2 py-2 font-semibold text-text">{member.displayName}</td>
+                    <td className="px-2 py-2 text-text-muted">{member.email}</td>
+                    <td className="px-2 py-2">
+                      {member.role === "admin" ? (
+                        <Chip tone="accent">관리자</Chip>
+                      ) : (
+                        <Chip tone="neutral">회원</Chip>
+                      )}
+                    </td>
+                    <td className="px-2 py-2 text-text-subtle">
+                      {new Date(member.createdAt).toLocaleDateString("ko-KR")}
+                    </td>
+                    <td className="px-2 py-2 text-right">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          removeMember(member.id);
+                          setRefreshToken((token) => token + 1);
+                        }}
+                        className="inline-flex items-center gap-1 rounded-md border border-accent-4/40 bg-accent-4/10 px-2 py-1 text-xs font-semibold text-accent-4 transition hover:bg-accent-4/20"
+                      >
+                        <Trash2 className="size-3.5" aria-hidden />
+                        삭제
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="mt-4 rounded-md border border-dashed border-border-strong bg-bg p-4 text-sm text-text-muted">
+            {total === 0
+              ? "아직 가입한 회원이 없습니다. /account 에서 회원가입을 테스트할 수 있습니다."
+              : "검색 조건에 맞는 회원이 없습니다."}
+          </p>
+        )}
+      </div>
+    </section>
   );
 }
 
@@ -438,7 +540,7 @@ function AdminConsole({
                 {contentAudit.passed ? "PASS" : "CHECK"}
               </span>
             </div>
-            <div className="mt-3 grid gap-2 rounded-md border border-border bg-surface/70 p-3 sm:grid-cols-2 lg:grid-cols-5">
+            <div className="mt-3 grid gap-2 rounded-md bg-bg p-3 sm:grid-cols-2 lg:grid-cols-5">
               <label className="lg:col-span-2">
                 <span className="text-xs font-semibold text-text-subtle">
                   검색
@@ -535,7 +637,7 @@ function AdminConsole({
                 {filteredSnapshotCandidates.length}개
               </span>
             </div>
-            <div className="mt-3 grid gap-2 rounded-md border border-border bg-surface/70 p-3 md:grid-cols-2">
+            <div className="mt-3 grid gap-2 rounded-md bg-bg p-3 md:grid-cols-2">
               <label className="lg:col-span-2">
                 <span className="text-xs font-semibold text-text-subtle">검색</span>
                 <span className="relative mt-2 block">
@@ -651,6 +753,7 @@ function AdminConsole({
           </article>
         </section>
 
+        <MemberManagementSection />
         <EditorialOpsSection
           monitors={curationMonitors}
           pipelineItems={updatePipeline}

@@ -1,20 +1,39 @@
 import {
   getContentMetadataSearchText,
+  getDomainFromUrl,
+  getEffectiveDate,
   getLearningResourceMetadata,
   getSearchTerms,
   getSources,
+  isRecent,
   providerCatalog,
+  resolveResourceImage,
   type LearningResource,
   type ProviderId,
 } from '@aidigestdesk/content'
-import { ExternalLink, Library, Search } from 'lucide-react'
+import {
+  BookOpen,
+  ExternalLink,
+  FileText,
+  Library,
+  MessagesSquare,
+  PenLine,
+  PlayCircle,
+  Search,
+} from 'lucide-react'
 import { useDeferredValue, useMemo, useState } from 'react'
 
+import type { ComponentType } from 'react'
+
 import {
+  BrandMark,
   MetadataChips,
   MultiSegmentBar,
+  NewBadge,
   SectionHeader,
   SegmentBar,
+  SortSelect,
+  Thumbnail,
 } from '@/components/app/CommonUi'
 import {
   sourceKindFilters,
@@ -29,6 +48,7 @@ type ResourceLevelFilter = LearningResource['level'] | 'all'
 type ResourceProviderFilter = ProviderId | 'all'
 type ResourceSortMode = 'language' | 'type' | 'title' | 'level' | 'provider' | 'lastChecked'
 type ResourceSortDirection = 'asc' | 'desc'
+type ResourceSortValue = `${ResourceSortMode}-${ResourceSortDirection}`
 type ResourceAccessFilter =
   | 'all'
   | 'free'
@@ -65,6 +85,26 @@ type ActiveSourceKindFilter = Exclude<SourceKindFilter, 'all'>
 
 function hasAnyTag(resource: LearningResource, tags: string[]) {
   return tags.some((tag) => resource.tags.includes(tag))
+}
+
+type ThumbnailRatio = 'video' | 'cover' | 'square'
+
+const resourceTypeIcons: Record<
+  LearningResource['type'],
+  ComponentType<{ className?: string; 'aria-hidden'?: boolean }>
+> = {
+  '공식 문서': FileText,
+  '강좌/영상': PlayCircle,
+  '블로그/글': PenLine,
+  도서: BookOpen,
+  커뮤니티: MessagesSquare,
+}
+
+/** resolveResourceImage가 null일 때 카드 썸네일 비율을 자료형으로 결정한다. */
+function getFallbackThumbnailRatio(type: LearningResource['type']): ThumbnailRatio {
+  if (type === '강좌/영상') return 'video'
+  if (type === '도서') return 'cover'
+  return 'square'
 }
 
 function getResourceSearchableText(resource: LearningResource) {
@@ -351,20 +391,19 @@ export function ResourceLibrary({ resources }: { resources: LearningResource[] }
     { id: 'hackathons', label: '해커톤/대회' },
     { id: 'openSource', label: '오픈소스/로컬' },
   ]
-  const sortFilters: Array<{ id: ResourceSortMode; label: string }> = [
-    { id: 'language', label: '언어' },
-    { id: 'type', label: '자료형' },
-    { id: 'title', label: '제목' },
-    { id: 'level', label: '난이도' },
-    { id: 'provider', label: '제공사' },
-    { id: 'lastChecked', label: '최근 확인일' },
-  ]
-  const sortDirectionFilters: Array<{
-    id: ResourceSortDirection
-    label: string
-  }> = [
-    { id: 'asc', label: '오름차순' },
-    { id: 'desc', label: '내림차순' },
+  const sortOptions: Array<{ value: ResourceSortValue; label: string }> = [
+    { value: 'language-asc', label: '언어순(한국어 먼저)' },
+    { value: 'language-desc', label: '언어순(영어 먼저)' },
+    { value: 'type-asc', label: '자료형 A→Z' },
+    { value: 'type-desc', label: '자료형 Z→A' },
+    { value: 'title-asc', label: '제목 A→Z' },
+    { value: 'title-desc', label: '제목 Z→A' },
+    { value: 'level-asc', label: '난이도 입문→고급' },
+    { value: 'level-desc', label: '난이도 고급→입문' },
+    { value: 'provider-asc', label: '제공사 A→Z' },
+    { value: 'provider-desc', label: '제공사 Z→A' },
+    { value: 'lastChecked-desc', label: '최근 확인일 최신순' },
+    { value: 'lastChecked-asc', label: '최근 확인일 오래된순' },
   ]
   const getLatestSourceCheckDate = (resource: LearningResource) => {
     return getSources(resource.sourceIds)
@@ -549,12 +588,15 @@ export function ResourceLibrary({ resources }: { resources: LearningResource[] }
           onChange={setResourceTypes}
         />
         <MultiSegmentBar label="난이도" items={levelFilters} value={levels} onChange={setLevels} />
-        <SegmentBar label="정렬" items={sortFilters} value={sortMode} onChange={setSortMode} />
-        <SegmentBar
-          label="정렬 방향"
-          items={sortDirectionFilters}
-          value={sortDirection}
-          onChange={setSortDirection}
+        <SortSelect
+          label="정렬"
+          value={`${sortMode}-${sortDirection}` satisfies ResourceSortValue}
+          onChange={(next) => {
+            const splitAt = next.lastIndexOf('-')
+            setSortMode(next.slice(0, splitAt) as ResourceSortMode)
+            setSortDirection(next.slice(splitAt + 1) as ResourceSortDirection)
+          }}
+          options={sortOptions}
         />
         <MultiSegmentBar
           label="출처 성격"
@@ -650,6 +692,12 @@ function ResourceColumn({ title, resources }: { title: string; resources: Learni
             const lastChecked = resourceSources
               .map((source) => source.lastChecked)
               .toSorted((a, b) => b.localeCompare(a))[0]
+            const resolvedImage = resolveResourceImage(resource)
+            const thumbnailRatio = resolvedImage?.ratio ?? getFallbackThumbnailRatio(resource.type)
+            const TypeIcon = resourceTypeIcons[resource.type]
+            const isNew = isRecent(getEffectiveDate(metadata))
+            const firstProviderId = resource.providerIds?.[0]
+            const resourceDomain = getDomainFromUrl(resource.url)
 
             return (
               <a
@@ -659,11 +707,28 @@ function ResourceColumn({ title, resources }: { title: string; resources: Learni
                 rel="noreferrer"
                 className="block rounded-md border border-border bg-bg p-3 transition hover:border-border-strong"
               >
-                <span className="flex items-start justify-between gap-3">
-                  <span>
-                    <span className="block text-sm font-semibold text-text">{resource.title}</span>
-                    <span className="mt-1 block text-xs text-text-subtle">
-                      {resource.author} · {resource.language} · {resource.level}
+                <Thumbnail
+                  src={resolvedImage?.src ?? undefined}
+                  alt={resource.title}
+                  ratio={thumbnailRatio}
+                  icon={TypeIcon}
+                  caption={resource.type}
+                />
+                <span className="mt-3 flex items-start justify-between gap-3">
+                  <span className="min-w-0">
+                    <span className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-sm font-semibold text-text">{resource.title}</span>
+                      {isNew ? <NewBadge /> : null}
+                    </span>
+                    <span className="mt-1 flex items-center gap-1.5 text-xs text-text-subtle">
+                      {firstProviderId ? (
+                        <BrandMark providerId={firstProviderId} label={resource.author} size="sm" />
+                      ) : resourceDomain ? (
+                        <BrandMark domain={resourceDomain} label={resource.author} size="sm" />
+                      ) : null}
+                      <span className="min-w-0 truncate">
+                        {resource.author} · {resource.language} · {resource.level}
+                      </span>
                     </span>
                   </span>
                   <ExternalLink className="size-3.5 shrink-0 text-text-subtle" aria-hidden />

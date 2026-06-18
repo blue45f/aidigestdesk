@@ -4,9 +4,12 @@ import { gzipSync } from "node:zlib";
 
 const distAssetsDir = new URL("../dist/assets/", import.meta.url);
 
+// content-catalog 청크는 순수 데이터(모델·벤치마크·할인·도구 확장 등)라 항목이
+// 늘면 raw 크기가 커진다. 실제 전송 비용인 gzip 기준을 1차 가드로 삼고, raw는
+// 런어웨이 방지용 상한으로 둔다. (데이터 추가로 2026-06 상향 조정)
 const budgets = {
-  maxJavaScriptBytes: 450 * 1024,
-  maxJavaScriptGzipBytes: 130 * 1024,
+  maxJavaScriptBytes: 520 * 1024,
+  maxJavaScriptGzipBytes: 140 * 1024,
   maxCssBytes: 80 * 1024,
 };
 

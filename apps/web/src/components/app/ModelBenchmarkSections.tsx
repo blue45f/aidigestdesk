@@ -22,7 +22,7 @@ import {
   MetadataChips,
   MultiSegmentBar,
   SectionHeader,
-  SegmentBar,
+  SortSelect,
   TextList,
 } from '@/components/app/CommonUi'
 import {
@@ -138,19 +138,21 @@ export function ModelCards({
   const [modelLimit, setModelLimit] = useState<ListLimit>(0)
   const modelQueryTerms = useMemo(() => getSearchTerms(modelQuery), [modelQuery])
 
-  const modelSortDirectionFilters: Array<{
-    id: ModelCardSortDirection
+  const cardSortValue = `${cardSortMode}-${cardSortDirection}` as const
+  const cardSortOptions: Array<{
+    value: `${ModelCardSortMode}-${ModelCardSortDirection}`
     label: string
   }> = [
-    { id: 'asc', label: '오름차순' },
-    { id: 'desc', label: '내림차순' },
-  ]
-  const modelSortFilters: Array<{ id: ModelCardSortMode; label: string }> = [
-    { id: 'model', label: '모델명' },
-    { id: 'provider', label: '제공사' },
-    { id: 'status', label: '상태' },
-    { id: 'lastUpdate', label: '최근 업데이트' },
-    { id: 'verified', label: '확인일' },
+    { value: 'model-asc', label: '모델명 A→Z' },
+    { value: 'model-desc', label: '모델명 Z→A' },
+    { value: 'provider-asc', label: '제공사 오름차순' },
+    { value: 'provider-desc', label: '제공사 내림차순' },
+    { value: 'status-asc', label: '상태 오름차순' },
+    { value: 'status-desc', label: '상태 내림차순' },
+    { value: 'lastUpdate-desc', label: '최근 업데이트순' },
+    { value: 'lastUpdate-asc', label: '오래된순' },
+    { value: 'verified-desc', label: '확인일 최신순' },
+    { value: 'verified-asc', label: '확인일 오래된순' },
   ]
   const providerOptions = useMemo<Array<{ id: ModelCardProviderFilter; label: string }>>(() => {
     const options = Array.from(new Set(models.map((model) => model.providerId))).toSorted((a, b) =>
@@ -246,7 +248,7 @@ export function ModelCards({
         title="현재 주요 모델"
         description="상용 LLM과 에이전트 서비스를 같은 표면에서 보되, Manus는 모델보다 태스크 플랫폼으로 분리했습니다."
       />
-      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1fr_1fr_1.2fr_1.2fr_1fr]">
+      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1fr_1fr_1.4fr_1fr]">
         <label className="block xl:col-span-2">
           <span className="text-xs font-semibold text-text-subtle">모델 검색</span>
           <input
@@ -272,17 +274,15 @@ export function ModelCards({
             onChange={setStatusFilters}
           />
         </div>
-        <SegmentBar
+        <SortSelect
           label="정렬"
-          items={modelSortFilters}
-          value={cardSortMode}
-          onChange={setCardSortMode}
-        />
-        <SegmentBar
-          label="정렬 방향"
-          items={modelSortDirectionFilters}
-          value={cardSortDirection}
-          onChange={setCardSortDirection}
+          value={cardSortValue}
+          onChange={(next) => {
+            const splitAt = next.lastIndexOf('-')
+            setCardSortMode(next.slice(0, splitAt) as ModelCardSortMode)
+            setCardSortDirection(next.slice(splitAt + 1) as ModelCardSortDirection)
+          }}
+          options={cardSortOptions}
         />
         <label className="block">
           <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
@@ -632,23 +632,29 @@ export function BenchmarkBoard() {
     })),
     { id: 'other', label: '기타' },
   ]
-  const sortFilters: Array<{ id: BenchmarkSortMode; label: string }> = [
-    { id: 'rank', label: '순위' },
-    { id: 'model', label: '모델' },
-    { id: 'provider', label: '제공사' },
-    { id: 'domain', label: '분야' },
-    { id: 'score', label: '점수' },
-    { id: 'price', label: '가격' },
-    { id: 'speed', label: '속도' },
-    { id: 'latency', label: 'Latency' },
-    { id: 'lastChecked', label: '최근 확인일' },
-  ]
-  const sortDirectionFilters: Array<{
-    id: BenchmarkSortDirection
+  const sortValue = `${sortMode}-${sortDirection}` as const
+  const sortOptions: Array<{
+    value: `${BenchmarkSortMode}-${BenchmarkSortDirection}`
     label: string
   }> = [
-    { id: 'asc', label: '오름차순' },
-    { id: 'desc', label: '내림차순' },
+    { value: 'score-desc', label: '점수 높은순' },
+    { value: 'score-asc', label: '점수 낮은순' },
+    { value: 'rank-asc', label: '순위 오름차순' },
+    { value: 'rank-desc', label: '순위 내림차순' },
+    { value: 'model-asc', label: '모델 A→Z' },
+    { value: 'model-desc', label: '모델 Z→A' },
+    { value: 'provider-asc', label: '제공사 오름차순' },
+    { value: 'provider-desc', label: '제공사 내림차순' },
+    { value: 'domain-asc', label: '분야 오름차순' },
+    { value: 'domain-desc', label: '분야 내림차순' },
+    { value: 'price-asc', label: '가격 낮은순' },
+    { value: 'price-desc', label: '가격 높은순' },
+    { value: 'speed-desc', label: '속도 빠른순' },
+    { value: 'speed-asc', label: '속도 느린순' },
+    { value: 'latency-asc', label: 'Latency 낮은순' },
+    { value: 'latency-desc', label: 'Latency 높은순' },
+    { value: 'lastChecked-desc', label: '최근 확인일순' },
+    { value: 'lastChecked-asc', label: '오래된 확인일순' },
   ]
   const visibleEntries = useMemo(
     () =>
@@ -811,12 +817,15 @@ export function BenchmarkBoard() {
           value={sourceKinds}
           onChange={setSourceKinds}
         />
-        <SegmentBar label="정렬" items={sortFilters} value={sortMode} onChange={setSortMode} />
-        <SegmentBar
-          label="정렬 방향"
-          items={sortDirectionFilters}
-          value={sortDirection}
-          onChange={setSortDirection}
+        <SortSelect
+          label="정렬"
+          value={sortValue}
+          onChange={(next) => {
+            const splitAt = next.lastIndexOf('-')
+            setSortMode(next.slice(0, splitAt) as BenchmarkSortMode)
+            setSortDirection(next.slice(splitAt + 1) as BenchmarkSortDirection)
+          }}
+          options={sortOptions}
         />
         <MultiSegmentBar
           label="제공사"
@@ -973,20 +982,17 @@ export function ComparisonMatrix() {
   const [matrixSortDirection, setMatrixSortDirection] =
     useState<ComparisonMatrixSortDirection>('asc')
   const [matrixLimit, setMatrixLimit] = useState<ListLimit>(0)
-  const matrixSortFilters: Array<{
-    id: ComparisonMatrixSortMode
+  const matrixSortValue = `${matrixSortMode}-${matrixSortDirection}` as const
+  const matrixSortOptions: Array<{
+    value: `${ComparisonMatrixSortMode}-${ComparisonMatrixSortDirection}`
     label: string
   }> = [
-    { id: 'axis', label: '축명' },
-    { id: 'filled', label: '채워진 항목' },
-    { id: 'coverage', label: '내용 길이' },
-  ]
-  const matrixSortDirectionFilters: Array<{
-    id: ComparisonMatrixSortDirection
-    label: string
-  }> = [
-    { id: 'asc', label: '오름차순' },
-    { id: 'desc', label: '내림차순' },
+    { value: 'axis-asc', label: '축명 오름차순' },
+    { value: 'axis-desc', label: '축명 내림차순' },
+    { value: 'filled-asc', label: '채워진 항목 오름차순' },
+    { value: 'filled-desc', label: '채워진 항목 내림차순' },
+    { value: 'coverage-asc', label: '내용 길이 오름차순' },
+    { value: 'coverage-desc', label: '내용 길이 내림차순' },
   ]
   const visibleComparisonRows = useMemo(() => {
     const normalizedQuery = rowQuery.trim().toLocaleLowerCase('ko-KR')
@@ -1023,7 +1029,7 @@ export function ComparisonMatrix() {
         title="기능 비교"
         description="최신 모델 스펙과 제품 성격이 다른 항목은 같은 축에 놓되 해석 기준을 분리했습니다."
       />
-      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1.2fr_1fr_1fr_0.8fr]">
+      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1.6fr_1.2fr_0.8fr]">
         <label className="block xl:col-span-2">
           <span className="text-xs font-semibold text-text-subtle">축 검색</span>
           <input
@@ -1033,17 +1039,15 @@ export function ComparisonMatrix() {
             className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 py-2 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
           />
         </label>
-        <SegmentBar
+        <SortSelect
           label="행 정렬"
-          items={matrixSortFilters}
-          value={matrixSortMode}
-          onChange={setMatrixSortMode}
-        />
-        <SegmentBar
-          label="정렬 방향"
-          items={matrixSortDirectionFilters}
-          value={matrixSortDirection}
-          onChange={setMatrixSortDirection}
+          value={matrixSortValue}
+          onChange={(next) => {
+            const splitAt = next.lastIndexOf('-')
+            setMatrixSortMode(next.slice(0, splitAt) as ComparisonMatrixSortMode)
+            setMatrixSortDirection(next.slice(splitAt + 1) as ComparisonMatrixSortDirection)
+          }}
+          options={matrixSortOptions}
         />
         <label className="block">
           <span className="text-xs font-semibold text-text-subtle">표시 개수</span>

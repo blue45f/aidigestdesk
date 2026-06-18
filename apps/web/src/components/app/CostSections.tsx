@@ -2,7 +2,7 @@ import { calculateModelCosts, getProviderLabel } from "@aidigestdesk/content";
 import { Calculator } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { SectionHeader, SegmentBar } from "@/components/app/CommonUi";
+import { SectionHeader, SortSelect } from "@/components/app/CommonUi";
 
 type ModelCostSortMode =
   | "model"
@@ -29,23 +29,27 @@ export function ModelCostCalculator() {
   const [costEstimateLimit, setCostEstimateLimit] =
     useState<CostEstimateListLimit>(0);
   const cheapest = estimates[0];
-  const costSortModeFilters: Array<{
-    id: ModelCostSortMode;
+  const costSortValue = `${costSortMode}-${costSortDirection}`;
+  const costSortOptions: Array<{
+    value: string;
     label: string;
   }> = [
-    { id: "model", label: "모델" },
-    { id: "provider", label: "제공사" },
-    { id: "input", label: "입력" },
-    { id: "output", label: "출력" },
-    { id: "total", label: "월 합계" },
+    { value: "total-asc", label: "월 합계 낮은순" },
+    { value: "total-desc", label: "월 합계 높은순" },
+    { value: "input-asc", label: "입력 비용 낮은순" },
+    { value: "input-desc", label: "입력 비용 높은순" },
+    { value: "output-asc", label: "출력 비용 낮은순" },
+    { value: "output-desc", label: "출력 비용 높은순" },
+    { value: "model-asc", label: "모델 A→Z" },
+    { value: "model-desc", label: "모델 Z→A" },
+    { value: "provider-asc", label: "제공사 A→Z" },
+    { value: "provider-desc", label: "제공사 Z→A" },
   ];
-  const costSortDirectionFilters: Array<{
-    id: ModelCostSortDirection;
-    label: string;
-  }> = [
-    { id: "asc", label: "오름차순" },
-    { id: "desc", label: "내림차순" },
-  ];
+  const handleCostSortChange = (next: string) => {
+    const splitAt = next.lastIndexOf("-");
+    setCostSortMode(next.slice(0, splitAt) as ModelCostSortMode);
+    setCostSortDirection(next.slice(splitAt + 1) as ModelCostSortDirection);
+  };
   const sortedEstimates = useMemo(() => {
     const direction = costSortDirection === "asc" ? 1 : -1;
     return estimates.toSorted((left, right) => {
@@ -122,18 +126,11 @@ export function ModelCostCalculator() {
         </article>
 
         <article className="overflow-hidden rounded-lg border border-border bg-surface">
-          <div className="grid gap-2 border-b border-border px-4 py-3 md:grid-cols-4">
-            <SegmentBar
-              label="정렬"
-              items={costSortModeFilters}
-              value={costSortMode}
-              onChange={setCostSortMode}
-            />
-            <SegmentBar
-              label="정렬 방향"
-              items={costSortDirectionFilters}
-              value={costSortDirection}
-              onChange={setCostSortDirection}
+          <div className="grid gap-2 border-b border-border px-4 py-3 md:grid-cols-3">
+            <SortSelect
+              value={costSortValue}
+              onChange={handleCostSortChange}
+              options={costSortOptions}
             />
             <label className="block">
               <span className="text-xs font-semibold text-text-subtle">
@@ -242,22 +239,25 @@ export function EventCostComparisonSection() {
     useState<EventCostSortDirection>("desc");
   const [eventEstimateLimit, setEventEstimateLimit] =
     useState<EventEstimateListLimit>(0);
-  const eventSortModeFilters: Array<{
-    id: EventCostSortMode;
+  const eventSortValue = `${eventSortMode}-${eventSortDirection}`;
+  const eventSortOptions: Array<{
+    value: string;
     label: string;
   }> = [
-    { id: "model", label: "모델" },
-    { id: "normal", label: "일반" },
-    { id: "event", label: "이벤트" },
-    { id: "saved", label: "절감" },
+    { value: "saved-desc", label: "절감 큰순" },
+    { value: "saved-asc", label: "절감 작은순" },
+    { value: "normal-asc", label: "일반 비용 낮은순" },
+    { value: "normal-desc", label: "일반 비용 높은순" },
+    { value: "event-asc", label: "이벤트 비용 낮은순" },
+    { value: "event-desc", label: "이벤트 비용 높은순" },
+    { value: "model-asc", label: "모델 A→Z" },
+    { value: "model-desc", label: "모델 Z→A" },
   ];
-  const eventSortDirectionFilters: Array<{
-    id: EventCostSortDirection;
-    label: string;
-  }> = [
-    { id: "asc", label: "오름차순" },
-    { id: "desc", label: "내림차순" },
-  ];
+  const handleEventSortChange = (next: string) => {
+    const splitAt = next.lastIndexOf("-");
+    setEventSortMode(next.slice(0, splitAt) as EventCostSortMode);
+    setEventSortDirection(next.slice(splitAt + 1) as EventCostSortDirection);
+  };
   const scenario =
     eventCostScenarios.find((item) => item.id === scenarioId) ??
     eventCostScenarios[0];
@@ -356,18 +356,11 @@ export function EventCostComparisonSection() {
         </article>
 
         <article className="overflow-hidden rounded-lg border border-border bg-surface">
-        <div className="grid gap-2 border-b border-border px-4 py-3 md:grid-cols-3">
-          <SegmentBar
-            label="정렬"
-            items={eventSortModeFilters}
-            value={eventSortMode}
-            onChange={setEventSortMode}
-            />
-            <SegmentBar
-              label="정렬 방향"
-            items={eventSortDirectionFilters}
-            value={eventSortDirection}
-            onChange={setEventSortDirection}
+        <div className="grid gap-2 border-b border-border px-4 py-3 md:grid-cols-2">
+          <SortSelect
+            value={eventSortValue}
+            onChange={handleEventSortChange}
+            options={eventSortOptions}
           />
           <label className="block">
             <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
