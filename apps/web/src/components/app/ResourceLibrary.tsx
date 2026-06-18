@@ -19,6 +19,17 @@ type ResourceLanguageFilter = LearningResource["language"] | "all";
 type ResourceTypeFilter = LearningResource["type"] | "all";
 type ResourceLevelFilter = LearningResource["level"] | "all";
 type ResourceProviderFilter = ProviderId | "all";
+type ResourceAccessFilter =
+  | "all"
+  | "free"
+  | "paid"
+  | "subscription"
+  | "publicFunded"
+  | "remote"
+  | "bootcamp"
+  | "events"
+  | "hackathons"
+  | "openSource";
 type ResourceFocusFilter =
   | "all"
   | "modelChannels"
@@ -41,12 +52,8 @@ function hasAnyTag(resource: LearningResource, tags: string[]) {
   return tags.some((tag) => resource.tags.includes(tag));
 }
 
-function matchesResourceFocus(
-  resource: LearningResource,
-  focus: ResourceFocusFilter,
-) {
-  const tagSet = new Set(resource.tags);
-  const searchable = [
+function getResourceSearchableText(resource: LearningResource) {
+  return [
     resource.id,
     resource.title,
     resource.author,
@@ -55,6 +62,14 @@ function matchesResourceFocus(
   ]
     .join(" ")
     .toLocaleLowerCase("ko-KR");
+}
+
+function matchesResourceFocus(
+  resource: LearningResource,
+  focus: ResourceFocusFilter,
+) {
+  const tagSet = new Set(resource.tags);
+  const searchable = getResourceSearchableText(resource);
 
   switch (focus) {
     case "modelChannels":
@@ -167,6 +182,83 @@ function matchesResourceFocus(
   }
 }
 
+function matchesResourceAccess(
+  resource: LearningResource,
+  access: ResourceAccessFilter,
+) {
+  const searchable = getResourceSearchableText(resource);
+
+  switch (access) {
+    case "free":
+      return (
+        searchable.includes("무료") ||
+        searchable.includes("공개강좌") ||
+        searchable.includes("공공 교육") ||
+        searchable.includes("free")
+      );
+    case "paid":
+      return (
+        searchable.includes("유료") ||
+        searchable.includes("가격") ||
+        searchable.includes("pricing") ||
+        searchable.includes("플랜") ||
+        searchable.includes("크레딧") ||
+        searchable.includes("credit")
+      );
+    case "subscription":
+      return (
+        searchable.includes("구독") ||
+        searchable.includes("subscription") ||
+        searchable.includes("class101") ||
+        searchable.includes("데이스쿨")
+      );
+    case "publicFunded":
+      return (
+        searchable.includes("국비지원") ||
+        searchable.includes("k-디지털") ||
+        searchable.includes("내일배움카드") ||
+        searchable.includes("공공 교육")
+      );
+    case "remote":
+      return (
+        searchable.includes("원격 교육") ||
+        searchable.includes("온라인") ||
+        searchable.includes("remote")
+      );
+    case "bootcamp":
+      return (
+        searchable.includes("부트캠프") ||
+        searchable.includes("모집 상태") ||
+        searchable.includes("데브코스") ||
+        searchable.includes("캠퍼스")
+      );
+    case "events":
+      return (
+        searchable.includes("이벤트") ||
+        searchable.includes("웨비나") ||
+        searchable.includes("학생 혜택") ||
+        searchable.includes("무료 체험")
+      );
+    case "hackathons":
+      return (
+        searchable.includes("해커톤") ||
+        searchable.includes("경진대회") ||
+        searchable.includes("dacon") ||
+        searchable.includes("데이콘") ||
+        searchable.includes("daker")
+      );
+    case "openSource":
+      return (
+        searchable.includes("오픈소스") ||
+        searchable.includes("오픈웨이트") ||
+        searchable.includes("로컬 모델") ||
+        searchable.includes("자체배포")
+      );
+    default:
+      return true;
+  }
+}
+
 export function ResourceLibrary({
   resources,
 }: {
@@ -178,6 +270,7 @@ export function ResourceLibrary({
   const [resourceProvider, setResourceProvider] =
     useState<ResourceProviderFilter>("all");
   const [focus, setFocus] = useState<ResourceFocusFilter>("all");
+  const [access, setAccess] = useState<ResourceAccessFilter>("all");
   const [sourceKind, setSourceKind] = useState<SourceKindFilter>("all");
   const [tag, setTag] = useState("all");
   const [resourceQuery, setResourceQuery] = useState("");
@@ -234,6 +327,18 @@ export function ResourceLibrary({
     { id: "officialKo", label: "한국어 공식" },
     { id: "codingTools", label: "AI 코딩 도구" },
   ];
+  const accessFilters: Array<{ id: ResourceAccessFilter; label: string }> = [
+    { id: "all", label: "전체" },
+    { id: "free", label: "무료/공개" },
+    { id: "paid", label: "유료/가격" },
+    { id: "subscription", label: "구독형" },
+    { id: "publicFunded", label: "국비/공공" },
+    { id: "remote", label: "온라인/원격" },
+    { id: "bootcamp", label: "모집/부트캠프" },
+    { id: "events", label: "혜택/이벤트" },
+    { id: "hackathons", label: "해커톤/대회" },
+    { id: "openSource", label: "오픈소스/로컬" },
+  ];
   const tagFilters = useMemo(() => {
     const tags = new Set<string>();
     for (const resource of resources) {
@@ -252,6 +357,7 @@ export function ResourceLibrary({
             (resourceProvider === "all" ||
               resource.providerIds?.includes(resourceProvider)) &&
             matchesResourceFocus(resource, focus) &&
+            matchesResourceAccess(resource, access) &&
             (sourceKind === "all" ||
               getSources(resource.sourceIds).some(
                 (source) => source.kind === sourceKind,
@@ -284,6 +390,7 @@ export function ResourceLibrary({
           a.language === b.language ? 0 : a.language === "한국어" ? -1 : 1,
         ),
     [
+      access,
       focus,
       language,
       level,
@@ -415,6 +522,24 @@ export function ResourceLibrary({
             ))}
           </select>
         </label>
+        <label className="block">
+          <span className="text-xs font-semibold text-text-subtle">
+            접근/비용
+          </span>
+          <select
+            value={access}
+            onChange={(event) =>
+              setAccess(event.target.value as ResourceAccessFilter)
+            }
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+          >
+            {accessFilters.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.label}
+              </option>
+            ))}
+          </select>
+        </label>
         <label className="block xl:col-span-2">
           <span className="text-xs font-semibold text-text-subtle">
             세부 태그
@@ -449,6 +574,7 @@ export function ResourceLibrary({
                 setLevel("all");
                 setResourceProvider("all");
                 setFocus("all");
+                setAccess("all");
                 setSourceKind("all");
                 setTag("all");
                 setResourceQuery("");

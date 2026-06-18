@@ -213,6 +213,34 @@ describe('catalog search', () => {
       )
     ).toBe(true)
 
+    const codepressoResults = searchCatalog('코드프레소', 'all', 'learning')
+    expect(
+      codepressoResults.resources.some(
+        (resource) => resource.id === 'res-korean-course-marketplace-matrix'
+      )
+    ).toBe(true)
+
+    const daconResults = searchCatalog('데이콘', 'all', 'learning')
+    expect(
+      daconResults.resources.some(
+        (resource) => resource.id === 'res-korean-ai-competition-hackathon-learning'
+      )
+    ).toBe(true)
+
+    const kakaoCampusResults = searchCatalog('카카오테크캠퍼스', 'all', 'learning')
+    expect(
+      kakaoCampusResults.resources.some(
+        (resource) => resource.id === 'res-korean-ai-competition-hackathon-learning'
+      )
+    ).toBe(true)
+
+    const hackathonResults = searchCatalog('해커톤', 'all', 'learning')
+    expect(
+      hackathonResults.resources.some(
+        (resource) => resource.id === 'res-korean-ai-competition-hackathon-learning'
+      )
+    ).toBe(true)
+
     const hanbitResults = searchCatalog('한빛미디어', 'all', 'books')
     expect(
       hanbitResults.resources.some(
