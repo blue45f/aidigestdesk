@@ -274,7 +274,7 @@ async function compareWithTecaData(tecaEvents) {
 
     if (event.title !== candidate.title) {
       warnings.push(
-        `TECA 제목 불일치: catalog=${event.title}, teca=${teca.title}, url=${event.url}`,
+        `TECA 제목 불일치: catalog=${event.title}, teca=${candidate.title}, url=${event.url}`,
       );
     }
     if (event.startRaw !== candidate.startDate) {
