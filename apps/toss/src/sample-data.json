@@ -1,0 +1,455 @@
+{
+  "generatedAt": "2026-06-18T03:03:31.872Z",
+  "items": [
+    {
+      "id": "anthropic-models",
+      "title": "Claude Models Overview",
+      "publisher": "Anthropic",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P0",
+      "url": "https://platform.claude.com/docs/en/about-claude/models/overview",
+      "excerpt": "<!DOCTYPE html><html class=\"h-screen antialiased bg-page __variable_8d1da5 __variable_2d8cf6 __variable_5581e8 cds-root text-primary\" lang=\"en-US\" data-theme=\"claude\" data-color-version=\"v2\" data-build-id=\"46190ce197733d7d2f2fff929389b97c55f05708\" style=\"font-size:100%;--cds-page"
+    },
+    {
+      "id": "aa-leaderboard",
+      "title": "LLM Leaderboard",
+      "publisher": "Artificial Analysis",
+      "kind": "benchmark",
+      "kindLabel": "벤치마크",
+      "priority": "P0",
+      "url": "https://artificialanalysis.ai/leaderboards/models",
+      "excerpt": "<!DOCTYPE html><html lang=\"en\" class=\"h-full __variable_6fa1ea __variable_cefbf4\" style=\"scroll-behavior:smooth\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/css/764c9d93bef34cc1.css\""
+    },
+    {
+      "id": "deepseek-pricing",
+      "title": "DeepSeek Models & Pricing",
+      "publisher": "DeepSeek API Docs",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P0",
+      "url": "https://api-docs.deepseek.com/quick_start/pricing",
+      "excerpt": "<!doctype html> <html lang=\"en\" dir=\"ltr\" class=\"docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-quick_start/pricing\" data-has-hydrated=\"false\"> <head> <meta charset=\"UTF-8\"> <meta name=\"generator\" content=\"Docusaurus v3.1.0\"> <title data"
+    },
+    {
+      "id": "google-models",
+      "title": "Gemini API Models",
+      "publisher": "Google AI for Developers",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P0",
+      "url": "https://ai.google.dev/gemini-api/docs/models",
+      "excerpt": "<!doctype html> <html lang=\"en\" dir=\"ltr\"> <head> <meta name=\"google-signin-client-id\" content=\"157101835696-ooapojlodmuabs2do2vuhhnf90bccmoi.apps.googleusercontent.com\"><meta name=\"google-signin-scope\" content=\"profile email https://www.googleapis.com/auth/developerprofiles http"
+    },
+    {
+      "id": "mistral-models",
+      "title": "Mistral Models Overview",
+      "publisher": "Mistral AI",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P0",
+      "url": "https://docs.mistral.ai/models/overview",
+      "excerpt": "<!DOCTYPE html><!--ngLIgQUu_fIyya82NlP_y--><html lang=\"en\" class=\"__variable_5c766e\" data-selected-language=\"typescript\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" href=\"/_next/static/media/1f0533b0fb4d90d"
+    },
+    {
+      "id": "kimi-models",
+      "title": "Kimi API Model List",
+      "publisher": "Moonshot AI",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P0",
+      "url": "https://platform.kimi.ai/docs/models",
+      "excerpt": "<!DOCTYPE html><html lang=\"en\" class=\"inter_1d81deff-module__CYM0aG__variable jetbrains_mono_e9ee6d28-module__lbFCHq__variable dark\" data-banner-state=\"visible\" data-assistant-state=\"closed\" data-page-mode=\"none\" data-current-path=\"/\"><head><meta charSet=\"utf-8\"/><meta name=\"view"
+    },
+    {
+      "id": "openai-models",
+      "title": "OpenAI Models",
+      "publisher": "OpenAI Developers",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P0",
+      "url": "https://developers.openai.com/api/docs/models",
+      "excerpt": "<!DOCTYPE html><html lang=\"en\"> <head><!-- Global Metadata --><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\"><meta name=\"generator\" content=\"Astro v6.0.4\"><link rel=\"preload\" href=\"/fo"
+    },
+    {
+      "id": "qwen-docs",
+      "title": "Qwen Documentation",
+      "publisher": "Alibaba Qwen Team",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P1",
+      "url": "https://qwen.readthedocs.io/en/latest/",
+      "excerpt": "<!doctype html> <html class=\"no-js\" lang=\"en\" data-content_root=\"./\"> <head><meta charset=\"utf-8\"> <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"> <meta name=\"color-scheme\" content=\"light dark\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1"
+    },
+    {
+      "id": "ap-g7-ai-sovereignty",
+      "title": "AI executives gather at G7 as Europeans seek checks on American dominance",
+      "publisher": "Associated Press",
+      "kind": "publisher",
+      "kindLabel": "미디어",
+      "priority": "P1",
+      "url": "https://apnews.com/article/7d783c6de4356962e338b8b8563d48ea",
+      "excerpt": "<!DOCTYPE html> <html class=\"StoryPage\" lang=\"en\" data-header-hasleaderboard=\"true\" data-named-page-type=\"Article\" data-leaderboard-is-fixed=\"true\" data-hasZephr=\"true\"data-lead=\"medium\"> <head><script>window.kameleoonQueue=window.kameleoonQueue||[];</script><script>window.kamele"
+    },
+    {
+      "id": "manus-api",
+      "title": "Manus API v2 Introduction",
+      "publisher": "Manus API",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P1",
+      "url": "https://open.manus.ai/docs/v2/introduction",
+      "excerpt": "<!DOCTYPE html><html lang=\"en\" class=\"inter_1d81deff-module__CYM0aG__variable jetbrains_mono_e9ee6d28-module__lbFCHq__variable dark\" data-banner-state=\"visible\" data-assistant-state=\"closed\" data-page-mode=\"none\" data-current-path=\"/\"><head><meta charSet=\"utf-8\"/><meta name=\"view"
+    },
+    {
+      "id": "xai-models",
+      "title": "xAI Models",
+      "publisher": "xAI Docs",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P1",
+      "url": "https://docs.x.ai/developers/models",
+      "excerpt": "<!DOCTYPE html><html lang=\"en\" class=\"universalsans_7450c837-module__q3q6RG__variable universalsansdisplay_994e610b-module__1SkMda__variable geistmono_157ca88a-module__H5cItq__variable bg-surface-base antialiased\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width="
+    },
+    {
+      "id": "youtube-vibe-coding-search",
+      "title": "Korean Vibe Coding YouTube Search",
+      "publisher": "YouTube",
+      "kind": "community",
+      "kindLabel": "커뮤니티",
+      "priority": "P1",
+      "url": "https://www.youtube.com/results?search_query=%EB%B0%94%EC%9D%B4%EB%B8%8C+%EC%BD%94%EB%94%A9+Claude+Code+Codex+Cursor",
+      "excerpt": "<!DOCTYPE html><html style=\"font-size: 62.5%;font-family: Roboto, Arial, sans-serif;\" lang=\"ko-KR\" darker-dark-theme darker-dark-theme-deprecate system-icons color-version=\"v2_0\" typography typography-spacing><head><script data-id=\"_gd\" nonce=\"3vnYD662HcdXGdD7HfMD9g\">window.WIZ_g"
+    },
+    {
+      "id": "qwen-quickstart",
+      "title": "Qwen Quickstart",
+      "publisher": "Alibaba Qwen Team",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://qwen.readthedocs.io/en/latest/getting_started/quickstart.html",
+      "excerpt": "<!doctype html> <html class=\"no-js\" lang=\"en\" data-content_root=\"../\"> <head><meta charset=\"utf-8\"> <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"> <meta name=\"color-scheme\" content=\"light dark\"><meta name=\"viewport\" content=\"width=device-width, initial-scale="
+    },
+    {
+      "id": "anthropic-courses",
+      "title": "Anthropic Academy",
+      "publisher": "Anthropic",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://www.anthropic.com/learn",
+      "excerpt": "<!DOCTYPE html><html lang=\"en\" class=\"anthropicsans_dce02d96-module__tEBbKW__variable anthropicserif_e7e46c4-module__uImRTq__variable anthropicmono_fae19af3-module__c5XAsG__variable copernicus_4da799c5-module__dijTSq__variable styrenea_f8492ab1-module__HimLXW__variable styreneb_2"
+    },
+    {
+      "id": "anthropic-docs-ko",
+      "title": "Claude API Korean Docs",
+      "publisher": "Anthropic",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://platform.claude.com/docs/ko/intro",
+      "excerpt": "<!DOCTYPE html><html class=\"h-screen antialiased bg-page __variable_8d1da5 __variable_2d8cf6 __variable_5581e8 cds-root text-primary\" lang=\"en-US\" data-theme=\"claude\" data-color-version=\"v2\" data-build-id=\"46190ce197733d7d2f2fff929389b97c55f05708\" style=\"font-size:100%;--cds-page"
+    },
+    {
+      "id": "claude-code-setup",
+      "title": "Claude Code Advanced Setup",
+      "publisher": "Anthropic",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://code.claude.com/docs/en/setup",
+      "excerpt": "<!DOCTYPE html><html lang=\"en\" class=\"inter_1d81deff-module__CYM0aG__variable jetbrains_mono_e9ee6d28-module__lbFCHq__variable dark\" data-banner-state=\"visible\" data-assistant-state=\"closed\" data-page-mode=\"none\" data-current-path=\"/\"><head><meta charSet=\"utf-8\"/><meta name=\"view"
+    },
+    {
+      "id": "claude-code-docs",
+      "title": "Claude Code Overview",
+      "publisher": "Anthropic",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://code.claude.com/docs/en/overview",
+      "excerpt": "<!DOCTYPE html><html lang=\"en\" class=\"inter_1d81deff-module__CYM0aG__variable jetbrains_mono_e9ee6d28-module__lbFCHq__variable dark\" data-banner-state=\"visible\" data-assistant-state=\"closed\" data-page-mode=\"none\" data-current-path=\"/\"><head><meta charSet=\"utf-8\"/><meta name=\"view"
+    },
+    {
+      "id": "anthropic-fable5",
+      "title": "Introducing Claude Fable 5 and Claude Mythos 5",
+      "publisher": "Anthropic",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://platform.claude.com/docs/en/about-claude/models/introducing-claude-fable-5-and-claude-mythos-5",
+      "excerpt": "<!DOCTYPE html><html class=\"h-screen antialiased bg-page __variable_8d1da5 __variable_2d8cf6 __variable_5581e8 cds-root text-primary\" lang=\"en-US\" data-theme=\"claude\" data-color-version=\"v2\" data-build-id=\"46190ce197733d7d2f2fff929389b97c55f05708\" style=\"font-size:100%;--cds-page"
+    },
+    {
+      "id": "aws-bedrock-ko",
+      "title": "Amazon Bedrock Korean User Guide",
+      "publisher": "AWS Docs",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://docs.aws.amazon.com/ko_kr/bedrock/latest/userguide/what-is-bedrock.html",
+      "excerpt": "<!DOCTYPE html> <html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"ko-KR\"><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>개요 - Amazon Bedrock</title><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\" /><meta name=\"assets_root\" conte"
+    },
+    {
+      "id": "deepseek-updates",
+      "title": "DeepSeek API Change Log",
+      "publisher": "DeepSeek API Docs",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://api-docs.deepseek.com/updates",
+      "excerpt": "<!doctype html> <html lang=\"en\" dir=\"ltr\" class=\"docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-updates\" data-has-hydrated=\"false\"> <head> <meta charset=\"UTF-8\"> <meta name=\"generator\" content=\"Docusaurus v3.1.0\"> <title data-rh=\"true\">C"
+    },
+    {
+      "id": "google-gemini31",
+      "title": "Gemini 3.1 Pro Preview",
+      "publisher": "Google AI for Developers",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview",
+      "excerpt": "<!doctype html> <html lang=\"en\" dir=\"ltr\"> <head> <meta name=\"google-signin-client-id\" content=\"157101835696-ooapojlodmuabs2do2vuhhnf90bccmoi.apps.googleusercontent.com\"><meta name=\"google-signin-scope\" content=\"profile email https://www.googleapis.com/auth/developerprofiles http"
+    },
+    {
+      "id": "google-gemini-docs-ko",
+      "title": "Gemini API Korean Docs",
+      "publisher": "Google AI for Developers",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://ai.google.dev/gemini-api/docs?hl=ko",
+      "excerpt": "<!doctype html> <html lang=\"ko-x-mtfrom-en\" dir=\"ltr\"> <head> <meta name=\"google-signin-client-id\" content=\"157101835696-ooapojlodmuabs2do2vuhhnf90bccmoi.apps.googleusercontent.com\"><meta name=\"google-signin-scope\" content=\"profile email https://www.googleapis.com/auth/developerp"
+    },
+    {
+      "id": "google-cloud-vertex-ko",
+      "title": "Google Cloud Gemini Enterprise Agent Platform Korean Docs",
+      "publisher": "Google Cloud",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://cloud.google.com/vertex-ai/generative-ai/docs/learn/models?hl=ko",
+      "excerpt": "<!doctype html> <html lang=\"ko-x-mtfrom-en\" dir=\"ltr\"> <head> <meta name=\"google-signin-client-id\" content=\"721724668570-nbkv1cfusk7kk4eni4pjvepaus73b13t.apps.googleusercontent.com\"><meta name=\"google-signin-scope\" content=\"profile email https://www.googleapis.com/auth/developerp"
+    },
+    {
+      "id": "google-dev-blog-ko",
+      "title": "Google Developers Blog Korean",
+      "publisher": "Google Developers",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://developers.googleblog.com/ko/",
+      "excerpt": "<!DOCTYPE html> <html lang=\"en\"> <head> <meta charset=\"utf-8\" /> <title> 홈 - Google Developers Blog </title> <meta property=\"og:title\" content=\"홈- Google Developers Blog\" /> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /> <meta content=\"https://storage.goog"
+    },
+    {
+      "id": "gemini-cli-github",
+      "title": "Gemini CLI",
+      "publisher": "Google Gemini",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://github.com/google-gemini/gemini-cli",
+      "excerpt": "<!DOCTYPE html> <html lang=\"en\" data-color-mode=\"auto\" data-light-theme=\"light\" data-dark-theme=\"dark\" data-a11y-animated-images=\"system\" data-a11y-link-underlines=\"true\" > <head> <meta charset=\"utf-8\"> <link rel=\"dns-prefetch\" href=\"https://github.githubassets.com\"> <link rel=\"d"
+    },
+    {
+      "id": "inflearn-vibe-coding",
+      "title": "Inflearn Vibe Coding Search",
+      "publisher": "Inflearn",
+      "kind": "publisher",
+      "kindLabel": "미디어",
+      "priority": "P2",
+      "url": "https://www.inflearn.com/search?s=%EB%B0%94%EC%9D%B4%EB%B8%8C%20%EC%BD%94%EB%94%A9",
+      "excerpt": "<!DOCTYPE html><html data-mode=\"ssr\" lang=\"ko\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width\"/><title>바이브 코딩 검색결과 리스트 | 인프런</title><meta name=\"description\" content=\"바이브 코딩에 관심있다면 지금 당장 시작하세요! 인프런은 언제나 당신의 성장을 응원합니다.\"/><link rel=\"canonical\" href=\"h"
+    },
+    {
+      "id": "manus-home",
+      "title": "Manus: Hands On AI",
+      "publisher": "Manus",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://manus.im/",
+      "excerpt": "<!DOCTYPE html><html lang=\"en\" dir=\"ltr\" class=\"bg-[var(--background-menu-white)] light\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, user-scalable=no\"/><link rel=\"stylesheet\" href=\"https://files.manuscdn.com/webapp/_next/static"
+    },
+    {
+      "id": "azure-openai-ko",
+      "title": "Azure OpenAI Service Korean Docs",
+      "publisher": "Microsoft Learn",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://learn.microsoft.com/ko-kr/azure/ai-services/openai/overview",
+      "excerpt": "<!DOCTYPE html> <html class=\"layout layout-holy-grail show-table-of-contents conceptual show-breadcrumb default-focus\" lang=\"ko-kr\" dir=\"ltr\" data-authenticated=\"false\" data-auth-status-determined=\"false\" data-target=\"docs\" x-ms-format-detection=\"none\" > <head> <title>Azure에서 판매하"
+    },
+    {
+      "id": "mistral-ministral-3-14b",
+      "title": "Ministral 3 14B Model Card",
+      "publisher": "Mistral AI",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://docs.mistral.ai/models/model-cards/ministral-3-14b-25-12",
+      "excerpt": "<!DOCTYPE html><!--ngLIgQUu_fIyya82NlP_y--><html lang=\"en\" class=\"__variable_5c766e\" data-selected-language=\"typescript\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" href=\"/_next/static/media/1f0533b0fb4d90d"
+    },
+    {
+      "id": "mistral-api",
+      "title": "Mistral Chat Completion API",
+      "publisher": "Mistral AI",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://docs.mistral.ai/api",
+      "excerpt": "<!DOCTYPE html><!--ngLIgQUu_fIyya82NlP_y--><html lang=\"en\" class=\"__variable_5c766e\" data-selected-language=\"typescript\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" href=\"/_next/static/media/1f0533b0fb4d90d"
+    },
+    {
+      "id": "mistral-medium-35",
+      "title": "Mistral Medium 3.5 Model Card",
+      "publisher": "Mistral AI",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://docs.mistral.ai/models/model-cards/mistral-medium-3-5-26-04",
+      "excerpt": "<!DOCTYPE html><!--ngLIgQUu_fIyya82NlP_y--><html lang=\"en\" class=\"__variable_5c766e\" data-selected-language=\"typescript\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" href=\"/_next/static/media/1f0533b0fb4d90d"
+    },
+    {
+      "id": "mistral-small-4",
+      "title": "Mistral Small 4 Model Card",
+      "publisher": "Mistral AI",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://docs.mistral.ai/models/model-cards/mistral-small-4-0-26-03",
+      "excerpt": "<!DOCTYPE html><!--ngLIgQUu_fIyya82NlP_y--><html lang=\"en\" class=\"__variable_5c766e\" data-selected-language=\"typescript\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" href=\"/_next/static/media/1f0533b0fb4d90d"
+    },
+    {
+      "id": "kimi-k27-code",
+      "title": "Kimi K2.7 Code Quickstart",
+      "publisher": "Moonshot AI",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://platform.kimi.ai/docs/guide/kimi-k2-7-code-quickstart",
+      "excerpt": "<!DOCTYPE html><html lang=\"en\" class=\"inter_1d81deff-module__CYM0aG__variable jetbrains_mono_e9ee6d28-module__lbFCHq__variable dark\" data-banner-state=\"visible\" data-assistant-state=\"closed\" data-page-mode=\"none\" data-current-path=\"/\"><head><meta charSet=\"utf-8\"/><meta name=\"view"
+    },
+    {
+      "id": "openai-codex-cli",
+      "title": "Codex CLI Docs",
+      "publisher": "OpenAI Developers",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://developers.openai.com/codex/cli",
+      "excerpt": "<!DOCTYPE html><html lang=\"en\"> <head><!-- Global Metadata --><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\"><meta name=\"generator\" content=\"Astro v6.0.4\"><link rel=\"preload\" href=\"/fo"
+    },
+    {
+      "id": "openai-gpt55",
+      "title": "GPT-5.5 Model",
+      "publisher": "OpenAI Developers",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://developers.openai.com/api/docs/models/gpt-5.5",
+      "excerpt": "<!DOCTYPE html><html lang=\"en\"> <head><!-- Global Metadata --><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\"><meta name=\"generator\" content=\"Astro v6.0.4\"><link rel=\"preload\" href=\"/fo"
+    },
+    {
+      "id": "openai-videos",
+      "title": "OpenAI Developer Videos",
+      "publisher": "OpenAI Developers",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://developers.openai.com/learn/videos",
+      "excerpt": "<!DOCTYPE html><html lang=\"en\"> <head><!-- Global Metadata --><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\"><meta name=\"generator\" content=\"Astro v6.0.4\"><link rel=\"preload\" href=\"/fo"
+    },
+    {
+      "id": "xai-grok43",
+      "title": "Grok 4.3",
+      "publisher": "xAI Docs",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://docs.x.ai/developers/models/grok-4.3",
+      "excerpt": "<!DOCTYPE html><html lang=\"en\" class=\"universalsans_7450c837-module__q3q6RG__variable universalsansdisplay_994e610b-module__1SkMda__variable geistmono_157ca88a-module__H5cItq__variable bg-surface-base antialiased\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width="
+    },
+    {
+      "id": "yes24-vibe-coding-books",
+      "title": "YES24 Vibe Coding Book Search",
+      "publisher": "YES24",
+      "kind": "publisher",
+      "kindLabel": "미디어",
+      "priority": "P2",
+      "url": "https://www.yes24.com/Product/Search?domain=BOOK&query=%EB%B0%94%EC%9D%B4%EB%B8%8C%20%EC%BD%94%EB%94%A9",
+      "excerpt": "<!DOCTYPE html > <html lang=\"ko\"> <head> <meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\" /> <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" /> <meta http-equiv=\"Accept-CH\" content=\"dpr, width, viewport-width, rtt, downlink, ect, UA, UA-Platform, UA-Arch, UA"
+    },
+    {
+      "id": "youtube-teddynote",
+      "title": "테디노트 TeddyNote",
+      "publisher": "YouTube",
+      "kind": "community",
+      "kindLabel": "커뮤니티",
+      "priority": "P2",
+      "url": "https://www.youtube.com/@teddynote",
+      "excerpt": "<!DOCTYPE html><html style=\"font-size: 62.5%;font-family: Roboto, Arial, sans-serif;\" lang=\"ko-KR\" darker-dark-theme darker-dark-theme-deprecate system-icons color-version=\"v2_0\" typography typography-spacing><head><script data-id=\"_gd\" nonce=\"QxPhprga8LLDGI2FLaosHg\">window.WIZ_g"
+    },
+    {
+      "id": "youtube-anthropic",
+      "title": "Anthropic YouTube",
+      "publisher": "YouTube",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://www.youtube.com/@anthropic-ai",
+      "excerpt": "<!DOCTYPE html><html style=\"font-size: 62.5%;font-family: Roboto, Arial, sans-serif;\" lang=\"ko-KR\" darker-dark-theme darker-dark-theme-deprecate system-icons color-version=\"v2_0\" typography typography-spacing><head><script data-id=\"_gd\" nonce=\"aW-UhYH569lQtV-HK9aT0Q\">window.WIZ_g"
+    },
+    {
+      "id": "youtube-codefactory-search",
+      "title": "Code Factory YouTube Search",
+      "publisher": "YouTube",
+      "kind": "community",
+      "kindLabel": "커뮤니티",
+      "priority": "P2",
+      "url": "https://www.youtube.com/results?search_query=%EC%BD%94%EB%93%9C%ED%8C%A9%ED%86%A0%EB%A6%AC+AI+%EC%BD%94%EB%94%A9",
+      "excerpt": "<!DOCTYPE html><html style=\"font-size: 62.5%;font-family: Roboto, Arial, sans-serif;\" lang=\"ko-KR\" darker-dark-theme darker-dark-theme-deprecate system-icons color-version=\"v2_0\" typography typography-spacing><head><script data-id=\"_gd\" nonce=\"6sgsl7gnH4tMU5GbGsUdpA\">window.WIZ_g"
+    },
+    {
+      "id": "youtube-google-cloud-tech",
+      "title": "Google Cloud Tech YouTube",
+      "publisher": "YouTube",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://www.youtube.com/@GoogleCloudTech",
+      "excerpt": "<!DOCTYPE html><html style=\"font-size: 62.5%;font-family: Roboto, Arial, sans-serif;\" lang=\"ko-KR\" darker-dark-theme darker-dark-theme-deprecate system-icons color-version=\"v2_0\" typography typography-spacing><head><script data-id=\"_gd\" nonce=\"nRIHKNg3GWmBEsUMPh8tAQ\">window.WIZ_g"
+    },
+    {
+      "id": "youtube-google-developers",
+      "title": "Google for Developers YouTube",
+      "publisher": "YouTube",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://www.youtube.com/@GoogleDevelopers",
+      "excerpt": "<!DOCTYPE html><html style=\"font-size: 62.5%;font-family: Roboto, Arial, sans-serif;\" lang=\"ko-KR\" darker-dark-theme darker-dark-theme-deprecate system-icons color-version=\"v2_0\" typography typography-spacing><head><script data-id=\"_gd\" nonce=\"i2pvHhOb7DbuHb79xjy5GA\">window.WIZ_g"
+    },
+    {
+      "id": "youtube-mistral-ai",
+      "title": "Mistral AI YouTube",
+      "publisher": "YouTube",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://www.youtube.com/@MistralAI",
+      "excerpt": "<!DOCTYPE html><html style=\"font-size: 62.5%;font-family: Roboto, Arial, sans-serif;\" lang=\"ko-KR\" darker-dark-theme darker-dark-theme-deprecate system-icons color-version=\"v2_0\" typography typography-spacing><head><script data-id=\"_gd\" nonce=\"RqeTv4YGdSGL3CFFfymMzQ\">window.WIZ_g"
+    },
+    {
+      "id": "youtube-openai",
+      "title": "OpenAI YouTube",
+      "publisher": "YouTube",
+      "kind": "official",
+      "kindLabel": "공식",
+      "priority": "P2",
+      "url": "https://www.youtube.com/@OpenAI",
+      "excerpt": "<!DOCTYPE html><html style=\"font-size: 62.5%;font-family: Roboto, Arial, sans-serif;\" lang=\"ko-KR\" darker-dark-theme darker-dark-theme-deprecate system-icons color-version=\"v2_0\" typography typography-spacing><head><script data-id=\"_gd\" nonce=\"xTUHpZ_qidywlBjVaBzEng\">window.WIZ_g"
+    }
+  ]
+}
