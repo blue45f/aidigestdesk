@@ -30,6 +30,7 @@ import {
 import { useMemo, useState } from "react";
 
 import { EmptyState, SectionHeader, SegmentBar } from "@/components/app/CommonUi";
+import { getBrowserLocaleContext } from "@/utils/environment";
 
 const stats = getCatalogStats();
 
@@ -296,6 +297,25 @@ function formatCommunityProviderLabels(resource: { providerIds?: ProviderId[] })
   return resource.providerIds
     .map((providerId) => getProviderLabel(providerId) ?? "기타")
     .join(" · ");
+}
+
+type LocaleAwareFilterDefaults = {
+  eventAreaScope: EventScheduleAreaScope;
+  eventRegion: EventScheduleRegionFilter;
+  eventLanguage: EventScheduleLanguageFilter;
+  communityLanguage: WebzineCommunityLanguageFilter;
+};
+
+function getLocaleAwareFilterDefaults(): LocaleAwareFilterDefaults {
+  const browserContext = getBrowserLocaleContext();
+  const isDomesticUser = browserContext.isDomestic;
+
+  return {
+    eventAreaScope: isDomesticUser ? "국내" : "국외",
+    eventRegion: isDomesticUser ? "국내" : "all",
+    eventLanguage: isDomesticUser ? "한국어" : "영어",
+    communityLanguage: isDomesticUser ? "한국어" : "영어",
+  };
 }
 
 export function Briefing({
@@ -807,7 +827,9 @@ export function WebzineSection({
   const [communitySortDirection, setCommunitySortDirection] =
     useState<WebzineCommunitySortDirection>("asc");
   const [communityLanguageFilter, setCommunityLanguageFilter] =
-    useState<WebzineCommunityLanguageFilter>("한국어");
+    useState<WebzineCommunityLanguageFilter>(() =>
+      getLocaleAwareFilterDefaults().communityLanguage,
+    );
   const [communityTypeFilter, setCommunityTypeFilter] =
     useState<WebzineCommunityTypeFilter>("all");
   const [communityLimit, setCommunityLimit] = useState<WebzineListLimit>(6);
@@ -1107,7 +1129,9 @@ export function WebzineSection({
               type="button"
               onClick={() => {
                 setCommunityQuery("");
-                setCommunityLanguageFilter("한국어");
+                setCommunityLanguageFilter(
+                  getLocaleAwareFilterDefaults().communityLanguage,
+                );
                 setCommunityTypeFilter("all");
                 setCommunitySortMode("language");
                 setCommunitySortDirection("asc");
@@ -1232,15 +1256,16 @@ function EventCalendarBoard() {
     startOfMonth(parseDate(SNAPSHOT_DATE)),
   );
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const localeAwareDefaults = getLocaleAwareFilterDefaults();
   const [selectedType, setSelectedType] = useState<EventScheduleType | "all">(
     "all",
   );
   const [selectedAreaScope, setSelectedAreaScope] =
-    useState<EventScheduleAreaScope>("국내");
+    useState<EventScheduleAreaScope>(localeAwareDefaults.eventAreaScope);
   const [selectedRegion, setSelectedRegion] =
-    useState<EventScheduleRegionFilter>("all");
+    useState<EventScheduleRegionFilter>(localeAwareDefaults.eventRegion);
   const [selectedLanguage, setSelectedLanguage] =
-    useState<EventScheduleLanguageFilter>("all");
+    useState<EventScheduleLanguageFilter>(localeAwareDefaults.eventLanguage);
   const [selectedFormat, setSelectedFormat] =
     useState<EventScheduleFormatFilter>("all");
   const [selectedStatus, setSelectedStatus] =
@@ -1272,9 +1297,9 @@ function EventCalendarBoard() {
 
   const resetFilters = () => {
     setSelectedType("all");
-    setSelectedAreaScope("국내");
-    setSelectedRegion("all");
-    setSelectedLanguage("all");
+    setSelectedAreaScope(localeAwareDefaults.eventAreaScope);
+    setSelectedRegion(localeAwareDefaults.eventRegion);
+    setSelectedLanguage(localeAwareDefaults.eventLanguage);
     setSelectedFormat("all");
     setSelectedStatus("all");
     setQuery("");
