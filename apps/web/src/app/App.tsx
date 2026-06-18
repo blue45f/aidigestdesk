@@ -1,7 +1,5 @@
 import {
   aiCodingTools,
-  curationMonitors,
-  featureBacklog,
   learningResources,
   manualGuides,
   modelProfiles,
@@ -11,7 +9,6 @@ import {
   SNAPSHOT_DATE,
   sources,
   taskRecommendations,
-  updatePipeline,
   vibeCodingCommands,
   type AiCodingToolProfile,
   type ContentCategory,
@@ -55,8 +52,6 @@ import {
   EventCostComparisonSection,
   ModelCostCalculator,
 } from "@/components/app/CostSections";
-import { EditorialOpsSection } from "@/components/app/EditorialOpsSection";
-import { ExportDeskSection } from "@/components/app/ExportDeskSection";
 import {
   DesignWorkflowSection,
   ManualGuides,
@@ -94,20 +89,13 @@ const providerFilters: Array<{ id: ProviderFilter; label: string }> = [
 const categoryFilters: Array<{ id: CategoryFilter; label: string }> = [
   { id: "all", label: "전체" },
   { id: "news", label: "뉴스" },
-  { id: "events", label: "이벤트" },
-  { id: "updates", label: "업데이트" },
-  { id: "recommendations", label: "추천" },
-  { id: "vibe", label: "바이브 코딩" },
+  { id: "events", label: "일정/이벤트" },
+  { id: "recommendations", label: "작업 추천" },
   { id: "tools", label: "AI 도구" },
-  { id: "design", label: "디자인/PPT" },
+  { id: "vibe", label: "CLI/코딩" },
   { id: "comparison", label: "모델 비교" },
   { id: "benchmarks", label: "벤치마크" },
-  { id: "manuals", label: "사용법" },
-  { id: "personas", label: "직군별" },
-  { id: "learning", label: "강좌" },
-  { id: "books", label: "도서" },
-  { id: "ops", label: "편집실" },
-  { id: "sources", label: "소스" },
+  { id: "learning", label: "강좌/자료" },
 ];
 
 function ResourcesRoute({
@@ -302,24 +290,6 @@ export default function App() {
       : hasActiveFilter
         ? []
         : taskRecommendations;
-  const visibleMonitors =
-    results.curationMonitors.length > 0
-      ? results.curationMonitors
-      : hasActiveFilter
-        ? []
-        : curationMonitors;
-  const visiblePipelineItems =
-    results.pipelineItems.length > 0
-      ? results.pipelineItems
-      : hasActiveFilter
-        ? []
-        : updatePipeline;
-  const visibleBacklog =
-    results.featureBacklog.length > 0
-      ? results.featureBacklog
-      : hasActiveFilter
-        ? []
-        : featureBacklog;
   const visibleSources =
     category === "sources" || results.sources.length > 0
       ? results.sources
@@ -387,10 +357,6 @@ export default function App() {
               </div>
 
               <Briefing results={results} useFallback={!hasActiveFilter} />
-              <WebzineSection
-                results={results}
-                useFallback={!hasActiveFilter}
-              />
               <EventPromotionsSection />
               <TaskRecommendationSection
                 recommendations={visibleTaskRecommendations}
@@ -406,15 +372,13 @@ export default function App() {
               {selectedModel ? <ModelDetail profile={selectedModel} /> : null}
               <BenchmarkBoard />
               <ComparisonMatrix />
+              <ResourceLibrary resources={visibleResources} />
+              <WebzineSection
+                results={results}
+                useFallback={!hasActiveFilter}
+              />
               <ManualGuides guides={visibleGuides} />
               <PersonaPlaybooks guides={visiblePersonaGuides} />
-              <ResourceLibrary resources={visibleResources} />
-              <EditorialOpsSection
-                monitors={visibleMonitors}
-                pipelineItems={visiblePipelineItems}
-                backlog={visibleBacklog}
-              />
-              <ExportDeskSection />
               <ModelCostCalculator />
               <EventCostComparisonSection />
               <SourcesSection sourceItems={visibleSources} />

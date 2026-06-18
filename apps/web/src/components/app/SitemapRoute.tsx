@@ -1,6 +1,6 @@
 import { Home } from "lucide-react";
 
-type SitemapTarget = "portal" | "resources" | "admin";
+type SitemapTarget = "portal" | "resources";
 
 const sitemapLinks: Array<{
   id: string;
@@ -14,7 +14,7 @@ const sitemapLinks: Array<{
     route: "portal",
     title: "포털 메인",
     description:
-      "브리핑, 웹진, 이벤트, 모델 비교, 벤치마크, 사용법, 강좌/도서 등 공개 핵심 화면입니다.",
+      "브리핑, 일정/이벤트, 작업 추천, 모델 비교, 강좌/자료, 비용을 순서대로 확인하는 공개 핵심 화면입니다.",
     links: [
       {
         href: "#updates",
@@ -22,14 +22,19 @@ const sitemapLinks: Array<{
         note: "최신 업데이트 + 핵심 영향",
       },
       {
-        href: "#webzine",
-        label: "AI 뉴스와 커뮤니티",
-        note: "뉴스·이벤트·강좌형 콘텐츠",
+        href: "#events",
+        label: "일정/해커톤 캘린더",
+        note: "해커톤, 컨퍼런스, 웨비나",
       },
       {
-        href: "#events",
-        label: "이벤트와 프로모션",
-        note: "크레딧/할인/초대 신호",
+        href: "#task-recommendations",
+        label: "작업별 추천",
+        note: "코딩, PPT, 리서치, 비용",
+      },
+      {
+        href: "#ai-tools",
+        label: "AI 도구",
+        note: "IDE, CLI, PR 리뷰, 에이전트",
       },
       {
         href: "#comparison",
@@ -43,18 +48,18 @@ const sitemapLinks: Array<{
       },
       {
         href: "#learning",
-        label: "강좌/도서",
+        label: "강좌/자료",
         note: "언어/형식/난이도/태그 필터",
       },
       {
-        href: "#ops",
-        label: "편집실",
-        note: "운영 모니터링/파이프라인",
+        href: "#webzine",
+        label: "뉴스 웹진",
+        note: "한국어 커뮤니티와 강좌형 콘텐츠",
       },
       {
-        href: "#event-costs",
-        label: "이벤트 비용 비교",
-        note: "2배 크레딧/할인 시나리오",
+        href: "#costs",
+        label: "비용",
+        note: "모델 비용과 이벤트 비용 비교",
       },
     ],
   },
@@ -89,35 +94,6 @@ const sitemapLinks: Array<{
         href: "#sources",
         label: "자료 출처",
         note: "공식, 벤치마크, 커뮤니티",
-      },
-    ],
-  },
-  {
-    id: "admin",
-    route: "admin",
-    title: "관리자 콘솔",
-    description:
-      "로그인 후 접근하는 운영 페이지입니다. 공개 페이지와 분리된 콘텐츠 관리 공간입니다.",
-    links: [
-      {
-        href: "#admin-overview",
-        label: "콘솔 개요",
-        note: "로그인 계정과 감사 상태",
-      },
-      {
-        href: "#ops",
-        label: "운영 편집실",
-        note: "모니터링 큐, 파이프라인, 백로그",
-      },
-      {
-        href: "#exports",
-        label: "내보내기",
-        note: "뉴스레터, CSV, JSON, Runbook",
-      },
-      {
-        href: "#sources",
-        label: "출처",
-        note: "출처 성격/발행처 기반 검수",
       },
     ],
   },
@@ -159,8 +135,8 @@ export function SitemapRoute({
                 AI Digest Desk 전체 지도
               </h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
-                포털, 자료실, 관리자 콘솔을 페이지 단위와 섹션 단위로 분리해
-                빠르게 이동할 수 있게 구성했습니다.
+                포털과 자료실의 핵심 섹션만 노출해 일반 사용자가 필요한
+                정보로 바로 이동할 수 있게 구성했습니다.
               </p>
             </div>
             <a
@@ -173,7 +149,7 @@ export function SitemapRoute({
           </div>
         </section>
 
-        <div className="grid gap-4 xl:grid-cols-3">
+        <div className="grid gap-4 xl:grid-cols-2">
           {sitemapLinks.map((section) => (
             <article
               key={section.id}

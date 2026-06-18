@@ -78,6 +78,34 @@ export type UpdateItem = {
   sourceIds: string[]
 }
 
+export type EventScheduleType =
+  | '해커톤'
+  | '컨퍼런스'
+  | '웨비나'
+  | '세미나/모임'
+  | '공모전/챌린지'
+  | '프로모션/지원'
+
+export type EventScheduleItem = {
+  id: string
+  title: string
+  organizer: string
+  type: EventScheduleType
+  startDate: string
+  endDate?: string
+  timeLabel?: string
+  location: string
+  format: '온라인' | '오프라인' | '하이브리드' | '상시 확인'
+  language: '한국어' | '영어' | '다국어'
+  region: '국내' | '북미' | '유럽' | '글로벌'
+  status: '모집중' | '진행예정' | '진행중' | '종료' | '상시 확인'
+  summary: string
+  relevance: string
+  tags: string[]
+  sourceIds: string[]
+  url: string
+}
+
 export type BenchmarkEntry = {
   id: string
   rankLabel: string
@@ -295,6 +323,7 @@ export type TaskRecommendation = {
 export type SearchResults = {
   models: ModelProfile[]
   updates: UpdateItem[]
+  eventSchedules: EventScheduleItem[]
   taskRecommendations: TaskRecommendation[]
   aiCodingTools: AiCodingToolProfile[]
   benchmarks: BenchmarkEntry[]
@@ -2929,6 +2958,42 @@ export const sources: SourceRef[] = [
     note: 'Upstage의 웨비나, 컨퍼런스, 제품/파트너 이벤트를 확인하는 공식 이벤트 허브.',
   },
   {
+    id: 'ai-engineer-worldsfair-2026',
+    title: 'AI Engineer World’s Fair 2026',
+    publisher: 'AI Engineer',
+    kind: 'official',
+    url: 'https://www.ai.engineer/worldsfair/2026',
+    lastChecked: SNAPSHOT_DATE,
+    note: 'AI Engineer World’s Fair 2026 본행사, 공식 해커톤, 사이드 이벤트, Moscone West 세션/랩/키노트 정보를 확인하는 공식 일정 페이지.',
+  },
+  {
+    id: 'github-universe-2026',
+    title: 'GitHub Universe 2026',
+    publisher: 'GitHub',
+    kind: 'official',
+    url: 'https://githubuniverse.com/',
+    lastChecked: SNAPSHOT_DATE,
+    note: 'GitHub Universe 2026의 샌프란시스코/온라인 일정, 워크숍, 데모, day of learning, 조기 할인 정보를 확인하는 공식 행사 페이지.',
+  },
+  {
+    id: 'nvidia-gtc',
+    title: 'NVIDIA GTC',
+    publisher: 'NVIDIA',
+    kind: 'official',
+    url: 'https://www.nvidia.com/gtc/',
+    lastChecked: SNAPSHOT_DATE,
+    note: 'GTC 2026 온디맨드 세션, GTC Berlin 일정, GTC 2027 알림과 AI infrastructure/agentic AI/physical AI 세션을 확인하는 공식 페이지.',
+  },
+  {
+    id: 'aws-reinvent-2026',
+    title: 'AWS re:Invent 2026',
+    publisher: 'AWS',
+    kind: 'official',
+    url: 'https://aws.amazon.com/events/reinvent/',
+    lastChecked: SNAPSHOT_DATE,
+    note: 'AWS re:Invent 2026의 Las Vegas 일정, 등록 오픈, 2,200개 이상 세션/랩, cloud and AI 트랙 정보를 확인하는 공식 행사 페이지.',
+  },
+  {
     id: 'exaone-45-paper',
     title: 'EXAONE 4.5 Technical Report',
     publisher: 'arXiv',
@@ -4949,6 +5014,269 @@ export const updates: UpdateItem[] = [
       'slidesgen-bench-paper',
       'apex-agents-paper',
     ],
+  },
+]
+
+export const eventScheduleItems: EventScheduleItem[] = [
+  {
+    id: 'schedule-openai-academy-builder-bootcamp-agents',
+    title: 'Builder Bootcamp: Agents',
+    organizer: 'OpenAI Academy',
+    type: '웨비나',
+    startDate: '2026-06-18',
+    timeLabel: '17:00-18:00 GMT',
+    location: 'Online',
+    format: '온라인',
+    language: '영어',
+    region: '글로벌',
+    status: '진행예정',
+    summary:
+      'OpenAI Academy 공개 이벤트 허브의 Agents/Builder Bootcamp 온라인 세션. Codex와 에이전트 워크플로 학습 큐에 연결한다.',
+    relevance:
+      'Codex, Agents SDK, 도구 호출 기반 바이브 코딩을 배우는 사용자가 짧은 실습 이벤트를 찾을 때 우선 확인할 일정이다.',
+    tags: ['OpenAI Academy', 'Agents', 'Codex', '온라인', '부트캠프'],
+    sourceIds: ['openai-academy-events', 'openai-codex-cli'],
+    url: 'https://academy.openai.com/public/events',
+  },
+  {
+    id: 'schedule-upstage-ax-document-automation-meetup',
+    title: '퇴근길 AX 문서 자동화 밋업',
+    organizer: 'Upstage',
+    type: '세미나/모임',
+    startDate: '2026-06-18',
+    timeLabel: '19:00 KST',
+    location: 'Upstage 이벤트 페이지 확인',
+    format: '상시 확인',
+    language: '한국어',
+    region: '국내',
+    status: '진행예정',
+    summary:
+      'Upstage KR 이벤트 목록에 등록된 문서 자동화 밋업. Document AI, Solar, Studio agent를 업무 자동화 사례로 확인한다.',
+    relevance:
+      'PDF/문서 기반 RAG, Document Parse, 사내 문서 자동화형 바이브 코딩 수요와 직접 연결된다.',
+    tags: ['Upstage', 'AX', 'Document AI', '문서 자동화', '한국어'],
+    sourceIds: ['upstage-events', 'upstage-docs'],
+    url: 'https://www.upstage.ai/events',
+  },
+  {
+    id: 'schedule-modulabs-cvpr-ai-seminar',
+    title: '모두의 CVPR: Faculty와 함께하는 연구 트렌드와 논문',
+    organizer: '모두의연구소',
+    type: '세미나/모임',
+    startDate: '2026-06-30',
+    timeLabel: '19:00-21:30 KST',
+    location: '강남 캠퍼스',
+    format: '오프라인',
+    language: '한국어',
+    region: '국내',
+    status: '모집중',
+    summary:
+      '모두의연구소 세미나 목록의 CVPR 연구 트렌드 세션. 멀티모달 임베딩, 효율적 파인튜닝, 연구자 커리어 키워드를 포함한다.',
+    relevance:
+      '비전/멀티모달 모델과 최신 논문을 바이브 코딩 제품 기획에 연결하려는 사용자에게 적합하다.',
+    tags: ['모두의연구소', 'CVPR', '멀티모달', '파인튜닝', '세미나'],
+    sourceIds: ['modulabs-ai'],
+    url: 'https://modulabs.co.kr/',
+  },
+  {
+    id: 'schedule-modulabs-ai-for-science',
+    title: '공간생물학의 AI for Science 데이터폭발, 인프라, 그리고 신약개발',
+    organizer: '모두의연구소',
+    type: '세미나/모임',
+    startDate: '2026-07-01',
+    timeLabel: '19:00-21:00 KST',
+    location: '강남 캠퍼스',
+    format: '오프라인',
+    language: '한국어',
+    region: '국내',
+    status: '모집중',
+    summary:
+      '모두의연구소 세미나 목록의 AI for Science 세션. 공간생물학 데이터, AI 인프라, 신약개발 사례를 다룬다.',
+    relevance:
+      '연구/데이터 분석/AI for Science 작업에 맞는 모델 추천과 벤치마크 필터를 보강하는 일정이다.',
+    tags: ['모두의연구소', 'AI for Science', '데이터', '인프라', '신약개발'],
+    sourceIds: ['modulabs-ai'],
+    url: 'https://modulabs.co.kr/',
+  },
+  {
+    id: 'schedule-dacon-baram-2026',
+    title: '제3회 풍력발전량 예측 AI 경진대회 - BARAM 2026',
+    organizer: 'DACON',
+    type: '공모전/챌린지',
+    startDate: '2026-07-06',
+    location: 'DACON 온라인',
+    format: '온라인',
+    language: '한국어',
+    region: '국내',
+    status: '진행예정',
+    summary:
+      'DACON 진행 중인 경진대회 목록의 풍력발전량 예측 AI 챌린지. 정형 회귀, 에너지, NMAE 평가를 사용한다.',
+    relevance:
+      '실전 데이터 경진대회에서 모델 실험, 프롬프트 기반 분석, 코드 생성 보조를 비교하기 좋은 일정이다.',
+    tags: ['DACON', 'AI 경진대회', '정형 회귀', '에너지', 'NMAE'],
+    sourceIds: ['dacon-ai-learning'],
+    url: 'https://dacon.io/',
+  },
+  {
+    id: 'schedule-dacon-scpc-ai-challenge-2026',
+    title: '2026 Samsung Collegiate Programming Challenge : AI 챌린지',
+    organizer: 'DACON',
+    type: '공모전/챌린지',
+    startDate: '2026-07-06',
+    location: 'DACON 온라인',
+    format: '온라인',
+    language: '한국어',
+    region: '국내',
+    status: '진행예정',
+    summary:
+      'DACON에 등록된 SCPC AI 챌린지. sLM Harness Engineering, 알고리즘, 채용 연계 키워드를 함께 추적한다.',
+    relevance:
+      '코딩·모델 경량화·평가 harness 작업에서 Claude Code, Codex, Cursor, Gemini CLI 비교 후보가 된다.',
+    tags: ['DACON', 'SCPC', 'AI 챌린지', 'sLM', 'Harness Engineering'],
+    sourceIds: ['dacon-ai-learning'],
+    url: 'https://dacon.io/',
+  },
+  {
+    id: 'schedule-ai-engineer-worldsfair-hackathon-2026',
+    title: 'AI Engineer World’s Fair Hackathon 2026',
+    organizer: 'AI Engineer / Cerebral Valley',
+    type: '해커톤',
+    startDate: '2026-06-27',
+    endDate: '2026-06-28',
+    timeLabel: '09:00-17:00 PT',
+    location: 'San Francisco, CA',
+    format: '오프라인',
+    language: '영어',
+    region: '북미',
+    status: '진행예정',
+    summary:
+      'AI Engineer World’s Fair 공식 해커톤. recursive self-improvement와 출력 기반 자기 개선 시스템을 주제로 진행된다.',
+    relevance:
+      '에이전트가 결과를 검토하고 다음 산출물을 개선하는 바이브 코딩 패턴을 실험하기 좋은 글로벌 해커톤이다.',
+    tags: ['AI Engineer', '해커톤', 'Cerebral Valley', 'recursive self-improvement', 'Agent'],
+    sourceIds: ['ai-engineer-worldsfair-2026'],
+    url: 'https://www.ai.engineer/worldsfair/2026',
+  },
+  {
+    id: 'schedule-ai-engineer-worldsfair-2026',
+    title: 'AI Engineer World’s Fair 2026',
+    organizer: 'AI Engineer',
+    type: '컨퍼런스',
+    startDate: '2026-06-29',
+    endDate: '2026-07-02',
+    location: 'Moscone West, San Francisco',
+    format: '오프라인',
+    language: '영어',
+    region: '북미',
+    status: '진행예정',
+    summary:
+      '키노트, 브레이크아웃, 엑스포, 랩, 포스터 세션, 사이드 이벤트를 한 건물에서 운영하는 AI 엔지니어링 컨퍼런스.',
+    relevance:
+      '에이전트 앱, LLM infra, 제품화 사례, 개발자 도구 세션을 한 번에 추적해야 하는 AI 바이브 코딩 핵심 컨퍼런스다.',
+    tags: ['AI Engineer', '컨퍼런스', 'AI 앱', 'LLM infra', '에이전트'],
+    sourceIds: ['ai-engineer-worldsfair-2026'],
+    url: 'https://www.ai.engineer/worldsfair/2026',
+  },
+  {
+    id: 'schedule-nvidia-gtc-berlin-2026',
+    title: 'NVIDIA GTC Berlin',
+    organizer: 'NVIDIA',
+    type: '컨퍼런스',
+    startDate: '2026-10-20',
+    endDate: '2026-10-22',
+    location: 'Berlin',
+    format: '오프라인',
+    language: '영어',
+    region: '유럽',
+    status: '진행예정',
+    summary:
+      'NVIDIA GTC 지역 컨퍼런스. AI infrastructure, agentic AI, physical AI, inference와 hands-on training 후보를 추적한다.',
+    relevance:
+      '로컬/자체 배포, GPU 비용, 추론 최적화, 물리 AI와 연결되는 모델 선택 기준을 보강한다.',
+    tags: ['NVIDIA', 'GTC', 'AI infrastructure', 'agentic AI', 'GPU'],
+    sourceIds: ['nvidia-gtc'],
+    url: 'https://www.nvidia.com/gtc/',
+  },
+  {
+    id: 'schedule-github-universe-2026',
+    title: 'GitHub Universe 2026',
+    organizer: 'GitHub',
+    type: '컨퍼런스',
+    startDate: '2026-10-28',
+    endDate: '2026-10-29',
+    location: 'Fort Mason Center, San Francisco / Online',
+    format: '하이브리드',
+    language: '영어',
+    region: '북미',
+    status: '모집중',
+    summary:
+      'GitHub의 플래그십 개발자 행사. humans, agents, code를 연결하는 주제와 워크숍, 데모, 온라인 스트리밍을 제공한다.',
+    relevance:
+      'Copilot, GitHub Actions, 코드 리뷰, agents, repo automation 트렌드를 AI 코딩 도구 비교에 반영한다.',
+    tags: ['GitHub Universe', 'Copilot', 'Agents', '개발자 컨퍼런스', '하이브리드'],
+    sourceIds: ['github-universe-2026', 'github-copilot-docs'],
+    url: 'https://githubuniverse.com/',
+  },
+  {
+    id: 'schedule-github-universe-day-of-learning-2026',
+    title: 'GitHub Universe Day of Learning',
+    organizer: 'GitHub',
+    type: '세미나/모임',
+    startDate: '2026-10-30',
+    timeLabel: '08:00-16:00 PT',
+    location: 'GitHub Headquarters, San Francisco',
+    format: '오프라인',
+    language: '영어',
+    region: '북미',
+    status: '모집중',
+    summary:
+      'GitHub Universe 별도 티켓형 day of learning. 라이브 데모, 전문가 세션, GitHub HQ 학습 프로그램을 제공한다.',
+    relevance:
+      '팀 단위 AI 코딩 도입 교육과 Copilot/Cursor류 워크플로 전환 교육 일정으로 비교한다.',
+    tags: ['GitHub', '학습일', '워크숍', 'Copilot', '팀 교육'],
+    sourceIds: ['github-universe-2026'],
+    url: 'https://githubuniverse.com/',
+  },
+  {
+    id: 'schedule-aws-reinvent-2026',
+    title: 'AWS re:Invent 2026',
+    organizer: 'AWS',
+    type: '컨퍼런스',
+    startDate: '2026-11-30',
+    endDate: '2026-12-04',
+    location: 'Las Vegas, NV',
+    format: '오프라인',
+    language: '영어',
+    region: '북미',
+    status: '모집중',
+    summary:
+      'AWS 연례 컨퍼런스. cloud and AI 커뮤니티, 2,200개 이상 세션/랩, GenAI와 Agentic AI 운영 사례를 추적한다.',
+    relevance:
+      'Bedrock, 서버리스, 비용 최적화, 보안, 운영 자동화 기반의 AI 앱 배포 전략을 비교하는 일정이다.',
+    tags: ['AWS re:Invent', 'Bedrock', 'Agentic AI', 'Cloud', '컨퍼런스'],
+    sourceIds: ['aws-reinvent-2026', 'aws-bedrock-ko'],
+    url: 'https://aws.amazon.com/events/reinvent/',
+  },
+  {
+    id: 'schedule-upstage-aws-ai-initiative',
+    title: 'Upstage-AWS AI Initiative',
+    organizer: 'Upstage / AWS',
+    type: '프로모션/지원',
+    startDate: SNAPSHOT_DATE,
+    endDate: '2027-03-31',
+    timeLabel: '~2027-03-31 23:00 KST',
+    location: '공식 이벤트 페이지 확인',
+    format: '상시 확인',
+    language: '다국어',
+    region: '글로벌',
+    status: '진행중',
+    summary:
+      'Upstage 이벤트 페이지의 Featured Event. Upstage와 AWS의 AI Initiative를 2027년 3월 31일까지 추적한다.',
+    relevance:
+      'Solar, Document AI, AWS 기반 PoC/교육/지원 혜택이 있을 때 비용·이벤트 비교 섹션과 연결한다.',
+    tags: ['Upstage', 'AWS', 'AI Initiative', '지원', '프로모션'],
+    sourceIds: ['upstage-events', 'aws-bedrock-ko'],
+    url: 'https://www.upstage.ai/events',
   },
 ]
 
@@ -11664,6 +11992,7 @@ function collectReferencedSourceIds() {
 
   for (const model of modelProfiles) addMany(model.sourceIds)
   for (const update of updates) addMany(update.sourceIds)
+  for (const eventSchedule of eventScheduleItems) addMany(eventSchedule.sourceIds)
   for (const benchmark of benchmarkEntries) addMany(benchmark.sourceIds)
   for (const command of vibeCodingCommands) addMany(command.sourceIds)
   for (const tool of aiCodingTools) addMany(tool.sourceIds)
@@ -11687,6 +12016,7 @@ export function runContentAudit(): ContentAuditResult {
   const duplicateSourceIds = duplicateIds(sources)
   const duplicateModelIds = duplicateIds(modelProfiles)
   const duplicateUpdateIds = duplicateIds(updates)
+  const duplicateEventScheduleIds = duplicateIds(eventScheduleItems)
   const duplicateCommandIds = duplicateIds(vibeCodingCommands)
   const duplicateAiCodingToolIds = duplicateIds(aiCodingTools)
   const duplicatePersonaIds = duplicateIds(personaGuides)
@@ -11718,6 +12048,7 @@ export function runContentAudit(): ContentAuditResult {
         duplicateSourceIds.length +
           duplicateModelIds.length +
           duplicateUpdateIds.length +
+          duplicateEventScheduleIds.length +
           duplicateCommandIds.length +
           duplicateAiCodingToolIds.length +
           duplicatePersonaIds.length +
@@ -11730,6 +12061,7 @@ export function runContentAudit(): ContentAuditResult {
         duplicateSourceIds.length +
           duplicateModelIds.length +
           duplicateUpdateIds.length +
+          duplicateEventScheduleIds.length +
           duplicateCommandIds.length +
           duplicateAiCodingToolIds.length +
           duplicatePersonaIds.length +
@@ -11741,6 +12073,7 @@ export function runContentAudit(): ContentAuditResult {
               ...duplicateSourceIds,
               ...duplicateModelIds,
               ...duplicateUpdateIds,
+              ...duplicateEventScheduleIds,
               ...duplicateCommandIds,
               ...duplicateAiCodingToolIds,
               ...duplicatePersonaIds,
@@ -11972,6 +12305,37 @@ export function searchCatalog(
         )
       : []
 
+  const filteredEventSchedules =
+    selectedCategory === 'all' ||
+    selectedCategory === 'events' ||
+    selectedCategory === 'learning' ||
+    selectedCategory === 'vibe' ||
+    selectedCategory === 'tools'
+      ? eventScheduleItems.filter(
+          (eventSchedule) =>
+            (selectedProvider === 'all' ||
+              getSources(eventSchedule.sourceIds).some((source) =>
+                normalizeText(`${source.title} ${source.publisher} ${source.note}`).includes(
+                  normalizeText(selectedProvider)
+                )
+              ) ||
+              eventSchedule.tags.some((tag) => normalizeText(tag).includes(normalizeText(selectedProvider)))) &&
+            matchesQuery(query, [
+              eventSchedule.title,
+              eventSchedule.organizer,
+              eventSchedule.type,
+              eventSchedule.location,
+              eventSchedule.format,
+              eventSchedule.language,
+              eventSchedule.region,
+              eventSchedule.status,
+              eventSchedule.summary,
+              eventSchedule.relevance,
+              ...eventSchedule.tags,
+            ])
+        )
+      : []
+
   const filteredTaskRecommendations =
     selectedCategory === 'all' ||
     selectedCategory === 'recommendations' ||
@@ -12161,6 +12525,7 @@ export function searchCatalog(
   for (const item of [
     ...models,
     ...filteredUpdates,
+    ...filteredEventSchedules,
     ...filteredTaskRecommendations,
     ...benchmarks,
     ...filteredVibeCodingCommands,
@@ -12190,6 +12555,7 @@ export function searchCatalog(
   return {
     models,
     updates: filteredUpdates,
+    eventSchedules: filteredEventSchedules,
     taskRecommendations: filteredTaskRecommendations,
     aiCodingTools: filteredAiCodingTools,
     benchmarks,
@@ -12209,6 +12575,7 @@ export function getCatalogStats() {
   return {
     providers: new Set(modelProfiles.map((profile) => profile.providerId)).size,
     updates: updates.length,
+    eventSchedules: eventScheduleItems.length,
     benchmarkRows: benchmarkEntries.length,
     vibeCommands: vibeCodingCommands.length,
     aiCodingTools: aiCodingTools.length,

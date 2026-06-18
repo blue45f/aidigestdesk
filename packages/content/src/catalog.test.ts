@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import {
   calculateModelCosts,
+  eventScheduleItems,
   getCatalogStats,
   getMissingSourceReferences,
   getSources,
@@ -270,6 +271,37 @@ describe('catalog search', () => {
     const upstageResults = searchCatalog('Solar Pro 3', 'all', 'events')
     expect(
       upstageResults.updates.some((update) => update.id === 'update-upstage-solar-pro3-pricing')
+    ).toBe(true)
+  })
+
+  it('finds AI hackathon and conference schedule items', () => {
+    expect(eventScheduleItems.length).toBeGreaterThan(8)
+
+    const hackathonResults = searchCatalog('해커톤', 'all', 'events')
+    expect(
+      hackathonResults.eventSchedules.some(
+        (eventSchedule) => eventSchedule.id === 'schedule-ai-engineer-worldsfair-hackathon-2026'
+      )
+    ).toBe(true)
+    const daconResults = searchCatalog('DACON', 'all', 'events')
+    expect(
+      daconResults.eventSchedules.some(
+        (eventSchedule) => eventSchedule.id === 'schedule-dacon-scpc-ai-challenge-2026'
+      )
+    ).toBe(true)
+
+    const conferenceResults = searchCatalog('GitHub Universe', 'all', 'events')
+    expect(
+      conferenceResults.eventSchedules.some(
+        (eventSchedule) => eventSchedule.id === 'schedule-github-universe-2026'
+      )
+    ).toBe(true)
+
+    const koreanSeminarResults = searchCatalog('모두의연구소', 'all', 'events')
+    expect(
+      koreanSeminarResults.eventSchedules.some(
+        (eventSchedule) => eventSchedule.id === 'schedule-modulabs-cvpr-ai-seminar'
+      )
     ).toBe(true)
   })
 

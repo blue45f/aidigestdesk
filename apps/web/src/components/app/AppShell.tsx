@@ -1,29 +1,21 @@
 import { SNAPSHOT_DATE } from "@aidigestdesk/content";
 import {
-  BarChart3,
   BookOpen,
   Boxes,
   Calculator,
-  CircleHelp,
   Code2,
-  Download,
   FileText,
-  Gauge,
   Home,
   Library,
-  LayoutDashboard,
   MapPin,
   Moon,
   Newspaper,
-  Palette,
-  PanelLeft,
   Search,
   Settings2,
   ShieldCheck,
   Sparkles,
   Sun,
   Table2,
-  Users,
 } from "lucide-react";
 
 import type { AdminSession } from "@/components/app/adminSession";
@@ -32,9 +24,8 @@ import type { AppRoute } from "@/components/app/appRoutes";
 import { IconButton } from "@/components/app/CommonUi";
 
 const routeItems = [
-  { id: "portal", label: "포털", icon: Home },
+  { id: "portal", label: "홈", icon: Home },
   { id: "resources", label: "자료", icon: Library },
-  { id: "admin", label: "Admin", icon: LayoutDashboard },
   { id: "sitemap", label: "사이트맵", icon: MapPin },
 ] satisfies Array<{
   id: AppRoute;
@@ -43,22 +34,15 @@ const routeItems = [
 }>;
 
 const navItems = [
-  { href: "#updates", label: "업데이트", icon: Newspaper },
-  { href: "#events", label: "이벤트", icon: Sparkles },
+  { href: "#updates", label: "브리핑", icon: Newspaper },
+  { href: "#events", label: "일정/이벤트", icon: Sparkles },
   { href: "#task-recommendations", label: "작업 추천", icon: Sparkles },
-  { href: "#webzine", label: "웹진", icon: Newspaper },
   { href: "#ai-tools", label: "AI 도구", icon: Boxes },
-  { href: "#vibe-coding", label: "바이브 코딩", icon: Code2 },
-  { href: "#design", label: "디자인/PPT", icon: Palette },
-  { href: "#comparison", label: "모델 비교", icon: Table2 },
-  { href: "#benchmarks", label: "벤치마크", icon: BarChart3 },
-  { href: "#manuals", label: "사용법", icon: CircleHelp },
-  { href: "#personas", label: "직군별", icon: Users },
-  { href: "#learning", label: "강좌/도서", icon: BookOpen },
-  { href: "#ops", label: "편집실", icon: Gauge },
-  { href: "#exports", label: "내보내기", icon: Download },
-  { href: "#costs", label: "비용 계산기", icon: Calculator },
-  { href: "#event-costs", label: "이벤트 비용", icon: Calculator },
+  { href: "#vibe-coding", label: "CLI 명령어", icon: Code2 },
+  { href: "#comparison", label: "모델/벤치마크", icon: Table2 },
+  { href: "#learning", label: "강좌/자료", icon: BookOpen },
+  { href: "#webzine", label: "뉴스 웹진", icon: Newspaper },
+  { href: "#costs", label: "비용", icon: Calculator },
   { href: "#sources", label: "소스", icon: FileText },
 ] as const;
 
@@ -147,9 +131,6 @@ export function Header({
             </button>
           ))}
         </div>
-        <IconButton label="사이드바">
-          <PanelLeft className="size-4" aria-hidden />
-        </IconButton>
         <IconButton
           label={dark ? "라이트 모드" : "다크 모드"}
           onClick={onToggleDark}
@@ -160,16 +141,18 @@ export function Header({
             <Moon className="size-4" aria-hidden />
           )}
         </IconButton>
-        <IconButton
-          label={route === "admin" ? "포털로 이동" : "관리자 콘솔"}
-          onClick={() => onNavigate(route === "admin" ? "portal" : "admin")}
-        >
-          {route === "admin" ? (
-            <Home className="size-4" aria-hidden />
-          ) : (
-            <Settings2 className="size-4" aria-hidden />
-          )}
-        </IconButton>
+        {adminSession || route === "admin" ? (
+          <IconButton
+            label={route === "admin" ? "포털로 이동" : "관리자 콘솔"}
+            onClick={() => onNavigate(route === "admin" ? "portal" : "admin")}
+          >
+            {route === "admin" ? (
+              <Home className="size-4" aria-hidden />
+            ) : (
+              <Settings2 className="size-4" aria-hidden />
+            )}
+          </IconButton>
+        ) : null}
       </div>
       <div className="border-t border-border px-4 py-3 md:hidden">
         {route !== "admin" ? (

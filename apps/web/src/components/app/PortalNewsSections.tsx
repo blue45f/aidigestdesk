@@ -1,14 +1,30 @@
 import {
+  eventScheduleItems,
+  type EventScheduleItem,
+  type EventScheduleType,
   getCatalogStats,
   getProviderLabel,
   getSources,
   learningResources,
+  SNAPSHOT_DATE,
   sources,
   updates,
   type SearchResults,
   type SourceRef,
 } from "@aidigestdesk/content";
-import { ExternalLink, Gauge, Newspaper, Sparkles } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  ExternalLink,
+  Gauge,
+  MapPin,
+  Newspaper,
+  SlidersHorizontal,
+  Sparkles,
+} from "lucide-react";
+import { useMemo, useState } from "react";
 
 import { EmptyState, SectionHeader } from "@/components/app/CommonUi";
 
@@ -24,6 +40,92 @@ const providerSummary = [
 
 function sourceUrl(sourceId: string) {
   return getSources([sourceId])[0]?.url ?? "#";
+}
+
+const scheduleTypeFilters: Array<{ id: EventScheduleType | "all"; label: string }> =
+  [
+    { id: "all", label: "전체" },
+    { id: "해커톤", label: "해커톤" },
+    { id: "컨퍼런스", label: "컨퍼런스" },
+    { id: "웨비나", label: "웨비나" },
+    { id: "세미나/모임", label: "세미나" },
+    { id: "공모전/챌린지", label: "챌린지" },
+    { id: "프로모션/지원", label: "지원" },
+  ];
+
+const weekdayLabels = ["월", "화", "수", "목", "금", "토", "일"] as const;
+
+function parseDate(value: string) {
+  const [year = 1970, month = 1, day = 1] = value
+    .split("-")
+    .map((part) => Number(part));
+  return new Date(year, month - 1, day);
+}
+
+function toDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function startOfMonth(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function addMonths(date: Date, amount: number) {
+  return new Date(date.getFullYear(), date.getMonth() + amount, 1);
+}
+
+function formatMonth(date: Date) {
+  return new Intl.DateTimeFormat("ko-KR", {
+    year: "numeric",
+    month: "long",
+  }).format(date);
+}
+
+function formatDateRange(item: EventScheduleItem) {
+  const start = item.startDate.replaceAll("-", ".");
+  if (!item.endDate || item.endDate === item.startDate) return start;
+  return `${start} - ${item.endDate.replaceAll("-", ".")}`;
+}
+
+function getScheduleEndDate(item: EventScheduleItem) {
+  return item.endDate ?? item.startDate;
+}
+
+function isSameMonth(dateKey: string, monthDate: Date) {
+  const date = parseDate(dateKey);
+  return (
+    date.getFullYear() === monthDate.getFullYear() &&
+    date.getMonth() === monthDate.getMonth()
+  );
+}
+
+function eventTouchesDate(item: EventScheduleItem, dateKey: string) {
+  return item.startDate <= dateKey && getScheduleEndDate(item) >= dateKey;
+}
+
+function eventTouchesMonth(item: EventScheduleItem, monthDate: Date) {
+  const firstDay = toDateKey(startOfMonth(monthDate));
+  const lastDay = toDateKey(
+    new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0),
+  );
+  return item.startDate <= lastDay && getScheduleEndDate(item) >= firstDay;
+}
+
+function statusClass(status: EventScheduleItem["status"]) {
+  switch (status) {
+    case "모집중":
+    case "진행중":
+      return "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300";
+    case "진행예정":
+      return "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-900 dark:bg-sky-950/40 dark:text-sky-300";
+    case "상시 확인":
+      return "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300";
+    case "종료":
+      return "border-border bg-bg text-text-subtle";
+  }
 }
 
 export function Briefing({
@@ -291,6 +393,296 @@ export function WebzineSection({
   );
 }
 
+function EventCalendarBoard() {
+  const [activeMonth, setActiveMonth] = useState(() =>
+    startOfMonth(parseDate(SNAPSHOT_DATE)),
+  );
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState<EventScheduleType | "all">(
+    "all",
+  );
+
+  const filteredEvents = useMemo(
+    () =>
+      eventScheduleItems
+        .filter((item) => selectedType === "all" || item.type === selectedType)
+        .toSorted((a, b) => a.startDate.localeCompare(b.startDate)),
+    [selectedType],
+  );
+
+  const monthEvents = filteredEvents.filter((item) =>
+    eventTouchesMonth(item, activeMonth),
+  );
+  const agendaEvents = (
+    selectedDate
+      ? filteredEvents.filter((item) => eventTouchesDate(item, selectedDate))
+      : monthEvents
+  ).slice(0, 8);
+
+  const leadingBlankCount = (startOfMonth(activeMonth).getDay() + 6) % 7;
+  const firstCellDate = new Date(
+    activeMonth.getFullYear(),
+    activeMonth.getMonth(),
+    1 - leadingBlankCount,
+  );
+  const calendarCells = Array.from({ length: 42 }, (_, index) => {
+    const date = new Date(firstCellDate);
+    date.setDate(firstCellDate.getDate() + index);
+    const dateKey = toDateKey(date);
+    const events = filteredEvents.filter((item) =>
+      eventTouchesDate(item, dateKey),
+    );
+    return {
+      date,
+      dateKey,
+      events,
+      inMonth: isSameMonth(dateKey, activeMonth),
+      isSelected: selectedDate === dateKey,
+      isToday: dateKey === SNAPSHOT_DATE,
+    };
+  });
+
+  return (
+    <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+      <div className="rounded-lg border border-border bg-surface p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent">
+              <CalendarDays className="size-3.5" aria-hidden />
+              일정 캘린더
+            </p>
+            <h3 className="mt-1 text-lg font-semibold text-text">
+              {formatMonth(activeMonth)}
+            </h3>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setActiveMonth((date) => addMonths(date, -1))}
+              className="grid size-9 place-items-center rounded-md border border-border bg-bg text-text-muted transition hover:text-text"
+              aria-label="이전 달"
+            >
+              <ChevronLeft className="size-4" aria-hidden />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveMonth(startOfMonth(parseDate(SNAPSHOT_DATE)));
+                setSelectedDate(SNAPSHOT_DATE);
+              }}
+              className="h-9 rounded-md border border-border bg-bg px-3 text-xs font-semibold text-text-muted transition hover:text-text"
+            >
+              오늘
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveMonth((date) => addMonths(date, 1))}
+              className="grid size-9 place-items-center rounded-md border border-border bg-bg text-text-muted transition hover:text-text"
+              aria-label="다음 달"
+            >
+              <ChevronRight className="size-4" aria-hidden />
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          {scheduleTypeFilters.map((filter) => (
+            <button
+              key={filter.id}
+              type="button"
+              onClick={() => {
+                setSelectedType(filter.id);
+                setSelectedDate(null);
+              }}
+              className={
+                selectedType === filter.id
+                  ? "rounded-md border border-ink bg-ink px-2.5 py-1.5 text-xs font-semibold text-ink-fg"
+                  : "rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+              }
+            >
+              {filter.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-4 grid grid-cols-7 gap-1.5 text-center text-[0.6875rem] font-semibold text-text-subtle">
+          {weekdayLabels.map((day) => (
+            <span key={day}>{day}</span>
+          ))}
+        </div>
+        <div className="mt-2 grid grid-cols-7 gap-1.5">
+          {calendarCells.map((cell) => (
+            <button
+              key={cell.dateKey}
+              type="button"
+              onClick={() => setSelectedDate(cell.dateKey)}
+              className={`min-h-20 rounded-md border p-1.5 text-left transition sm:min-h-24 ${
+                cell.isSelected
+                  ? "border-ink bg-ink text-ink-fg"
+                  : cell.isToday
+                    ? "border-accent bg-surface-2 text-text"
+                    : "border-border bg-bg text-text hover:border-border-strong"
+              } ${cell.inMonth ? "" : "opacity-45"}`}
+            >
+              <span className="block text-xs font-semibold">
+                {cell.date.getDate()}
+              </span>
+              {cell.events.length ? (
+                <span
+                  className={`mt-3 inline-flex size-5 items-center justify-center rounded-full text-[0.625rem] font-semibold sm:hidden ${
+                    cell.isSelected
+                      ? "bg-white/15 text-ink-fg"
+                      : "bg-accent text-ink-fg"
+                  }`}
+                >
+                  {cell.events.length}
+                </span>
+              ) : null}
+              <span className="mt-1 hidden space-y-1 sm:block">
+                {cell.events.slice(0, 2).map((item) => (
+                  <span
+                    key={item.id}
+                    className={`block truncate rounded-sm px-1.5 py-0.5 text-[0.625rem] font-semibold ${
+                      cell.isSelected
+                        ? "bg-white/15 text-ink-fg"
+                        : "bg-surface-2 text-text-muted"
+                    }`}
+                  >
+                    {item.type === "컨퍼런스" ? "컨퍼런스" : item.type} ·{" "}
+                    {item.organizer}
+                  </span>
+                ))}
+                {cell.events.length > 2 ? (
+                  <span
+                    className={`block text-[0.625rem] font-semibold ${
+                      cell.isSelected ? "text-ink-fg" : "text-accent"
+                    }`}
+                  >
+                    +{cell.events.length - 2}
+                  </span>
+                ) : null}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <aside className="rounded-lg border border-border bg-surface p-4">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent">
+              <SlidersHorizontal className="size-3.5" aria-hidden />
+              일정 리스트
+            </p>
+            <h3 className="mt-1 text-lg font-semibold text-text">
+              {selectedDate
+                ? selectedDate.replaceAll("-", ".")
+                : `${formatMonth(activeMonth)} 전체`}
+            </h3>
+          </div>
+          <button
+            type="button"
+            onClick={() => setSelectedDate(null)}
+            className="rounded-md border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+          >
+            월간 전체
+          </button>
+        </div>
+
+        <div className="mt-4 space-y-3">
+          {agendaEvents.length ? (
+            agendaEvents.map((item) => {
+              const eventSources = getSources(item.sourceIds);
+              return (
+                <article
+                  key={item.id}
+                  className="rounded-md border border-border bg-bg p-3"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                      <p className="text-xs font-semibold text-accent">
+                        {formatDateRange(item)} · {item.type}
+                      </p>
+                      <h4 className="mt-1 text-sm font-semibold leading-5 text-text">
+                        {item.title}
+                      </h4>
+                    </div>
+                    <span
+                      className={`rounded-md border px-2 py-1 text-[0.6875rem] font-semibold ${statusClass(
+                        item.status,
+                      )}`}
+                    >
+                      {item.status}
+                    </span>
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-2 text-[0.6875rem] font-semibold text-text-subtle">
+                    <span className="inline-flex items-center gap-1">
+                      <MapPin className="size-3" aria-hidden />
+                      {item.location}
+                    </span>
+                    {item.timeLabel ? (
+                      <span className="inline-flex items-center gap-1">
+                        <Clock className="size-3" aria-hidden />
+                        {item.timeLabel}
+                      </span>
+                    ) : null}
+                    <span>{item.format}</span>
+                    <span>{item.language}</span>
+                  </div>
+                  <p className="mt-2 text-xs leading-5 text-text-muted">
+                    {item.summary}
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-text-subtle">
+                    {item.relevance}
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {item.tags.slice(0, 5).map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-muted transition hover:text-text"
+                    >
+                      일정 보기
+                      <ExternalLink className="size-3" aria-hidden />
+                    </a>
+                    {eventSources.slice(0, 2).map((source) => (
+                      <a
+                        key={source.id}
+                        href={source.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-muted transition hover:text-text"
+                      >
+                        {source.publisher}
+                        <ExternalLink className="size-3" aria-hidden />
+                      </a>
+                    ))}
+                  </div>
+                </article>
+              );
+            })
+          ) : (
+            <EmptyState
+              title="선택한 날짜의 일정이 없습니다"
+              body="월간 전체를 누르거나 다른 일정 유형을 선택하세요."
+            />
+          )}
+        </div>
+      </aside>
+    </div>
+  );
+}
+
 export function EventPromotionsSection() {
   const eventItems = updates.filter((item) => item.category === "events");
 
@@ -298,9 +690,10 @@ export function EventPromotionsSection() {
     <section id="events" className="space-y-4">
       <SectionHeader
         icon={Sparkles}
-        title="LLM 이벤트와 프로모션 워치"
-        description="2배 크레딧, 친구 초대, 무료 quota, 학생/교육 혜택, 플랜 할인은 공식 확인 링크와 만료 조건을 분리해 추적합니다."
+        title="AI 일정·해커톤·프로모션 워치"
+        description="해커톤, 컨퍼런스, 웨비나, 학생/교육 혜택, 크레딧 이벤트를 날짜와 공식 확인 링크 기준으로 추적합니다."
       />
+      <EventCalendarBoard />
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {eventItems.map((item) => {
           const eventSources = getSources(item.sourceIds);
