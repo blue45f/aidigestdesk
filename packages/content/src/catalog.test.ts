@@ -186,6 +186,64 @@ describe("catalog search", () => {
       ),
     ).toBe(true);
 
+    const paperBenchResults = searchCatalog("PaperBench", "all", "benchmarks");
+    expect(
+      paperBenchResults.benchmarks.some(
+        (entry) => entry.id === "paperbench-research-replication",
+      ),
+    ).toBe(true);
+
+    const mleBenchResults = searchCatalog("MLE-bench", "all", "benchmarks");
+    expect(
+      mleBenchResults.benchmarks.some(
+        (entry) => entry.id === "mlebench-kaggle-engineering",
+      ),
+    ).toBe(true);
+
+    const browseCompResults = searchCatalog("BrowseComp", "all", "benchmarks");
+    expect(
+      browseCompResults.benchmarks.some(
+        (entry) => entry.id === "browsecomp-web-research",
+      ),
+    ).toBe(true);
+
+    const gpuResults = searchCatalog("GPU", "all", "benchmarks");
+    expect(
+      gpuResults.benchmarks.some(
+        (entry) => entry.id === "kernelbench-gpu-kernels",
+      ),
+    ).toBe(true);
+
+    const smartContractResults = searchCatalog(
+      "스마트컨트랙트",
+      "all",
+      "benchmarks",
+    );
+    expect(
+      smartContractResults.benchmarks.some(
+        (entry) => entry.id === "evmbench-smart-contract-security",
+      ),
+    ).toBe(true);
+
+    const cybenchResults = searchCatalog("Cybench", "all", "benchmarks");
+    expect(
+      cybenchResults.benchmarks.some(
+        (entry) => entry.id === "cybench-ctf-agent",
+      ),
+    ).toBe(true);
+
+    const reBenchResults = searchCatalog("RE-Bench", "all", "benchmarks");
+    expect(
+      reBenchResults.benchmarks.some((entry) => entry.id === "rebench-ai-rd"),
+    ).toBe(true);
+
+    const webAgentResults = searchCatalog("웹 에이전트", "all", "learning");
+    expect(
+      webAgentResults.resources.some(
+        (resource) => resource.id === "res-benchmark-hubs-web-os-agents",
+      ),
+    ).toBe(true);
+
     const gdpvalResults = searchCatalog("GDPval", "all", "benchmarks");
     expect(
       gdpvalResults.benchmarks.some(
@@ -245,12 +303,12 @@ describe("catalog search", () => {
     expect(getCatalogStats()).toMatchObject({
       providers: 10,
       updates: 33,
-      benchmarkRows: 44,
+      benchmarkRows: 60,
       vibeCommands: 9,
       aiCodingTools: 14,
       personaGuides: 5,
       taskRecommendations: 8,
-      monitors: 33,
+      monitors: 35,
       pipelineItems: 9,
       costProfiles: 10,
     });
