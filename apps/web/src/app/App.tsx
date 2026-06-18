@@ -90,6 +90,10 @@ import { useEffect, useMemo, useState } from "react";
 
 import type { ComponentType, FormEvent, ReactNode } from "react";
 
+import { RouteAnnouncer } from "@/components/layout/RouteAnnouncer";
+import { SkipLink } from "@/components/layout/SkipLink";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+
 
 type ProviderFilter = ProviderId | "all";
 type CategoryFilter = ContentCategory | "all";
@@ -164,6 +168,12 @@ const WORKBENCH_STORAGE_KEY = "aidigestdesk.editorWorkbench.v1";
 const ADMIN_SESSION_STORAGE_KEY = "aidigestdesk.adminSession.v1";
 
 type AppRoute = "portal" | "resources" | "admin";
+
+const routeTitles: Record<AppRoute, string> = {
+  portal: "포털 대시보드",
+  resources: "AI 바이브 코딩 자료실",
+  admin: "관리자 콘솔",
+};
 
 type AdminSession = {
   email: string;
@@ -386,7 +396,7 @@ function Header({
     <header className="sticky top-0 z-40 border-b border-border bg-bg/90 backdrop-blur">
       <div className="flex h-16 items-center gap-3 px-4 lg:px-5">
         <a
-          href={route === "portal" ? "#main" : "/"}
+          href={route === "portal" ? "#main-content" : "/"}
           onClick={(event) => {
             if (route !== "portal") {
               event.preventDefault();
@@ -3218,8 +3228,9 @@ function AdminLogin({
 
   return (
     <main
-      id="admin-main"
-      className="min-h-[calc(100vh-4rem)] px-4 py-8 lg:px-6"
+      id="main-content"
+      tabIndex={-1}
+      className="min-h-[calc(100vh-4rem)] px-4 py-8 outline-none lg:px-6"
     >
       <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[1fr_24rem]">
         <section className="rounded-lg border border-border bg-surface p-6">
@@ -3345,7 +3356,11 @@ function AdminConsole({
   ).length;
 
   return (
-    <main id="admin-main" className="px-4 py-5 lg:px-6">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="px-4 py-5 outline-none lg:px-6"
+    >
       <div className="mx-auto max-w-[96rem] space-y-6">
         <section
           id="admin-overview"
@@ -3565,7 +3580,11 @@ function ResourcesRoute({
   ).length;
 
   return (
-    <main id="resources-main" className="px-4 py-5 lg:px-6">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="px-4 py-5 outline-none lg:px-6"
+    >
       <div className="mx-auto max-w-[96rem] space-y-6">
         <section className="rounded-lg border border-border bg-surface p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
@@ -3680,6 +3699,8 @@ export default function App() {
     getInitialAdminSession,
   );
   const [dark, setDark] = useState(false);
+
+  useDocumentTitle(routeTitles[route]);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
@@ -3797,6 +3818,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-bg text-text">
+      <SkipLink />
+      <RouteAnnouncer routeKey={route} />
       <Header
         query={query}
         onQueryChange={setQuery}
@@ -3825,7 +3848,11 @@ export default function App() {
       ) : (
         <div className="grid lg:grid-cols-[15rem_1fr]">
           <Sidebar />
-          <main id="main" className="min-w-0 px-4 py-5 lg:px-6">
+          <main
+            id="main-content"
+            tabIndex={-1}
+            className="min-w-0 px-4 py-5 outline-none lg:px-6"
+          >
             <div className="mx-auto max-w-[96rem] space-y-6">
               <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1.25fr]">
                 <SegmentBar
@@ -3878,7 +3905,7 @@ export default function App() {
               <footer className="flex flex-col gap-2 border-t border-border py-6 text-xs text-text-subtle sm:flex-row sm:items-center sm:justify-between">
                 <span>AIDigestDesk · {SNAPSHOT_DATE} 스냅샷</span>
                 <a
-                  href="#main"
+                  href="#main-content"
                   className="inline-flex items-center gap-1 font-semibold text-text-muted hover:text-text"
                 >
                   맨 위로{" "}
