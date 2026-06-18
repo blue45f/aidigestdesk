@@ -112,3 +112,30 @@ export function SectionHeader({
     </div>
   );
 }
+
+export function MetricCard({
+  label,
+  value,
+  detail,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  detail: string;
+  icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
+}) {
+  return (
+    <article className="rounded-lg border border-border bg-surface p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold text-text-subtle">{label}</p>
+          <p className="mt-1 text-2xl font-semibold text-text">{value}</p>
+        </div>
+        <span className="grid size-9 shrink-0 place-items-center rounded-md border border-border bg-bg text-accent">
+          <Icon className="size-4" aria-hidden />
+        </span>
+      </div>
+      <p className="mt-2 text-xs leading-5 text-text-muted">{detail}</p>
+    </article>
+  );
+}
