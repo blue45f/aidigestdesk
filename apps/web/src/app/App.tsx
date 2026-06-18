@@ -990,7 +990,7 @@ function TaskRecommendationSection({
       </div>
 
       {visibleRecommendations.length ? (
-        <div className="grid gap-4 xl:grid-cols-2">
+        <div className="grid min-w-0 gap-4 xl:grid-cols-2">
           {visibleRecommendations.map((recommendation) => {
             const primaryModels = recommendation.primaryModelIds
               .map(getModelById)
@@ -1016,7 +1016,7 @@ function TaskRecommendationSection({
             return (
               <article
                 key={recommendation.id}
-                className="rounded-lg border border-border bg-surface p-5"
+                className="min-w-0 rounded-lg border border-border bg-surface p-5"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -1029,7 +1029,7 @@ function TaskRecommendationSection({
                       {recommendation.title}
                     </h3>
                   </div>
-                  <span className="rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-subtle">
+                  <span className="max-w-full rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-subtle">
                     {recommendation.benchmarkDomains
                       .map(getBenchmarkDomainLabel)
                       .join(" · ")}
@@ -1039,12 +1039,12 @@ function TaskRecommendationSection({
                   {recommendation.userIntent}
                 </p>
 
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  <div>
+                <div className="mt-4 grid min-w-0 gap-4 md:grid-cols-2">
+                  <div className="min-w-0">
                     <p className="text-xs font-semibold text-text-subtle">
                       우선 추천
                     </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
+                    <div className="mt-2 flex min-w-0 flex-wrap gap-2">
                       {primaryModels.map((model) => (
                         <span
                           key={model.id}
@@ -1055,11 +1055,11 @@ function TaskRecommendationSection({
                       ))}
                     </div>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-xs font-semibold text-text-subtle">
                       대체 후보
                     </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
+                    <div className="mt-2 flex min-w-0 flex-wrap gap-2">
                       {alternateModels.map((model) => (
                         <span
                           key={model.id}
@@ -1072,7 +1072,7 @@ function TaskRecommendationSection({
                   </div>
                 </div>
 
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <div className="mt-4 grid min-w-0 gap-4 md:grid-cols-2">
                   <TextList
                     title="추천 이유"
                     items={recommendation.rationale}
@@ -1087,13 +1087,13 @@ function TaskRecommendationSection({
                   <p className="mb-1 text-xs font-semibold text-text-subtle">
                     바로 넣을 프롬프트
                   </p>
-                  <pre className="overflow-x-auto rounded-md border border-border bg-bg p-3 text-xs leading-5 text-text">
+                  <pre className="min-w-0 overflow-x-auto whitespace-pre-wrap break-words rounded-md border border-border bg-bg p-3 text-xs leading-5 text-text">
                     <code>{recommendation.promptStarter}</code>
                   </pre>
                 </div>
 
-                <div className="mt-4 grid gap-3 md:grid-cols-2">
-                  <div>
+                <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-2">
+                  <div className="min-w-0">
                     <p className="text-xs font-semibold text-text-subtle">
                       연결 명령어
                     </p>
@@ -1113,11 +1113,11 @@ function TaskRecommendationSection({
                       ))}
                     </div>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-xs font-semibold text-text-subtle">
                       관련 자료
                     </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
+                    <div className="mt-2 flex min-w-0 flex-wrap gap-2">
                       {relatedResources.map((resource) => (
                         <a
                           key={resource.id}

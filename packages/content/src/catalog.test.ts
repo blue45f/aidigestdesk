@@ -165,6 +165,20 @@ describe("catalog search", () => {
       ),
     ).toBe(true);
 
+    const mobileResults = searchCatalog("모바일", "all", "benchmarks");
+    expect(
+      mobileResults.benchmarks.some(
+        (entry) => entry.id === "swebench-mobile-cursor-opus",
+      ),
+    ).toBe(true);
+
+    const dialogueResults = searchCatalog("대화", "all", "benchmarks");
+    expect(
+      dialogueResults.benchmarks.some(
+        (entry) => entry.id === "dialogue-swebench-agent",
+      ),
+    ).toBe(true);
+
     const courseResults = searchCatalog("노마드코더", "all", "learning");
     expect(
       courseResults.resources.some(
@@ -203,7 +217,7 @@ describe("catalog search", () => {
     expect(getCatalogStats()).toMatchObject({
       providers: 10,
       updates: 33,
-      benchmarkRows: 32,
+      benchmarkRows: 36,
       vibeCommands: 9,
       aiCodingTools: 14,
       personaGuides: 5,
