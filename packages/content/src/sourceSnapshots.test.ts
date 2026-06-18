@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import type { CurationMonitor, SourceRef } from "./catalog";
 import {
   createSourceSnapshotStore,
   getSourceSnapshotCandidates,
   snapshotSources,
   summarizeSnapshotRecords,
 } from "./sourceSnapshots";
+
+import type { CurationMonitor, SourceRef } from "./catalog";
 
 const fixtureSource: SourceRef = {
   id: "fixture-source",

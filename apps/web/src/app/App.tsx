@@ -1,42 +1,4 @@
 import {
-  BarChart3,
-  BookOpen,
-  Boxes,
-  Calculator,
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  CircleHelp,
-  Clipboard,
-  Code2,
-  Copy,
-  Download,
-  ExternalLink,
-  FileJson,
-  FileText,
-  Gauge,
-  Home,
-  KeyRound,
-  Library,
-  LayoutDashboard,
-  LogIn,
-  LogOut,
-  Moon,
-  Newspaper,
-  PanelLeft,
-  Palette,
-  Search,
-  Settings2,
-  ShieldCheck,
-  Sparkles,
-  Sun,
-  Table2,
-  Users,
-} from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import type { ComponentType, FormEvent, ReactNode } from "react";
-
-import {
   aiCodingTools,
   benchmarkEntries,
   calculateModelCosts,
@@ -89,6 +51,45 @@ import {
   type UpdatePipelineItem,
   type VibeCodingCommand,
 } from "@aidigestdesk/content";
+import {
+  BarChart3,
+  BookOpen,
+  Boxes,
+  Calculator,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  CircleHelp,
+  Clipboard,
+  Code2,
+  Copy,
+  Download,
+  ExternalLink,
+  FileJson,
+  FileText,
+  Gauge,
+  Home,
+  KeyRound,
+  Library,
+  LayoutDashboard,
+  LogIn,
+  LogOut,
+  Moon,
+  Newspaper,
+  PanelLeft,
+  Palette,
+  Search,
+  Settings2,
+  ShieldCheck,
+  Sparkles,
+  Sun,
+  Table2,
+  Users,
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+
+import type { ComponentType, FormEvent, ReactNode } from "react";
+
 
 type ProviderFilter = ProviderId | "all";
 type CategoryFilter = ContentCategory | "all";
@@ -3790,14 +3791,9 @@ export default function App() {
         ? []
         : sources;
 
-  useEffect(() => {
-    if (
-      !visibleModels.some((model) => model.id === selectedModelId) &&
-      visibleModels[0]
-    ) {
-      setSelectedModelId(visibleModels[0].id);
-    }
-  }, [selectedModelId, visibleModels]);
+  // selectedModel 은 렌더 중 visibleModels[0] 로 폴백하고, 소비처는 selectedModel?.id
+  // 를 쓴다. 따라서 필터로 현재 선택이 빠져도 effect 로 state 를 되돌릴 필요가 없다
+  // (https://react.dev/learn/you-might-not-need-an-effect).
 
   return (
     <div className="min-h-screen bg-bg text-text">
