@@ -5717,7 +5717,7 @@ export const eventScheduleItems: EventScheduleItem[] = [
   },
   {
     id: 'schedule-teca-nexon-mecathon',
-    title: '넥슨 패스트 트랙 해커톤 2026 메커톤',
+    title: "넥슨 패스트 트랙 해커톤 '2026 메커톤'",
     organizer: '넥슨코리아',
     type: '해커톤',
     startDate: '2026-04-24',
