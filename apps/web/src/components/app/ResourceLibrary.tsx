@@ -276,8 +276,9 @@ export function ResourceLibrary({
 }: {
   resources: LearningResource[];
 }) {
+  const localeAwareDefaults = getLocaleAwareFilterDefaults();
   const [language, setLanguage] = useState<ResourceLanguageFilter>(() =>
-    getLocaleAwareFilterDefaults().resourceLanguage,
+    localeAwareDefaults.resourceLanguage,
   );
   const [resourceType, setResourceType] = useState<ResourceTypeFilter>("all");
   const [level, setLevel] = useState<ResourceLevelFilter>("all");
@@ -676,7 +677,7 @@ export function ResourceLibrary({
             <button
               type="button"
               onClick={() => {
-                setLanguage("koreanOrCaption");
+                setLanguage(localeAwareDefaults.resourceLanguage);
                 setResourceType("all");
                 setLevel("all");
                 setSortMode("language");
