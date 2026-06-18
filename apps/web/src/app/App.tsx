@@ -37,6 +37,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { ComponentType, FormEvent, ReactNode } from "react";
 
 import {
+  aiCodingTools,
   benchmarkEntries,
   calculateModelCosts,
   comparisonProviderOrder,
@@ -48,6 +49,7 @@ import {
   curationMonitors,
   featureBacklog,
   getBenchmarkDomainLabel,
+  getAiCodingToolCategoryLabel,
   getCatalogStats,
   getModelById,
   getProviderLabel,
@@ -69,6 +71,8 @@ import {
   updates,
   vibeCodingCommands,
   type BenchmarkDomain,
+  type AiCodingToolCategory,
+  type AiCodingToolProfile,
   type ContentCategory,
   type CurationMonitor,
   type FeatureBacklogItem,
@@ -95,6 +99,14 @@ type ResourceProviderFilter = ProviderId | "all";
 type BenchmarkDomainFilter = BenchmarkDomain | "all";
 type VibeSurfaceFilter = VibeCodingCommand["surface"] | "all";
 type VibeFitFilter = VibeCodingCommand["vibeCodingFit"] | "all";
+type AiCodingToolCategoryFilter = AiCodingToolCategory | "all";
+type AiCodingToolPricingFilter =
+  | "all"
+  | "free"
+  | "student"
+  | "trial"
+  | "enterprise"
+  | "openSource";
 type SourceKindFilter = SourceRef["kind"] | "all";
 type TaskRecommendationCategoryFilter = TaskRecommendationCategory | "all";
 
@@ -113,6 +125,7 @@ const categoryFilters: Array<{ id: CategoryFilter; label: string }> = [
   { id: "updates", label: "업데이트" },
   { id: "recommendations", label: "추천" },
   { id: "vibe", label: "바이브 코딩" },
+  { id: "tools", label: "AI 도구" },
   { id: "design", label: "디자인/PPT" },
   { id: "comparison", label: "모델 비교" },
   { id: "benchmarks", label: "벤치마크" },
@@ -129,6 +142,7 @@ const navItems = [
   { href: "#events", label: "이벤트", icon: Sparkles },
   { href: "#task-recommendations", label: "작업 추천", icon: Sparkles },
   { href: "#webzine", label: "웹진", icon: Newspaper },
+  { href: "#ai-tools", label: "AI 도구", icon: Boxes },
   { href: "#vibe-coding", label: "바이브 코딩", icon: Code2 },
   { href: "#design", label: "디자인/PPT", icon: Palette },
   { href: "#comparison", label: "모델 비교", icon: Table2 },
@@ -275,6 +289,7 @@ async function copyText(text: string) {
 const providerSummary = [
   { label: "제공사", value: `${stats.providers}` },
   { label: "업데이트", value: `${stats.updates}` },
+  { label: "AI 도구", value: `${stats.aiCodingTools}` },
   { label: "벤치마크", value: `${stats.benchmarkRows}` },
   { label: "출처", value: `${stats.sources}` },
 ] as const;
@@ -601,7 +616,7 @@ function Briefing({
             벤치마크 원문 <ExternalLink className="size-3.5" aria-hidden />
           </a>
         </div>
-        <div className="mt-5 grid gap-2 sm:grid-cols-4">
+        <div className="mt-5 grid gap-2 sm:grid-cols-5">
           {providerSummary.map((item) => (
             <div
               key={item.label}
@@ -1132,6 +1147,230 @@ function TaskRecommendationSection({
   );
 }
 
+function matchesToolPricing(
+  tool: AiCodingToolProfile,
+  pricingMode: AiCodingToolPricingFilter,
+) {
+  if (pricingMode === "all") return true;
+
+  const combined = [
+    tool.pricing,
+    tool.eventSignal,
+    ...tool.tags,
+    ...tool.caveats,
+  ]
+    .join(" ")
+    .toLocaleLowerCase("ko-KR");
+
+  switch (pricingMode) {
+    case "free":
+      return /무료|free|basic|community/.test(combined);
+    case "student":
+      return /학생|student|education|edu|교육/.test(combined);
+    case "trial":
+      return /체험|trial|preview|베타/.test(combined);
+    case "enterprise":
+      return /enterprise|team|business|pro\+|엔터프라이즈|팀/.test(combined);
+    case "openSource":
+      return /오픈소스|open-source|self-host|로컬|자체/.test(combined);
+  }
+}
+
+function CodingToolDirectorySection({
+  tools,
+}: {
+  tools: AiCodingToolProfile[];
+}) {
+  const [category, setCategory] = useState<AiCodingToolCategoryFilter>("all");
+  const [pricingMode, setPricingMode] =
+    useState<AiCodingToolPricingFilter>("all");
+  const [query, setQuery] = useState("");
+
+  const toolCategoryFilters: Array<{
+    id: AiCodingToolCategoryFilter;
+    label: string;
+  }> = [
+    "all",
+    "AI IDE",
+    "IDE 확장",
+    "CLI/터미널",
+    "PR 리뷰",
+    "웹앱 제작",
+    "클라우드 에이전트",
+    "오픈소스 스택",
+  ].map((id) => ({
+    id: id as AiCodingToolCategoryFilter,
+    label: getAiCodingToolCategoryLabel(id as AiCodingToolCategoryFilter),
+  }));
+  const pricingFilters: Array<{
+    id: AiCodingToolPricingFilter;
+    label: string;
+  }> = [
+    { id: "all", label: "전체" },
+    { id: "free", label: "무료/프리" },
+    { id: "student", label: "학생" },
+    { id: "trial", label: "체험" },
+    { id: "enterprise", label: "팀/엔터프라이즈" },
+    { id: "openSource", label: "오픈소스/자체" },
+  ];
+
+  const filteredTools = useMemo(() => {
+    const normalizedQuery = query.toLocaleLowerCase("ko-KR").trim();
+
+    return tools.filter((tool) => {
+      const searchable = [
+        tool.toolName,
+        tool.vendor,
+        tool.category,
+        tool.pricing,
+        tool.eventSignal,
+        ...tool.bestFor,
+        ...tool.integrations,
+        ...tool.koreanResources,
+        ...tool.caveats,
+        ...tool.tags,
+      ]
+        .join(" ")
+        .toLocaleLowerCase("ko-KR");
+
+      return (
+        (category === "all" || tool.category === category) &&
+        matchesToolPricing(tool, pricingMode) &&
+        (!normalizedQuery || searchable.includes(normalizedQuery))
+      );
+    });
+  }, [category, pricingMode, query, tools]);
+
+  return (
+    <section id="ai-tools" className="space-y-4">
+      <SectionHeader
+        icon={Boxes}
+        title="AI 코딩 도구 디렉터리"
+        description="Cursor, Copilot, Junie, Amazon Q, Gemini Code Assist, Jules, Amp, Zed, Augment, Tabnine, CodeRabbit, TRAE와 오픈소스 스택을 도구 관점으로 비교합니다."
+      />
+      <div className="grid gap-4 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1fr_18rem]">
+        <SegmentBar
+          label="도구 유형"
+          items={toolCategoryFilters}
+          value={category}
+          onChange={setCategory}
+        />
+        <SegmentBar
+          label="가격/혜택"
+          items={pricingFilters}
+          value={pricingMode}
+          onChange={setPricingMode}
+        />
+        <label className="block min-w-0">
+          <span className="text-xs font-semibold text-text-subtle">
+            도구 검색
+          </span>
+          <div className="mt-2 flex h-10 items-center gap-2 rounded-md border border-border bg-bg px-3">
+            <Search className="size-4 shrink-0 text-text-subtle" aria-hidden />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Cursor, 학생, PR 리뷰"
+              className="min-w-0 flex-1 bg-transparent text-sm text-text outline-none placeholder:text-text-subtle"
+            />
+          </div>
+        </label>
+      </div>
+
+      {filteredTools.length ? (
+        <div className="grid gap-4 lg:grid-cols-2">
+          {filteredTools.map((tool) => {
+            const toolSources = getSources(tool.sourceIds).slice(0, 4);
+            return (
+              <article
+                key={tool.id}
+                className="rounded-lg border border-border bg-surface p-4"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-accent">
+                      {tool.vendor} · {tool.category}
+                    </p>
+                    <h3 className="mt-1 text-base font-semibold text-text">
+                      {tool.toolName}
+                    </h3>
+                  </div>
+                  <span className="rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-subtle">
+                    {tool.providerIds?.length
+                      ? tool.providerIds.map(getProviderLabel).join(" · ")
+                      : "도구 독립"}
+                  </span>
+                </div>
+
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  <div className="rounded-md border border-border bg-bg p-3">
+                    <p className="text-xs font-semibold text-text-subtle">
+                      가격/플랜
+                    </p>
+                    <p className="mt-1 text-sm leading-6 text-text-muted">
+                      {tool.pricing}
+                    </p>
+                  </div>
+                  <div className="rounded-md border border-border bg-bg p-3">
+                    <p className="text-xs font-semibold text-text-subtle">
+                      이벤트/혜택 신호
+                    </p>
+                    <p className="mt-1 text-sm leading-6 text-text-muted">
+                      {tool.eventSignal}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4 grid gap-4 md:grid-cols-3">
+                  <TextList title="추천 업무" items={tool.bestFor} />
+                  <TextList title="연동" items={tool.integrations} />
+                  <TextList title="주의점" items={tool.caveats} />
+                </div>
+
+                <div className="mt-4">
+                  <p className="text-xs font-semibold text-text-subtle">
+                    한국어 자료/검색 허브
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {tool.koreanResources.map((resource) => (
+                      <span
+                        key={resource}
+                        className="rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted"
+                      >
+                        {resource}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {toolSources.map((source) => (
+                    <a
+                      key={source.id}
+                      href={source.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+                    >
+                      {source.publisher}
+                      <ExternalLink className="size-3" aria-hidden />
+                    </a>
+                  ))}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      ) : (
+        <EmptyState
+          title="조건에 맞는 AI 코딩 도구가 없습니다"
+          body="도구 유형, 가격/혜택, 검색어를 전체 기준으로 바꾸면 다시 표시됩니다."
+        />
+      )}
+    </section>
+  );
+}
+
 function fitClass(fit: VibeCodingCommand["vibeCodingFit"]) {
   switch (fit) {
     case "매우 높음":
@@ -1517,7 +1756,7 @@ function BenchmarkBoard() {
       <SectionHeader
         icon={BarChart3}
         title="벤치마크와 비용"
-        description="Artificial Analysis와 공식 문서 기반 운영 지표를 분야별로 나누어 가격, 속도, latency, context와 함께 봅니다."
+        description="Artificial Analysis, LM Arena, HELM, SWE-bench, LiveCodeBench, Aider, BFCL, Terminal-Bench, OSWorld, WebArena, MMMU, DocVQA, ChartQA를 분야별로 나누어 점수·규모·비용·latency와 함께 봅니다."
       />
       <SegmentBar
         label="분야"
@@ -1532,7 +1771,7 @@ function BenchmarkBoard() {
           <span className="hidden md:block">가격</span>
           <span className="hidden md:block">속도</span>
           <span className="hidden md:block">Latency</span>
-          <span className="text-right">점수</span>
+          <span className="text-right">점수/규모</span>
         </div>
         {visibleEntries.map((entry) => {
           const numericScore = Number(entry.score.replace("*", "")) || 0;
@@ -3305,12 +3544,14 @@ function AdminRoute({
 function ResourcesRoute({
   resources,
   recommendations,
+  toolProfiles,
   vibeCommands,
   sourceItems,
   onNavigate,
 }: {
   resources: LearningResource[];
   recommendations: TaskRecommendation[];
+  toolProfiles: AiCodingToolProfile[];
   vibeCommands: VibeCodingCommand[];
   sourceItems: SourceRef[];
   onNavigate: (route: AppRoute) => void;
@@ -3348,7 +3589,7 @@ function ResourcesRoute({
               포털로
             </button>
           </div>
-          <div className="mt-5 grid gap-3 md:grid-cols-4">
+          <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
             <AdminMetricCard
               label="자료"
               value={`${resources.length}`}
@@ -3368,6 +3609,12 @@ function ResourcesRoute({
               icon={FileText}
             />
             <AdminMetricCard
+              label="AI 도구"
+              value={`${toolProfiles.length}`}
+              detail="IDE, CLI, PR 리뷰, 에이전트"
+              icon={Boxes}
+            />
+            <AdminMetricCard
               label="출처"
               value={`${sourceItems.length}`}
               detail="공식/출판사/커뮤니티"
@@ -3377,6 +3624,7 @@ function ResourcesRoute({
         </section>
 
         <TaskRecommendationSection recommendations={recommendations} />
+        <CodingToolDirectorySection tools={toolProfiles} />
         <ResourceLibrary resources={resources} />
         <VibeCodingSection commands={vibeCommands} />
         <BenchmarkBoard />
@@ -3505,6 +3753,12 @@ export default function App() {
       : hasActiveFilter
         ? []
         : vibeCodingCommands;
+  const visibleAiCodingTools =
+    results.aiCodingTools.length > 0
+      ? results.aiCodingTools
+      : hasActiveFilter
+        ? []
+        : aiCodingTools;
   const visibleTaskRecommendations =
     results.taskRecommendations.length > 0
       ? results.taskRecommendations
@@ -3567,6 +3821,7 @@ export default function App() {
         <ResourcesRoute
           resources={visibleResources}
           recommendations={visibleTaskRecommendations}
+          toolProfiles={visibleAiCodingTools}
           vibeCommands={visibleVibeCommands}
           sourceItems={visibleSources}
           onNavigate={navigateToRoute}
@@ -3600,6 +3855,7 @@ export default function App() {
               <TaskRecommendationSection
                 recommendations={visibleTaskRecommendations}
               />
+              <CodingToolDirectorySection tools={visibleAiCodingTools} />
               <VibeCodingSection commands={visibleVibeCommands} />
               <DesignWorkflowSection />
               <ModelCards

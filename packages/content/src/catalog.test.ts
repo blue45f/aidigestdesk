@@ -127,6 +127,52 @@ describe("catalog search", () => {
     ).toBe(true);
   });
 
+  it("finds expanded AI coding tool profiles", () => {
+    const jetBrainsResults = searchCatalog("JetBrains", "all", "tools");
+    expect(
+      jetBrainsResults.aiCodingTools.some(
+        (tool) => tool.id === "tool-jetbrains-junie",
+      ),
+    ).toBe(true);
+
+    const codeRabbitResults = searchCatalog("PR 리뷰", "all", "tools");
+    expect(
+      codeRabbitResults.aiCodingTools.some(
+        (tool) => tool.id === "tool-coderabbit",
+      ),
+    ).toBe(true);
+
+    const studentResults = searchCatalog("학생", "all", "tools");
+    expect(
+      studentResults.aiCodingTools.some(
+        (tool) => tool.id === "tool-github-copilot",
+      ),
+    ).toBe(true);
+  });
+
+  it("finds expanded benchmark and Korean course sources", () => {
+    const sweBenchResults = searchCatalog("SWE-bench", "all", "benchmarks");
+    expect(
+      sweBenchResults.benchmarks.some(
+        (entry) => entry.id === "swebench-verified-coverage",
+      ),
+    ).toBe(true);
+
+    const aiderResults = searchCatalog("Aider", "all", "benchmarks");
+    expect(
+      aiderResults.benchmarks.some(
+        (entry) => entry.id === "aider-gpt5-high-polyglot",
+      ),
+    ).toBe(true);
+
+    const courseResults = searchCatalog("노마드코더", "all", "learning");
+    expect(
+      courseResults.resources.some(
+        (resource) => resource.id === "res-korean-course-platforms",
+      ),
+    ).toBe(true);
+  });
+
   it("finds task recommendations by user intent", () => {
     const cursorResults = searchCatalog(
       "버그 수정",
@@ -156,13 +202,14 @@ describe("catalog search", () => {
   it("exposes summary stats", () => {
     expect(getCatalogStats()).toMatchObject({
       providers: 10,
-      updates: 30,
-      benchmarkRows: 13,
+      updates: 33,
+      benchmarkRows: 32,
       vibeCommands: 9,
+      aiCodingTools: 14,
       personaGuides: 5,
       taskRecommendations: 8,
-      monitors: 25,
-      pipelineItems: 8,
+      monitors: 32,
+      pipelineItems: 9,
       costProfiles: 10,
     });
   });

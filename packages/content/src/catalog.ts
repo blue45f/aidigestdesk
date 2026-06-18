@@ -16,6 +16,7 @@ export type ContentCategory =
   | "updates"
   | "recommendations"
   | "vibe"
+  | "tools"
   | "design"
   | "comparison"
   | "benchmarks"
@@ -120,6 +121,31 @@ export type VibeCodingCommand = {
   setupNotes: string[];
   caveats: string[];
   sourceIds: string[];
+};
+
+export type AiCodingToolCategory =
+  | "AI IDE"
+  | "IDE 확장"
+  | "CLI/터미널"
+  | "PR 리뷰"
+  | "웹앱 제작"
+  | "클라우드 에이전트"
+  | "오픈소스 스택";
+
+export type AiCodingToolProfile = {
+  id: string;
+  toolName: string;
+  vendor: string;
+  category: AiCodingToolCategory;
+  providerIds?: ProviderId[];
+  pricing: string;
+  eventSignal: string;
+  bestFor: string[];
+  integrations: string[];
+  koreanResources: string[];
+  caveats: string[];
+  sourceIds: string[];
+  tags: string[];
 };
 
 export type ComparisonRow = {
@@ -275,6 +301,7 @@ export type SearchResults = {
   models: ModelProfile[];
   updates: UpdateItem[];
   taskRecommendations: TaskRecommendation[];
+  aiCodingTools: AiCodingToolProfile[];
   benchmarks: BenchmarkEntry[];
   manuals: ManualGuide[];
   personaGuides: PersonaGuide[];
@@ -749,6 +776,132 @@ export const sources: SourceRef[] = [
     note: "상용·오픈 모델의 Intelligence Index, 가격, 속도, latency, context 비교 출처.",
   },
   {
+    id: "lmarena-leaderboard",
+    title: "Arena Leaderboard",
+    publisher: "LMArena",
+    kind: "benchmark",
+    url: "https://arena.ai/leaderboard",
+    lastChecked: SNAPSHOT_DATE,
+    note: "사용자 선호 기반 Elo/arena 방식으로 frontier model 응답 품질을 비교하는 리더보드.",
+  },
+  {
+    id: "scale-leaderboard",
+    title: "Scale Labs Leaderboard",
+    publisher: "Scale Labs",
+    kind: "benchmark",
+    url: "https://labs.scale.com/leaderboard",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Scale Labs의 AI 모델 리더보드와 실무형 평가 신호를 확인하는 벤치마크 허브.",
+  },
+  {
+    id: "helm-leaderboard",
+    title: "HELM",
+    publisher: "Stanford CRFM",
+    kind: "benchmark",
+    url: "https://crfm.stanford.edu/helm/latest/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Stanford CRFM의 Holistic Evaluation of Language Models. 정확도, calibration, robustness, fairness, bias, toxicity, efficiency 등 다축 평가 출처.",
+  },
+  {
+    id: "swebench-leaderboard",
+    title: "SWE-bench Leaderboards",
+    publisher: "SWE-bench",
+    kind: "benchmark",
+    url: "https://www.swebench.com/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "SWE-bench Full/Verified/Lite/Multilingual/Multimodal 리더보드, resolved %, cost/step 비교, 실제 GitHub issue 해결 능력 평가 출처.",
+  },
+  {
+    id: "livecodebench-leaderboard",
+    title: "LiveCodeBench Leaderboard",
+    publisher: "LiveCodeBench",
+    kind: "benchmark",
+    url: "https://livecodebench.github.io/leaderboard.html",
+    lastChecked: SNAPSHOT_DATE,
+    note: "contamination-free coding evaluation, Pass@1, 난이도별 programming task 성능을 확인하는 코딩 벤치마크.",
+  },
+  {
+    id: "aider-polyglot-leaderboard",
+    title: "Aider LLM Leaderboards",
+    publisher: "Aider",
+    kind: "benchmark",
+    url: "https://aider.chat/docs/leaderboards/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Aider polyglot benchmark. 225개 Exercism 코딩 과제를 C++, Go, Java, JavaScript, Python, Rust로 평가하며 비용, 명령어, edit format 정확도를 함께 제공.",
+  },
+  {
+    id: "bigcodebench-leaderboard",
+    title: "BigCodeBench Leaderboard",
+    publisher: "BigCodeBench",
+    kind: "benchmark",
+    url: "https://bigcode-bench.github.io/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "1140개 practical programming task와 Hard subset, Complete/Instruct(Vibe Check) coding ability 평가 출처.",
+  },
+  {
+    id: "bfcl-leaderboard",
+    title: "Berkeley Function Calling Leaderboard",
+    publisher: "Berkeley Gorilla",
+    kind: "benchmark",
+    url: "https://gorilla.cs.berkeley.edu/leaderboard.html",
+    lastChecked: SNAPSHOT_DATE,
+    note: "BFCL V4 함수 호출, tool use, AST/API call 정확도를 비교하는 도구 호출 벤치마크.",
+  },
+  {
+    id: "terminal-bench",
+    title: "Terminal-Bench",
+    publisher: "Terminal-Bench",
+    kind: "benchmark",
+    url: "https://www.tbench.ai/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Linux terminal에서 복합 개발/운영 작업을 수행하는 agent 능력을 평가하는 터미널 벤치마크.",
+  },
+  {
+    id: "osworld-benchmark",
+    title: "OSWorld",
+    publisher: "OSWorld",
+    kind: "benchmark",
+    url: "https://os-world.github.io/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "실제 컴퓨터 환경에서 open-ended GUI task를 수행하는 multimodal computer-use agent 벤치마크.",
+  },
+  {
+    id: "webarena-benchmark",
+    title: "WebArena",
+    publisher: "WebArena",
+    kind: "benchmark",
+    url: "https://webarena.dev/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "웹사이트 조작, 탐색, 정보 입력, 설정 변경 등 web agent task 평가를 위한 벤치마크 허브.",
+  },
+  {
+    id: "mmmu-benchmark",
+    title: "MMMU",
+    publisher: "MMMU",
+    kind: "benchmark",
+    url: "https://mmmu-benchmark.github.io/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "대학 수준의 Art & Design, Business, Science, Health, Humanities, Tech & Engineering 멀티모달 추론 벤치마크.",
+  },
+  {
+    id: "docvqa-benchmark",
+    title: "DocVQA",
+    publisher: "DocVQA",
+    kind: "benchmark",
+    url: "https://www.docvqa.org/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "문서 이미지, 양식, 표, 스캔 문서 기반 질의응답을 평가하는 문서 이해 벤치마크.",
+  },
+  {
+    id: "chartqa-benchmark",
+    title: "ChartQA",
+    publisher: "ChartQA",
+    kind: "benchmark",
+    url: "https://github.com/vis-nlp/ChartQA",
+    lastChecked: SNAPSHOT_DATE,
+    note: "차트/그래프 질의응답을 평가하는 시각 자료 이해 벤치마크. PPT/리포트 분석 품질의 보조 지표로 사용.",
+  },
+  {
     id: "openai-videos",
     title: "OpenAI Developer Videos",
     publisher: "OpenAI Developers",
@@ -965,6 +1118,186 @@ export const sources: SourceRef[] = [
     note: "GitHub Copilot, Copilot Chat, agent mode, CLI/IDE 설정과 조직 정책을 확인하는 공식 문서.",
   },
   {
+    id: "github-copilot-plans",
+    title: "GitHub Copilot Plans",
+    publisher: "GitHub Docs",
+    kind: "official",
+    url: "https://docs.github.com/en/copilot/get-started/plans",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Copilot Free, Student, Pro, Pro+, Max, Business, Enterprise 플랜, AI Credits, agent/cloud/code review/MCP 기능 매트릭스와 일시 중단 안내 확인 출처.",
+  },
+  {
+    id: "github-education-pack",
+    title: "GitHub Student Developer Pack",
+    publisher: "GitHub Education",
+    kind: "official",
+    url: "https://education.github.com/pack",
+    lastChecked: SNAPSHOT_DATE,
+    note: "GitHub Copilot 학생 혜택 상태, GitHub Pro, JetBrains 학생 구독 등 개발자 도구 교육 혜택을 확인하는 공식 허브.",
+  },
+  {
+    id: "jetbrains-ai",
+    title: "JetBrains AI",
+    publisher: "JetBrains",
+    kind: "official",
+    url: "https://www.jetbrains.com/ai/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "JetBrains AI Assistant, 코드 완성, IDE 통합, 팀/엔터프라이즈 AI 기능과 가격 진입점을 확인하는 공식 제품 페이지.",
+  },
+  {
+    id: "jetbrains-junie",
+    title: "Junie by JetBrains",
+    publisher: "JetBrains",
+    kind: "official",
+    url: "https://www.jetbrains.com/junie/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "JetBrains IDE 안에서 동작하는 Junie AI coding agent의 제품 포지션, 지원 IDE, 사용 흐름을 확인하는 공식 페이지.",
+  },
+  {
+    id: "jetbrains-student-pack",
+    title: "Free JetBrains Student Pack",
+    publisher: "JetBrains",
+    kind: "official",
+    url: "https://www.jetbrains.com/academy/student-pack/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "JetBrains 학생용 무료 개발 도구와 교육 혜택을 확인하는 공식 학생 팩 페이지.",
+  },
+  {
+    id: "amazon-q-developer-docs",
+    title: "What is Amazon Q Developer?",
+    publisher: "AWS Docs",
+    kind: "official",
+    url: "https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/what-is.html",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Amazon Q Developer의 IDE/CLI, 코드 완성, 보안 스캔, 업그레이드/디버깅 지원과 AWS Builder ID 무료 로그인 경로 확인 출처.",
+  },
+  {
+    id: "amazon-q-developer-pricing",
+    title: "Amazon Q Developer Pricing",
+    publisher: "AWS",
+    kind: "official",
+    url: "https://aws.amazon.com/q/developer/pricing/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Amazon Q Developer Free tier, Pro $19/user/month, agentic requests, Java/.NET transformation LOC 한도와 과금 방식을 확인하는 공식 가격 페이지.",
+  },
+  {
+    id: "sourcegraph-amp-manual",
+    title: "Amp Owner's Manual",
+    publisher: "Amp",
+    kind: "official",
+    url: "https://ampcode.com/manual",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Amp CLI 설치, deep/smart/rush 모드, Oracle, subagents, AGENTS.md, IDE 연동, thread sharing과 모델 사용 정책을 확인하는 공식 매뉴얼.",
+  },
+  {
+    id: "sourcegraph-pricing",
+    title: "Sourcegraph Pricing",
+    publisher: "Sourcegraph",
+    kind: "official",
+    url: "https://sourcegraph.com/pricing",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Sourcegraph 엔터프라이즈 가격, AI 기능 크레딧, MCP server, CLI, Cursor/Codex/Amp/Claude Code 연동을 확인하는 공식 가격 페이지.",
+  },
+  {
+    id: "zed-ai",
+    title: "Zed AI",
+    publisher: "Zed",
+    kind: "official",
+    url: "https://zed.dev/ai",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Zed의 agentic editing, 실시간 협업, unified diff review, ACP 기반 Claude Agent/Codex/OpenCode 연동과 MCP 지원 출처.",
+  },
+  {
+    id: "augment-docs",
+    title: "Augment Documentation",
+    publisher: "Augment Code",
+    kind: "official",
+    url: "https://docs.augmentcode.com/introduction",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Augment, Cosmos, Auggie CLI, Context Engine, VS Code/JetBrains/Vim/Neovim, Code Review, Slack, admin/analytics 문서 출처.",
+  },
+  {
+    id: "augment-pricing",
+    title: "Augment Pricing",
+    publisher: "Augment Code",
+    kind: "official",
+    url: "https://www.augmentcode.com/pricing",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Augment Business $100/month flat, up to 50 seats, usage included, CLI/MCP/Cosmos/Context Engine 포함 여부를 확인하는 공식 가격 페이지.",
+  },
+  {
+    id: "tabnine-docs",
+    title: "Tabnine Documentation",
+    publisher: "Tabnine",
+    kind: "official",
+    url: "https://docs.tabnine.com/main",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Tabnine AI code assistant, IDE/CLI, context, enterprise/privacy deployment 문서 출처.",
+  },
+  {
+    id: "tabnine-pricing",
+    title: "Tabnine Pricing",
+    publisher: "Tabnine",
+    kind: "official",
+    url: "https://www.tabnine.com/pricing/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Tabnine Code Assistant $39/user/month, Agentic Platform $59/user/month, CLI, Context Engine, SaaS/VPC/on-prem/air-gapped, zero retention 정책 확인 출처.",
+  },
+  {
+    id: "coderabbit-docs",
+    title: "CodeRabbit Documentation",
+    publisher: "CodeRabbit",
+    kind: "official",
+    url: "https://docs.coderabbit.ai/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "CodeRabbit AI code review, PR summaries, IDE/CLI reviews, CodeRabbit Plan, Slack agent, pre-merge checks, Autofix, unit test generation 문서 출처.",
+  },
+  {
+    id: "coderabbit-pricing",
+    title: "CodeRabbit Pricing",
+    publisher: "CodeRabbit",
+    kind: "official",
+    url: "https://www.coderabbit.ai/pricing",
+    lastChecked: SNAPSHOT_DATE,
+    note: "CodeRabbit Pro/Pro Plus/Enterprise, 무료 공개 저장소 리뷰, Slack agent minute 과금, PR 리뷰 제한과 기능 비교 출처.",
+  },
+  {
+    id: "google-jules-docs",
+    title: "Jules Getting Started",
+    publisher: "Google Jules",
+    kind: "official",
+    url: "https://jules.google/docs",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Google Jules의 GitHub 연동, 가상 머신 기반 작업 실행, 계획/리뷰/예약 작업, CLI/API/통합 문서를 확인하는 공식 문서.",
+  },
+  {
+    id: "gemini-code-assist-ko",
+    title: "Gemini Code Assist Korean Product Page",
+    publisher: "Google Code Assist",
+    kind: "official",
+    url: "https://codeassist.google/products/business?hl=ko",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Gemini Code Assist의 한국어 제품 설명, VS Code/JetBrains/Cloud Workstations, Gemini CLI, smart actions, 엔터프라이즈 보안과 가격표 출처.",
+  },
+  {
+    id: "trae-docs",
+    title: "TRAE Documentation",
+    publisher: "TRAE",
+    kind: "official",
+    url: "https://docs.trae.ai/ide/trae-solo-is-now-available?_lang=en",
+    lastChecked: SNAPSHOT_DATE,
+    note: "TRAE IDE와 SOLO mode, cloud task, 문서 진입점을 확인하는 공식 문서.",
+  },
+  {
+    id: "trae-pricing",
+    title: "TRAE Pricing",
+    publisher: "TRAE",
+    kind: "official",
+    url: "https://www.trae.ai/pricing",
+    lastChecked: SNAPSHOT_DATE,
+    note: "TRAE Free/Lite/Pro/Pro+/Ultra, 7일 Pro trial, Basic usage, Autocomplete, concurrent cloud tasks, SOLO mode 포함 여부 확인 출처.",
+  },
+  {
     id: "devin-docs",
     title: "Devin Documentation",
     publisher: "Cognition",
@@ -1062,6 +1395,60 @@ export const sources: SourceRef[] = [
     url: "https://www.youtube.com/results?search_query=GitHub+Copilot+%ED%95%9C%EA%B5%AD%EC%96%B4+%EA%B0%95%EC%A2%8C",
     lastChecked: SNAPSHOT_DATE,
     note: "GitHub Copilot, Copilot Chat, agent mode 관련 한국어 유튜브 강좌 후보 검색 링크.",
+  },
+  {
+    id: "youtube-jetbrains-junie-korean-search",
+    title: "JetBrains Junie Korean YouTube Search",
+    publisher: "YouTube",
+    kind: "community",
+    url: "https://www.youtube.com/results?search_query=JetBrains+Junie+AI+%EC%BD%94%EB%94%A9+%ED%95%9C%EA%B5%AD%EC%96%B4",
+    lastChecked: SNAPSHOT_DATE,
+    note: "JetBrains AI, Junie, IntelliJ/WebStorm AI 코딩 에이전트 관련 한국어 영상 후보를 찾는 검색 링크.",
+  },
+  {
+    id: "youtube-amazon-q-korean-search",
+    title: "Amazon Q Developer Korean YouTube Search",
+    publisher: "YouTube",
+    kind: "community",
+    url: "https://www.youtube.com/results?search_query=Amazon+Q+Developer+%ED%95%9C%EA%B5%AD%EC%96%B4+%EA%B0%95%EC%A2%8C",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Amazon Q Developer, AWS IDE/CLI AI 코딩, 코드 변환 관련 한국어 영상 후보 검색 링크.",
+  },
+  {
+    id: "youtube-augment-korean-search",
+    title: "Augment Code Korean YouTube Search",
+    publisher: "YouTube",
+    kind: "community",
+    url: "https://www.youtube.com/results?search_query=Augment+Code+AI+%EC%BD%94%EB%94%A9+%ED%95%9C%EA%B5%AD%EC%96%B4",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Augment Code, Auggie CLI, enterprise coding agent 관련 한국어 영상 후보 검색 링크.",
+  },
+  {
+    id: "youtube-tabnine-korean-search",
+    title: "Tabnine Korean YouTube Search",
+    publisher: "YouTube",
+    kind: "community",
+    url: "https://www.youtube.com/results?search_query=Tabnine+AI+%EC%BD%94%EB%94%A9+%ED%95%9C%EA%B5%AD%EC%96%B4",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Tabnine AI code assistant, privacy-first coding assistant 관련 한국어 영상 후보 검색 링크.",
+  },
+  {
+    id: "youtube-coderabbit-korean-search",
+    title: "CodeRabbit Korean YouTube Search",
+    publisher: "YouTube",
+    kind: "community",
+    url: "https://www.youtube.com/results?search_query=CodeRabbit+AI+%EC%BD%94%EB%93%9C+%EB%A6%AC%EB%B7%B0+%ED%95%9C%EA%B5%AD%EC%96%B4",
+    lastChecked: SNAPSHOT_DATE,
+    note: "CodeRabbit AI code review, PR 리뷰 자동화 관련 한국어 영상 후보 검색 링크.",
+  },
+  {
+    id: "youtube-trae-korean-search",
+    title: "TRAE Korean YouTube Search",
+    publisher: "YouTube",
+    kind: "community",
+    url: "https://www.youtube.com/results?search_query=TRAE+AI+IDE+%ED%95%9C%EA%B5%AD%EC%96%B4",
+    lastChecked: SNAPSHOT_DATE,
+    note: "TRAE AI IDE, SOLO mode, cloud task 관련 한국어 영상 후보 검색 링크.",
   },
   {
     id: "youtube-v0-lovable-bolt-korean-search",
@@ -1460,6 +1847,123 @@ export const sources: SourceRef[] = [
     note: "AI 연구 커뮤니티, 풀잎스쿨, 랩, 세미나와 학습 모임을 찾는 국내 커뮤니티 교육 허브.",
   },
   {
+    id: "nomadcoders",
+    title: "Nomad Coders",
+    publisher: "Nomad Coders",
+    kind: "publisher",
+    url: "https://nomadcoders.co/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "한국어 웹/앱 개발 강좌, 프론트엔드/백엔드/풀스택 학습 경로와 AI 코딩 관련 신규 강좌 후보를 찾는 플랫폼.",
+  },
+  {
+    id: "dreamcoding-academy",
+    title: "Dream Coding Academy",
+    publisher: "Dream Coding",
+    kind: "publisher",
+    url: "https://academy.dream-coding.com/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "드림코딩의 프론트엔드, 실무 개발, 생산성·AI 도구 관련 신규 강좌 후보를 찾는 한국어 강좌 플랫폼.",
+  },
+  {
+    id: "class101-dev-ai",
+    title: "CLASS101",
+    publisher: "CLASS101",
+    kind: "publisher",
+    url: "https://class101.net/ko",
+    lastChecked: SNAPSHOT_DATE,
+    note: "클래스101의 AI 활용, 업무 자동화, 디자인·개발·크리에이터 강좌 후보를 찾는 구독형 강좌 플랫폼.",
+  },
+  {
+    id: "coloso-dev-ai",
+    title: "Coloso",
+    publisher: "Coloso",
+    kind: "publisher",
+    url: "https://coloso.co.kr/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "콜로소의 AI, 디자인, 3D, 개발, 생산성 실무 강좌 후보를 찾는 한국어 전문 강좌 플랫폼.",
+  },
+  {
+    id: "wanted-events",
+    title: "Wanted Events",
+    publisher: "Wanted",
+    kind: "publisher",
+    url: "https://www.wanted.co.kr/events",
+    lastChecked: SNAPSHOT_DATE,
+    note: "원티드의 개발자 커리어, AI/데이터/제품 세미나, 웨비나, 교육 이벤트 후보를 찾는 이벤트 허브.",
+  },
+  {
+    id: "likelion-school",
+    title: "LIKELION",
+    publisher: "LIKELION",
+    kind: "publisher",
+    url: "https://likelion.net/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "멋쟁이사자처럼의 부트캠프, AI/개발 교육, 창업/서비스 제작 프로그램 후보를 확인하는 교육 플랫폼.",
+  },
+  {
+    id: "aiffel-ai",
+    title: "AIFFEL",
+    publisher: "AIFFEL",
+    kind: "publisher",
+    url: "https://aiffel.io/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "AIFFEL의 AI 개발자 교육, 부트캠프, 프로젝트 기반 학습과 원격/오프라인 과정 후보를 확인하는 플랫폼.",
+  },
+  {
+    id: "opentutorials",
+    title: "생활코딩 / OpenTutorials",
+    publisher: "OpenTutorials",
+    kind: "community",
+    url: "https://opentutorials.org/course/1",
+    lastChecked: SNAPSHOT_DATE,
+    note: "생활코딩의 무료 웹/개발 입문 자료와 AI 코딩 입문자가 함께 볼 수 있는 한국어 공개 학습 허브.",
+  },
+  {
+    id: "edwith",
+    title: "edwith",
+    publisher: "edwith",
+    kind: "publisher",
+    url: "https://www.edwith.org/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "edwith의 공개 온라인 강좌, SW/AI/데이터 학습 자료 후보를 찾는 한국어 교육 플랫폼.",
+  },
+  {
+    id: "kocw",
+    title: "KOCW",
+    publisher: "KOCW",
+    kind: "publisher",
+    url: "https://www.kocw.net/home/index.do",
+    lastChecked: SNAPSHOT_DATE,
+    note: "국내 대학 공개 강의, AI/데이터/컴퓨터공학 강좌 후보를 찾는 공공 공개강좌 허브.",
+  },
+  {
+    id: "zerobase",
+    title: "ZeroBase",
+    publisher: "ZeroBase",
+    kind: "publisher",
+    url: "https://zero-base.co.kr/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "제로베이스의 개발, 데이터, PM, AI 활용 부트캠프와 실무 강좌 후보를 찾는 교육 플랫폼.",
+  },
+  {
+    id: "ozcoding",
+    title: "OZ Coding School",
+    publisher: "OZ Coding School",
+    kind: "publisher",
+    url: "https://ozcodingschool.com/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "오즈코딩스쿨의 개발자 교육, 부트캠프, AI/웹 개발 원격 과정 후보를 확인하는 플랫폼.",
+  },
+  {
+    id: "multicampus",
+    title: "Multicampus",
+    publisher: "Multicampus",
+    kind: "publisher",
+    url: "https://www.multicampus.com/",
+    lastChecked: SNAPSHOT_DATE,
+    note: "멀티캠퍼스의 기업교육, AI/데이터/클라우드/개발자 교육 과정과 B2B 원격 교육 후보를 확인하는 플랫폼.",
+  },
+  {
     id: "aihub",
     title: "AI Hub",
     publisher: "AI Hub",
@@ -1521,6 +2025,42 @@ export const sources: SourceRef[] = [
     url: "https://www.inflearn.com/search?s=Cursor",
     lastChecked: SNAPSHOT_DATE,
     note: "Cursor, AI IDE, AI pair programming 강좌 후보를 추적하기 위한 인프런 검색 링크.",
+  },
+  {
+    id: "inflearn-jetbrains-ai",
+    title: "Inflearn JetBrains AI Search",
+    publisher: "Inflearn",
+    kind: "publisher",
+    url: "https://www.inflearn.com/search?s=JetBrains%20AI",
+    lastChecked: SNAPSHOT_DATE,
+    note: "JetBrains AI, Junie, IntelliJ/WebStorm AI 코딩 강좌 후보를 찾는 인프런 검색 링크.",
+  },
+  {
+    id: "inflearn-amazon-q",
+    title: "Inflearn Amazon Q Developer Search",
+    publisher: "Inflearn",
+    kind: "publisher",
+    url: "https://www.inflearn.com/search?s=Amazon%20Q%20Developer",
+    lastChecked: SNAPSHOT_DATE,
+    note: "Amazon Q Developer, AWS AI 코딩, IDE/CLI 개발 보조 강좌 후보를 찾는 인프런 검색 링크.",
+  },
+  {
+    id: "inflearn-coderabbit",
+    title: "Inflearn CodeRabbit Search",
+    publisher: "Inflearn",
+    kind: "publisher",
+    url: "https://www.inflearn.com/search?s=CodeRabbit",
+    lastChecked: SNAPSHOT_DATE,
+    note: "CodeRabbit, AI 코드 리뷰, PR 자동화 강좌 후보를 찾는 인프런 검색 링크.",
+  },
+  {
+    id: "inflearn-trae",
+    title: "Inflearn TRAE Search",
+    publisher: "Inflearn",
+    kind: "publisher",
+    url: "https://www.inflearn.com/search?s=TRAE",
+    lastChecked: SNAPSHOT_DATE,
+    note: "TRAE AI IDE, SOLO mode, AI 개발 도구 강좌 후보를 찾는 인프런 검색 링크.",
   },
   {
     id: "inflearn-codefactory",
@@ -2501,6 +3041,55 @@ export const updates: UpdateItem[] = [
     ],
   },
   {
+    id: "update-ai-coding-tool-directory",
+    providerId: "market",
+    category: "tools",
+    title:
+      "AI 코딩 도구 디렉터리를 IDE·CLI·PR 리뷰·클라우드 에이전트 축으로 확장",
+    date: SNAPSHOT_DATE,
+    summary:
+      "Cursor, GitHub Copilot, JetBrains Junie, Amazon Q Developer, Gemini Code Assist/Jules, Amp, Zed, Augment, Tabnine, CodeRabbit, TRAE, 오픈소스 agent stack, Lovable/Bolt/v0, Devin/Replit/Manus를 별도 비교군으로 추가했다.",
+    impact:
+      "모델 성능표만으로는 바이브 코딩 도구 선택이 어렵기 때문에, 사용 표면·가격·이벤트·한국어 자료·권한 리스크를 함께 필터링할 수 있다.",
+    tags: ["AI 코딩 도구", "도구 디렉터리", "Cursor", "Copilot", "CLI"],
+    sourceIds: [
+      "cursor-docs",
+      "github-copilot-plans",
+      "jetbrains-junie",
+      "amazon-q-developer-docs",
+      "gemini-code-assist-ko",
+      "sourcegraph-amp-manual",
+      "coderabbit-docs",
+      "trae-pricing",
+    ],
+  },
+  {
+    id: "event-github-copilot-student-pack",
+    providerId: "market",
+    category: "events",
+    title: "GitHub Copilot Student와 Education Pack 상태 확인",
+    date: SNAPSHOT_DATE,
+    summary:
+      "GitHub Docs는 Copilot Student 무료 접근을 안내하지만, Student Developer Pack의 Copilot 신규 plan sign-up은 일시 중단 상태로 표시된다.",
+    impact:
+      "학생 대상 AI 코딩 혜택 비교에서는 Copilot 공식 플랜 문서와 Education Pack 상태를 동시에 보여주고, Cursor/JetBrains 학생 혜택과 같이 비교해야 한다.",
+    tags: ["이벤트", "학생 혜택", "Copilot", "Education Pack", "일시 중단"],
+    sourceIds: ["github-copilot-plans", "github-education-pack"],
+  },
+  {
+    id: "event-trae-trial",
+    providerId: "market",
+    category: "events",
+    title: "TRAE Pro 7일 체험과 cloud task 플랜 비교",
+    date: SNAPSHOT_DATE,
+    summary:
+      "TRAE 가격표는 Pro 7일 무료 체험, Lite/Pro/Pro+/Ultra 월 가격, Basic usage와 concurrent cloud tasks 차이를 안내한다.",
+    impact:
+      "Cursor/Windsurf/TRAE 같은 AI IDE 비교에서 무료 체험, SOLO mode, cloud task 병렬 수를 이벤트 비용 축으로 필터링할 수 있다.",
+    tags: ["이벤트", "TRAE", "무료 체험", "AI IDE", "cloud task"],
+    sourceIds: ["trae-pricing", "trae-docs"],
+  },
+  {
     id: "event-openai-academy",
     providerId: "openai",
     category: "events",
@@ -2923,6 +3512,273 @@ export const benchmarkEntries: BenchmarkEntry[] = [
     context: "files/projects",
     sourceIds: ["manus-home", "manus-api", "youtube-manus-search"],
   },
+  {
+    id: "lmarena-user-preference",
+    rankLabel: "Arena",
+    modelName: "Frontier chat models",
+    providerId: "other",
+    domain: "overall",
+    metric: "Human preference Elo leaderboard",
+    score: "100",
+    price: "varies",
+    speed: "model dependent",
+    latency: "model dependent",
+    context: "anonymous pairwise user votes",
+    sourceIds: ["lmarena-leaderboard"],
+  },
+  {
+    id: "helm-holistic",
+    rankLabel: "Holistic",
+    modelName: "HELM scenarios",
+    providerId: "other",
+    domain: "overall",
+    metric:
+      "Accuracy, calibration, robustness, fairness, bias, toxicity, efficiency",
+    score: "7",
+    price: "benchmark dependent",
+    speed: "tracked in efficiency",
+    latency: "tracked in efficiency",
+    context: "multi-metric evaluation",
+    sourceIds: ["helm-leaderboard"],
+  },
+  {
+    id: "scale-labs-practical",
+    rankLabel: "Practical",
+    modelName: "Scale Labs evaluations",
+    providerId: "other",
+    domain: "overall",
+    metric: "Practical model leaderboard hub",
+    score: "100",
+    price: "varies",
+    speed: "varies",
+    latency: "varies",
+    context: "frontier model evals",
+    sourceIds: ["scale-leaderboard"],
+  },
+  {
+    id: "swebench-verified-coverage",
+    rankLabel: "SWE",
+    modelName: "SWE-bench Verified",
+    providerId: "other",
+    domain: "coding",
+    metric: "% resolved on 500 human-filtered GitHub issues",
+    score: "500",
+    price: "agent run cost compared on leaderboard",
+    speed: "step count tracked",
+    latency: "task dependent",
+    context: "500 verified instances",
+    sourceIds: ["swebench-leaderboard"],
+  },
+  {
+    id: "swebench-multilingual-coverage",
+    rankLabel: "SWE",
+    modelName: "SWE-bench Multilingual",
+    providerId: "other",
+    domain: "coding",
+    metric: "% resolved across non-Python language issue tasks",
+    score: "300",
+    price: "agent run cost compared on leaderboard",
+    speed: "step count tracked",
+    latency: "task dependent",
+    context: "300 tasks across 9 programming languages",
+    sourceIds: ["swebench-leaderboard"],
+  },
+  {
+    id: "swebench-multimodal-coverage",
+    rankLabel: "SWE",
+    modelName: "SWE-bench Multimodal",
+    providerId: "other",
+    domain: "multimodal",
+    metric: "% resolved on image-required JavaScript issue tasks",
+    score: "517",
+    price: "agent run cost compared on leaderboard",
+    speed: "step count tracked",
+    latency: "task dependent",
+    context: "517 multimodal issue instances",
+    sourceIds: ["swebench-leaderboard"],
+  },
+  {
+    id: "livecodebench-pass1",
+    rankLabel: "Coding",
+    modelName: "LiveCodeBench",
+    providerId: "other",
+    domain: "coding",
+    metric: "Pass@1, Easy/Medium/Hard contamination-free coding tasks",
+    score: "3",
+    price: "model dependent",
+    speed: "model dependent",
+    latency: "model dependent",
+    context: "leaderboard splits by difficulty",
+    sourceIds: ["livecodebench-leaderboard"],
+  },
+  {
+    id: "aider-gpt5-high-polyglot",
+    rankLabel: "#1 Aider",
+    modelName: "GPT-5 high in Aider",
+    providerId: "openai",
+    domain: "coding",
+    metric: "Aider Polyglot benchmark percent correct",
+    score: "88.0",
+    price: "$29.08 total benchmark cost",
+    speed: "194.0 sec/case",
+    latency: "225 cases",
+    context: "C++, Go, Java, JavaScript, Python, Rust",
+    sourceIds: ["aider-polyglot-leaderboard"],
+  },
+  {
+    id: "aider-gemini25-polyglot",
+    rankLabel: "Aider",
+    modelName: "Gemini 2.5 Pro preview in Aider",
+    providerId: "google",
+    domain: "coding",
+    metric: "Aider Polyglot benchmark percent correct",
+    score: "83.1",
+    price: "$49.88 total benchmark cost",
+    speed: "200.3 sec/case",
+    latency: "225 cases",
+    context: "diff-fenced edit format, 32K thinking",
+    sourceIds: ["aider-polyglot-leaderboard"],
+  },
+  {
+    id: "aider-grok4-polyglot",
+    rankLabel: "Aider",
+    modelName: "Grok 4 high in Aider",
+    providerId: "xai",
+    domain: "coding",
+    metric: "Aider Polyglot benchmark percent correct",
+    score: "79.6",
+    price: "$59.62 total benchmark cost",
+    speed: "403.2 sec/case",
+    latency: "225 cases",
+    context: "OpenRouter xAI route",
+    sourceIds: ["aider-polyglot-leaderboard"],
+  },
+  {
+    id: "bigcodebench-full",
+    rankLabel: "Coding",
+    modelName: "BigCodeBench Full",
+    providerId: "other",
+    domain: "coding",
+    metric: "Practical programming tasks, Complete/Instruct Vibe Check",
+    score: "1140",
+    price: "model dependent",
+    speed: "model dependent",
+    latency: "model dependent",
+    context: "1140 tasks, hard subset ~150",
+    sourceIds: ["bigcodebench-leaderboard"],
+  },
+  {
+    id: "bfcl-v4-tool-use",
+    rankLabel: "Tool Use",
+    modelName: "Berkeley Function Calling Leaderboard V4",
+    providerId: "other",
+    domain: "agent",
+    metric: "Overall Accuracy, cost, latency for function/tool calling",
+    score: "4",
+    price: "entire benchmark cost estimated",
+    speed: "latency tracked",
+    latency: "seconds",
+    context: "real-world functions, multi-turn, agentic eval",
+    sourceIds: ["bfcl-leaderboard"],
+  },
+  {
+    id: "terminal-bench-agent",
+    rankLabel: "Terminal",
+    modelName: "Terminal-Bench 2.0",
+    providerId: "other",
+    domain: "agent",
+    metric: "Task resolution success-rate for terminal agents",
+    score: "2",
+    price: "run dependent",
+    speed: "agent dependent",
+    latency: "task dependent",
+    context: "Linux terminal, system, security, data-science tasks",
+    sourceIds: ["terminal-bench"],
+  },
+  {
+    id: "osworld-agent",
+    rankLabel: "Computer",
+    modelName: "OSWorld",
+    providerId: "other",
+    domain: "agent",
+    metric: "GUI computer-use agent task success",
+    score: "369",
+    price: "run dependent",
+    speed: "trajectory dependent",
+    latency: "task dependent",
+    context: "369 full tasks or 361 excluding Google Drive tasks",
+    sourceIds: ["osworld-benchmark"],
+  },
+  {
+    id: "webarena-agent",
+    rankLabel: "Web",
+    modelName: "WebArena",
+    providerId: "other",
+    domain: "agent",
+    metric: "Web navigation and website operation task success",
+    score: "812",
+    price: "run dependent",
+    speed: "trajectory dependent",
+    latency: "task dependent",
+    context: "mock websites, web agent actions",
+    sourceIds: ["webarena-benchmark"],
+  },
+  {
+    id: "mmmu-multimodal",
+    rankLabel: "MMMU",
+    modelName: "MMMU / MMMU-Pro",
+    providerId: "other",
+    domain: "multimodal",
+    metric: "College-level multimodal reasoning across 6 disciplines",
+    score: "11500",
+    price: "model dependent",
+    speed: "model dependent",
+    latency: "model dependent",
+    context: "11.5K questions, 30 image formats",
+    sourceIds: ["mmmu-benchmark"],
+  },
+  {
+    id: "mmmu-design-ppt",
+    rankLabel: "PPT/Charts",
+    modelName: "MMMU Art & Design / Business / Tech slices",
+    providerId: "other",
+    domain: "ppt",
+    metric: "Charts, tables, diagrams, posters, logos, blueprints, screenshots",
+    score: "30",
+    price: "model dependent",
+    speed: "model dependent",
+    latency: "model dependent",
+    context: "30 image types for document/design-heavy workflows",
+    sourceIds: ["mmmu-benchmark"],
+  },
+  {
+    id: "docvqa-docs",
+    rankLabel: "Docs",
+    modelName: "DocVQA / InfographicVQA",
+    providerId: "other",
+    domain: "ppt",
+    metric: "Document visual question answering challenge",
+    score: "2026",
+    price: "model dependent",
+    speed: "model dependent",
+    latency: "model dependent",
+    context: "forms, scanned docs, infographics, multimodal documents",
+    sourceIds: ["docvqa-benchmark"],
+  },
+  {
+    id: "chartqa-reports",
+    rankLabel: "Charts",
+    modelName: "ChartQA",
+    providerId: "other",
+    domain: "ppt",
+    metric: "Chart and graph question answering",
+    score: "100",
+    price: "model dependent",
+    speed: "model dependent",
+    latency: "model dependent",
+    context: "charts/graphs for PPT and report analysis",
+    sourceIds: ["chartqa-benchmark"],
+  },
 ];
 
 export const vibeCodingCommands: VibeCodingCommand[] = [
@@ -3154,6 +4010,520 @@ export const vibeCodingCommands: VibeCodingCommand[] = [
       "코드 diff 단위 검증보다 산출물/태스크 완료 검증이 중요하다.",
     ],
     sourceIds: ["manus-api", "manus-home", "youtube-manus-search"],
+  },
+];
+
+export const aiCodingTools: AiCodingToolProfile[] = [
+  {
+    id: "tool-cursor",
+    toolName: "Cursor",
+    vendor: "Anysphere",
+    category: "AI IDE",
+    providerIds: ["cursor", "openai", "anthropic", "google"],
+    pricing:
+      "Hobby 무료, Pro/Teams/Enterprise. Pro는 월 $20 기준이며 학생 Pro 혜택은 별도 조건 확인.",
+    eventSignal:
+      "학생 1년 Pro 무료, Cloud agents/Bugbot/CLI 변경, Pro 포함 사용량과 on-demand usage 변동 감시.",
+    bestFor: [
+      "기존 저장소를 열어 바로 수정하는 바이브 코딩",
+      "프론트엔드 화면 보정과 테스트 재실행",
+      "팀 rules, MCP, Bugbot 리뷰까지 포함한 PR 루프",
+    ],
+    integrations: [
+      "VS Code 계열 IDE",
+      "Agent, Tab, Rules, MCP, Skills, Hooks",
+      "Cloud agents, Bugbot, Cursor CLI",
+    ],
+    koreanResources: [
+      "Cursor 한국어 YouTube 검색",
+      "인프런 Cursor 강좌 검색",
+      "코드팩토리/개발동생 AI 코딩 검색 허브",
+    ],
+    caveats: [
+      "기저 모델 품질과 IDE 실행 표면 품질을 분리해 평가해야 한다.",
+      "repo 권한, MCP 서버, 터미널 명령, privacy mode를 팀 정책으로 고정한다.",
+    ],
+    sourceIds: [
+      "cursor-docs",
+      "cursor-pricing",
+      "cursor-changelog",
+      "cursor-students",
+      "youtube-cursor-korean-search",
+      "inflearn-cursor",
+    ],
+    tags: ["Cursor", "AI IDE", "Agent", "Bugbot", "학생 혜택"],
+  },
+  {
+    id: "tool-github-copilot",
+    toolName: "GitHub Copilot",
+    vendor: "GitHub",
+    category: "IDE 확장",
+    providerIds: ["openai", "anthropic", "google", "xai"],
+    pricing:
+      "Free, Student, Pro $10, Pro+ $39, Max $100, Business $19/seat, Enterprise $39/seat/month 기준.",
+    eventSignal:
+      "GitHub Education Copilot 신규 sign-up 일시 중단, Business self-serve pause, AI Credits/모델 제공 범위 변경 감시.",
+    bestFor: [
+      "VS Code/JetBrains/Visual Studio 안의 보편적 코드 보조",
+      "GitHub PR, issue, code review, cloud agent 흐름",
+      "팀/엔터프라이즈 정책과 감사 로그가 필요한 조직",
+    ],
+    integrations: [
+      "VS Code, Visual Studio, JetBrains, Eclipse, Xcode, Vim/Neovim",
+      "GitHub.com, GitHub Mobile, Copilot CLI",
+      "MCP, cloud agent, code review, Spark",
+    ],
+    koreanResources: [
+      "GitHub Copilot 한국어 YouTube 검색",
+      "인프런 GitHub Copilot 강좌 검색",
+      "GitHub Student Developer Pack",
+    ],
+    caveats: [
+      "Free/Student 모델과 Pro/Business/Enterprise 모델 제공 범위가 다르며 변경될 수 있다.",
+      "학생 혜택과 신규 가입 가능 여부는 GitHub Education 페이지에서 재확인해야 한다.",
+    ],
+    sourceIds: [
+      "github-copilot-docs",
+      "github-copilot-plans",
+      "github-education-pack",
+      "youtube-copilot-korean-search",
+      "inflearn-github-copilot",
+    ],
+    tags: ["Copilot", "GitHub", "AI Credits", "MCP", "Student"],
+  },
+  {
+    id: "tool-jetbrains-junie",
+    toolName: "JetBrains AI / Junie",
+    vendor: "JetBrains",
+    category: "AI IDE",
+    providerIds: ["openai", "google"],
+    pricing:
+      "JetBrains AI 플랜과 IDE 라이선스 정책을 함께 확인. 학생용 JetBrains 개발 도구 혜택은 별도 학생 팩에서 확인.",
+    eventSignal:
+      "Junie 지원 IDE, AI Assistant 플랜, JetBrains 학생 팩, Gemini/OpenAI 모델 통합 변경 감시.",
+    bestFor: [
+      "IntelliJ, WebStorm, PyCharm, GoLand 중심 개발팀",
+      "IDE 인덱스와 리팩터링 도구를 깊게 쓰는 JVM/백엔드 프로젝트",
+      "JetBrains 생태계에서 AI 코딩 에이전트를 쓰려는 팀",
+    ],
+    integrations: [
+      "JetBrains IDEs",
+      "Junie coding agent",
+      "AI Assistant, Mellum, OpenAI/Google 모델 연동",
+    ],
+    koreanResources: [
+      "JetBrains Junie 한국어 YouTube 검색",
+      "인프런 JetBrains AI 검색",
+      "GitHub Education JetBrains 학생 혜택",
+    ],
+    caveats: [
+      "IDE별 지원 기능과 플랜 제공 범위가 다를 수 있다.",
+      "VS Code 중심 강좌보다 JetBrains 한국어 실습 자료가 적어 검색 허브 추적이 필요하다.",
+    ],
+    sourceIds: [
+      "jetbrains-ai",
+      "jetbrains-junie",
+      "jetbrains-student-pack",
+      "github-education-pack",
+      "youtube-jetbrains-junie-korean-search",
+      "inflearn-jetbrains-ai",
+    ],
+    tags: ["JetBrains", "Junie", "IntelliJ", "WebStorm", "학생 혜택"],
+  },
+  {
+    id: "tool-amazon-q-developer",
+    toolName: "Amazon Q Developer",
+    vendor: "AWS",
+    category: "IDE 확장",
+    providerIds: ["anthropic"],
+    pricing:
+      "Free tier와 Pro $19/user/month. Free는 월 agentic request/변환 LOC 제한, Pro는 더 높은 한도와 관리자 기능 제공.",
+    eventSignal:
+      "Free tier agentic request, Pro 포함 LOC, Java/.NET transformation overage, AWS Builder ID 무료 로그인 조건 감시.",
+    bestFor: [
+      "AWS 아키텍처와 코드베이스를 같이 다루는 개발",
+      "Java/.NET 업그레이드와 보안 취약점 스캔",
+      "AWS Console, IDE, CLI를 같이 쓰는 클라우드 팀",
+    ],
+    integrations: [
+      "VS Code, JetBrains, Visual Studio, Eclipse",
+      "AWS Console, AWS docs/site, AWS Chatbot",
+      "Amazon Bedrock 기반 Q Developer",
+    ],
+    koreanResources: [
+      "Amazon Q Developer 한국어 YouTube 검색",
+      "인프런 Amazon Q Developer 검색",
+      "AWS Bedrock 한국어 문서",
+    ],
+    caveats: [
+      "AWS 권한과 IAM Identity Center 설정에 따라 기능 접근과 과금 시작 조건이 달라질 수 있다.",
+      "Free/Pro의 LOC와 agentic request 한도는 월별 운영 지표로 따로 본다.",
+    ],
+    sourceIds: [
+      "amazon-q-developer-docs",
+      "amazon-q-developer-pricing",
+      "aws-bedrock-ko",
+      "youtube-amazon-q-korean-search",
+      "inflearn-amazon-q",
+    ],
+    tags: ["AWS", "Amazon Q", "IDE", "CLI", "Java upgrade"],
+  },
+  {
+    id: "tool-gemini-code-assist-jules",
+    toolName: "Gemini Code Assist / Jules",
+    vendor: "Google",
+    category: "클라우드 에이전트",
+    providerIds: ["google"],
+    pricing:
+      "Gemini Code Assist Standard 월 $22.80/user, 30일 무료 체험 가능. Jules 사용량/limits는 별도 문서 확인.",
+    eventSignal:
+      "Gemini Code Assist trial, Gemini CLI 라이선스 연동, Jules usage limits, Google 학생/교육 혜택 감시.",
+    bestFor: [
+      "Google Cloud, Firebase, Apigee, BigQuery 개발 흐름",
+      "Gemini CLI와 IDE chat/completion을 함께 쓰는 팀",
+      "GitHub repo를 VM에서 비동기 수정하는 Jules 작업",
+    ],
+    integrations: [
+      "VS Code, JetBrains IDEs, Cloud Workstations",
+      "Gemini CLI",
+      "Jules GitHub integration, REST API, scheduled tasks",
+    ],
+    koreanResources: [
+      "Gemini Code Assist 한국어 제품 페이지",
+      "Google Developers Korea YouTube",
+      "Gemini API 한국어 문서",
+    ],
+    caveats: [
+      "Code Assist와 Gemini API 가격/한도는 다른 제품 축으로 관리한다.",
+      "Jules는 실험적 coding agent로 repo 권한과 VM 환경 설정을 별도 검토한다.",
+    ],
+    sourceIds: [
+      "gemini-code-assist-ko",
+      "google-jules-docs",
+      "gemini-cli-github",
+      "google-gemini-docs-ko",
+      "youtube-google-developers-korea",
+    ],
+    tags: ["Gemini", "Code Assist", "Jules", "Google Cloud", "CLI"],
+  },
+  {
+    id: "tool-sourcegraph-amp",
+    toolName: "Amp",
+    vendor: "Sourcegraph",
+    category: "CLI/터미널",
+    providerIds: ["openai", "anthropic"],
+    pricing:
+      "Amp 자체 사용 정책은 manual/pricing 확인. Sourcegraph enterprise는 starting at $16K와 AI credits 포함 안내.",
+    eventSignal:
+      "Amp 모델 모드, Oracle/subagents, Sourcegraph credit pooling, MCP/CLI/agents 연동 변경 감시.",
+    bestFor: [
+      "터미널 중심 장시간 coding agent 작업",
+      "Oracle, subagents, thread sharing을 쓰는 리뷰/탐색",
+      "대형 codebase context를 Sourcegraph와 같이 쓰는 엔터프라이즈 팀",
+    ],
+    integrations: [
+      "Amp CLI",
+      "VS Code/Cursor/Windsurf, JetBrains, Neovim, Zed",
+      "Sourcegraph MCP, code graph, Deep Search",
+    ],
+    koreanResources: [
+      "Amp/Sourcegraph 한국어 검색 후보는 AI 코딩 검색 허브에서 추적",
+      "Cursor/Claude Code/Codex 한국어 채널과 병행 비교",
+    ],
+    caveats: [
+      "Amp 매뉴얼의 모델/모드 설명은 제품 정책에 맞춰 자주 바뀔 수 있다.",
+      "Sourcegraph 가격은 엔터프라이즈 영업/크레딧 구조라 개인 도구와 직접 비교하기 어렵다.",
+    ],
+    sourceIds: ["sourcegraph-amp-manual", "sourcegraph-pricing"],
+    tags: ["Amp", "Sourcegraph", "CLI", "Subagents", "MCP"],
+  },
+  {
+    id: "tool-zed-ai",
+    toolName: "Zed AI",
+    vendor: "Zed",
+    category: "AI IDE",
+    providerIds: ["openai", "anthropic"],
+    pricing:
+      "Zed AI 사용 비용은 Zed 계정/모델/API 설정 기준으로 별도 확인. ACP 기반 외부 agent 연결 가능.",
+    eventSignal:
+      "ACP, Claude Agent/Codex/OpenCode 연동, agentic editing, MCP support, review diff 기능 변경 감시.",
+    bestFor: [
+      "빠른 Rust 기반 editor와 agentic editing을 함께 쓰는 개발자",
+      "실시간 협업과 AI agent 진행 상황을 같이 보는 팀",
+      "Codex/Claude/OpenCode 등 외부 agent를 editor 안에 붙이는 실험",
+    ],
+    integrations: [
+      "Zed Agent Panel",
+      "ACP, MCP",
+      "Claude Agent, Codex, OpenCode",
+    ],
+    koreanResources: [
+      "Zed AI 한국어 자료는 일반 AI IDE/바이브 코딩 검색 허브에서 추적",
+      "해외 공식 문서 중심으로 우선 검증",
+    ],
+    caveats: [
+      "Zed 자체 LLM이 아니라 editor/agent host 성격이 강하다.",
+      "팀에서 이미 VS Code/JetBrains 표준이면 전환 비용을 따로 계산한다.",
+    ],
+    sourceIds: ["zed-ai"],
+    tags: ["Zed", "ACP", "Agentic editing", "MCP"],
+  },
+  {
+    id: "tool-augment-code",
+    toolName: "Augment Code",
+    vendor: "Augment",
+    category: "클라우드 에이전트",
+    providerIds: ["openai", "anthropic", "google"],
+    pricing:
+      "Business $100/month flat, up to 50 seats, $100/month usage included, top-ups/pay as you go. Enterprise custom.",
+    eventSignal:
+      "Cosmos, Auggie CLI, Context Engine, usage top-up, enterprise/compliance 기능과 가격 변경 감시.",
+    bestFor: [
+      "큰 코드베이스 맥락을 Context Engine으로 잡아야 하는 팀",
+      "Auggie CLI와 IDE/Slack/PR 리뷰를 함께 쓰는 엔터프라이즈 SDLC",
+      "반복 workflow automation과 ticket-to-PR 흐름",
+    ],
+    integrations: [
+      "VS Code, JetBrains, Vim/Neovim",
+      "Auggie CLI, Cosmos, Context Engine MCP",
+      "Slack, Code Review, admin analytics",
+    ],
+    koreanResources: [
+      "Augment 한국어 YouTube 검색",
+      "공식 문서와 가격표 중심 검증",
+    ],
+    caveats: [
+      "가격은 사용량 포함/초과 과금 구조라 좌석당 단순 비교가 어렵다.",
+      "엔터프라이즈 자동화는 권한과 감사 로그 설계가 먼저다.",
+    ],
+    sourceIds: [
+      "augment-docs",
+      "augment-pricing",
+      "youtube-augment-korean-search",
+    ],
+    tags: ["Augment", "Auggie", "Cosmos", "Context Engine", "Enterprise"],
+  },
+  {
+    id: "tool-tabnine",
+    toolName: "Tabnine",
+    vendor: "Tabnine",
+    category: "IDE 확장",
+    providerIds: ["openai", "anthropic", "google", "mistral"],
+    pricing:
+      "Code Assistant $39/user/month, Agentic Platform $59/user/month annual subscription 기준. 자체 LLM 사용 시 별도 quota/handling fee 조건 확인.",
+    eventSignal:
+      "Tabnine CLI, Agentic Platform, Context Engine, air-gapped/VPC/on-prem 배포, zero retention 정책 변경 감시.",
+    bestFor: [
+      "코드 프라이버시와 자체 배포 요구가 강한 조직",
+      "IDE completion/chat을 빠르게 표준화하려는 팀",
+      "on-prem/air-gapped 환경의 AI coding assistant",
+    ],
+    integrations: [
+      "All major IDEs",
+      "Tabnine CLI",
+      "Jira, Confluence, Git providers, MCP",
+    ],
+    koreanResources: [
+      "Tabnine 한국어 YouTube 검색",
+      "해외 공식 문서와 privacy/enterprise 문서 중심 검증",
+    ],
+    caveats: [
+      "개인 바이브 코딩보다 엔터프라이즈 보안/배포 요구에 강점이 있다.",
+      "무제한 사용 조건은 자체 LLM/on-prem 여부에 따라 다르게 해석해야 한다.",
+    ],
+    sourceIds: [
+      "tabnine-docs",
+      "tabnine-pricing",
+      "youtube-tabnine-korean-search",
+    ],
+    tags: ["Tabnine", "Privacy", "On-prem", "CLI", "Enterprise"],
+  },
+  {
+    id: "tool-coderabbit",
+    toolName: "CodeRabbit",
+    vendor: "CodeRabbit",
+    category: "PR 리뷰",
+    providerIds: ["openai", "anthropic"],
+    pricing:
+      "Pro/Pro Plus/Enterprise. 공개 저장소 무료 리뷰, Slack agent는 agent minute 기준 과금.",
+    eventSignal:
+      "OSS free review, Slack agent minute, Pro/Pro Plus review limit, Autofix/UTG/merge conflict 기능 변경 감시.",
+    bestFor: [
+      "PR 리뷰, 요약, walkthrough, pre-merge checks 자동화",
+      "IDE/CLI에서 리뷰 피드백을 빠르게 받는 팀",
+      "issue/Slack에서 계획과 PR 생성까지 연결하는 흐름",
+    ],
+    integrations: [
+      "GitHub, GitLab",
+      "IDE review extension, CLI review tool",
+      "Slack agent, Jira, Linear, MCP/tool catalog",
+    ],
+    koreanResources: [
+      "CodeRabbit 한국어 YouTube 검색",
+      "인프런 CodeRabbit 검색",
+    ],
+    caveats: [
+      "구현 agent가 아니라 code review/planning에 강한 도구로 분류한다.",
+      "리뷰 자동화는 팀 coding standard와 false positive 관리가 중요하다.",
+    ],
+    sourceIds: [
+      "coderabbit-docs",
+      "coderabbit-pricing",
+      "youtube-coderabbit-korean-search",
+      "inflearn-coderabbit",
+    ],
+    tags: ["CodeRabbit", "PR review", "Autofix", "Slack agent", "OSS"],
+  },
+  {
+    id: "tool-trae",
+    toolName: "TRAE",
+    vendor: "TRAE",
+    category: "AI IDE",
+    providerIds: ["anthropic", "openai"],
+    pricing:
+      "Free/Lite $3, Pro $10 after 7-day trial, Pro+ $30, Ultra $100/month. Basic usage와 cloud task 동시 실행 수 차등.",
+    eventSignal:
+      "Pro 7일 무료 체험, SOLO mode, cloud task concurrency, Basic/Bonus usage, Model early access 변경 감시.",
+    bestFor: [
+      "SOLO mode 중심의 AI IDE 실험",
+      "cloud task 동시 실행으로 여러 개발 작업을 돌리는 개인/소규모 팀",
+      "Cursor/Windsurf와 비교할 신규 AI IDE 후보",
+    ],
+    integrations: [
+      "TRAE IDE",
+      "SOLO mode",
+      "TRAE Work Web/Desktop cloud tasks",
+    ],
+    koreanResources: ["TRAE 한국어 YouTube 검색", "인프런 TRAE 검색"],
+    caveats: [
+      "공식 문서/가격 페이지의 플랜명과 usage 단위가 바뀔 수 있어 주기 확인이 필요하다.",
+      "한국어 강좌/커뮤니티 자료는 아직 검색 허브로 추적하는 단계다.",
+    ],
+    sourceIds: [
+      "trae-docs",
+      "trae-pricing",
+      "youtube-trae-korean-search",
+      "inflearn-trae",
+    ],
+    tags: ["TRAE", "SOLO", "AI IDE", "Cloud tasks", "Trial"],
+  },
+  {
+    id: "tool-open-source-agent-stack",
+    toolName: "Cline / Roo Code / Aider / Continue / OpenHands",
+    vendor: "Open-source ecosystem",
+    category: "오픈소스 스택",
+    providerIds: ["openai", "anthropic", "google", "kimi", "deepseek", "qwen"],
+    pricing:
+      "도구는 오픈소스 중심. 비용은 연결한 API 모델, 로컬 GPU, 자체 호스팅, MCP/서빙 인프라에 따라 달라짐.",
+    eventSignal:
+      "GitHub release, model provider 지원, MCP/tool calling, VS Code extension 정책, 로컬 실행 가이드 변경 감시.",
+    bestFor: [
+      "모델을 직접 고르고 OpenAI 호환 API를 바꿔가며 실험",
+      "저비용/로컬/사내망 코딩 agent 구성",
+      "Cursor/Copilot에 종속되지 않는 개발 워크플로",
+    ],
+    integrations: [
+      "VS Code extensions",
+      "Terminal Git workflow",
+      "OpenAI-compatible APIs, local models, MCP",
+    ],
+    koreanResources: [
+      "Cline/Roo Code 한국어 YouTube 검색",
+      "인프런 Cline 검색",
+      "Kimi/DeepSeek/Qwen 한국어 검색 허브",
+    ],
+    caveats: [
+      "품질과 보안은 연결 모델, permission 설정, repo 규칙에 크게 좌우된다.",
+      "직접 운영 시 업데이트/보안 패치/키 관리 책임이 커진다.",
+    ],
+    sourceIds: [
+      "cline-github",
+      "roo-code-docs",
+      "aider-docs",
+      "continue-docs",
+      "openhands-docs",
+      "youtube-cline-roo-korean-search",
+      "inflearn-cline",
+    ],
+    tags: ["Cline", "Roo Code", "Aider", "Continue", "OpenHands"],
+  },
+  {
+    id: "tool-web-app-builders",
+    toolName: "Lovable / Bolt / v0",
+    vendor: "Lovable, StackBlitz, Vercel",
+    category: "웹앱 제작",
+    providerIds: ["openai", "anthropic"],
+    pricing:
+      "도구별 무료/유료 플랜과 배포/크레딧 정책 상이. 실제 비용은 생성 횟수, 배포, 팀 기능, 모델 사용량을 같이 확인.",
+    eventSignal:
+      "신규 사용자 크레딧, 생성 한도, GitHub export, Vercel/StackBlitz 배포, 팀 플랜 이벤트 변경 감시.",
+    bestFor: [
+      "랜딩 페이지와 CRUD 웹앱의 빠른 초안",
+      "디자인 시안과 프론트엔드 구조를 프롬프트로 생성",
+      "비개발자와 개발자가 함께 요구사항을 시각화",
+    ],
+    integrations: [
+      "Lovable projects and integrations",
+      "Bolt app generation and deployment",
+      "v0 UI generation and Vercel workflow",
+    ],
+    koreanResources: [
+      "v0/Lovable/Bolt 한국어 YouTube 검색",
+      "인프런 v0 검색",
+      "인프런 Lovable 검색",
+    ],
+    caveats: [
+      "초안 생성과 운영 가능한 제품 코드는 품질 기준이 다르다.",
+      "라우팅, auth, DB, 배포 권한, 비용 한도는 개발자가 별도 검수해야 한다.",
+    ],
+    sourceIds: [
+      "lovable-docs",
+      "bolt-docs",
+      "v0-docs",
+      "youtube-v0-lovable-bolt-korean-search",
+      "inflearn-v0",
+      "inflearn-lovable",
+    ],
+    tags: ["Lovable", "Bolt", "v0", "웹앱", "프로토타입"],
+  },
+  {
+    id: "tool-cloud-agents",
+    toolName: "Devin / Replit Agent / Manus",
+    vendor: "Cognition, Replit, Manus",
+    category: "클라우드 에이전트",
+    providerIds: ["manus", "openai", "anthropic"],
+    pricing:
+      "제품별 task/session/credit/seat 구조가 달라 공식 가격과 사용량 로그를 함께 확인해야 함.",
+    eventSignal:
+      "초대/크레딧, cloud workspace limits, GitHub/Slack 연동, 태스크 병렬 실행, 브라우저 조작 기능 변경 감시.",
+    bestFor: [
+      "로컬 노트북을 켜두지 않는 비동기 개발/자동화",
+      "issue-to-PR, 브라우저 조작, 웹사이트/PPT 산출물 제작",
+      "비개발자도 태스크 단위로 결과를 검수하는 업무",
+    ],
+    integrations: [
+      "GitHub repositories",
+      "Slack/웹앱/브라우저",
+      "Files, webhooks, project instructions",
+    ],
+    koreanResources: [
+      "헤르메스 에이전트 사용자 요청 영상",
+      "Manus/AI agent 한국어 YouTube 검색",
+      "국내 AI 자동화 커뮤니티 검색 허브",
+    ],
+    caveats: [
+      "모델 벤치마크보다 태스크 완료율, 권한, 비용, 감사 로그가 핵심 지표다.",
+      "자동 브라우저/파일 조작 권한은 민감 데이터와 분리해야 한다.",
+    ],
+    sourceIds: [
+      "devin-docs",
+      "replit-agent-docs",
+      "manus-home",
+      "manus-api",
+      "youtube-hermes-agent-video",
+      "youtube-manus-search",
+    ],
+    tags: ["Devin", "Replit Agent", "Manus", "Cloud agent", "Task automation"],
   },
 ];
 
@@ -4658,6 +6028,73 @@ export const learningResources: LearningResource[] = [
     tags: ["한국어", "교육기관", "원격 교육", "부트캠프"],
   },
   {
+    id: "res-korean-course-platforms",
+    type: "강좌/영상",
+    title: "인프런 유사 국내 강좌 플랫폼 묶음",
+    author: "Nomad Coders, Dream Coding, CLASS101, Coloso",
+    language: "한국어",
+    level: "입문",
+    summary:
+      "노마드코더, 드림코딩 아카데미, 클래스101, 콜로소의 개발·AI·업무 자동화·디자인 강좌 후보를 계속 추적한다.",
+    url: "https://nomadcoders.co/",
+    sourceIds: [
+      "nomadcoders",
+      "dreamcoding-academy",
+      "class101-dev-ai",
+      "coloso-dev-ai",
+    ],
+    providerIds: ["openai", "anthropic", "google", "cursor"],
+    tags: ["한국어", "강좌 플랫폼", "인프런 유사", "개발 강좌", "AI 강좌"],
+  },
+  {
+    id: "res-korean-bootcamp-expanded",
+    type: "강좌/영상",
+    title: "국내 AI/개발 부트캠프 확장 묶음",
+    author: "LIKELION, AIFFEL, ZeroBase, OZ Coding School, Multicampus",
+    language: "한국어",
+    level: "실무",
+    summary:
+      "멋쟁이사자처럼, AIFFEL, 제로베이스, 오즈코딩스쿨, 멀티캠퍼스의 AI/데이터/개발자 교육과 기업교육 후보를 추적한다.",
+    url: "https://likelion.net/",
+    sourceIds: [
+      "likelion-school",
+      "aiffel-ai",
+      "zerobase",
+      "ozcoding",
+      "multicampus",
+    ],
+    providerIds: ["openai", "anthropic", "google", "qwen"],
+    tags: ["한국어", "부트캠프", "원격 교육", "기업교육", "AI 개발자"],
+  },
+  {
+    id: "res-korean-open-course-hubs",
+    type: "강좌/영상",
+    title: "무료/공개 개발 강좌 허브",
+    author: "OpenTutorials, edwith, KOCW",
+    language: "한국어",
+    level: "입문",
+    summary:
+      "생활코딩/OpenTutorials, edwith, KOCW의 무료 공개 개발·AI·데이터 강좌 후보를 함께 추적한다.",
+    url: "https://opentutorials.org/course/1",
+    sourceIds: ["opentutorials", "edwith", "kocw"],
+    providerIds: ["openai", "google", "qwen"],
+    tags: ["한국어", "무료 강좌", "공개강좌", "입문", "원격 교육"],
+  },
+  {
+    id: "res-korean-dev-events",
+    type: "커뮤니티",
+    title: "국내 개발자 AI 교육/이벤트 허브",
+    author: "Wanted, DEVOCEAN, 모두의연구소",
+    language: "한국어",
+    level: "실무",
+    summary:
+      "원티드 이벤트, DEVOCEAN, 모두의연구소에서 AI/개발/데이터 웨비나와 커뮤니티 학습 이벤트 후보를 추적한다.",
+    url: "https://www.wanted.co.kr/events",
+    sourceIds: ["wanted-events", "devocean-blog", "modulabs-ai"],
+    providerIds: ["openai", "anthropic", "google"],
+    tags: ["한국어", "이벤트", "웨비나", "커뮤니티", "개발자 교육"],
+  },
+  {
     id: "res-modulabs-aihub",
     type: "커뮤니티",
     title: "모두의연구소 / AI Hub",
@@ -4775,6 +6212,212 @@ export const learningResources: LearningResource[] = [
     ],
     providerIds: ["cursor", "openai", "anthropic", "google"],
     tags: ["한국어", "AI IDE", "Copilot", "프롬프트 웹앱"],
+  },
+  {
+    id: "res-official-ai-coding-tools",
+    type: "공식 문서",
+    title: "AI 코딩 도구 공식 문서 묶음",
+    author:
+      "Cursor, GitHub, JetBrains, AWS, Sourcegraph, Augment, Tabnine, CodeRabbit, TRAE",
+    language: "영어",
+    level: "실무",
+    summary:
+      "AI IDE, IDE 확장, CLI, PR 리뷰, 클라우드 에이전트 도구의 공식 문서를 한 번에 추적하는 리소스 묶음.",
+    url: "https://docs.cursor.com",
+    sourceIds: [
+      "cursor-docs",
+      "github-copilot-docs",
+      "jetbrains-junie",
+      "amazon-q-developer-docs",
+      "sourcegraph-amp-manual",
+      "augment-docs",
+      "tabnine-docs",
+      "coderabbit-docs",
+      "trae-docs",
+    ],
+    providerIds: ["cursor", "openai", "anthropic", "google", "mistral"],
+    tags: ["공식 문서", "AI 코딩 도구", "IDE", "CLI", "PR 리뷰"],
+  },
+  {
+    id: "res-gemini-code-assist-ko",
+    type: "공식 문서",
+    title: "Gemini Code Assist 한국어 제품/가격 페이지",
+    author: "Google Code Assist",
+    language: "한국어",
+    level: "실무",
+    summary:
+      "Gemini Code Assist의 한국어 제품 설명, VS Code/JetBrains/Cloud Workstations, Gemini CLI, smart actions, 가격 정보를 확인한다.",
+    url: "https://codeassist.google/products/business?hl=ko",
+    sourceIds: ["gemini-code-assist-ko", "google-jules-docs"],
+    providerIds: ["google"],
+    tags: ["한국어", "공식 문서", "Gemini Code Assist", "Jules", "CLI"],
+  },
+  {
+    id: "res-ai-coding-student-benefits",
+    type: "공식 문서",
+    title: "AI 코딩 학생/교육 혜택 확인 묶음",
+    author: "GitHub, Cursor, JetBrains, Google",
+    language: "영어",
+    level: "입문",
+    summary:
+      "Copilot Student, GitHub Education Pack, Cursor Students, JetBrains Student Pack, Gemini 학생 혜택을 한 곳에서 비교한다.",
+    url: "https://education.github.com/pack",
+    sourceIds: [
+      "github-copilot-plans",
+      "github-education-pack",
+      "cursor-students",
+      "jetbrains-student-pack",
+      "google-gemini-students",
+    ],
+    providerIds: ["cursor", "openai", "google"],
+    tags: ["학생 혜택", "이벤트", "교육", "Copilot", "Cursor"],
+  },
+  {
+    id: "res-korean-ai-tool-youtube-searches",
+    type: "강좌/영상",
+    title: "한국어 AI 코딩 도구 YouTube 검색 묶음",
+    author: "YouTube",
+    language: "한국어",
+    level: "입문",
+    summary:
+      "Cursor, Copilot, JetBrains Junie, Amazon Q, Augment, Tabnine, CodeRabbit, TRAE, Cline/Roo, v0/Lovable/Bolt 한국어 영상 후보를 계속 찾는 검색 묶음.",
+    url: "https://www.youtube.com/results?search_query=AI+%EC%BD%94%EB%94%A9+%EB%8F%84%EA%B5%AC+%ED%95%9C%EA%B5%AD%EC%96%B4",
+    sourceIds: [
+      "youtube-cursor-korean-search",
+      "youtube-copilot-korean-search",
+      "youtube-jetbrains-junie-korean-search",
+      "youtube-amazon-q-korean-search",
+      "youtube-augment-korean-search",
+      "youtube-tabnine-korean-search",
+      "youtube-coderabbit-korean-search",
+      "youtube-trae-korean-search",
+      "youtube-cline-roo-korean-search",
+      "youtube-v0-lovable-bolt-korean-search",
+    ],
+    providerIds: ["cursor", "openai", "anthropic", "google"],
+    tags: ["한국어", "유튜브", "AI 코딩 도구", "Cursor", "Copilot"],
+  },
+  {
+    id: "res-inflearn-expanded-ai-tools",
+    type: "강좌/영상",
+    title: "인프런 AI 코딩 도구 세부 검색 묶음",
+    author: "Inflearn",
+    language: "한국어",
+    level: "입문",
+    summary:
+      "GitHub Copilot, Cursor, JetBrains AI, Amazon Q Developer, CodeRabbit, TRAE, Cline, v0, Lovable 강좌 후보를 세부 검색으로 추적한다.",
+    url: "https://www.inflearn.com/search?s=AI%20%EC%BD%94%EB%94%A9",
+    sourceIds: [
+      "inflearn-github-copilot",
+      "inflearn-cursor",
+      "inflearn-jetbrains-ai",
+      "inflearn-amazon-q",
+      "inflearn-coderabbit",
+      "inflearn-trae",
+      "inflearn-cline",
+      "inflearn-v0",
+      "inflearn-lovable",
+    ],
+    providerIds: ["cursor", "openai", "anthropic", "google"],
+    tags: ["한국어", "인프런", "AI IDE", "PR 리뷰", "강좌"],
+  },
+  {
+    id: "res-pr-review-ai-tools",
+    type: "공식 문서",
+    title: "AI PR 리뷰 도구 공식 문서",
+    author: "CodeRabbit, GitHub, Cursor",
+    language: "영어",
+    level: "실무",
+    summary:
+      "CodeRabbit, GitHub Copilot code review, Cursor Bugbot처럼 PR 리뷰와 코드 검토에 특화된 AI 도구를 비교한다.",
+    url: "https://docs.coderabbit.ai/",
+    sourceIds: [
+      "coderabbit-docs",
+      "coderabbit-pricing",
+      "github-copilot-docs",
+      "github-copilot-plans",
+      "cursor-changelog",
+    ],
+    providerIds: ["cursor", "openai", "anthropic"],
+    tags: ["PR 리뷰", "CodeRabbit", "Copilot", "Bugbot", "공식 문서"],
+  },
+  {
+    id: "res-cloud-coding-agents",
+    type: "공식 문서",
+    title: "클라우드 코딩 에이전트 공식 문서",
+    author: "Google, Cognition, Replit, Manus",
+    language: "영어",
+    level: "실무",
+    summary:
+      "Jules, Devin, Replit Agent, Manus처럼 로컬 PC 밖에서 repo/task를 실행하는 클라우드 에이전트 문서 묶음.",
+    url: "https://jules.google/docs",
+    sourceIds: [
+      "google-jules-docs",
+      "devin-docs",
+      "replit-agent-docs",
+      "manus-home",
+      "manus-api",
+      "youtube-hermes-agent-video",
+    ],
+    providerIds: ["google", "manus", "openai", "anthropic"],
+    tags: ["Cloud agent", "Jules", "Devin", "Replit", "Manus"],
+  },
+  {
+    id: "res-benchmark-hubs-coding-agent",
+    type: "공식 문서",
+    title: "코딩/에이전트 벤치마크 허브",
+    author:
+      "SWE-bench, LiveCodeBench, Aider, BigCodeBench, BFCL, Terminal-Bench, OSWorld",
+    language: "영어",
+    level: "고급",
+    summary:
+      "SWE-bench, LiveCodeBench, Aider Polyglot, BigCodeBench, BFCL, Terminal-Bench, OSWorld, WebArena를 코딩/에이전트 평가 근거로 묶어 추적한다.",
+    url: "https://www.swebench.com/",
+    sourceIds: [
+      "swebench-leaderboard",
+      "livecodebench-leaderboard",
+      "aider-polyglot-leaderboard",
+      "bigcodebench-leaderboard",
+      "bfcl-leaderboard",
+      "terminal-bench",
+      "osworld-benchmark",
+      "webarena-benchmark",
+    ],
+    providerIds: ["openai", "anthropic", "google", "xai", "qwen"],
+    tags: ["Benchmark", "Coding", "Agent", "Tool use", "SWE-bench"],
+  },
+  {
+    id: "res-benchmark-hubs-multimodal-docs",
+    type: "공식 문서",
+    title: "멀티모달/PPT/문서 벤치마크 허브",
+    author: "MMMU, DocVQA, ChartQA",
+    language: "영어",
+    level: "고급",
+    summary:
+      "PPT, 리포트, 차트, 문서 이미지, 인포그래픽, 디자인/기술 도면 이해력을 평가할 때 MMMU, DocVQA, ChartQA를 보조 지표로 연결한다.",
+    url: "https://mmmu-benchmark.github.io/",
+    sourceIds: ["mmmu-benchmark", "docvqa-benchmark", "chartqa-benchmark"],
+    providerIds: ["openai", "anthropic", "google", "qwen", "mistral"],
+    tags: ["Benchmark", "PPT", "문서 이해", "차트", "멀티모달"],
+  },
+  {
+    id: "res-benchmark-hubs-overall",
+    type: "공식 문서",
+    title: "종합 모델 벤치마크 허브",
+    author: "Artificial Analysis, LMArena, Scale Labs, Stanford HELM",
+    language: "영어",
+    level: "실무",
+    summary:
+      "Artificial Analysis, LMArena, Scale Labs, Stanford HELM을 종합 성능·가격·선호도·안전성·효율 평가 근거로 함께 추적한다.",
+    url: "https://artificialanalysis.ai/leaderboards/models",
+    sourceIds: [
+      "aa-leaderboard",
+      "lmarena-leaderboard",
+      "scale-leaderboard",
+      "helm-leaderboard",
+    ],
+    providerIds: ["openai", "anthropic", "google", "xai", "mistral"],
+    tags: ["Benchmark", "리더보드", "가격", "선호도", "안전성"],
   },
   {
     id: "res-ai-engineering-book",
@@ -5239,6 +6882,76 @@ export const curationMonitors: CurationMonitor[] = [
       "도구 공식 문서의 릴리스/설정/MCP/agent mode 변경을 감지해 바이브 코딩 도구 섹션 후보로 보낸다.",
   },
   {
+    id: "monitor-ai-coding-tool-directory",
+    sourceId: "github-copilot-plans",
+    providerId: "market",
+    cadence: "주 2회",
+    priority: "P1",
+    status: "자동화 후보",
+    owner: "학습 리소스",
+    nextCheck: "2026-06-20",
+    nextAction:
+      "Copilot, JetBrains Junie, Amazon Q, Gemini Code Assist, Amp, Zed, Augment, Tabnine, TRAE의 공식 문서와 플랜 변경 확인",
+    automationHint:
+      "도구별 category, pricing, eventSignal, sourceIds를 diff해 AI 코딩 도구 디렉터리 업데이트 후보로 보낸다.",
+  },
+  {
+    id: "monitor-code-review-ai-tools",
+    sourceId: "coderabbit-docs",
+    providerId: "market",
+    cadence: "주 2회",
+    priority: "P1",
+    status: "자동화 후보",
+    owner: "에이전트",
+    nextCheck: "2026-06-20",
+    nextAction:
+      "CodeRabbit, Copilot code review, Cursor Bugbot의 PR 리뷰/Autofix/UTG/pre-merge 기능 변경 확인",
+    automationHint:
+      "PR review, Autofix, unit test, pre-merge, OSS free 키워드를 추출해 리뷰 도구 비교 섹션에 반영한다.",
+  },
+  {
+    id: "monitor-gemini-code-assist-jules",
+    sourceId: "gemini-code-assist-ko",
+    providerId: "google",
+    cadence: "주 2회",
+    priority: "P1",
+    status: "확인 필요",
+    owner: "에이전트",
+    nextCheck: "2026-06-20",
+    nextAction:
+      "Gemini Code Assist 가격, 30일 trial, Gemini CLI 연동, Jules usage/limits/API/CLI 변경 확인",
+    automationHint:
+      "Code Assist 제품 페이지와 Jules docs의 pricing, usage limits, CLI, GitHub integration 섹션을 구조화한다.",
+  },
+  {
+    id: "monitor-trae-ai-ide-events",
+    sourceId: "trae-pricing",
+    providerId: "market",
+    cadence: "주 2회",
+    priority: "P2",
+    status: "확인 필요",
+    owner: "학습 리소스",
+    nextCheck: "2026-06-20",
+    nextAction:
+      "TRAE 7일 trial, SOLO mode, Basic usage, concurrent cloud tasks, model early access 변경 확인",
+    automationHint:
+      "가격표의 Free/Lite/Pro/Pro+/Ultra 필드를 파싱해 이벤트 비용 비교 섹션 후보로 보낸다.",
+  },
+  {
+    id: "monitor-jetbrains-amazon-q-korean",
+    sourceId: "jetbrains-junie",
+    providerId: "market",
+    cadence: "주 1회",
+    priority: "P2",
+    status: "자동화 후보",
+    owner: "학습 리소스",
+    nextCheck: "2026-06-24",
+    nextAction:
+      "JetBrains Junie, Amazon Q Developer, AWS/JetBrains 한국어 강좌와 학생/교육 혜택 후보 확인",
+    automationHint:
+      "YouTube/Inflearn 검색 허브에서 JetBrains Junie, Amazon Q Developer 키워드 신규 후보를 수동 검토 큐로 보낸다.",
+  },
+  {
     id: "monitor-cursor-changelog",
     sourceId: "cursor-changelog",
     providerId: "cursor",
@@ -5362,6 +7075,34 @@ export const curationMonitors: CurationMonitor[] = [
     automationHint:
       "YouTube 채널 RSS를 구독하고 title에 RAG, LangChain, Claude, Gemini, Codex 키워드를 매칭한다.",
   },
+  {
+    id: "monitor-expanded-benchmark-sources",
+    sourceId: "swebench-leaderboard",
+    providerId: "market",
+    cadence: "주 2회",
+    priority: "P1",
+    status: "확인 필요",
+    owner: "벤치마크",
+    nextCheck: "2026-06-20",
+    nextAction:
+      "SWE-bench, LiveCodeBench, Aider, BigCodeBench, BFCL, Terminal-Bench, OSWorld, WebArena, MMMU, DocVQA, ChartQA의 신규 리더보드/평가 버전 확인",
+    automationHint:
+      "벤치마크별 domain, metric, score, 비용/latency 유무, 데이터셋 규모를 분리해 코딩/PPT/에이전트 필터 후보로 보낸다.",
+  },
+  {
+    id: "monitor-korean-course-platforms-expanded",
+    sourceId: "nomadcoders",
+    providerId: "market",
+    cadence: "주 1회",
+    priority: "P2",
+    status: "자동화 후보",
+    owner: "학습 리소스",
+    nextCheck: "2026-06-24",
+    nextAction:
+      "노마드코더, 드림코딩, CLASS101, 콜로소, 원티드, 멋쟁이사자처럼, AIFFEL, 오픈튜토리얼스, 에드위드, KOCW, 제로베이스, 오즈코딩, 멀티캠퍼스의 AI 코딩/LLM 강좌 후보 확인",
+    automationHint:
+      "강좌명, 언어, 가격/무료 여부, 온라인 여부, 최신 등록일, AI 코딩 관련 키워드를 추출해 한국어 자료실 후보로 보낸다.",
+  },
 ];
 
 export const updatePipeline: UpdatePipelineItem[] = [
@@ -5395,13 +7136,67 @@ export const updatePipeline: UpdatePipelineItem[] = [
     providerId: "market",
     stage: "수집",
     priority: "높음",
-    sourceIds: ["aa-leaderboard"],
+    sourceIds: [
+      "aa-leaderboard",
+      "lmarena-leaderboard",
+      "scale-leaderboard",
+      "helm-leaderboard",
+      "swebench-leaderboard",
+      "livecodebench-leaderboard",
+      "aider-polyglot-leaderboard",
+      "bigcodebench-leaderboard",
+      "bfcl-leaderboard",
+      "terminal-bench",
+      "osworld-benchmark",
+      "webarena-benchmark",
+      "mmmu-benchmark",
+      "docvqa-benchmark",
+      "chartqa-benchmark",
+    ],
     summary:
-      "Artificial Analysis 상위 모델의 rank, score, price, speed, latency 변동을 요약한다.",
+      "종합, 코딩, 함수 호출, 터미널/브라우저 에이전트, 문서/PPT류 멀티모달 벤치마크의 rank, score, price, speed, latency, 데이터셋 규모 변동을 요약한다.",
     acceptance: [
-      "상위 20개 모델 중 rank 변화가 있는 항목만 강조한다.",
+      "상위 모델과 평가 버전 변화가 있는 항목만 강조한다.",
       "가격과 latency가 동시에 나빠진 모델은 주의 라벨을 붙인다.",
-      "벤치마크 출처와 확인일을 UI에 표시한다.",
+      "벤치마크 출처, 확인일, 평가 분야를 UI에 표시한다.",
+    ],
+  },
+  {
+    id: "pipe-ai-coding-tool-directory",
+    title: "AI 코딩 도구 디렉터리",
+    providerId: "market",
+    stage: "검토",
+    priority: "높음",
+    sourceIds: [
+      "cursor-docs",
+      "cursor-changelog",
+      "cursor-students",
+      "github-copilot-plans",
+      "github-education-pack",
+      "jetbrains-ai",
+      "jetbrains-junie",
+      "amazon-q-developer-docs",
+      "amazon-q-developer-pricing",
+      "gemini-code-assist-ko",
+      "google-jules-docs",
+      "sourcegraph-amp-manual",
+      "sourcegraph-pricing",
+      "zed-ai",
+      "augment-docs",
+      "augment-pricing",
+      "tabnine-docs",
+      "tabnine-pricing",
+      "coderabbit-docs",
+      "coderabbit-pricing",
+      "trae-docs",
+      "trae-pricing",
+    ],
+    summary:
+      "Cursor, Copilot, Junie, Amazon Q, Gemini Code Assist/Jules, Amp, Zed, Augment, Tabnine, CodeRabbit, TRAE, 오픈소스 에이전트 스택을 가격/이벤트/한국어 자료/통합 방식으로 비교한다.",
+    acceptance: [
+      "모델 제공사와 도구 제공사를 분리해 표시한다.",
+      "무료/학생/체험/엔터프라이즈/오픈소스 조건이 검색 가능하다.",
+      "공식 문서와 한국어 강좌 검색 허브를 동시에 노출한다.",
     ],
   },
   {
@@ -5431,10 +7226,29 @@ export const updatePipeline: UpdatePipelineItem[] = [
       "youtube-cursor-korean-search",
       "youtube-windsurf-korean-search",
       "youtube-cline-roo-korean-search",
+      "youtube-jetbrains-junie-korean-search",
+      "youtube-amazon-q-korean-search",
+      "youtube-augment-korean-search",
+      "youtube-tabnine-korean-search",
+      "youtube-coderabbit-korean-search",
+      "youtube-trae-korean-search",
       "kmooc-ai",
       "boostcourse-ai",
       "elice-ai",
       "modulabs-ai",
+      "nomadcoders",
+      "dreamcoding-academy",
+      "class101-dev-ai",
+      "coloso-dev-ai",
+      "wanted-events",
+      "likelion-school",
+      "aiffel-ai",
+      "opentutorials",
+      "edwith",
+      "kocw",
+      "zerobase",
+      "ozcoding",
+      "multicampus",
       "yes24-llm-books",
       "yes24-vibe-coding-books",
       "hanbit-llm-books",
@@ -5669,6 +7483,19 @@ export const featureBacklog: FeatureBacklogItem[] = [
       "Cursor 같은 도구형 실행 표면은 LLM 제공사와 별도로 표시한다.",
     ],
   },
+  {
+    id: "feature-ai-coding-tool-directory",
+    title: "AI 코딩 도구 디렉터리",
+    priority: "P0",
+    status: "구현됨",
+    rationale:
+      "바이브 코딩 도구는 모델 성능만으로 판단하기 어렵기 때문에 IDE, CLI, PR 리뷰, 웹앱 제작, 클라우드 에이전트를 별도 축으로 비교해야 한다.",
+    acceptance: [
+      "Cursor, GitHub Copilot, JetBrains Junie, Amazon Q, Gemini Code Assist/Jules, Amp, Zed, Augment, Tabnine, CodeRabbit, TRAE와 오픈소스 스택을 비교한다.",
+      "가격, 이벤트/학생 혜택, 한국어 자료, 연동 방식, 주의점을 필터링할 수 있다.",
+      "도구 디렉터리는 바이브 코딩 명령어와 벤치마크 섹션으로 이어진다.",
+    ],
+  },
 ];
 
 const sourceById = new Map(sources.map((source) => [source.id, source]));
@@ -5759,6 +7586,7 @@ function collectReferencedSourceIds() {
   for (const update of updates) addMany(update.sourceIds);
   for (const benchmark of benchmarkEntries) addMany(benchmark.sourceIds);
   for (const command of vibeCodingCommands) addMany(command.sourceIds);
+  for (const tool of aiCodingTools) addMany(tool.sourceIds);
   for (const guide of manualGuides) addMany(guide.sourceIds);
   for (const guide of personaGuides) addMany(guide.sourceIds);
   for (const recommendation of taskRecommendations)
@@ -5781,6 +7609,7 @@ export function runContentAudit(): ContentAuditResult {
   const duplicateModelIds = duplicateIds(modelProfiles);
   const duplicateUpdateIds = duplicateIds(updates);
   const duplicateCommandIds = duplicateIds(vibeCodingCommands);
+  const duplicateAiCodingToolIds = duplicateIds(aiCodingTools);
   const duplicatePersonaIds = duplicateIds(personaGuides);
   const duplicateTaskRecommendationIds = duplicateIds(taskRecommendations);
   const duplicateResourceIds = duplicateIds(learningResources);
@@ -5815,6 +7644,7 @@ export function runContentAudit(): ContentAuditResult {
           duplicateModelIds.length +
           duplicateUpdateIds.length +
           duplicateCommandIds.length +
+          duplicateAiCodingToolIds.length +
           duplicatePersonaIds.length +
           duplicateTaskRecommendationIds.length +
           duplicateResourceIds.length ===
@@ -5826,6 +7656,7 @@ export function runContentAudit(): ContentAuditResult {
           duplicateModelIds.length +
           duplicateUpdateIds.length +
           duplicateCommandIds.length +
+          duplicateAiCodingToolIds.length +
           duplicatePersonaIds.length +
           duplicateTaskRecommendationIds.length +
           duplicateResourceIds.length ===
@@ -5836,6 +7667,7 @@ export function runContentAudit(): ContentAuditResult {
               ...duplicateModelIds,
               ...duplicateUpdateIds,
               ...duplicateCommandIds,
+              ...duplicateAiCodingToolIds,
               ...duplicatePersonaIds,
               ...duplicateTaskRecommendationIds,
               ...duplicateResourceIds,
@@ -5939,6 +7771,29 @@ export function getTaskRecommendationCategoryLabel(
   }
 }
 
+export function getAiCodingToolCategoryLabel(
+  category: AiCodingToolCategory | "all",
+) {
+  switch (category) {
+    case "all":
+      return "전체";
+    case "AI IDE":
+      return "AI IDE";
+    case "IDE 확장":
+      return "IDE 확장";
+    case "CLI/터미널":
+      return "CLI/터미널";
+    case "PR 리뷰":
+      return "PR 리뷰";
+    case "웹앱 제작":
+      return "웹앱 제작";
+    case "클라우드 에이전트":
+      return "클라우드 에이전트";
+    case "오픈소스 스택":
+      return "오픈소스";
+  }
+}
+
 export function getModelById(id: string) {
   return modelProfiles.find((profile) => profile.id === id);
 }
@@ -5992,6 +7847,7 @@ export function searchCatalog(
     selectedCategory === "recommendations" ||
     selectedCategory === "updates" ||
     selectedCategory === "vibe" ||
+    selectedCategory === "tools" ||
     selectedCategory === "design" ||
     selectedCategory === "benchmarks"
       ? updates.filter(
@@ -6060,7 +7916,9 @@ export function searchCatalog(
       : [];
 
   const filteredVibeCodingCommands =
-    selectedCategory === "all" || selectedCategory === "vibe"
+    selectedCategory === "all" ||
+    selectedCategory === "vibe" ||
+    selectedCategory === "tools"
       ? vibeCodingCommands.filter(
           (command) =>
             matchesProvider(command.providerId, selectedProvider) &&
@@ -6074,6 +7932,30 @@ export function searchCatalog(
               command.vibeCodingFit,
               ...command.setupNotes,
               ...command.caveats,
+            ]),
+        )
+      : [];
+
+  const filteredAiCodingTools =
+    selectedCategory === "all" ||
+    selectedCategory === "tools" ||
+    selectedCategory === "vibe" ||
+    selectedCategory === "learning"
+      ? aiCodingTools.filter(
+          (tool) =>
+            (selectedProvider === "all" ||
+              tool.providerIds?.includes(selectedProvider)) &&
+            matchesQuery(query, [
+              tool.toolName,
+              tool.vendor,
+              tool.category,
+              tool.pricing,
+              tool.eventSignal,
+              ...tool.bestFor,
+              ...tool.integrations,
+              ...tool.koreanResources,
+              ...tool.caveats,
+              ...tool.tags,
             ]),
         )
       : [];
@@ -6186,6 +8068,7 @@ export function searchCatalog(
     ...filteredTaskRecommendations,
     ...benchmarks,
     ...filteredVibeCodingCommands,
+    ...filteredAiCodingTools,
     ...manuals,
     ...filteredPersonaGuides,
     ...resources,
@@ -6213,6 +8096,7 @@ export function searchCatalog(
     models,
     updates: filteredUpdates,
     taskRecommendations: filteredTaskRecommendations,
+    aiCodingTools: filteredAiCodingTools,
     benchmarks,
     manuals,
     personaGuides: filteredPersonaGuides,
@@ -6232,6 +8116,7 @@ export function getCatalogStats() {
     updates: updates.length,
     benchmarkRows: benchmarkEntries.length,
     vibeCommands: vibeCodingCommands.length,
+    aiCodingTools: aiCodingTools.length,
     personaGuides: personaGuides.length,
     taskRecommendations: taskRecommendations.length,
     resources: learningResources.length,

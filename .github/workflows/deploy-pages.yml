@@ -24,15 +24,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version-file: .nvmrc
-
-      - name: Enable pnpm
-        run: |
-          corepack enable
-          corepack prepare pnpm@11.4.0 --activate
+          node-version: 24
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
