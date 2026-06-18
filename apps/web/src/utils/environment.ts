@@ -8,11 +8,19 @@ const DOMESTIC_LANGUAGE_PREFIXES = ["ko", "ko-kr", "ko_kr"] as const;
 const DOMESTIC_TIMEZONE_HINTS = ["asia/seoul", "asia/pyongyang", "asia/jeju"] as const;
 
 export function getBrowserLocaleContext(): BrowserLocaleContext {
-  if (typeof navigator === "undefined" || typeof Intl === "undefined") {
+  if (typeof Intl === "undefined") {
     return { isDomestic: false, locale: "", timeZone: "" };
   }
 
-  const locale = (navigator.languages?.[0] || navigator.language || "").toLowerCase();
+  const localeFromNavigator =
+    typeof navigator !== "undefined"
+      ? (navigator.languages?.[0] || navigator.language || "")
+      : "";
+  const locale = (
+    localeFromNavigator ||
+    Intl.DateTimeFormat().resolvedOptions().locale ||
+    ""
+  ).toLowerCase();
 
   let timeZone = "";
   try {

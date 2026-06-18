@@ -9,6 +9,7 @@ import { ExternalLink, Library, Search } from "lucide-react";
 import { useDeferredValue, useMemo, useState } from "react";
 
 import { SectionHeader, SegmentBar } from "@/components/app/CommonUi";
+import { getBrowserLocaleContext } from "@/utils/environment";
 import {
   sourceKindFilters,
   sourceKindLabel,
@@ -275,7 +276,9 @@ export function ResourceLibrary({
 }: {
   resources: LearningResource[];
 }) {
-  const [language, setLanguage] = useState<ResourceLanguageFilter>("koreanOrCaption");
+  const [language, setLanguage] = useState<ResourceLanguageFilter>(() =>
+    getBrowserLocaleContext().isDomestic ? "koreanOrCaption" : "영어",
+  );
   const [resourceType, setResourceType] = useState<ResourceTypeFilter>("all");
   const [level, setLevel] = useState<ResourceLevelFilter>("all");
   const [resourceProvider, setResourceProvider] =
