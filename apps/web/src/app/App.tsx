@@ -1756,7 +1756,7 @@ function BenchmarkBoard() {
       <SectionHeader
         icon={BarChart3}
         title="벤치마크와 비용"
-        description="Artificial Analysis, LM Arena, HELM, SWE-bench, LiveCodeBench, Aider, BFCL, Terminal-Bench, OSWorld, WebArena, MMMU, DocVQA, ChartQA를 분야별로 나누어 점수·규모·비용·latency와 함께 봅니다."
+        description="종합 리더보드, SWE-Bench Pro, SWE-Lancer, GDPval, SpreadsheetBench, BlueFin, OfficeBench, Terminal-Bench, OSWorld, MMMU, DocVQA를 분야별로 나누어 점수·규모·비용·latency와 함께 봅니다."
       />
       <SegmentBar
         label="분야"

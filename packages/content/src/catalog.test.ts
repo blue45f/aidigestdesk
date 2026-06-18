@@ -179,6 +179,34 @@ describe("catalog search", () => {
       ),
     ).toBe(true);
 
+    const sweLancerResults = searchCatalog("SWE-Lancer", "all", "benchmarks");
+    expect(
+      sweLancerResults.benchmarks.some(
+        (entry) => entry.id === "swelancer-economic-coding",
+      ),
+    ).toBe(true);
+
+    const gdpvalResults = searchCatalog("GDPval", "all", "benchmarks");
+    expect(
+      gdpvalResults.benchmarks.some(
+        (entry) => entry.id === "gdpval-work-deliverables",
+      ),
+    ).toBe(true);
+
+    const sheetResults = searchCatalog("스프레드시트", "all", "benchmarks");
+    expect(
+      sheetResults.benchmarks.some(
+        (entry) => entry.id === "bluefin-finance-spreadsheets",
+      ),
+    ).toBe(true);
+
+    const officeResults = searchCatalog("Office automation", "all", "learning");
+    expect(
+      officeResults.resources.some(
+        (resource) => resource.id === "res-benchmark-hubs-work-office",
+      ),
+    ).toBe(true);
+
     const courseResults = searchCatalog("노마드코더", "all", "learning");
     expect(
       courseResults.resources.some(
@@ -217,12 +245,12 @@ describe("catalog search", () => {
     expect(getCatalogStats()).toMatchObject({
       providers: 10,
       updates: 33,
-      benchmarkRows: 36,
+      benchmarkRows: 44,
       vibeCommands: 9,
       aiCodingTools: 14,
       personaGuides: 5,
       taskRecommendations: 8,
-      monitors: 32,
+      monitors: 33,
       pipelineItems: 9,
       costProfiles: 10,
     });
