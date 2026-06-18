@@ -148,6 +148,39 @@ describe("catalog search", () => {
         (resource) => resource.id === "res-korean-remote-bootcamps",
       ),
     ).toBe(true);
+
+    const kDigitalResults = searchCatalog("K-디지털", "all", "learning");
+    expect(
+      kDigitalResults.resources.some(
+        (resource) => resource.id === "res-kdigital-public-training-hub",
+      ),
+    ).toBe(true);
+    expect(
+      kDigitalResults.updates.some(
+        (update) => update.id === "update-korean-public-ai-training",
+      ),
+    ).toBe(true);
+
+    const bootcampResults = searchCatalog("SW마에스트로", "all", "learning");
+    expect(
+      bootcampResults.resources.some(
+        (resource) => resource.id === "res-national-ai-bootcamp-watchlist",
+      ),
+    ).toBe(true);
+
+    const newsletterResults = searchCatalog("GeekNews", "all", "learning");
+    expect(
+      newsletterResults.resources.some(
+        (resource) => resource.id === "res-korean-ai-newsletter-community-hub",
+      ),
+    ).toBe(true);
+
+    const opsResults = searchCatalog("국내 AI 교육 모집 상태", "all", "ops");
+    expect(
+      opsResults.pipelineItems.some(
+        (item) => item.id === "pipe-korean-education-status-watch",
+      ),
+    ).toBe(true);
   });
 
   it("finds LLM event and promotion watch items", () => {
@@ -505,14 +538,14 @@ describe("catalog search", () => {
   it("exposes summary stats", () => {
     expect(getCatalogStats()).toMatchObject({
       providers: 10,
-      updates: 40,
+      updates: 43,
       benchmarkRows: 91,
       vibeCommands: 9,
       aiCodingTools: 14,
       personaGuides: 5,
       taskRecommendations: 8,
-      monitors: 47,
-      pipelineItems: 12,
+      monitors: 50,
+      pipelineItems: 13,
       costProfiles: 10,
     });
   });
