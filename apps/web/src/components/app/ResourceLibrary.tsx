@@ -1,420 +1,412 @@
 import {
+  getContentMetadataSearchText,
+  getLearningResourceMetadata,
   getSearchTerms,
   getSources,
   providerCatalog,
   type LearningResource,
   type ProviderId,
-} from "@aidigestdesk/content";
-import { ExternalLink, Library, Search } from "lucide-react";
-import { useDeferredValue, useMemo, useState } from "react";
+} from '@aidigestdesk/content'
+import { ExternalLink, Library, Search } from 'lucide-react'
+import { useDeferredValue, useMemo, useState } from 'react'
 
-import { SectionHeader, SegmentBar } from "@/components/app/CommonUi";
-import { getLocaleAwareFilterDefaults } from "@/utils/environment";
+import {
+  MetadataChips,
+  MultiSegmentBar,
+  SectionHeader,
+  SegmentBar,
+} from '@/components/app/CommonUi'
 import {
   sourceKindFilters,
   sourceKindLabel,
   type SourceKindFilter,
-} from "@/components/app/sourceLabels";
+} from '@/components/app/sourceLabels'
+import { getLocaleAwareFilterDefaults } from '@/utils/environment'
 
-type ResourceLanguageFilter =
-  | LearningResource["language"]
-  | "all"
-  | "koreanOrCaption";
-type ResourceTypeFilter = LearningResource["type"] | "all";
-type ResourceLevelFilter = LearningResource["level"] | "all";
-type ResourceProviderFilter = ProviderId | "all";
-type ResourceSortMode =
-  | "language"
-  | "type"
-  | "title"
-  | "level"
-  | "provider"
-  | "lastChecked";
-type ResourceSortDirection = "asc" | "desc";
+type ResourceLanguageFilter = LearningResource['language'] | 'all' | 'koreanOrCaption'
+type ResourceTypeFilter = LearningResource['type'] | 'all'
+type ResourceLevelFilter = LearningResource['level'] | 'all'
+type ResourceProviderFilter = ProviderId | 'all'
+type ResourceSortMode = 'language' | 'type' | 'title' | 'level' | 'provider' | 'lastChecked'
+type ResourceSortDirection = 'asc' | 'desc'
 type ResourceAccessFilter =
-  | "all"
-  | "free"
-  | "paid"
-  | "subscription"
-  | "publicFunded"
-  | "remote"
-  | "bootcamp"
-  | "events"
-  | "hackathons"
-  | "openSource";
+  | 'all'
+  | 'free'
+  | 'paid'
+  | 'subscription'
+  | 'publicFunded'
+  | 'remote'
+  | 'bootcamp'
+  | 'events'
+  | 'hackathons'
+  | 'openSource'
 type ResourceFocusFilter =
-  | "all"
-  | "modelChannels"
-  | "koreanCreators"
-  | "coursePlatforms"
-  | "inflearn"
-  | "publicTraining"
-  | "bootcamps"
-  | "books"
-  | "bookStores"
-  | "community"
-  | "events"
-  | "newsletters"
-  | "koreanLLM"
-  | "koreanBenchmarks"
-  | "officialKo"
-  | "codingTools";
+  | 'all'
+  | 'modelChannels'
+  | 'koreanCreators'
+  | 'coursePlatforms'
+  | 'inflearn'
+  | 'publicTraining'
+  | 'bootcamps'
+  | 'books'
+  | 'bookStores'
+  | 'community'
+  | 'events'
+  | 'newsletters'
+  | 'koreanLLM'
+  | 'koreanBenchmarks'
+  | 'officialKo'
+  | 'codingTools'
+type ActiveResourceTypeFilter = Exclude<ResourceTypeFilter, 'all'>
+type ActiveResourceLevelFilter = Exclude<ResourceLevelFilter, 'all'>
+type ActiveResourceFocusFilter = Exclude<ResourceFocusFilter, 'all'>
+type ActiveResourceAccessFilter = Exclude<ResourceAccessFilter, 'all'>
+type ActiveSourceKindFilter = Exclude<SourceKindFilter, 'all'>
 
 function hasAnyTag(resource: LearningResource, tags: string[]) {
-  return tags.some((tag) => resource.tags.includes(tag));
+  return tags.some((tag) => resource.tags.includes(tag))
 }
 
 function getResourceSearchableText(resource: LearningResource) {
+  const metadata = getLearningResourceMetadata(resource)
   return [
     resource.id,
     resource.title,
     resource.author,
     resource.summary,
+    getContentMetadataSearchText(metadata),
     ...resource.tags,
   ]
-    .join(" ")
-    .toLocaleLowerCase("ko-KR");
+    .join(' ')
+    .toLocaleLowerCase('ko-KR')
 }
 
-function matchesResourceFocus(
-  resource: LearningResource,
-  focus: ResourceFocusFilter,
-) {
-  const tagSet = new Set(resource.tags);
-  const searchable = getResourceSearchableText(resource);
+function matchesResourceFocus(resource: LearningResource, focus: ResourceFocusFilter) {
+  const tagSet = new Set(resource.tags)
+  const searchable = getResourceSearchableText(resource)
 
   switch (focus) {
-    case "modelChannels":
+    case 'modelChannels':
       return (
-        tagSet.has("모델별") ||
-        tagSet.has("공식 채널") ||
-        tagSet.has("후보 채널") ||
-        resource.id.includes("model-")
-      );
-    case "koreanCreators":
+        tagSet.has('모델별') ||
+        tagSet.has('공식 채널') ||
+        tagSet.has('후보 채널') ||
+        resource.id.includes('model-')
+      )
+    case 'koreanCreators':
       return (
-        resource.language === "한국어" &&
-        (tagSet.has("유튜브") ||
-          tagSet.has("유튜버") ||
-          tagSet.has("코드팩토리") ||
-          tagSet.has("개발동생") ||
-          resource.id.includes("youtube"))
-      );
-    case "coursePlatforms":
+        resource.language === '한국어' &&
+        (tagSet.has('유튜브') ||
+          tagSet.has('유튜버') ||
+          tagSet.has('코드팩토리') ||
+          tagSet.has('개발동생') ||
+          resource.id.includes('youtube'))
+      )
+    case 'coursePlatforms':
       return (
-        tagSet.has("강좌 플랫폼") ||
-        tagSet.has("인프런") ||
-        tagSet.has("인프런 대체") ||
-        tagSet.has("원격 교육") ||
-        tagSet.has("K-디지털")
-      );
-    case "inflearn":
+        tagSet.has('강좌 플랫폼') ||
+        tagSet.has('인프런') ||
+        tagSet.has('인프런 대체') ||
+        tagSet.has('원격 교육') ||
+        tagSet.has('K-디지털')
+      )
+    case 'inflearn':
       return (
-        tagSet.has("인프런") ||
-        searchable.includes("inflearn") ||
-        searchable.includes("인프런")
-      );
-    case "publicTraining":
+        tagSet.has('인프런') || searchable.includes('inflearn') || searchable.includes('인프런')
+      )
+    case 'publicTraining':
       return hasAnyTag(resource, [
-        "K-디지털",
-        "국비지원",
-        "내일배움카드",
-        "공공 교육",
-        "공개강좌",
-        "무료 강좌",
-      ]);
-    case "bootcamps":
+        'K-디지털',
+        '국비지원',
+        '내일배움카드',
+        '공공 교육',
+        '공개강좌',
+        '무료 강좌',
+      ])
+    case 'bootcamps':
       return hasAnyTag(resource, [
-        "부트캠프",
-        "SSAFY",
-        "SW마에스트로",
-        "SeSAC",
-        "카카오테크",
-        "모집 상태",
-      ]);
-    case "books":
-      return resource.type === "도서";
-    case "bookStores":
+        '부트캠프',
+        'SSAFY',
+        'SW마에스트로',
+        'SeSAC',
+        '카카오테크',
+        '모집 상태',
+      ])
+    case 'books':
+      return resource.type === '도서'
+    case 'bookStores':
       return (
-        resource.type === "도서" &&
-        (hasAnyTag(resource, ["도서", "신간", "출판사"]) ||
-          searchable.includes("yes24") ||
-          searchable.includes("알라딘") ||
-          searchable.includes("교보") ||
-          searchable.includes("서점") ||
-          searchable.includes("길벗") ||
-          searchable.includes("위키북스") ||
-          searchable.includes("한빛미디어") ||
-          searchable.includes("제이펍") ||
-          searchable.includes("에이콘"))
-      );
-    case "community":
-      return resource.type === "커뮤니티";
-    case "events":
-      return hasAnyTag(resource, ["이벤트", "웨비나", "모집 상태", "학생 혜택"]);
-    case "newsletters":
+        resource.type === '도서' &&
+        (hasAnyTag(resource, ['도서', '신간', '출판사']) ||
+          searchable.includes('yes24') ||
+          searchable.includes('알라딘') ||
+          searchable.includes('교보') ||
+          searchable.includes('서점') ||
+          searchable.includes('길벗') ||
+          searchable.includes('위키북스') ||
+          searchable.includes('한빛미디어') ||
+          searchable.includes('제이펍') ||
+          searchable.includes('에이콘'))
+      )
+    case 'community':
+      return resource.type === '커뮤니티'
+    case 'events':
+      return hasAnyTag(resource, ['이벤트', '웨비나', '모집 상태', '학생 혜택'])
+    case 'newsletters':
+      return hasAnyTag(resource, ['뉴스레터', '웹진', 'GeekNews', '요즘IT', 'Disquiet'])
+    case 'koreanLLM':
       return hasAnyTag(resource, [
-        "뉴스레터",
-        "웹진",
-        "GeekNews",
-        "요즘IT",
-        "Disquiet",
-      ]);
-    case "koreanLLM":
+        '국내 LLM',
+        'HyperCLOVA X',
+        'Solar Pro 3',
+        'EXAONE',
+        'Kanana',
+        '한국어 성능',
+      ])
+    case 'koreanBenchmarks':
       return hasAnyTag(resource, [
-        "국내 LLM",
-        "HyperCLOVA X",
-        "Solar Pro 3",
-        "EXAONE",
-        "Kanana",
-        "한국어 성능",
-      ]);
-    case "koreanBenchmarks":
-      return hasAnyTag(resource, [
-        "한국어 벤치마크",
-        "KMMLU",
-        "KMMMU",
-        "KoBALT",
-        "HRET",
-        "KITE",
-        "HAE-RAE",
-      ]);
-    case "officialKo":
-      return resource.type === "공식 문서" && resource.language === "한국어";
-    case "codingTools":
+        '한국어 벤치마크',
+        'KMMLU',
+        'KMMMU',
+        'KoBALT',
+        'HRET',
+        'KITE',
+        'HAE-RAE',
+      ])
+    case 'officialKo':
+      return resource.type === '공식 문서' && resource.language === '한국어'
+    case 'codingTools':
       return (
-        tagSet.has("AI 코딩") ||
-        tagSet.has("AI 코딩 도구") ||
-        tagSet.has("AI IDE") ||
-        tagSet.has("CLI") ||
-        tagSet.has("바이브 코딩")
-      );
+        tagSet.has('AI 코딩') ||
+        tagSet.has('AI 코딩 도구') ||
+        tagSet.has('AI IDE') ||
+        tagSet.has('CLI') ||
+        tagSet.has('바이브 코딩')
+      )
     default:
-      return true;
+      return true
   }
 }
 
-function matchesResourceAccess(
-  resource: LearningResource,
-  access: ResourceAccessFilter,
-) {
-  const searchable = getResourceSearchableText(resource);
+function matchesResourceAccess(resource: LearningResource, access: ResourceAccessFilter) {
+  const searchable = getResourceSearchableText(resource)
 
   switch (access) {
-    case "free":
+    case 'free':
       return (
-        searchable.includes("무료") ||
-        searchable.includes("공개강좌") ||
-        searchable.includes("공공 교육") ||
-        searchable.includes("free")
-      );
-    case "paid":
+        searchable.includes('무료') ||
+        searchable.includes('공개강좌') ||
+        searchable.includes('공공 교육') ||
+        searchable.includes('free')
+      )
+    case 'paid':
       return (
-        searchable.includes("유료") ||
-        searchable.includes("가격") ||
-        searchable.includes("pricing") ||
-        searchable.includes("플랜") ||
-        searchable.includes("크레딧") ||
-        searchable.includes("credit")
-      );
-    case "subscription":
+        searchable.includes('유료') ||
+        searchable.includes('가격') ||
+        searchable.includes('pricing') ||
+        searchable.includes('플랜') ||
+        searchable.includes('크레딧') ||
+        searchable.includes('credit')
+      )
+    case 'subscription':
       return (
-        searchable.includes("구독") ||
-        searchable.includes("subscription") ||
-        searchable.includes("class101") ||
-        searchable.includes("데이스쿨")
-      );
-    case "publicFunded":
+        searchable.includes('구독') ||
+        searchable.includes('subscription') ||
+        searchable.includes('class101') ||
+        searchable.includes('데이스쿨')
+      )
+    case 'publicFunded':
       return (
-        searchable.includes("국비지원") ||
-        searchable.includes("k-디지털") ||
-        searchable.includes("내일배움카드") ||
-        searchable.includes("공공 교육")
-      );
-    case "remote":
+        searchable.includes('국비지원') ||
+        searchable.includes('k-디지털') ||
+        searchable.includes('내일배움카드') ||
+        searchable.includes('공공 교육')
+      )
+    case 'remote':
       return (
-        searchable.includes("원격 교육") ||
-        searchable.includes("온라인") ||
-        searchable.includes("remote")
-      );
-    case "bootcamp":
+        searchable.includes('원격 교육') ||
+        searchable.includes('온라인') ||
+        searchable.includes('remote')
+      )
+    case 'bootcamp':
       return (
-        searchable.includes("부트캠프") ||
-        searchable.includes("모집 상태") ||
-        searchable.includes("데브코스") ||
-        searchable.includes("캠퍼스")
-      );
-    case "events":
+        searchable.includes('부트캠프') ||
+        searchable.includes('모집 상태') ||
+        searchable.includes('데브코스') ||
+        searchable.includes('캠퍼스')
+      )
+    case 'events':
       return (
-        searchable.includes("이벤트") ||
-        searchable.includes("웨비나") ||
-        searchable.includes("학생 혜택") ||
-        searchable.includes("무료 체험")
-      );
-    case "hackathons":
+        searchable.includes('이벤트') ||
+        searchable.includes('웨비나') ||
+        searchable.includes('학생 혜택') ||
+        searchable.includes('무료 체험')
+      )
+    case 'hackathons':
       return (
-        searchable.includes("해커톤") ||
-        searchable.includes("경진대회") ||
-        searchable.includes("dacon") ||
-        searchable.includes("데이콘") ||
-        searchable.includes("daker")
-      );
-    case "openSource":
+        searchable.includes('해커톤') ||
+        searchable.includes('경진대회') ||
+        searchable.includes('dacon') ||
+        searchable.includes('데이콘') ||
+        searchable.includes('daker')
+      )
+    case 'openSource':
       return (
-        searchable.includes("오픈소스") ||
-        searchable.includes("오픈웨이트") ||
-        searchable.includes("로컬 모델") ||
-        searchable.includes("자체배포")
-      );
+        searchable.includes('오픈소스') ||
+        searchable.includes('오픈웨이트') ||
+        searchable.includes('로컬 모델') ||
+        searchable.includes('자체배포')
+      )
     default:
-      return true;
+      return true
   }
 }
 
-export function ResourceLibrary({
-  resources,
-}: {
-  resources: LearningResource[];
-}) {
-  const localeAwareDefaults = getLocaleAwareFilterDefaults();
-  const [language, setLanguage] = useState<ResourceLanguageFilter>(() =>
-    localeAwareDefaults.resourceLanguage,
-  );
-  const [resourceType, setResourceType] = useState<ResourceTypeFilter>("all");
-  const [level, setLevel] = useState<ResourceLevelFilter>("all");
-  const [resourceProvider, setResourceProvider] =
-    useState<ResourceProviderFilter>("all");
-  const [focus, setFocus] = useState<ResourceFocusFilter>("all");
-  const [access, setAccess] = useState<ResourceAccessFilter>("all");
-  const [sourceKind, setSourceKind] = useState<SourceKindFilter>("all");
-  const [sortMode, setSortMode] = useState<ResourceSortMode>("language");
-  const [sortDirection, setSortDirection] =
-    useState<ResourceSortDirection>("asc");
-  const [tag, setTag] = useState("all");
-  const [resourceQuery, setResourceQuery] = useState("");
-  const deferredResourceQuery = useDeferredValue(resourceQuery);
+export function ResourceLibrary({ resources }: { resources: LearningResource[] }) {
+  const localeAwareDefaults = getLocaleAwareFilterDefaults()
+  const [language, setLanguage] = useState<ResourceLanguageFilter>(
+    () => localeAwareDefaults.resourceLanguage
+  )
+  const [resourceTypes, setResourceTypes] = useState<ActiveResourceTypeFilter[]>([])
+  const [levels, setLevels] = useState<ActiveResourceLevelFilter[]>([])
+  const [resourceProvider, setResourceProvider] = useState<ProviderId[]>([])
+  const [focuses, setFocuses] = useState<ActiveResourceFocusFilter[]>([])
+  const [accesses, setAccesses] = useState<ActiveResourceAccessFilter[]>([])
+  const [sourceKinds, setSourceKinds] = useState<ActiveSourceKindFilter[]>([])
+  const [sortMode, setSortMode] = useState<ResourceSortMode>('language')
+  const [sortDirection, setSortDirection] = useState<ResourceSortDirection>('asc')
+  const [tags, setTags] = useState<string[]>([])
+  const [resourceQuery, setResourceQuery] = useState('')
+  const deferredResourceQuery = useDeferredValue(resourceQuery)
   const resourceSearchTerms = useMemo(
     () => getSearchTerms(deferredResourceQuery),
-    [deferredResourceQuery],
-  );
+    [deferredResourceQuery]
+  )
 
   const supportsKoreanOrCaption = useMemo(
     () => (resource: LearningResource) => {
-      if (resource.language === "한국어") return true;
-      const searchable = getResourceSearchableText(resource);
-      return searchable.includes("자막");
+      if (resource.language === '한국어') return true
+      const searchable = getResourceSearchableText(resource)
+      return searchable.includes('자막')
     },
-    [],
-  );
-  const languageFilters: Array<{ id: ResourceLanguageFilter; label: string }> =
-    [
-      { id: "koreanOrCaption", label: "기본(한국어/자막)" },
-      { id: "all", label: "전체" },
-      { id: "한국어", label: "한국어" },
-      { id: "영어", label: "영어" },
-    ];
+    []
+  )
+  const languageFilters: Array<{ id: ResourceLanguageFilter; label: string }> = [
+    { id: 'koreanOrCaption', label: '기본(한국어/자막)' },
+    { id: 'all', label: '전체' },
+    { id: '한국어', label: '한국어' },
+    { id: '영어', label: '영어' },
+  ]
   const typeFilters: Array<{ id: ResourceTypeFilter; label: string }> = [
-    { id: "all", label: "전체" },
-    { id: "공식 문서", label: "공식 문서" },
-    { id: "강좌/영상", label: "유튜브/영상" },
-    { id: "블로그/글", label: "블로그/글" },
-    { id: "도서", label: "도서" },
-    { id: "커뮤니티", label: "커뮤니티" },
-  ];
+    { id: 'all', label: '전체' },
+    { id: '공식 문서', label: '공식 문서' },
+    { id: '강좌/영상', label: '유튜브/영상' },
+    { id: '블로그/글', label: '블로그/글' },
+    { id: '도서', label: '도서' },
+    { id: '커뮤니티', label: '커뮤니티' },
+  ]
   const levelFilters: Array<{ id: ResourceLevelFilter; label: string }> = [
-    { id: "all", label: "전체" },
-    { id: "입문", label: "입문" },
-    { id: "실무", label: "실무" },
-    { id: "고급", label: "고급" },
-  ];
+    { id: 'all', label: '전체' },
+    { id: '입문', label: '입문' },
+    { id: '실무', label: '실무' },
+    { id: '고급', label: '고급' },
+  ]
   const providerResourceFilters: Array<{
-    id: ResourceProviderFilter;
-    label: string;
+    id: ResourceProviderFilter
+    label: string
   }> = [
-    { id: "all", label: "전체 제공사" },
+    { id: 'all', label: '전체 제공사' },
     ...providerCatalog.map((provider) => ({
       id: provider.id,
       label: provider.label,
     })),
-  ];
+  ]
   const focusFilters: Array<{ id: ResourceFocusFilter; label: string }> = [
-    { id: "all", label: "전체 묶음" },
-    { id: "modelChannels", label: "모델별 채널" },
-    { id: "koreanCreators", label: "국내 유튜버" },
-    { id: "coursePlatforms", label: "강좌 플랫폼" },
-    { id: "inflearn", label: "인프런" },
-    { id: "publicTraining", label: "국비/공개강좌" },
-    { id: "bootcamps", label: "부트캠프" },
-    { id: "books", label: "도서/신간" },
-    { id: "bookStores", label: "서점/출판사" },
-    { id: "community", label: "커뮤니티" },
-    { id: "events", label: "이벤트/웨비나" },
-    { id: "newsletters", label: "뉴스레터/웹진" },
-    { id: "koreanLLM", label: "국내 LLM" },
-    { id: "koreanBenchmarks", label: "한국어 벤치마크" },
-    { id: "officialKo", label: "한국어 공식" },
-    { id: "codingTools", label: "AI 코딩 도구" },
-  ];
+    { id: 'all', label: '전체 묶음' },
+    { id: 'modelChannels', label: '모델별 채널' },
+    { id: 'koreanCreators', label: '국내 유튜버' },
+    { id: 'coursePlatforms', label: '강좌 플랫폼' },
+    { id: 'inflearn', label: '인프런' },
+    { id: 'publicTraining', label: '국비/공개강좌' },
+    { id: 'bootcamps', label: '부트캠프' },
+    { id: 'books', label: '도서/신간' },
+    { id: 'bookStores', label: '서점/출판사' },
+    { id: 'community', label: '커뮤니티' },
+    { id: 'events', label: '이벤트/웨비나' },
+    { id: 'newsletters', label: '뉴스레터/웹진' },
+    { id: 'koreanLLM', label: '국내 LLM' },
+    { id: 'koreanBenchmarks', label: '한국어 벤치마크' },
+    { id: 'officialKo', label: '한국어 공식' },
+    { id: 'codingTools', label: 'AI 코딩 도구' },
+  ]
   const accessFilters: Array<{ id: ResourceAccessFilter; label: string }> = [
-    { id: "all", label: "전체" },
-    { id: "free", label: "무료/공개" },
-    { id: "paid", label: "유료/가격" },
-    { id: "subscription", label: "구독형" },
-    { id: "publicFunded", label: "국비/공공" },
-    { id: "remote", label: "온라인/원격" },
-    { id: "bootcamp", label: "모집/부트캠프" },
-    { id: "events", label: "혜택/이벤트" },
-    { id: "hackathons", label: "해커톤/대회" },
-    { id: "openSource", label: "오픈소스/로컬" },
-  ];
+    { id: 'all', label: '전체' },
+    { id: 'free', label: '무료/공개' },
+    { id: 'paid', label: '유료/가격' },
+    { id: 'subscription', label: '구독형' },
+    { id: 'publicFunded', label: '국비/공공' },
+    { id: 'remote', label: '온라인/원격' },
+    { id: 'bootcamp', label: '모집/부트캠프' },
+    { id: 'events', label: '혜택/이벤트' },
+    { id: 'hackathons', label: '해커톤/대회' },
+    { id: 'openSource', label: '오픈소스/로컬' },
+  ]
   const sortFilters: Array<{ id: ResourceSortMode; label: string }> = [
-    { id: "language", label: "언어" },
-    { id: "type", label: "자료형" },
-    { id: "title", label: "제목" },
-    { id: "level", label: "난이도" },
-    { id: "provider", label: "제공사" },
-    { id: "lastChecked", label: "최근 확인일" },
-  ];
+    { id: 'language', label: '언어' },
+    { id: 'type', label: '자료형' },
+    { id: 'title', label: '제목' },
+    { id: 'level', label: '난이도' },
+    { id: 'provider', label: '제공사' },
+    { id: 'lastChecked', label: '최근 확인일' },
+  ]
   const sortDirectionFilters: Array<{
-    id: ResourceSortDirection;
-    label: string;
+    id: ResourceSortDirection
+    label: string
   }> = [
-    { id: "asc", label: "오름차순" },
-    { id: "desc", label: "내림차순" },
-  ];
+    { id: 'asc', label: '오름차순' },
+    { id: 'desc', label: '내림차순' },
+  ]
   const getLatestSourceCheckDate = (resource: LearningResource) => {
     return getSources(resource.sourceIds)
       .map((source) => source.lastChecked)
-      .toSorted((a, b) => b.localeCompare(a))[0];
-  };
+      .toSorted((a, b) => b.localeCompare(a))[0]
+  }
   const tagFilters = useMemo(() => {
-    const tags = new Set<string>();
+    const tags = new Set<string>()
     for (const resource of resources) {
-      for (const resourceTag of resource.tags) tags.add(resourceTag);
+      for (const resourceTag of resource.tags) tags.add(resourceTag)
     }
-    return ["all", ...[...tags].toSorted((a, b) => a.localeCompare(b, "ko"))];
-  }, [resources]);
+    return [
+      { id: 'all', label: '전체 태그' },
+      ...[...tags]
+        .toSorted((a, b) => a.localeCompare(b, 'ko'))
+        .map((item) => ({
+          id: item,
+          label: item,
+        })),
+    ]
+  }, [resources])
   const filteredResources = useMemo(
     () =>
       resources
         .filter(
           (resource) =>
-            (language === "all"
+            (language === 'all'
               ? true
-              : language === "koreanOrCaption"
+              : language === 'koreanOrCaption'
                 ? supportsKoreanOrCaption(resource)
                 : resource.language === language) &&
-            (resourceType === "all" || resource.type === resourceType) &&
-            (level === "all" || resource.level === level) &&
-            (resourceProvider === "all" ||
-              resource.providerIds?.includes(resourceProvider)) &&
-            matchesResourceFocus(resource, focus) &&
-            matchesResourceAccess(resource, access) &&
-            (sourceKind === "all" ||
-              getSources(resource.sourceIds).some(
-                (source) => source.kind === sourceKind,
-              )) &&
-            (tag === "all" || resource.tags.includes(tag)) &&
+            (resourceTypes.length === 0 || resourceTypes.includes(resource.type)) &&
+            (levels.length === 0 || levels.includes(resource.level)) &&
+            (resourceProvider.length === 0 ||
+              resourceProvider.some((providerId) => resource.providerIds?.includes(providerId))) &&
+            (focuses.length === 0 ||
+              focuses.some((focus) => matchesResourceFocus(resource, focus))) &&
+            (accesses.length === 0 ||
+              accesses.some((access) => matchesResourceAccess(resource, access))) &&
+            (sourceKinds.length === 0 ||
+              getSources(resource.sourceIds).some((source) => sourceKinds.includes(source.kind))) &&
+            (tags.length === 0 || tags.some((tag) => resource.tags.includes(tag))) &&
             (!resourceSearchTerms.length ||
               resourceSearchTerms.some((searchTerm) =>
                 [
@@ -431,110 +423,98 @@ export function ResourceLibrary({
                     source.note,
                   ]),
                 ]
-                  .join(" ")
-                  .toLocaleLowerCase("ko-KR")
-                  .replace(/\s+/g, " ")
+                  .join(' ')
+                  .toLocaleLowerCase('ko-KR')
+                  .replace(/\s+/g, ' ')
                   .trim()
-                  .includes(searchTerm),
-              )),
+                  .includes(searchTerm)
+              ))
         )
         .toSorted((a, b) => {
-          const direction = sortDirection === "asc" ? 1 : -1;
+          const direction = sortDirection === 'asc' ? 1 : -1
           switch (sortMode) {
-            case "language": {
-              if (a.language === b.language) return a.type.localeCompare(b.type);
-              return (a.language === "한국어" ? -1 : 1) * direction;
+            case 'language': {
+              if (a.language === b.language) return a.type.localeCompare(b.type)
+              return (a.language === '한국어' ? -1 : 1) * direction
             }
-            case "type": {
-              const byType = a.type.localeCompare(b.type);
-              if (byType !== 0) return byType * direction;
-              return a.title.localeCompare(b.title) * direction;
+            case 'type': {
+              const byType = a.type.localeCompare(b.type)
+              if (byType !== 0) return byType * direction
+              return a.title.localeCompare(b.title) * direction
             }
-            case "title":
-              return a.title.localeCompare(b.title) * direction;
-            case "level": {
-              const order: Record<LearningResource["level"], number> = {
+            case 'title':
+              return a.title.localeCompare(b.title) * direction
+            case 'level': {
+              const order: Record<LearningResource['level'], number> = {
                 입문: 0,
                 실무: 1,
                 고급: 2,
-              };
-              const byLevel = order[a.level] - order[b.level];
-              if (byLevel !== 0) return byLevel * direction;
-              return a.title.localeCompare(b.title) * direction;
-            }
-            case "provider": {
-              const firstProviderA = a.providerIds?.[0] ?? "zzzz";
-              const firstProviderB = b.providerIds?.[0] ?? "zzzz";
-              if (firstProviderA === firstProviderB) {
-                return a.title.localeCompare(b.title) * direction;
               }
-              return firstProviderA.localeCompare(firstProviderB) * direction;
+              const byLevel = order[a.level] - order[b.level]
+              if (byLevel !== 0) return byLevel * direction
+              return a.title.localeCompare(b.title) * direction
             }
-            case "lastChecked": {
-              const checkedA = getLatestSourceCheckDate(a);
-              const checkedB = getLatestSourceCheckDate(b);
-              if (!checkedA && !checkedB) return 0;
-              if (!checkedA) return 1 * direction;
-              if (!checkedB) return -1 * direction;
-              return checkedB.localeCompare(checkedA) * direction;
+            case 'provider': {
+              const firstProviderA = a.providerIds?.[0] ?? 'zzzz'
+              const firstProviderB = b.providerIds?.[0] ?? 'zzzz'
+              if (firstProviderA === firstProviderB) {
+                return a.title.localeCompare(b.title) * direction
+              }
+              return firstProviderA.localeCompare(firstProviderB) * direction
+            }
+            case 'lastChecked': {
+              const checkedA = getLatestSourceCheckDate(a)
+              const checkedB = getLatestSourceCheckDate(b)
+              if (!checkedA && !checkedB) return 0
+              if (!checkedA) return 1 * direction
+              if (!checkedB) return -1 * direction
+              return checkedB.localeCompare(checkedA) * direction
             }
             default:
-              return a.title.localeCompare(b.title);
+              return a.title.localeCompare(b.title)
           }
         }),
     [
-      access,
-      focus,
+      accesses,
+      focuses,
       language,
-      level,
+      levels,
       resourceProvider,
-      resourceType,
+      resourceTypes,
       resources,
       resourceSearchTerms,
       supportsKoreanOrCaption,
-      sourceKind,
-      tag,
+      sourceKinds,
+      tags,
       sortMode,
       sortDirection,
-    ],
-  );
+    ]
+  )
   const grouped = useMemo(() => {
     return {
-      official: filteredResources.filter(
-        (resource) => resource.type === "공식 문서",
-      ),
-      videos: filteredResources.filter(
-        (resource) => resource.type === "강좌/영상",
-      ),
-      blogs: filteredResources.filter(
-        (resource) => resource.type === "블로그/글",
-      ),
-      books: filteredResources.filter((resource) => resource.type === "도서"),
-      community: filteredResources.filter(
-        (resource) => resource.type === "커뮤니티",
-      ),
-    };
-  }, [filteredResources]);
+      official: filteredResources.filter((resource) => resource.type === '공식 문서'),
+      videos: filteredResources.filter((resource) => resource.type === '강좌/영상'),
+      blogs: filteredResources.filter((resource) => resource.type === '블로그/글'),
+      books: filteredResources.filter((resource) => resource.type === '도서'),
+      community: filteredResources.filter((resource) => resource.type === '커뮤니티'),
+    }
+  }, [filteredResources])
   const coverageItems = useMemo(() => {
-    const countByType = (type: LearningResource["type"]) =>
-      filteredResources.filter((resource) => resource.type === type).length;
-    const sourceCount = new Set(
-      filteredResources.flatMap((resource) => resource.sourceIds),
-    ).size;
+    const countByType = (type: LearningResource['type']) =>
+      filteredResources.filter((resource) => resource.type === type).length
+    const sourceCount = new Set(filteredResources.flatMap((resource) => resource.sourceIds)).size
 
     return [
       {
-        label: "한국어",
-        value: filteredResources.filter(
-          (resource) => resource.language === "한국어",
-        ).length,
+        label: '한국어',
+        value: filteredResources.filter((resource) => resource.language === '한국어').length,
       },
-      { label: "영상", value: countByType("강좌/영상") },
-      { label: "도서", value: countByType("도서") },
-      { label: "공식", value: countByType("공식 문서") },
-      { label: "출처", value: sourceCount },
-    ];
-  }, [filteredResources]);
+      { label: '영상', value: countByType('강좌/영상') },
+      { label: '도서', value: countByType('도서') },
+      { label: '공식', value: countByType('공식 문서') },
+      { label: '출처', value: sourceCount },
+    ]
+  }, [filteredResources])
 
   return (
     <section id="learning" className="space-y-4">
@@ -545,9 +525,7 @@ export function ResourceLibrary({
       />
       <div className="grid gap-4 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1.35fr_1fr_1fr]">
         <label className="block xl:col-span-2">
-          <span className="text-xs font-semibold text-text-subtle">
-            자료실 검색
-          </span>
+          <span className="text-xs font-semibold text-text-subtle">자료실 검색</span>
           <span className="relative mt-2 block">
             <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
             <input
@@ -564,130 +542,69 @@ export function ResourceLibrary({
           value={language}
           onChange={setLanguage}
         />
-        <SegmentBar
+        <MultiSegmentBar
           label="자료 형식"
           items={typeFilters}
-          value={resourceType}
-          onChange={setResourceType}
+          value={resourceTypes}
+          onChange={setResourceTypes}
         />
-        <SegmentBar
-          label="난이도"
-          items={levelFilters}
-          value={level}
-          onChange={setLevel}
-        />
-        <SegmentBar
-          label="정렬"
-          items={sortFilters}
-          value={sortMode}
-          onChange={setSortMode}
-        />
+        <MultiSegmentBar label="난이도" items={levelFilters} value={levels} onChange={setLevels} />
+        <SegmentBar label="정렬" items={sortFilters} value={sortMode} onChange={setSortMode} />
         <SegmentBar
           label="정렬 방향"
           items={sortDirectionFilters}
           value={sortDirection}
           onChange={setSortDirection}
         />
-        <SegmentBar
+        <MultiSegmentBar
           label="출처 성격"
           items={sourceKindFilters}
-          value={sourceKind}
-          onChange={setSourceKind}
+          value={sourceKinds}
+          onChange={setSourceKinds}
         />
-        <label className="block">
-          <span className="text-xs font-semibold text-text-subtle">
-            자료 묶음
-          </span>
-          <select
-            value={focus}
-            onChange={(event) =>
-              setFocus(event.target.value as ResourceFocusFilter)
-            }
-            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
-          >
-            {focusFilters.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="block">
-          <span className="text-xs font-semibold text-text-subtle">
-            관련 제공사
-          </span>
-          <select
-            value={resourceProvider}
-            onChange={(event) =>
-              setResourceProvider(event.target.value as ResourceProviderFilter)
-            }
-            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
-          >
-            {providerResourceFilters.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="block">
-          <span className="text-xs font-semibold text-text-subtle">
-            접근/비용
-          </span>
-          <select
-            value={access}
-            onChange={(event) =>
-              setAccess(event.target.value as ResourceAccessFilter)
-            }
-            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
-          >
-            {accessFilters.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="block xl:col-span-2">
-          <span className="text-xs font-semibold text-text-subtle">
-            세부 태그
-          </span>
-          <select
-            value={tag}
-            onChange={(event) => setTag(event.target.value)}
-            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
-          >
-            {tagFilters.map((item) => (
-              <option key={item} value={item}>
-                {item === "all" ? "전체 태그" : item}
-              </option>
-            ))}
-          </select>
-        </label>
+        <MultiSegmentBar
+          label="자료 묶음"
+          items={focusFilters}
+          value={focuses}
+          onChange={setFocuses}
+        />
+        <MultiSegmentBar
+          label="관련 제공사"
+          items={providerResourceFilters}
+          value={resourceProvider}
+          onChange={setResourceProvider}
+        />
+        <MultiSegmentBar
+          label="접근/비용"
+          items={accessFilters}
+          value={accesses}
+          onChange={setAccesses}
+        />
+        <div className="xl:col-span-2">
+          <div className="max-h-40 overflow-y-auto rounded-md border border-border bg-bg p-3">
+            <MultiSegmentBar label="세부 태그" items={tagFilters} value={tags} onChange={setTags} />
+          </div>
+        </div>
         <div className="rounded-md border border-border bg-bg p-3">
           <div className="flex items-end justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold text-text-subtle">
-                필터 결과
-              </p>
-              <p className="mt-1 text-lg font-semibold text-text">
-                {filteredResources.length}개
-              </p>
+              <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
+              <p className="mt-1 text-lg font-semibold text-text">{filteredResources.length}개</p>
             </div>
             <button
               type="button"
               onClick={() => {
-                setLanguage(localeAwareDefaults.resourceLanguage);
-                setResourceType("all");
-                setLevel("all");
-                setSortMode("language");
-                setSortDirection("asc");
-                setResourceProvider("all");
-                setFocus("all");
-                setAccess("all");
-                setSourceKind("all");
-                setTag("all");
-                setResourceQuery("");
+                setLanguage(localeAwareDefaults.resourceLanguage)
+                setResourceTypes([])
+                setLevels([])
+                setSortMode('language')
+                setSortDirection('asc')
+                setResourceProvider([])
+                setFocuses([])
+                setAccesses([])
+                setSourceKinds([])
+                setTags([])
+                setResourceQuery('')
               }}
               className="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
             >
@@ -714,32 +631,25 @@ export function ResourceLibrary({
         <ResourceColumn title="커뮤니티" resources={grouped.community} />
       </div>
     </section>
-  );
+  )
 }
 
-function ResourceColumn({
-  title,
-  resources,
-}: {
-  title: string;
-  resources: LearningResource[];
-}) {
+function ResourceColumn({ title, resources }: { title: string; resources: LearningResource[] }) {
   return (
     <div className="rounded-lg border border-border bg-surface p-4">
       <h3 className="text-sm font-semibold text-text">{title}</h3>
       <div className="mt-3 space-y-3">
         {resources.length ? (
           resources.map((resource) => {
-            const resourceSources = getSources(resource.sourceIds);
-            const primarySource = resourceSources[0];
+            const metadata = getLearningResourceMetadata(resource)
+            const resourceSources = getSources(resource.sourceIds)
+            const primarySource = resourceSources[0]
             const sourceKinds = [
-              ...new Set(
-                resourceSources.map((source) => sourceKindLabel(source.kind)),
-              ),
-            ];
+              ...new Set(resourceSources.map((source) => sourceKindLabel(source.kind))),
+            ]
             const lastChecked = resourceSources
               .map((source) => source.lastChecked)
-              .toSorted((a, b) => b.localeCompare(a))[0];
+              .toSorted((a, b) => b.localeCompare(a))[0]
 
             return (
               <a
@@ -751,22 +661,28 @@ function ResourceColumn({
               >
                 <span className="flex items-start justify-between gap-3">
                   <span>
-                    <span className="block text-sm font-semibold text-text">
-                      {resource.title}
-                    </span>
+                    <span className="block text-sm font-semibold text-text">{resource.title}</span>
                     <span className="mt-1 block text-xs text-text-subtle">
-                      {resource.author} · {resource.language} ·{" "}
-                      {resource.level}
+                      {resource.author} · {resource.language} · {resource.level}
                     </span>
                   </span>
-                  <ExternalLink
-                    className="size-3.5 shrink-0 text-text-subtle"
-                    aria-hidden
-                  />
+                  <ExternalLink className="size-3.5 shrink-0 text-text-subtle" aria-hidden />
                 </span>
                 <span className="mt-2 block text-xs leading-5 text-text-muted">
                   {resource.summary}
                 </span>
+                <MetadataChips
+                  items={[
+                    { label: '작성자', value: metadata.authorNames?.join(', ') },
+                    { label: '출처', value: metadata.newsSources?.slice(0, 2).join(', ') },
+                    { label: '도메인', value: metadata.sourceDomains?.slice(0, 2).join(', ') },
+                    { label: '수집일', value: metadata.collectedAt },
+                    { label: '확인일', value: metadata.lastCheckedAt },
+                    { label: '자료형', value: metadata.contentType },
+                    { label: '언어', value: metadata.language },
+                  ]}
+                  limit={6}
+                />
                 <span className="mt-3 flex flex-wrap gap-1.5">
                   {primarySource ? (
                     <span className="rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle">
@@ -798,7 +714,7 @@ function ResourceColumn({
                   ))}
                 </span>
               </a>
-            );
+            )
           })
         ) : (
           <p className="rounded-md border border-border bg-bg p-3 text-xs leading-5 text-text-subtle">
@@ -807,5 +723,5 @@ function ResourceColumn({
         )}
       </div>
     </div>
-  );
+  )
 }

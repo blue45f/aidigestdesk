@@ -1,100 +1,90 @@
-import { ExternalLink, FileText } from "lucide-react";
-import { useMemo, useState } from "react";
+import {
+  getContentMetadataSearchText,
+  getSourceMetadata,
+  type SourceRef,
+} from '@aidigestdesk/content'
+import { ExternalLink, FileText } from 'lucide-react'
+import { useMemo, useState } from 'react'
 
-import type { SourceRef } from "@aidigestdesk/content";
-
-import { EmptyState, SectionHeader, SegmentBar } from "@/components/app/CommonUi";
+import { EmptyState, MetadataChips, SectionHeader, SegmentBar } from '@/components/app/CommonUi'
 import {
   sourceKindFilters,
   sourceKindLabel,
   type SourceKindFilter,
-} from "@/components/app/sourceLabels";
+} from '@/components/app/sourceLabels'
 
-type SourceSortMode =
-  | "title"
-  | "publisher"
-  | "kind"
-  | "lastChecked"
-  | "note";
-type SourceSortDirection = "asc" | "desc";
-type SourceListLimit = number;
+type SourceSortMode = 'title' | 'publisher' | 'kind' | 'lastChecked' | 'note'
+type SourceSortDirection = 'asc' | 'desc'
+type SourceListLimit = number
 
-export function SourcesSection({
-  sourceItems,
-}: {
-  sourceItems: SourceRef[];
-}) {
-  const [kind, setKind] = useState<SourceKindFilter>("all");
-  const [publisherQuery, setPublisherQuery] = useState("");
-  const [sortMode, setSortMode] = useState<SourceSortMode>("title");
-  const [sortDirection, setSortDirection] =
-    useState<SourceSortDirection>("asc");
-  const [sourceLimit, setSourceLimit] = useState<SourceListLimit>(0);
+export function SourcesSection({ sourceItems }: { sourceItems: SourceRef[] }) {
+  const [kind, setKind] = useState<SourceKindFilter>('all')
+  const [publisherQuery, setPublisherQuery] = useState('')
+  const [sortMode, setSortMode] = useState<SourceSortMode>('title')
+  const [sortDirection, setSortDirection] = useState<SourceSortDirection>('asc')
+  const [sourceLimit, setSourceLimit] = useState<SourceListLimit>(0)
 
   const sortModeFilters: Array<{ id: SourceSortMode; label: string }> = [
-    { id: "title", label: "제목" },
-    { id: "publisher", label: "발행처" },
-    { id: "kind", label: "출처 성격" },
-    { id: "lastChecked", label: "확인일" },
-    { id: "note", label: "요약" },
-  ];
+    { id: 'title', label: '제목' },
+    { id: 'publisher', label: '발행처' },
+    { id: 'kind', label: '출처 성격' },
+    { id: 'lastChecked', label: '확인일' },
+    { id: 'note', label: '요약' },
+  ]
   const sortDirectionFilters: Array<{
-    id: SourceSortDirection;
-    label: string;
+    id: SourceSortDirection
+    label: string
   }> = [
-    { id: "asc", label: "오름차순" },
-    { id: "desc", label: "내림차순" },
-  ];
+    { id: 'asc', label: '오름차순' },
+    { id: 'desc', label: '내림차순' },
+  ]
 
   const filteredSources = useMemo(() => {
-    const direction = sortDirection === "asc" ? 1 : -1;
-    const normalizedQuery = publisherQuery.trim().toLocaleLowerCase("ko-KR");
+    const direction = sortDirection === 'asc' ? 1 : -1
+    const normalizedQuery = publisherQuery.trim().toLocaleLowerCase('ko-KR')
 
     return sourceItems
       .filter((source) => {
-        const searchable = `${source.publisher} ${source.title} ${source.note} ${source.kind}`;
+        const metadata = getSourceMetadata(source)
+        const searchable = `${source.publisher} ${source.title} ${source.note} ${source.kind} ${getContentMetadataSearchText(metadata)}`
         return (
-          (kind === "all" || source.kind === kind) &&
-          (!normalizedQuery ||
-            searchable.toLocaleLowerCase("ko-KR").includes(normalizedQuery))
-        );
+          (kind === 'all' || source.kind === kind) &&
+          (!normalizedQuery || searchable.toLocaleLowerCase('ko-KR').includes(normalizedQuery))
+        )
       })
       .toSorted((left, right) => {
         switch (sortMode) {
-          case "title":
-            return left.title.localeCompare(right.title) * direction;
-          case "publisher":
-            return left.publisher.localeCompare(right.publisher) * direction;
-          case "kind":
-            return sourceKindLabel(left.kind).localeCompare(
-              sourceKindLabel(right.kind),
-            ) * direction;
-          case "lastChecked":
-            return right.lastChecked.localeCompare(left.lastChecked) * direction;
-          case "note":
-            return left.note.localeCompare(right.note) * direction;
+          case 'title':
+            return left.title.localeCompare(right.title) * direction
+          case 'publisher':
+            return left.publisher.localeCompare(right.publisher) * direction
+          case 'kind':
+            return sourceKindLabel(left.kind).localeCompare(sourceKindLabel(right.kind)) * direction
+          case 'lastChecked':
+            return right.lastChecked.localeCompare(left.lastChecked) * direction
+          case 'note':
+            return left.note.localeCompare(right.note) * direction
           default:
-            return 0;
+            return 0
         }
-    });
-  }, [kind, publisherQuery, sortDirection, sortMode, sourceItems]);
-  const visibleSources =
-    sourceLimit === 0 ? filteredSources : filteredSources.slice(0, sourceLimit);
+      })
+  }, [kind, publisherQuery, sortDirection, sortMode, sourceItems])
+  const visibleSources = sourceLimit === 0 ? filteredSources : filteredSources.slice(0, sourceLimit)
 
   const resetFilters = () => {
-    setKind("all");
-    setPublisherQuery("");
-    setSortMode("title");
-    setSortDirection("asc");
-    setSourceLimit(0);
-  };
+    setKind('all')
+    setPublisherQuery('')
+    setSortMode('title')
+    setSortDirection('asc')
+    setSourceLimit(0)
+  }
 
   const isResetDisabled =
-    kind === "all" &&
-    publisherQuery.trim() === "" &&
-    sortMode === "title" &&
-    sortDirection === "asc" &&
-    sourceLimit === 0;
+    kind === 'all' &&
+    publisherQuery.trim() === '' &&
+    sortMode === 'title' &&
+    sortDirection === 'asc' &&
+    sourceLimit === 0
 
   return (
     <section id="sources" className="space-y-4">
@@ -104,16 +94,9 @@ export function SourcesSection({
         description="제품 스펙은 공식 문서, 성능 비교는 벤치마크, 학습 자료는 발행 주체별로 구분하고 출처 성격과 발행처로 좁힙니다."
       />
       <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1fr_8rem_8rem_1.7fr]">
-        <SegmentBar
-          label="출처 성격"
-          items={sourceKindFilters}
-          value={kind}
-          onChange={setKind}
-        />
+        <SegmentBar label="출처 성격" items={sourceKindFilters} value={kind} onChange={setKind} />
         <label className="block">
-          <span className="text-xs font-semibold text-text-subtle">
-            발행처/제목 검색
-          </span>
+          <span className="text-xs font-semibold text-text-subtle">발행처/제목 검색</span>
           <input
             value={publisherQuery}
             onChange={(event) => setPublisherQuery(event.target.value)}
@@ -121,12 +104,7 @@ export function SourcesSection({
             className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
           />
         </label>
-        <SegmentBar
-          label="정렬"
-          items={sortModeFilters}
-          value={sortMode}
-          onChange={setSortMode}
-        />
+        <SegmentBar label="정렬" items={sortModeFilters} value={sortMode} onChange={setSortMode} />
         <SegmentBar
           label="정렬 방향"
           items={sortDirectionFilters}
@@ -164,37 +142,45 @@ export function SourcesSection({
 
       {visibleSources.length ? (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {visibleSources.map((source) => (
-            <a
-              key={source.id}
-              href={source.url}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-lg border border-border bg-surface p-4 transition hover:border-border-strong"
-            >
-              <span className="flex items-center justify-between gap-3">
-                <span className="rounded-md border border-border bg-bg px-2 py-1 text-xs font-semibold text-text-subtle">
-                  {sourceKindLabel(source.kind)}
+          {visibleSources.map((source) => {
+            const metadata = getSourceMetadata(source)
+            return (
+              <a
+                key={source.id}
+                href={source.url}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-lg border border-border bg-surface p-4 transition hover:border-border-strong"
+              >
+                <span className="flex items-center justify-between gap-3">
+                  <span className="rounded-md border border-border bg-bg px-2 py-1 text-xs font-semibold text-text-subtle">
+                    {sourceKindLabel(source.kind)}
+                  </span>
+                  <ExternalLink className="size-3.5 text-text-subtle" aria-hidden />
                 </span>
-                <ExternalLink
-                  className="size-3.5 text-text-subtle"
-                  aria-hidden
+                <span className="mt-3 block text-sm font-semibold text-text">{source.title}</span>
+                <span className="mt-1 block text-xs font-medium text-accent">
+                  {source.publisher}
+                </span>
+                <span className="mt-2 block text-xs leading-5 text-text-muted">{source.note}</span>
+                <MetadataChips
+                  items={[
+                    { label: '발행처', value: metadata.publisherName },
+                    { label: '도메인', value: metadata.sourceDomain },
+                    {
+                      label: '연결 도메인',
+                      value: metadata.sourceDomains?.slice(0, 3).join(', '),
+                    },
+                    { label: '자료형', value: metadata.contentType },
+                    { label: '수집일', value: metadata.collectedAt },
+                    { label: '검증일', value: metadata.verifiedAt },
+                    { label: '원문', value: metadata.canonicalUrl },
+                  ]}
+                  limit={7}
                 />
-              </span>
-              <span className="mt-3 block text-sm font-semibold text-text">
-                {source.title}
-              </span>
-              <span className="mt-1 block text-xs font-medium text-accent">
-                {source.publisher}
-              </span>
-              <span className="mt-2 block text-xs leading-5 text-text-muted">
-                {source.note}
-              </span>
-              <span className="mt-3 block text-xs text-text-subtle">
-                확인일 {source.lastChecked}
-              </span>
-            </a>
-          ))}
+              </a>
+            )
+          })}
         </div>
       ) : (
         <EmptyState
@@ -203,5 +189,5 @@ export function SourcesSection({
         />
       )}
     </section>
-  );
+  )
 }

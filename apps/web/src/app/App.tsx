@@ -17,86 +17,67 @@ import {
   type SourceRef,
   type TaskRecommendation,
   type VibeCodingCommand,
-} from "@aidigestdesk/content";
-import {
-  BookOpen,
-  Boxes,
-  ChevronRight,
-  ExternalLink,
-  FileText,
-  Home,
-  Library,
-} from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+} from '@aidigestdesk/content'
+import { BookOpen, Boxes, ChevronRight, ExternalLink, FileText, Home, Library } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 
-import { AdminRoute } from "@/components/app/AdminRoute";
+import { AdminRoute } from '@/components/app/AdminRoute'
 import {
   getInitialAdminSession,
   saveAdminSession,
   type AdminSession,
-} from "@/components/app/adminSession";
+} from '@/components/app/adminSession'
 import {
   CodingToolDirectorySection,
   TaskRecommendationSection,
   VibeCodingSection,
-} from "@/components/app/AiCodingSections";
-import {
-  getCurrentRoute,
-  routePath,
-  routeTitles,
-  type AppRoute,
-} from "@/components/app/appRoutes";
-import { Header, Sidebar } from "@/components/app/AppShell";
-import { MetricCard, SegmentBar } from "@/components/app/CommonUi";
-import {
-  EventCostComparisonSection,
-  ModelCostCalculator,
-} from "@/components/app/CostSections";
+} from '@/components/app/AiCodingSections'
+import { getCurrentRoute, routePath, routeTitles, type AppRoute } from '@/components/app/appRoutes'
+import { Header, Sidebar } from '@/components/app/AppShell'
+import { MetricCard, MultiSegmentBar } from '@/components/app/CommonUi'
+import { EventCostComparisonSection, ModelCostCalculator } from '@/components/app/CostSections'
 import {
   DesignWorkflowSection,
   ManualGuides,
   PersonaPlaybooks,
-} from "@/components/app/LearningWorkflowSections";
+} from '@/components/app/LearningWorkflowSections'
 import {
   BenchmarkBoard,
   ComparisonMatrix,
   ModelCards,
   ModelDetail,
-} from "@/components/app/ModelBenchmarkSections";
+} from '@/components/app/ModelBenchmarkSections'
 import {
   Briefing,
   EventPromotionsSection,
   WebzineSection,
-} from "@/components/app/PortalNewsSections";
-import { ResourceLibrary } from "@/components/app/ResourceLibrary";
-import { SitemapRoute } from "@/components/app/SitemapRoute";
-import { SourcesSection } from "@/components/app/SourcesSection";
-import { RouteAnnouncer } from "@/components/layout/RouteAnnouncer";
-import { SkipLink } from "@/components/layout/SkipLink";
-import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+} from '@/components/app/PortalNewsSections'
+import { ResourceLibrary } from '@/components/app/ResourceLibrary'
+import { SitemapRoute } from '@/components/app/SitemapRoute'
+import { SourcesSection } from '@/components/app/SourcesSection'
+import { RouteAnnouncer } from '@/components/layout/RouteAnnouncer'
+import { SkipLink } from '@/components/layout/SkipLink'
+import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 
-type ProviderFilter = ProviderId | "all";
-type CategoryFilter = ContentCategory | "all";
-
-const providerFilters: Array<{ id: ProviderFilter; label: string }> = [
-  { id: "all", label: "전체" },
+const providerFilters: Array<{ id: ProviderId | 'all'; label: string }> = [
+  { id: 'all', label: '전체' },
   ...providerCatalog.map((provider) => ({
     id: provider.id,
     label: provider.shortLabel,
   })),
-];
+]
 
-const categoryFilters: Array<{ id: CategoryFilter; label: string }> = [
-  { id: "all", label: "전체" },
-  { id: "news", label: "뉴스" },
-  { id: "events", label: "일정/이벤트" },
-  { id: "recommendations", label: "작업 추천" },
-  { id: "tools", label: "AI 도구" },
-  { id: "vibe", label: "CLI/코딩" },
-  { id: "comparison", label: "모델 비교" },
-  { id: "benchmarks", label: "벤치마크" },
-  { id: "learning", label: "강좌/자료" },
-];
+const categoryFilters: Array<{ id: ContentCategory | 'all'; label: string }> = [
+  { id: 'all', label: '전체' },
+  { id: 'news', label: '뉴스' },
+  { id: 'events', label: '일정/이벤트' },
+  { id: 'recommendations', label: '작업 추천' },
+  { id: 'tools', label: 'AI 도구' },
+  { id: 'vibe', label: 'CLI/코딩' },
+  { id: 'comparison', label: '모델 비교' },
+  { id: 'benchmarks', label: '벤치마크' },
+  { id: 'learning', label: '강좌/자료' },
+]
 
 function ResourcesRoute({
   resources,
@@ -106,44 +87,32 @@ function ResourcesRoute({
   sourceItems,
   onNavigate,
 }: {
-  resources: LearningResource[];
-  recommendations: TaskRecommendation[];
-  toolProfiles: AiCodingToolProfile[];
-  vibeCommands: VibeCodingCommand[];
-  sourceItems: SourceRef[];
-  onNavigate: (route: AppRoute) => void;
+  resources: LearningResource[]
+  recommendations: TaskRecommendation[]
+  toolProfiles: AiCodingToolProfile[]
+  vibeCommands: VibeCodingCommand[]
+  sourceItems: SourceRef[]
+  onNavigate: (route: AppRoute) => void
 }) {
-  const koreanResourceCount = resources.filter(
-    (resource) => resource.language === "한국어",
-  ).length;
-  const bookCount = resources.filter(
-    (resource) => resource.type === "도서",
-  ).length;
+  const koreanResourceCount = resources.filter((resource) => resource.language === '한국어').length
+  const bookCount = resources.filter((resource) => resource.type === '도서').length
 
   return (
-    <main
-      id="main-content"
-      tabIndex={-1}
-      className="px-4 py-5 outline-none lg:px-6"
-    >
+    <main id="main-content" tabIndex={-1} className="px-4 py-5 outline-none lg:px-6">
       <div className="mx-auto max-w-[96rem] space-y-6">
         <section className="rounded-lg border border-border bg-surface p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold text-accent">
-                자료 라우트 · /resources
-              </p>
-              <h1 className="mt-1 text-2xl font-semibold text-text">
-                AI 바이브 코딩 자료실
-              </h1>
+              <p className="text-xs font-semibold text-accent">자료 라우트 · /resources</p>
+              <h1 className="mt-1 text-2xl font-semibold text-text">AI 바이브 코딩 자료실</h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
-                한국어 유튜브, 교육기관, 원격 강좌, 신간 도서, 블로그, CLI
-                자료를 한 화면에서 세밀하게 필터링합니다.
+                한국어 유튜브, 교육기관, 원격 강좌, 신간 도서, 블로그, CLI 자료를 한 화면에서
+                세밀하게 필터링합니다.
               </p>
             </div>
             <button
               type="button"
-              onClick={() => onNavigate("portal")}
+              onClick={() => onNavigate('portal')}
               className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-3 py-2 text-xs font-semibold text-text-muted transition hover:text-text"
             >
               <Home className="size-3.5" aria-hidden />
@@ -192,110 +161,83 @@ function ResourcesRoute({
         <SourcesSection sourceItems={sourceItems} />
       </div>
     </main>
-  );
+  )
 }
 
 export default function App() {
-  const [query, setQuery] = useState("");
-  const [provider, setProvider] = useState<ProviderFilter>("all");
-  const [category, setCategory] = useState<CategoryFilter>("all");
-  const [selectedModelId, setSelectedModelId] = useState(
-    modelProfiles[0]?.id ?? "",
-  );
-  const [route, setRoute] = useState<AppRoute>(getCurrentRoute);
-  const [adminSession, setAdminSession] = useState<AdminSession | null>(
-    getInitialAdminSession,
-  );
-  const [dark, setDark] = useState(false);
+  const [query, setQuery] = useState('')
+  const [providers, setProviders] = useState<ProviderId[]>([])
+  const [categories, setCategories] = useState<ContentCategory[]>([])
+  const [selectedModelId, setSelectedModelId] = useState(modelProfiles[0]?.id ?? '')
+  const [route, setRoute] = useState<AppRoute>(getCurrentRoute)
+  const [adminSession, setAdminSession] = useState<AdminSession | null>(getInitialAdminSession)
+  const [dark, setDark] = useState(false)
 
-  useDocumentTitle(routeTitles[route]);
+  useDocumentTitle(routeTitles[route])
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-  }, [dark]);
+    document.documentElement.classList.toggle('dark', dark)
+  }, [dark])
 
   useEffect(() => {
-    const syncRoute = () => setRoute(getCurrentRoute());
-    window.addEventListener("popstate", syncRoute);
-    return () => window.removeEventListener("popstate", syncRoute);
-  }, []);
+    const syncRoute = () => setRoute(getCurrentRoute())
+    window.addEventListener('popstate', syncRoute)
+    return () => window.removeEventListener('popstate', syncRoute)
+  }, [])
 
   const navigateToRoute = (nextRoute: AppRoute) => {
-    const nextPath = routePath[nextRoute];
+    const nextPath = routePath[nextRoute]
     if (window.location.pathname !== nextPath) {
-      window.history.pushState(null, "", nextPath);
+      window.history.pushState(null, '', nextPath)
     }
-    setRoute(nextRoute);
-  };
+    setRoute(nextRoute)
+  }
 
   const handleAdminLogin = (session: AdminSession) => {
-    saveAdminSession(session);
-    setAdminSession(session);
-  };
+    saveAdminSession(session)
+    setAdminSession(session)
+  }
 
   const handleAdminLogout = () => {
-    saveAdminSession(null);
-    setAdminSession(null);
-  };
+    saveAdminSession(null)
+    setAdminSession(null)
+  }
 
   const results = useMemo(
-    () => searchCatalog(query, provider, category),
-    [query, provider, category],
-  );
-  const hasActiveFilter =
-    query.trim() !== "" || provider !== "all" || category !== "all";
+    () => searchCatalog(query, providers, categories),
+    [query, providers, categories]
+  )
+  const hasActiveFilter = query.trim() !== '' || providers.length > 0 || categories.length > 0
   const visibleModels =
-    results.models.length > 0
-      ? results.models
-      : hasActiveFilter
-        ? []
-        : modelProfiles;
+    results.models.length > 0 ? results.models : hasActiveFilter ? [] : modelProfiles
   const selectedModel =
-    visibleModels.find((model) => model.id === selectedModelId) ??
-    visibleModels[0] ??
-    null;
+    visibleModels.find((model) => model.id === selectedModelId) ?? visibleModels[0] ?? null
   const visibleGuides =
-    results.manuals.length > 0
-      ? results.manuals
-      : hasActiveFilter
-        ? []
-        : manualGuides;
+    results.manuals.length > 0 ? results.manuals : hasActiveFilter ? [] : manualGuides
   const visiblePersonaGuides =
-    results.personaGuides.length > 0
-      ? results.personaGuides
-      : hasActiveFilter
-        ? []
-        : personaGuides;
+    results.personaGuides.length > 0 ? results.personaGuides : hasActiveFilter ? [] : personaGuides
   const visibleResources =
-    results.resources.length > 0
-      ? results.resources
-      : hasActiveFilter
-        ? []
-        : learningResources;
+    results.resources.length > 0 ? results.resources : hasActiveFilter ? [] : learningResources
   const visibleVibeCommands =
     results.vibeCodingCommands.length > 0
       ? results.vibeCodingCommands
       : hasActiveFilter
         ? []
-        : vibeCodingCommands;
+        : vibeCodingCommands
   const visibleAiCodingTools =
-    results.aiCodingTools.length > 0
-      ? results.aiCodingTools
-      : hasActiveFilter
-        ? []
-        : aiCodingTools;
+    results.aiCodingTools.length > 0 ? results.aiCodingTools : hasActiveFilter ? [] : aiCodingTools
   const visibleTaskRecommendations =
     results.taskRecommendations.length > 0
       ? results.taskRecommendations
       : hasActiveFilter
         ? []
-        : taskRecommendations;
+        : taskRecommendations
   const visibleSources =
-    category === "sources" || results.sources.length > 0
+    categories.includes('sources') || results.sources.length > 0
       ? results.sources
       : hasActiveFilter
         ? []
-        : sources;
+        : sources
 
   // selectedModel 은 렌더 중 visibleModels[0] 로 폴백하고, 소비처는 selectedModel?.id
   // 를 쓴다. 따라서 필터로 현재 선택이 빠져도 effect 로 state 를 되돌릴 필요가 없다
@@ -314,14 +256,14 @@ export default function App() {
         dark={dark}
         onToggleDark={() => setDark((value) => !value)}
       />
-      {route === "admin" ? (
+      {route === 'admin' ? (
         <AdminRoute
           session={adminSession}
           onLogin={handleAdminLogin}
           onLogout={handleAdminLogout}
           onNavigate={navigateToRoute}
         />
-      ) : route === "resources" ? (
+      ) : route === 'resources' ? (
         <ResourcesRoute
           resources={visibleResources}
           recommendations={visibleTaskRecommendations}
@@ -330,53 +272,44 @@ export default function App() {
           sourceItems={visibleSources}
           onNavigate={navigateToRoute}
         />
-      ) : route === "sitemap" ? (
+      ) : route === 'sitemap' ? (
         <SitemapRoute onNavigate={navigateToRoute} />
       ) : (
         <div className="grid lg:grid-cols-[15rem_1fr]">
           <Sidebar />
-          <main
-            id="main-content"
-            tabIndex={-1}
-            className="min-w-0 px-4 py-5 outline-none lg:px-6"
-          >
+          <main id="main-content" tabIndex={-1} className="min-w-0 px-4 py-5 outline-none lg:px-6">
             <div className="mx-auto max-w-[96rem] space-y-6">
               <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1.25fr]">
-                <SegmentBar
+                <MultiSegmentBar
                   label="제공사"
                   items={providerFilters}
-                  value={provider}
-                  onChange={setProvider}
+                  value={providers}
+                  onChange={setProviders}
                 />
-                <SegmentBar
+                <MultiSegmentBar
                   label="카테고리"
                   items={categoryFilters}
-                  value={category}
-                  onChange={setCategory}
+                  value={categories}
+                  onChange={setCategories}
                 />
               </div>
 
               <Briefing results={results} useFallback={!hasActiveFilter} />
               <EventPromotionsSection />
-              <TaskRecommendationSection
-                recommendations={visibleTaskRecommendations}
-              />
+              <TaskRecommendationSection recommendations={visibleTaskRecommendations} />
               <CodingToolDirectorySection tools={visibleAiCodingTools} />
               <VibeCodingSection commands={visibleVibeCommands} />
               <DesignWorkflowSection />
               <ModelCards
                 models={visibleModels}
-                selectedModelId={selectedModel?.id ?? ""}
+                selectedModelId={selectedModel?.id ?? ''}
                 onSelectModel={setSelectedModelId}
               />
               {selectedModel ? <ModelDetail profile={selectedModel} /> : null}
               <BenchmarkBoard />
               <ComparisonMatrix />
               <ResourceLibrary resources={visibleResources} />
-              <WebzineSection
-                results={results}
-                useFallback={!hasActiveFilter}
-              />
+              <WebzineSection results={results} useFallback={!hasActiveFilter} />
               <ManualGuides guides={visibleGuides} />
               <PersonaPlaybooks guides={visiblePersonaGuides} />
               <ModelCostCalculator />
@@ -389,8 +322,7 @@ export default function App() {
                   href="#main-content"
                   className="inline-flex items-center gap-1 font-semibold text-text-muted hover:text-text"
                 >
-                  맨 위로{" "}
-                  <ChevronRight className="size-3.5 -rotate-90" aria-hidden />
+                  맨 위로 <ChevronRight className="size-3.5 -rotate-90" aria-hidden />
                 </a>
               </footer>
             </div>
@@ -398,5 +330,5 @@ export default function App() {
         </div>
       )}
     </div>
-  );
+  )
 }

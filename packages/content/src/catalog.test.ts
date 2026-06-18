@@ -23,6 +23,36 @@ describe('catalog search', () => {
     expect(results.models[0]?.providerId).toBe('openai')
   })
 
+  it('filters by multiple providers and categories', () => {
+    const providerResults = searchCatalog('', ['openai', 'anthropic'], 'comparison')
+    const providerIds = new Set(providerResults.models.map((model) => model.providerId))
+
+    expect(providerIds.has('openai')).toBe(true)
+    expect(providerIds.has('anthropic')).toBe(true)
+    expect(
+      [...providerIds].every((providerId) => ['openai', 'anthropic'].includes(providerId))
+    ).toBe(true)
+
+    const categoryResults = searchCatalog('', 'all', ['vibe', 'tools'])
+    expect(categoryResults.vibeCodingCommands.length).toBeGreaterThan(0)
+    expect(categoryResults.aiCodingTools.length).toBeGreaterThan(0)
+  })
+
+  it('searches collected metadata such as domains and checked dates', () => {
+    const eventDomainResults = searchCatalog('teca-official.co.kr', 'all', 'events')
+    expect(
+      eventDomainResults.eventSchedules.some((item) => item.sourceIds.includes('teca-hackathon-db'))
+    ).toBe(true)
+
+    const sourceDomainResults = searchCatalog('developers.openai.com', 'all', 'sources')
+    expect(sourceDomainResults.sources.some((source) => source.id === 'openai-codex-cli')).toBe(
+      true
+    )
+
+    const checkedDateResults = searchCatalog('2026-06-18', 'all', 'learning')
+    expect(checkedDateResults.resources.length).toBeGreaterThan(0)
+  })
+
   it('finds newly added AI providers and vibe coding commands', () => {
     const kimiResults = searchCatalog('Kimi')
     expect(kimiResults.models.some((model) => model.id === 'kimi-k27-code')).toBe(true)
@@ -124,16 +154,12 @@ describe('catalog search', () => {
 
     const koreanCursorResults = searchCatalog('커서 강좌', 'all', 'learning')
     expect(
-      koreanCursorResults.resources.some(
-        (resource) => resource.id === 'res-cursor-korean-youtube'
-      )
+      koreanCursorResults.resources.some((resource) => resource.id === 'res-cursor-korean-youtube')
     ).toBe(true)
 
     const koreanCodexCliResults = searchCatalog('코덱스 CLI', 'all', 'vibe')
     expect(
-      koreanCodexCliResults.vibeCodingCommands.some(
-        (command) => command.id === 'cmd-openai-codex'
-      )
+      koreanCodexCliResults.vibeCodingCommands.some((command) => command.id === 'cmd-openai-codex')
     ).toBe(true)
 
     const educationResults = searchCatalog('원격 교육', 'all', 'learning')

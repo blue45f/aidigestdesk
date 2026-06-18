@@ -37,6 +37,38 @@ export type SourceRef = {
   url: string
   lastChecked: string
   note: string
+  metadata?: ContentMetadata
+}
+
+export type ContentMetadata = {
+  authorNames?: string[]
+  publisherName?: string
+  sourceNames?: string[]
+  newsSources?: string[]
+  sourceKind?: SourceKind
+  sourceKinds?: SourceKind[]
+  sourceUrl?: string
+  sourceUrls?: string[]
+  canonicalUrl?: string
+  canonicalUrls?: string[]
+  sourceDomain?: string
+  sourceDomains?: string[]
+  createdAt?: string
+  publishedAt?: string
+  registeredAt?: string
+  updatedAt?: string
+  modifiedAt?: string
+  collectedAt?: string
+  lastCheckedAt?: string
+  verifiedAt?: string
+  startsAt?: string
+  endsAt?: string
+  language?: string
+  region?: string
+  format?: string
+  contentType?: string
+  providerNames?: string[]
+  tags?: string[]
 }
 
 export type ModelSpec = {
@@ -76,6 +108,7 @@ export type UpdateItem = {
   impact: string
   tags: string[]
   sourceIds: string[]
+  metadata?: ContentMetadata
 }
 
 export type EventScheduleType =
@@ -104,6 +137,7 @@ export type EventScheduleItem = {
   tags: string[]
   sourceIds: string[]
   url: string
+  metadata?: ContentMetadata
 }
 
 export type BenchmarkEntry = {
@@ -220,6 +254,7 @@ export type LearningResource = {
   sourceIds: string[]
   providerIds?: ProviderId[]
   tags: string[]
+  metadata?: ContentMetadata
 }
 
 export type CurationStatus = '정상' | '확인 필요' | '자동화 후보'
@@ -1934,6 +1969,33 @@ export const sources: SourceRef[] = [
     note: 'Copilot Free, Student, Pro, Pro+, Max, Business, Enterprise 플랜, AI Credits, agent/cloud/code review/MCP 기능 매트릭스와 일시 중단 안내 확인 출처.',
   },
   {
+    id: 'github-copilot-docs-ko',
+    title: 'GitHub Copilot Documentation (Korean)',
+    publisher: 'GitHub Docs',
+    kind: 'official',
+    url: 'https://docs.github.com/ko/copilot',
+    lastChecked: SNAPSHOT_DATE,
+    note: 'GitHub Copilot, Copilot Chat, 에이전트 모드, 정책, 접근 권한을 한국어로 확인할 수 있는 공식 문서.',
+  },
+  {
+    id: 'github-copilot-plans-ko',
+    title: 'GitHub Copilot Plans (Korean)',
+    publisher: 'GitHub Docs',
+    kind: 'official',
+    url: 'https://docs.github.com/ko/copilot/get-started/plans',
+    lastChecked: SNAPSHOT_DATE,
+    note: '한국어 지원 페이지 기준 Copilot 플랜, 코드 리뷰/에이전트 포함 범위, 사용량 정책을 확인한다.',
+  },
+  {
+    id: 'github-actions-docs-ko',
+    title: 'GitHub Actions Documentation (Korean)',
+    publisher: 'GitHub Docs',
+    kind: 'official',
+    url: 'https://docs.github.com/ko/actions',
+    lastChecked: SNAPSHOT_DATE,
+    note: '워크플로우 작성, 액션 마켓플레이스, 권한 제한, 보안 제어, 캐시/행렬/재사용 워크플로우를 확인하는 공식 문서.',
+  },
+  {
     id: 'github-education-pack',
     title: 'GitHub Student Developer Pack',
     publisher: 'GitHub Education',
@@ -2834,6 +2896,15 @@ export const sources: SourceRef[] = [
     note: '우아한형제들의 AI 적용 사례와 기술 글을 한국어로 확인하는 카테고리.',
   },
   {
+    id: 'line-engineering-blog',
+    title: 'LINE Engineering Blog',
+    publisher: 'LINE Corporation',
+    kind: 'publisher',
+    url: 'https://engineering.linecorp.com/ko/blog',
+    lastChecked: SNAPSHOT_DATE,
+    note: 'LINE의 검색, AI 추천, 음성, 플랫폼 아키텍처 글을 한국어로 제공하는 공식 기술 블로그.',
+  },
+  {
     id: 'devocean-blog',
     title: 'DEVOCEAN',
     publisher: 'SK Telecom',
@@ -2922,6 +2993,60 @@ export const sources: SourceRef[] = [
     url: 'https://blog-ko.superb-ai.com',
     lastChecked: SNAPSHOT_DATE,
     note: '비전 AI, 데이터셋, 모델 운영, AI 제품 사례를 한국어로 확인하는 블로그.',
+  },
+  {
+    id: 'ms-certifications-kr',
+    title: 'Microsoft 인증 포털 (한국어)',
+    publisher: 'Microsoft Learn',
+    kind: 'official',
+    url: 'https://learn.microsoft.com/ko-kr/certifications/',
+    lastChecked: SNAPSHOT_DATE,
+    note: 'Microsoft AI 관련 자격증(예: AI-900, AI-102) 자격 요건, 학습 가이드, 시험 일정, 언어 지원을 확인하는 공식 허브.',
+  },
+  {
+    id: 'ms-azure-ai-fundamentals',
+    title: 'Microsoft Azure AI Fundamentals (AI-900)',
+    publisher: 'Microsoft Learn',
+    kind: 'official',
+    url: 'https://learn.microsoft.com/ko-kr/certifications/azure-ai-fundamentals/',
+    lastChecked: SNAPSHOT_DATE,
+    note: 'AI-900 관련 시험 도메인, 실기 연습, 실전 가이드, 언어 지원 정보를 확인하는 한글 공식 페이지.',
+  },
+  {
+    id: 'ms-azure-ai-engineer',
+    title: 'Microsoft Azure AI Engineer Associate',
+    publisher: 'Microsoft Learn',
+    kind: 'official',
+    url: 'https://learn.microsoft.com/ko-kr/certifications/azure-ai-engineer/',
+    lastChecked: SNAPSHOT_DATE,
+    note: 'AI Engineer Associate(AI-102) 시험 요건, 준비 항목, 공식 학습 경로를 확인하는 한글 공식 문서.',
+  },
+  {
+    id: 'aws-certifications-kr',
+    title: 'AWS Certification',
+    publisher: 'AWS',
+    kind: 'official',
+    url: 'https://aws.amazon.com/ko/certification/',
+    lastChecked: SNAPSHOT_DATE,
+    note: 'AWS Certified AI/ML 관련 자격군, 시험 범위, 준비 가이드, 지원 언어 정보를 확인하는 공식 한글 페이지.',
+  },
+  {
+    id: 'google-cloud-certifications-ko',
+    title: 'Google Cloud Certification',
+    publisher: 'Google Cloud',
+    kind: 'official',
+    url: 'https://cloud.google.com/certification',
+    lastChecked: SNAPSHOT_DATE,
+    note: 'Google Cloud AI/ML, 데이터 엔지니어링 자격증 항목과 준비 과정을 확인하는 공식 페이지.',
+  },
+  {
+    id: 'qnet-edu-cert',
+    title: '국가평생교육 진흥원 Q-Net',
+    publisher: '직업능력개발정보시스템(Q-Net)',
+    kind: 'official',
+    url: 'https://www.q-net.or.kr/',
+    lastChecked: SNAPSHOT_DATE,
+    note: '국내 정보처리, AI·SW 관련 국가 자격 및 훈련 공고, 시험 일정, 원서 접수 링크를 확인하는 공식 포털.',
   },
   {
     id: 'upstage-docs',
@@ -5242,8 +5367,7 @@ export const eventScheduleItems: EventScheduleItem[] = [
     status: '모집중',
     summary:
       'GitHub Universe 별도 티켓형 day of learning. 라이브 데모, 전문가 세션, GitHub HQ 학습 프로그램을 제공한다.',
-    relevance:
-      '팀 단위 AI 코딩 도입 교육과 Copilot/Cursor류 워크플로 전환 교육 일정으로 비교한다.',
+    relevance: '팀 단위 AI 코딩 도입 교육과 Copilot/Cursor류 워크플로 전환 교육 일정으로 비교한다.',
     tags: ['GitHub', '학습일', '워크숍', 'Copilot', '팀 교육'],
     sourceIds: ['github-universe-2026'],
     url: 'https://githubuniverse.com/',
@@ -5413,8 +5537,7 @@ export const eventScheduleItems: EventScheduleItem[] = [
     language: '한국어',
     region: '국내',
     status: '종료',
-    summary:
-      '카카오 주관 3박 4일 대회. 프론트엔드·백엔드·디자인·PM 경로로 팀 구성이 큰 편.',
+    summary: '카카오 주관 3박 4일 대회. 프론트엔드·백엔드·디자인·PM 경로로 팀 구성이 큰 편.',
     relevance:
       '기획/프론트/백엔드 밸런스가 필요한 행사 선호도를 가진 팀에 과거 일정 기록 비교용으로 둔다.',
     tags: ['해커톤', '웹', '백엔드', '프론트엔드', '디자인'],
@@ -5454,8 +5577,7 @@ export const eventScheduleItems: EventScheduleItem[] = [
     status: '종료',
     summary:
       '카카오 주관 3박 4일 제주 해커톤. 시즌형 행사의 윈터 라인으로 오프라인 진행이 특성이다.',
-    relevance:
-      '오프라인 장기 체류형 해커톤 선호 여부를 판단할 때 과거 비교용 기준점으로 쓰인다.',
+    relevance: '오프라인 장기 체류형 해커톤 선호 여부를 판단할 때 과거 비교용 기준점으로 쓰인다.',
     tags: ['해커톤', '웹', '백엔드', '디자인', '기획'],
     sourceIds: ['teca-hackathon-db'],
     url: 'https://9oormthon.goorm.io/',
@@ -5492,8 +5614,7 @@ export const eventScheduleItems: EventScheduleItem[] = [
     region: '국내',
     status: '종료',
     summary: '개발자 중심의 마니또형 오프라인 축제형 바이브 코딩 해커톤.',
-    relevance:
-      '개발자 커뮤니티 색이 강한 행사로 코어 개발자 대상 이벤트 필터의 후보군으로 둔다.',
+    relevance: '개발자 커뮤니티 색이 강한 행사로 코어 개발자 대상 이벤트 필터의 후보군으로 둔다.',
     tags: ['해커톤', '바이브코딩', '개발자'],
     sourceIds: ['teca-hackathon-db'],
     url: 'https://ttalkkakthon.vibecodingclub.kr/',
@@ -5510,7 +5631,8 @@ export const eventScheduleItems: EventScheduleItem[] = [
     language: '한국어',
     region: '국내',
     status: '종료',
-    summary: '메가존클라우드 주최 온라인 AI 에이전트 해커톤. 에이전트형 태스크 주간 운영의 실전 사례를 제공.',
+    summary:
+      '메가존클라우드 주최 온라인 AI 에이전트 해커톤. 에이전트형 태스크 주간 운영의 실전 사례를 제공.',
     relevance: '오픈형 업무 자동화/에이전트 기능 비교 시 실전 레퍼런스로 연결한다.',
     tags: ['해커톤', 'Agent', 'AI', '에이전트'],
     sourceIds: ['teca-hackathon-db'],
@@ -5528,7 +5650,8 @@ export const eventScheduleItems: EventScheduleItem[] = [
     language: '영어',
     region: '북미',
     status: '종료',
-    summary: 'OpenAI 지원 샌프란시스코 오프라인 해커톤. 글로벌 AI 이벤트로 팀형 실습과 실전 배포성이 높음.',
+    summary:
+      'OpenAI 지원 샌프란시스코 오프라인 해커톤. 글로벌 AI 이벤트로 팀형 실습과 실전 배포성이 높음.',
     relevance: '북미 해커톤 일정/언어 비교를 위해 글로벌 뷰에서 우선 필터링한다.',
     tags: ['해커톤', '샌프란시스코', 'OpenAI', 'AI'],
     sourceIds: ['teca-hackathon-db'],
@@ -5546,7 +5669,8 @@ export const eventScheduleItems: EventScheduleItem[] = [
     language: '한국어',
     region: '국내',
     status: '종료',
-    summary: '온라인 바이브코딩 공모전. 웹 기반 구현 및 산출물 완성도를 중심으로 참가 조건이 구성됨.',
+    summary:
+      '온라인 바이브코딩 공모전. 웹 기반 구현 및 산출물 완성도를 중심으로 참가 조건이 구성됨.',
     relevance: '문서/코드 양식 제출형 공모전 조건을 확인할 때 유사 이벤트와 대비하기 좋다.',
     tags: ['공모전', '바이브코딩', '온라인', '코드'],
     sourceIds: ['teca-hackathon-db'],
@@ -5564,7 +5688,8 @@ export const eventScheduleItems: EventScheduleItem[] = [
     language: '영어',
     region: '국내',
     status: '종료',
-    summary: 'Snowflake가 주최한 오프라인 AI 해커톤. 데이터·플랫폼 관점 과제 구성의 강점이 있었던 행사.',
+    summary:
+      'Snowflake가 주최한 오프라인 AI 해커톤. 데이터·플랫폼 관점 과제 구성의 강점이 있었던 행사.',
     relevance: '글로벌 업체 오프라인 대회로 모델 비용·성과 비교 시 기업 이벤트 축에 반영한다.',
     tags: ['해커톤', 'Snowflake', '데이터', 'AI'],
     sourceIds: ['teca-hackathon-db'],
@@ -5582,7 +5707,8 @@ export const eventScheduleItems: EventScheduleItem[] = [
     language: '한국어',
     region: '국내',
     status: '종료',
-    summary: '고용노동부 공공데이터·AI 활용 공모전. 데이터 정제와 AI 적용 시나리오 품질 평가가 중심.',
+    summary:
+      '고용노동부 공공데이터·AI 활용 공모전. 데이터 정제와 AI 적용 시나리오 품질 평가가 중심.',
     relevance: '공공데이터 기반 사업 경험을 쌓는 팀이 우선 비교할 수 있는 경쟁대회이다.',
     tags: ['공모전', '공공데이터', 'AI', '데이터분석'],
     sourceIds: ['teca-hackathon-db'],
@@ -5781,7 +5907,8 @@ export const eventScheduleItems: EventScheduleItem[] = [
     language: '한국어',
     region: '국내',
     status: '모집중',
-    summary: 'NIA 주관 공공분야 AI 실증형 경진대회. 공공기관 주도 과제 특성의 장기 채용/기술 연계가 있음.',
+    summary:
+      'NIA 주관 공공분야 AI 실증형 경진대회. 공공기관 주도 과제 특성의 장기 채용/기술 연계가 있음.',
     relevance: '장기 공모전으로 자원/일정 분산 계획이 필요한 팀이 모니터링하면 좋은 항목이다.',
     tags: ['챌린지', '공공', 'AI 혁신', '실증'],
     sourceIds: ['teca-hackathon-db'],
@@ -5854,8 +5981,7 @@ export const eventScheduleItems: EventScheduleItem[] = [
     language: '한국어',
     region: '국내',
     status: '종료',
-    summary:
-      '로봇 활용 시나리오를 제안하는 오프라인 해커톤. AI 로봇 기반 실험 과제 특성이 뚜렷.',
+    summary: '로봇 활용 시나리오를 제안하는 오프라인 해커톤. AI 로봇 기반 실험 과제 특성이 뚜렷.',
     relevance: '하드웨어 연동형 해커톤 후보로 필터 분류 시 하위 범주에 넣는다.',
     tags: ['해커톤', '로봇', 'AI', '오프라인'],
     sourceIds: ['teca-hackathon-db'],
@@ -5873,8 +5999,7 @@ export const eventScheduleItems: EventScheduleItem[] = [
     language: '한국어',
     region: '국내',
     status: '종료',
-    summary:
-      '웹 미니게임 주제의 온라인 해커톤. 실습 과제 단위가 짧고 팀 운영이 빠른 편.',
+    summary: '웹 미니게임 주제의 온라인 해커톤. 실습 과제 단위가 짧고 팀 운영이 빠른 편.',
     relevance: '짧은 주기 온라인 해커톤과 웹 게임 과제형 이벤트 비교용으로 넣는다.',
     tags: ['해커톤', '웹', '게임', '온라인'],
     sourceIds: ['teca-hackathon-db'],
@@ -7264,7 +7389,13 @@ export const vibeCodingCommands: VibeCodingCommand[] = [
       '보안 키가 포함된 파일과 파괴적 명령 권한을 분리해야 한다.',
       '실패 테스트 없이 구현만 맡기면 회귀 검증 품질이 떨어진다.',
     ],
-    sourceIds: ['openai-codex-cli', 'openai-models', 'youtube-openai'],
+    sourceIds: [
+      'openai-codex-cli',
+      'openai-models',
+      'youtube-openai',
+      'youtube-openai-codex-korean-search',
+      'youtube-vibe-coding-search',
+    ],
   },
   {
     id: 'cmd-claude-code',
@@ -7292,6 +7423,7 @@ export const vibeCodingCommands: VibeCodingCommand[] = [
       'anthropic-fable5',
       'anthropic-docs-ko',
       'youtube-anthropic',
+      'youtube-claude-code-korean-search',
     ],
   },
   {
@@ -7316,7 +7448,12 @@ export const vibeCodingCommands: VibeCodingCommand[] = [
       'Cursor는 기저 모델이 아니라 실행 표면이므로 GPT/Claude/Gemini 품질과 별도 평가한다.',
       '자동 리뷰와 agent 실행은 repo 권한, 네트워크, 브라우저, destructive command 정책을 함께 제한해야 한다.',
     ],
-    sourceIds: ['cursor-docs', 'cursor-pricing', 'cursor-changelog'],
+    sourceIds: [
+      'cursor-docs',
+      'cursor-pricing',
+      'cursor-changelog',
+      'youtube-cursor-korean-search',
+    ],
   },
   {
     id: 'cmd-gemini-cli',
@@ -7343,6 +7480,7 @@ export const vibeCodingCommands: VibeCodingCommand[] = [
       'google-gemini31',
       'google-gemini-docs-ko',
       'youtube-google-developers',
+      'youtube-gemini-cli-korean-search',
     ],
   },
   {
@@ -7366,7 +7504,12 @@ export const vibeCodingCommands: VibeCodingCommand[] = [
       'K2.7 Code는 non-thinking mode를 끄는 방식으로 운용하지 않는다.',
       'tool_choice와 파라미터 제약은 공식 quickstart 기준으로 맞춘다.',
     ],
-    sourceIds: ['kimi-k27-code', 'kimi-models', 'youtube-kimi-search'],
+    sourceIds: [
+      'kimi-k27-code',
+      'kimi-models',
+      'youtube-kimi-search',
+      'youtube-kimi-korean-search',
+    ],
   },
   {
     id: 'cmd-deepseek-openai-compatible',
@@ -7389,7 +7532,12 @@ export const vibeCodingCommands: VibeCodingCommand[] = [
       'deepseek-chat/deepseek-reasoner 호환 이름은 2026-07-24 15:59 UTC 중단 일정이 있다.',
       'FIM은 non-thinking mode 제한을 확인해야 한다.',
     ],
-    sourceIds: ['deepseek-pricing', 'deepseek-updates', 'youtube-deepseek-search'],
+    sourceIds: [
+      'deepseek-pricing',
+      'deepseek-updates',
+      'youtube-deepseek-search',
+      'youtube-deepseek-korean-search',
+    ],
   },
   {
     id: 'cmd-xai-openai-compatible',
@@ -7418,6 +7566,7 @@ export const vibeCodingCommands: VibeCodingCommand[] = [
       'xai-rest-api-models',
       'xai-quickstart',
       'youtube-xai-official-candidate',
+      'youtube-grok-api-korean-search',
     ],
   },
   {
@@ -7440,7 +7589,12 @@ export const vibeCodingCommands: VibeCodingCommand[] = [
       'GPU 메모리, 양자화, 컨텍스트 길이에 따라 품질과 속도가 크게 달라진다.',
       '모델 라이선스와 상업 사용 조건을 배포 전 확인해야 한다.',
     ],
-    sourceIds: ['qwen-docs', 'qwen-quickstart', 'youtube-qwen-search'],
+    sourceIds: [
+      'qwen-docs',
+      'qwen-quickstart',
+      'youtube-qwen-search',
+      'youtube-qwen-korean-search',
+    ],
   },
   {
     id: 'cmd-mistral-api',
@@ -7467,6 +7621,7 @@ export const vibeCodingCommands: VibeCodingCommand[] = [
       'mistral-medium-35',
       'mistral-ministral-3-14b',
       'youtube-mistral-ai',
+      'youtube-mistral-korean-search',
     ],
   },
   {
@@ -7497,6 +7652,10 @@ export const vibeCodingCommands: VibeCodingCommand[] = [
       'deepseek-pricing',
       'qwen-quickstart',
       'mistral-api',
+      'youtube-kimi-korean-search',
+      'youtube-deepseek-korean-search',
+      'youtube-qwen-korean-search',
+      'youtube-mistral-korean-search',
     ],
   },
   {
@@ -7549,7 +7708,14 @@ export const vibeCodingCommands: VibeCodingCommand[] = [
       '로컬 모델은 repo 규모와 context window에 따라 정확도 편차가 크다.',
       '자동완성 모델과 chat 모델을 잘못 섞으면 비용 절감 효과가 줄어든다.',
     ],
-    sourceIds: ['continue-docs', 'qwen-quickstart', 'mistral-api', 'ollama-library'],
+    sourceIds: [
+      'continue-docs',
+      'qwen-quickstart',
+      'mistral-api',
+      'ollama-library',
+      'youtube-qwen-korean-search',
+      'youtube-mistral-korean-search',
+    ],
   },
   {
     id: 'cmd-openhands-agent',
@@ -7573,7 +7739,14 @@ export const vibeCodingCommands: VibeCodingCommand[] = [
       '컨테이너 권한과 네트워크 접근을 과하게 열면 보안 리스크가 크다.',
       'UI 기반 에이전트는 CLI보다 재현 로그와 diff 관리가 느슨해질 수 있다.',
     ],
-    sourceIds: ['openhands-docs', 'openai-codex-cli', 'claude-code-docs', 'gemini-cli-github'],
+    sourceIds: [
+      'openhands-docs',
+      'openai-codex-cli',
+      'claude-code-docs',
+      'gemini-cli-github',
+      'youtube-hermes-agent-video',
+      'youtube-manusai',
+    ],
   },
   {
     id: 'cmd-github-copilot-cli',
@@ -7647,7 +7820,7 @@ export const vibeCodingCommands: VibeCodingCommand[] = [
       '기저 모델 스펙이 모델 API처럼 공개되어 있지 않다.',
       '코드 diff 단위 검증보다 산출물/태스크 완료 검증이 중요하다.',
     ],
-    sourceIds: ['manus-api', 'manus-home', 'youtube-manus-search'],
+    sourceIds: ['manus-api', 'manus-home', 'youtube-manus-search', 'youtube-manus-korean-search'],
   },
 ]
 
@@ -9598,6 +9771,20 @@ export const learningResources: LearningResource[] = [
     tags: ['한국어', '블로그', '최신 업데이트', 'AI 기업'],
   },
   {
+    id: 'res-line-engineering-blog',
+    type: '블로그/글',
+    title: 'LINE Engineering Blog AI/플랫폼 글',
+    author: 'LINE Corporation',
+    language: '한국어',
+    level: '실무',
+    summary:
+      'LINE Engineering의 플랫폼, 검색, AI 추천, 음성 AI, 실전 운영 사례 등 한국어 기술 글을 추적한다.',
+    url: 'https://engineering.linecorp.com/ko/blog',
+    sourceIds: ['line-engineering-blog'],
+    providerIds: ['openai', 'google', 'qwen'],
+    tags: ['한국어', 'LINE', '공학', 'AI 추천', '플랫폼'],
+  },
+  {
     id: 'res-korean-llm-official-products',
     type: '공식 문서',
     title: '국내 LLM 공식 제품/가격 허브',
@@ -9713,6 +9900,55 @@ export const learningResources: LearningResource[] = [
     sourceIds: ['work24-kdigital-training', 'kmooc-ai', 'boostcourse-ai', 'aihub'],
     providerIds: ['openai', 'google', 'qwen'],
     tags: ['한국어', 'K-디지털', '국비지원', '내일배움카드', '원격 교육', '공공 교육'],
+  },
+  {
+    id: 'res-korean-ai-certification-hub',
+    type: '공식 문서',
+    title: 'AI 자격·시험·평가 정보 허브(한글)',
+    author: 'Microsoft / AWS / Google Cloud / Q-Net',
+    language: '한국어',
+    level: '입문',
+    summary:
+      'AI 기초부터 MLOps, 엔지니어링까지 공식 자격증 가이드와 시험 스코프, 스터디/공식 경로를 한 번에 비교한다.',
+    url: 'https://learn.microsoft.com/ko-kr/certifications/',
+    sourceIds: [
+      'ms-certifications-kr',
+      'ms-azure-ai-fundamentals',
+      'ms-azure-ai-engineer',
+      'aws-certifications-kr',
+      'google-cloud-certifications-ko',
+      'qnet-edu-cert',
+    ],
+    providerIds: ['openai', 'google'],
+    tags: ['한국어', '자격증', 'AI-900', 'AI-102', 'AWS', 'Google Cloud', 'Q-Net'],
+  },
+  {
+    id: 'res-ms-ai-cert-learning',
+    type: '강좌/영상',
+    title: 'MS AI 자격 준비 가이드(한글)',
+    author: 'Microsoft Learn',
+    language: '한국어',
+    level: '입문',
+    summary:
+      'Microsoft AI Fundamentals, AI Engineer 문서와 실습형 학습 경로를 한글로 확인할 수 있는 공식 페이지 집합.',
+    url: 'https://learn.microsoft.com/ko-kr/learn/certifications/certification-aliases',
+    sourceIds: ['ms-certifications-kr', 'ms-azure-ai-fundamentals', 'ms-azure-ai-engineer'],
+    providerIds: ['google'],
+    tags: ['한국어', '공식 문서', 'Microsoft', 'AI-900', 'AI-102', '학습 가이드'],
+  },
+  {
+    id: 'res-k-cloud-certification-hub',
+    type: '공식 문서',
+    title: '클라우드 기반 AI 자격증 한글 허브',
+    author: 'AWS / Google Cloud',
+    language: '한국어',
+    level: '실무',
+    summary:
+      'AWS와 Google Cloud의 AI/ML 관련 자격증 항목, 갱신 정책, 시험 비용/언어 정책을 빠르게 찾는 기준점 허브.',
+    url: 'https://aws.amazon.com/ko/certification/',
+    sourceIds: ['aws-certifications-kr', 'google-cloud-certifications-ko'],
+    providerIds: ['google'],
+    tags: ['한국어', '클라우드 자격증', 'AI', 'ML', '공식 문서'],
   },
   {
     id: 'res-korean-course-platforms',
@@ -11010,8 +11246,7 @@ export const learningResources: LearningResource[] = [
     id: 'res-korean-bookstore-publisher-matrix',
     type: '도서',
     title: '국내 서점/출판사 LLM·바이브 코딩 도서 매트릭스',
-    author:
-      'YES24, 알라딘, 교보문고, 길벗, 위키북스, 한빛미디어, 제이펍, 에이콘출판사, WikiDocs',
+    author: 'YES24, 알라딘, 교보문고, 길벗, 위키북스, 한빛미디어, 제이펍, 에이콘출판사, WikiDocs',
     language: '한국어',
     level: '입문',
     summary:
@@ -12725,6 +12960,281 @@ export function getSources(ids: readonly string[]) {
     .filter((source): source is SourceRef => Boolean(source))
 }
 
+function compactUnique(values: Array<string | undefined>) {
+  return [...new Set(values.filter((value): value is string => Boolean(value && value.trim())))]
+}
+
+function getUrlDomain(url: string) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return undefined
+  }
+}
+
+function latestDate(values: Array<string | undefined>) {
+  return compactUnique(values).toSorted((a, b) => b.localeCompare(a))[0]
+}
+
+function getSourceKindMetadataLabel(kind: SourceKind) {
+  switch (kind) {
+    case 'official':
+      return '공식 문서'
+    case 'benchmark':
+      return '벤치마크/논문'
+    case 'publisher':
+      return '출판사/미디어'
+    case 'community':
+      return '커뮤니티'
+  }
+}
+
+function getContentCategoryMetadataLabel(category: ContentCategory) {
+  switch (category) {
+    case 'news':
+      return '뉴스'
+    case 'events':
+      return '일정/이벤트'
+    case 'updates':
+      return '업데이트'
+    case 'recommendations':
+      return '작업 추천'
+    case 'vibe':
+      return '바이브 코딩'
+    case 'tools':
+      return 'AI 도구'
+    case 'design':
+      return '디자인/PPT'
+    case 'comparison':
+      return '모델 비교'
+    case 'benchmarks':
+      return '벤치마크'
+    case 'manuals':
+      return '매뉴얼'
+    case 'personas':
+      return '페르소나'
+    case 'learning':
+      return '학습 자료'
+    case 'books':
+      return '도서'
+    case 'ops':
+      return '운영'
+    case 'sources':
+      return '출처'
+  }
+}
+
+function mergeMetadata(base: ContentMetadata, override?: ContentMetadata): ContentMetadata {
+  if (!override) return base
+
+  return {
+    ...base,
+    ...override,
+    authorNames: compactUnique([...(base.authorNames ?? []), ...(override.authorNames ?? [])]),
+    sourceNames: compactUnique([...(base.sourceNames ?? []), ...(override.sourceNames ?? [])]),
+    newsSources: compactUnique([...(base.newsSources ?? []), ...(override.newsSources ?? [])]),
+    sourceKinds: [...new Set([...(base.sourceKinds ?? []), ...(override.sourceKinds ?? [])])],
+    sourceUrls: compactUnique([...(base.sourceUrls ?? []), ...(override.sourceUrls ?? [])]),
+    canonicalUrls: compactUnique([
+      ...(base.canonicalUrls ?? []),
+      ...(override.canonicalUrls ?? []),
+    ]),
+    sourceDomains: compactUnique([
+      ...(base.sourceDomains ?? []),
+      ...(override.sourceDomains ?? []),
+    ]),
+    providerNames: compactUnique([
+      ...(base.providerNames ?? []),
+      ...(override.providerNames ?? []),
+    ]),
+    tags: compactUnique([...(base.tags ?? []), ...(override.tags ?? [])]),
+  }
+}
+
+export function getSourceMetadata(source: SourceRef): ContentMetadata {
+  return mergeMetadata(
+    {
+      publisherName: source.publisher,
+      sourceNames: [source.title],
+      newsSources: [source.publisher],
+      sourceKind: source.kind,
+      sourceKinds: [source.kind],
+      sourceUrl: source.url,
+      sourceUrls: [source.url],
+      canonicalUrl: source.url,
+      canonicalUrls: [source.url],
+      sourceDomain: getUrlDomain(source.url),
+      sourceDomains: compactUnique([getUrlDomain(source.url)]),
+      collectedAt: source.lastChecked,
+      lastCheckedAt: source.lastChecked,
+      verifiedAt: source.lastChecked,
+      contentType: getSourceKindMetadataLabel(source.kind),
+    },
+    source.metadata
+  )
+}
+
+export function getLearningResourceMetadata(resource: LearningResource): ContentMetadata {
+  const resourceSources = getSources(resource.sourceIds)
+  const sourceMetadata = resourceSources.map(getSourceMetadata)
+  const lastCheckedAt = latestDate(sourceMetadata.map((metadata) => metadata.lastCheckedAt))
+  const resourceDomain = getUrlDomain(resource.url)
+
+  return mergeMetadata(
+    {
+      authorNames: [resource.author],
+      publisherName: resource.author,
+      sourceNames: sourceMetadata.flatMap((metadata) => metadata.sourceNames ?? []),
+      newsSources: sourceMetadata.flatMap((metadata) => metadata.newsSources ?? []),
+      sourceKinds: sourceMetadata.flatMap((metadata) => metadata.sourceKinds ?? []),
+      sourceUrl: resource.url,
+      sourceUrls: compactUnique([
+        resource.url,
+        ...sourceMetadata.flatMap((metadata) => metadata.sourceUrls ?? []),
+      ]),
+      canonicalUrl: resource.url,
+      canonicalUrls: compactUnique([
+        resource.url,
+        ...sourceMetadata.flatMap((metadata) => metadata.canonicalUrls ?? []),
+      ]),
+      sourceDomain: resourceDomain,
+      sourceDomains: compactUnique([
+        resourceDomain,
+        ...sourceMetadata.flatMap((metadata) => metadata.sourceDomains ?? []),
+      ]),
+      collectedAt: lastCheckedAt,
+      lastCheckedAt,
+      verifiedAt: lastCheckedAt,
+      registeredAt: lastCheckedAt,
+      updatedAt: lastCheckedAt,
+      language: resource.language,
+      contentType: resource.type,
+      providerNames: resource.providerIds?.map(
+        (providerId) => getProviderLabel(providerId) ?? providerId
+      ),
+      tags: resource.tags,
+    },
+    resource.metadata
+  )
+}
+
+export function getUpdateMetadata(item: UpdateItem): ContentMetadata {
+  const itemSources = getSources(item.sourceIds)
+  const sourceMetadata = itemSources.map(getSourceMetadata)
+  const lastCheckedAt = latestDate(sourceMetadata.map((metadata) => metadata.lastCheckedAt))
+  const primarySourceDomain = itemSources[0] ? getUrlDomain(itemSources[0].url) : undefined
+
+  return mergeMetadata(
+    {
+      publisherName: getProviderLabel(item.providerId) ?? item.providerId,
+      sourceNames: sourceMetadata.flatMap((metadata) => metadata.sourceNames ?? []),
+      newsSources: sourceMetadata.flatMap((metadata) => metadata.newsSources ?? []),
+      sourceKinds: sourceMetadata.flatMap((metadata) => metadata.sourceKinds ?? []),
+      sourceUrl: itemSources[0]?.url,
+      sourceUrls: compactUnique(sourceMetadata.flatMap((metadata) => metadata.sourceUrls ?? [])),
+      canonicalUrl: itemSources[0]?.url,
+      canonicalUrls: compactUnique(
+        sourceMetadata.flatMap((metadata) => metadata.canonicalUrls ?? [])
+      ),
+      sourceDomain: primarySourceDomain,
+      sourceDomains: compactUnique(
+        sourceMetadata.flatMap((metadata) => metadata.sourceDomains ?? [])
+      ),
+      createdAt: item.date,
+      publishedAt: item.date,
+      registeredAt: item.date,
+      updatedAt: item.date,
+      modifiedAt: lastCheckedAt ?? item.date,
+      collectedAt: lastCheckedAt ?? item.date,
+      lastCheckedAt,
+      verifiedAt: lastCheckedAt,
+      contentType: getContentCategoryMetadataLabel(item.category),
+      providerNames: [getProviderLabel(item.providerId) ?? item.providerId],
+      tags: item.tags,
+    },
+    item.metadata
+  )
+}
+
+export function getEventScheduleMetadata(item: EventScheduleItem): ContentMetadata {
+  const itemSources = getSources(item.sourceIds)
+  const sourceMetadata = itemSources.map(getSourceMetadata)
+  const lastCheckedAt = latestDate(sourceMetadata.map((metadata) => metadata.lastCheckedAt))
+  const eventDomain = getUrlDomain(item.url)
+
+  return mergeMetadata(
+    {
+      authorNames: [item.organizer],
+      publisherName: item.organizer,
+      sourceNames: sourceMetadata.flatMap((metadata) => metadata.sourceNames ?? []),
+      newsSources: sourceMetadata.flatMap((metadata) => metadata.newsSources ?? []),
+      sourceKinds: sourceMetadata.flatMap((metadata) => metadata.sourceKinds ?? []),
+      sourceUrl: item.url,
+      sourceUrls: compactUnique([
+        item.url,
+        ...sourceMetadata.flatMap((metadata) => metadata.sourceUrls ?? []),
+      ]),
+      canonicalUrl: item.url,
+      canonicalUrls: compactUnique([
+        item.url,
+        ...sourceMetadata.flatMap((metadata) => metadata.canonicalUrls ?? []),
+      ]),
+      sourceDomain: eventDomain,
+      sourceDomains: compactUnique([
+        eventDomain,
+        ...sourceMetadata.flatMap((metadata) => metadata.sourceDomains ?? []),
+      ]),
+      registeredAt: item.startDate,
+      updatedAt: lastCheckedAt,
+      modifiedAt: lastCheckedAt,
+      collectedAt: lastCheckedAt,
+      lastCheckedAt,
+      verifiedAt: lastCheckedAt,
+      startsAt: item.startDate,
+      endsAt: item.endDate ?? item.startDate,
+      language: item.language,
+      region: item.region,
+      format: item.format,
+      contentType: item.type,
+      tags: item.tags,
+    },
+    item.metadata
+  )
+}
+
+export function getContentMetadataSearchText(metadata: ContentMetadata) {
+  return compactUnique([
+    ...(metadata.authorNames ?? []),
+    metadata.publisherName,
+    ...(metadata.sourceNames ?? []),
+    ...(metadata.newsSources ?? []),
+    metadata.sourceKind,
+    ...(metadata.sourceKinds ?? []),
+    metadata.sourceUrl,
+    ...(metadata.sourceUrls ?? []),
+    metadata.canonicalUrl,
+    ...(metadata.canonicalUrls ?? []),
+    metadata.sourceDomain,
+    ...(metadata.sourceDomains ?? []),
+    metadata.createdAt,
+    metadata.publishedAt,
+    metadata.registeredAt,
+    metadata.updatedAt,
+    metadata.modifiedAt,
+    metadata.collectedAt,
+    metadata.lastCheckedAt,
+    metadata.verifiedAt,
+    metadata.startsAt,
+    metadata.endsAt,
+    metadata.language,
+    metadata.region,
+    metadata.format,
+    metadata.contentType,
+    ...(metadata.providerNames ?? []),
+    ...(metadata.tags ?? []),
+  ]).join(' ')
+}
+
 export function getProviderLabel(providerId: ProviderId | 'market' | 'other') {
   const provider = providerCatalog.find((item) => item.id === providerId)
   if (provider) return provider.label
@@ -12854,274 +13364,342 @@ function matchesQuery(query: string, values: readonly string[]) {
   )
 }
 
+function getSourceMetadataSearchText(sourceIds: readonly string[]) {
+  return getSources(sourceIds)
+    .map((source) => getContentMetadataSearchText(getSourceMetadata(source)))
+    .join(' ')
+}
+
+type ProviderFilterInput = ProviderId | 'all' | readonly ProviderId[]
+type CategoryFilterInput = ContentCategory | 'all' | readonly ContentCategory[]
+
+function normalizeFilterSelection<T extends string>(
+  selected: T | 'all' | readonly T[]
+): readonly T[] | null {
+  if (typeof selected === 'string') {
+    return selected === 'all' ? null : [selected as T]
+  }
+  return selected.length ? selected : null
+}
+
 function matchesProvider(
   providerId: ProviderId | 'market' | 'other',
-  selectedProvider: ProviderId | 'all'
+  selectedProvider: ProviderFilterInput
 ) {
-  return selectedProvider === 'all' || providerId === selectedProvider
+  const selectedProviders = normalizeFilterSelection(selectedProvider)
+  return selectedProviders === null || selectedProviders.includes(providerId as ProviderId)
+}
+
+function matchesAnyProvider(
+  selectedProvider: ProviderFilterInput,
+  predicate: (providerId: ProviderId) => boolean
+) {
+  const selectedProviders = normalizeFilterSelection(selectedProvider)
+  return selectedProviders === null || selectedProviders.some(predicate)
+}
+
+function matchesAnyCategory(
+  selectedCategory: CategoryFilterInput,
+  categories: readonly ContentCategory[]
+) {
+  const selectedCategories = normalizeFilterSelection(selectedCategory)
+  return (
+    selectedCategories === null ||
+    selectedCategories.some((category) => categories.includes(category))
+  )
+}
+
+function matchesExactCategory(selectedCategory: CategoryFilterInput, category: ContentCategory) {
+  const selectedCategories = normalizeFilterSelection(selectedCategory)
+  return selectedCategories === null || selectedCategories.includes(category)
 }
 
 export function searchCatalog(
   query: string,
-  selectedProvider: ProviderId | 'all' = 'all',
-  selectedCategory: ContentCategory | 'all' = 'all'
+  selectedProvider: ProviderFilterInput = 'all',
+  selectedCategory: CategoryFilterInput = 'all'
 ): SearchResults {
-  const models =
-    selectedCategory === 'all' || selectedCategory === 'comparison'
-      ? modelProfiles.filter(
-          (model) =>
-            matchesProvider(model.providerId, selectedProvider) &&
-            matchesQuery(query, [
-              model.providerName,
-              model.productName,
-              model.modelName,
-              model.modelId,
-              model.oneLine,
-              model.summary,
-              ...model.strengths,
-              ...model.caveats,
-              ...model.bestFor,
-              ...model.aliases,
-            ])
-        )
-      : []
+  const models = matchesAnyCategory(selectedCategory, ['comparison'])
+    ? modelProfiles.filter(
+        (model) =>
+          matchesProvider(model.providerId, selectedProvider) &&
+          matchesQuery(query, [
+            model.providerName,
+            model.productName,
+            model.modelName,
+            model.modelId,
+            model.oneLine,
+            model.summary,
+            ...model.strengths,
+            ...model.caveats,
+            ...model.bestFor,
+            ...model.aliases,
+            getSourceMetadataSearchText(model.sourceIds),
+          ])
+      )
+    : []
 
-  const filteredUpdates =
-    selectedCategory === 'all' ||
-    selectedCategory === 'news' ||
-    selectedCategory === 'events' ||
-    selectedCategory === 'recommendations' ||
-    selectedCategory === 'updates' ||
-    selectedCategory === 'vibe' ||
-    selectedCategory === 'tools' ||
-    selectedCategory === 'design' ||
-    selectedCategory === 'benchmarks' ||
-    selectedCategory === 'learning'
-      ? updates.filter(
-          (update) =>
-            (selectedCategory === 'all' ||
-              update.category === selectedCategory ||
-              selectedCategory === 'updates') &&
-            matchesProvider(update.providerId, selectedProvider) &&
-            matchesQuery(query, [update.title, update.summary, update.impact, ...update.tags])
-        )
-      : []
+  const filteredUpdates = matchesAnyCategory(selectedCategory, [
+    'news',
+    'events',
+    'recommendations',
+    'updates',
+    'vibe',
+    'tools',
+    'design',
+    'benchmarks',
+    'learning',
+  ])
+    ? updates.filter(
+        (update) =>
+          (matchesExactCategory(selectedCategory, update.category) ||
+            matchesExactCategory(selectedCategory, 'updates')) &&
+          matchesProvider(update.providerId, selectedProvider) &&
+          matchesQuery(query, [
+            update.title,
+            update.summary,
+            update.impact,
+            ...update.tags,
+            getContentMetadataSearchText(getUpdateMetadata(update)),
+          ])
+      )
+    : []
 
-  const filteredEventSchedules =
-    selectedCategory === 'all' ||
-    selectedCategory === 'events' ||
-    selectedCategory === 'learning' ||
-    selectedCategory === 'vibe' ||
-    selectedCategory === 'tools'
-      ? eventScheduleItems.filter(
-          (eventSchedule) =>
-            (selectedProvider === 'all' ||
+  const filteredEventSchedules = matchesAnyCategory(selectedCategory, [
+    'events',
+    'learning',
+    'vibe',
+    'tools',
+  ])
+    ? eventScheduleItems.filter(
+        (eventSchedule) =>
+          matchesAnyProvider(
+            selectedProvider,
+            (providerId) =>
               getSources(eventSchedule.sourceIds).some((source) =>
                 normalizeText(`${source.title} ${source.publisher} ${source.note}`).includes(
-                  normalizeText(selectedProvider)
+                  normalizeText(providerId)
                 )
               ) ||
-              eventSchedule.tags.some((tag) => normalizeText(tag).includes(normalizeText(selectedProvider)))) &&
-            matchesQuery(query, [
-              eventSchedule.title,
-              eventSchedule.organizer,
-              eventSchedule.type,
-              eventSchedule.location,
-              eventSchedule.format,
-              eventSchedule.language,
-              eventSchedule.region,
-              eventSchedule.status,
-              eventSchedule.summary,
-              eventSchedule.relevance,
-              ...eventSchedule.tags,
-            ])
-        )
-      : []
+              eventSchedule.tags.some((tag) =>
+                normalizeText(tag).includes(normalizeText(providerId))
+              )
+          ) &&
+          matchesQuery(query, [
+            eventSchedule.title,
+            eventSchedule.organizer,
+            eventSchedule.type,
+            eventSchedule.location,
+            eventSchedule.format,
+            eventSchedule.language,
+            eventSchedule.region,
+            eventSchedule.status,
+            eventSchedule.summary,
+            eventSchedule.relevance,
+            ...eventSchedule.tags,
+            getContentMetadataSearchText(getEventScheduleMetadata(eventSchedule)),
+          ])
+      )
+    : []
 
-  const filteredTaskRecommendations =
-    selectedCategory === 'all' ||
-    selectedCategory === 'recommendations' ||
-    selectedCategory === 'vibe' ||
-    selectedCategory === 'design' ||
-    selectedCategory === 'benchmarks' ||
-    selectedCategory === 'learning'
-      ? taskRecommendations.filter(
-          (recommendation) =>
-            (selectedProvider === 'all' ||
+  const filteredTaskRecommendations = matchesAnyCategory(selectedCategory, [
+    'recommendations',
+    'vibe',
+    'design',
+    'benchmarks',
+    'learning',
+  ])
+    ? taskRecommendations.filter(
+        (recommendation) =>
+          matchesAnyProvider(
+            selectedProvider,
+            (providerId) =>
               recommendation.primaryModelIds.some(
-                (modelId) => getModelById(modelId)?.providerId === selectedProvider
+                (modelId) => getModelById(modelId)?.providerId === providerId
               ) ||
               recommendation.alternateModelIds.some(
-                (modelId) => getModelById(modelId)?.providerId === selectedProvider
-              )) &&
-            matchesQuery(query, [
-              recommendation.title,
-              recommendation.userIntent,
-              recommendation.category,
-              recommendation.promptStarter,
-              ...recommendation.rationale,
-              ...recommendation.tradeoffs,
-              ...recommendation.primaryModelIds,
-              ...recommendation.alternateModelIds,
-              ...recommendation.commandIds,
-              ...recommendation.benchmarkDomains,
-              ...recommendation.resourceIds,
-            ])
-        )
-      : []
+                (modelId) => getModelById(modelId)?.providerId === providerId
+              )
+          ) &&
+          matchesQuery(query, [
+            recommendation.title,
+            recommendation.userIntent,
+            recommendation.category,
+            recommendation.promptStarter,
+            ...recommendation.rationale,
+            ...recommendation.tradeoffs,
+            ...recommendation.primaryModelIds,
+            ...recommendation.alternateModelIds,
+            ...recommendation.commandIds,
+            ...recommendation.benchmarkDomains,
+            ...recommendation.resourceIds,
+            getSourceMetadataSearchText(recommendation.sourceIds),
+          ])
+      )
+    : []
 
-  const benchmarks =
-    selectedCategory === 'all' || selectedCategory === 'benchmarks'
-      ? benchmarkEntries.filter(
-          (entry) =>
-            matchesProvider(entry.providerId, selectedProvider) &&
-            matchesQuery(query, [
-              entry.modelName,
-              entry.metric,
-              entry.score,
-              entry.price,
-              entry.speed,
-              entry.context,
-            ])
-        )
-      : []
+  const benchmarks = matchesAnyCategory(selectedCategory, ['benchmarks'])
+    ? benchmarkEntries.filter(
+        (entry) =>
+          matchesProvider(entry.providerId, selectedProvider) &&
+          matchesQuery(query, [
+            entry.modelName,
+            entry.metric,
+            entry.score,
+            entry.price,
+            entry.speed,
+            entry.context,
+            getSourceMetadataSearchText(entry.sourceIds),
+          ])
+      )
+    : []
 
-  const filteredVibeCodingCommands =
-    selectedCategory === 'all' || selectedCategory === 'vibe' || selectedCategory === 'tools'
-      ? vibeCodingCommands.filter(
-          (command) =>
-            matchesProvider(command.providerId, selectedProvider) &&
-            matchesQuery(query, [
-              command.modelName,
-              command.modelId,
-              command.surface,
-              command.installCommand,
-              command.command,
-              command.useCase,
-              command.vibeCodingFit,
-              ...command.setupNotes,
-              ...command.caveats,
-            ])
-        )
-      : []
+  const filteredVibeCodingCommands = matchesAnyCategory(selectedCategory, ['vibe', 'tools'])
+    ? vibeCodingCommands.filter(
+        (command) =>
+          matchesProvider(command.providerId, selectedProvider) &&
+          matchesQuery(query, [
+            command.modelName,
+            command.modelId,
+            command.surface,
+            command.installCommand,
+            command.command,
+            command.useCase,
+            command.vibeCodingFit,
+            ...command.setupNotes,
+            ...command.caveats,
+            getSourceMetadataSearchText(command.sourceIds),
+          ])
+      )
+    : []
 
-  const filteredAiCodingTools =
-    selectedCategory === 'all' ||
-    selectedCategory === 'tools' ||
-    selectedCategory === 'vibe' ||
-    selectedCategory === 'learning'
-      ? aiCodingTools.filter(
-          (tool) =>
-            (selectedProvider === 'all' || tool.providerIds?.includes(selectedProvider)) &&
-            matchesQuery(query, [
-              tool.toolName,
-              tool.vendor,
-              tool.category,
-              tool.pricing,
-              tool.eventSignal,
-              ...tool.bestFor,
-              ...tool.integrations,
-              ...tool.koreanResources,
-              ...tool.caveats,
-              ...tool.tags,
-            ])
-        )
-      : []
+  const filteredAiCodingTools = matchesAnyCategory(selectedCategory, ['tools', 'vibe', 'learning'])
+    ? aiCodingTools.filter(
+        (tool) =>
+          matchesAnyProvider(selectedProvider, (providerId) =>
+            Boolean(tool.providerIds?.includes(providerId))
+          ) &&
+          matchesQuery(query, [
+            tool.toolName,
+            tool.vendor,
+            tool.category,
+            tool.pricing,
+            tool.eventSignal,
+            ...tool.bestFor,
+            ...tool.integrations,
+            ...tool.koreanResources,
+            ...tool.caveats,
+            ...tool.tags,
+            getSourceMetadataSearchText(tool.sourceIds),
+          ])
+      )
+    : []
 
-  const manuals =
-    selectedCategory === 'all' || selectedCategory === 'manuals'
-      ? manualGuides.filter(
-          (guide) =>
-            matchesProvider(guide.providerId, selectedProvider) &&
-            matchesQuery(query, [guide.title, guide.summary, guide.level, ...guide.steps])
-        )
-      : []
+  const manuals = matchesAnyCategory(selectedCategory, ['manuals'])
+    ? manualGuides.filter(
+        (guide) =>
+          matchesProvider(guide.providerId, selectedProvider) &&
+          matchesQuery(query, [
+            guide.title,
+            guide.summary,
+            guide.level,
+            ...guide.steps,
+            getSourceMetadataSearchText(guide.sourceIds),
+          ])
+      )
+    : []
 
-  const filteredPersonaGuides =
-    selectedCategory === 'all' || selectedCategory === 'personas'
-      ? personaGuides.filter(
-          (guide) =>
-            (selectedProvider === 'all' || guide.providerIds.includes(selectedProvider)) &&
-            matchesQuery(query, [
-              guide.role,
-              guide.title,
-              guide.summary,
-              ...guide.workflow,
-              ...guide.promptExamples,
-              ...guide.checklist,
-            ])
-        )
-      : []
+  const filteredPersonaGuides = matchesAnyCategory(selectedCategory, ['personas'])
+    ? personaGuides.filter(
+        (guide) =>
+          matchesAnyProvider(selectedProvider, (providerId) =>
+            guide.providerIds.includes(providerId)
+          ) &&
+          matchesQuery(query, [
+            guide.role,
+            guide.title,
+            guide.summary,
+            ...guide.workflow,
+            ...guide.promptExamples,
+            ...guide.checklist,
+            getSourceMetadataSearchText(guide.sourceIds),
+          ])
+      )
+    : []
 
-  const resources =
-    selectedCategory === 'all' ||
-    selectedCategory === 'news' ||
-    selectedCategory === 'vibe' ||
-    selectedCategory === 'design' ||
-    selectedCategory === 'learning' ||
-    selectedCategory === 'books'
-      ? learningResources.filter(
-          (resource) =>
-            (selectedCategory !== 'books' || resource.type === '도서') &&
-            (selectedProvider === 'all' ||
-              resource.providerIds?.includes(selectedProvider) ||
-              resource.providerIds === undefined) &&
-            matchesQuery(query, [
-              resource.title,
-              resource.author,
-              resource.language,
-              resource.level,
-              resource.summary,
-              resource.type,
-              ...resource.tags,
-            ])
-        )
-      : []
+  const resources = matchesAnyCategory(selectedCategory, [
+    'news',
+    'vibe',
+    'design',
+    'learning',
+    'books',
+  ])
+    ? learningResources.filter(
+        (resource) =>
+          (!matchesExactCategory(selectedCategory, 'books') ||
+            matchesAnyCategory(selectedCategory, ['news', 'vibe', 'design', 'learning']) ||
+            resource.type === '도서') &&
+          matchesAnyProvider(
+            selectedProvider,
+            (providerId) =>
+              resource.providerIds?.includes(providerId) || resource.providerIds === undefined
+          ) &&
+          matchesQuery(query, [
+            resource.title,
+            resource.author,
+            resource.language,
+            resource.level,
+            resource.summary,
+            resource.type,
+            ...resource.tags,
+            getContentMetadataSearchText(getLearningResourceMetadata(resource)),
+          ])
+      )
+    : []
 
-  const filteredCurationMonitors =
-    selectedCategory === 'all' || selectedCategory === 'ops'
-      ? curationMonitors.filter(
-          (monitor) =>
-            matchesProvider(monitor.providerId, selectedProvider) &&
-            matchesQuery(query, [
-              monitor.id,
-              monitor.owner,
-              monitor.status,
-              monitor.priority,
-              monitor.nextAction,
-              monitor.automationHint,
-              getSources([monitor.sourceId])[0]?.title ?? monitor.sourceId,
-            ])
-        )
-      : []
+  const filteredCurationMonitors = matchesAnyCategory(selectedCategory, ['ops'])
+    ? curationMonitors.filter(
+        (monitor) =>
+          matchesProvider(monitor.providerId, selectedProvider) &&
+          matchesQuery(query, [
+            monitor.id,
+            monitor.owner,
+            monitor.status,
+            monitor.priority,
+            monitor.nextAction,
+            monitor.automationHint,
+            getSources([monitor.sourceId])[0]?.title ?? monitor.sourceId,
+            getSourceMetadataSearchText([monitor.sourceId]),
+          ])
+      )
+    : []
 
-  const filteredPipelineItems =
-    selectedCategory === 'all' || selectedCategory === 'ops'
-      ? updatePipeline.filter(
-          (item) =>
-            matchesProvider(item.providerId, selectedProvider) &&
-            matchesQuery(query, [
-              item.title,
-              item.stage,
-              item.priority,
-              item.summary,
-              ...item.acceptance,
-            ])
-        )
-      : []
-
-  const filteredFeatureBacklog =
-    selectedCategory === 'all' || selectedCategory === 'ops'
-      ? featureBacklog.filter((item) =>
+  const filteredPipelineItems = matchesAnyCategory(selectedCategory, ['ops'])
+    ? updatePipeline.filter(
+        (item) =>
+          matchesProvider(item.providerId, selectedProvider) &&
           matchesQuery(query, [
             item.title,
+            item.stage,
             item.priority,
-            item.status,
-            item.rationale,
+            item.summary,
             ...item.acceptance,
+            getSourceMetadataSearchText(item.sourceIds),
           ])
-        )
-      : []
+      )
+    : []
+
+  const filteredFeatureBacklog = matchesAnyCategory(selectedCategory, ['ops'])
+    ? featureBacklog.filter((item) =>
+        matchesQuery(query, [
+          item.title,
+          item.priority,
+          item.status,
+          item.rationale,
+          ...item.acceptance,
+        ])
+      )
+    : []
 
   const matchedSourceIds = new Set<string>()
   for (const item of [
@@ -13141,18 +13719,18 @@ export function searchCatalog(
   }
   for (const monitor of filteredCurationMonitors) matchedSourceIds.add(monitor.sourceId)
 
-  const matchedSources =
-    selectedCategory === 'sources'
-      ? sources.filter((source) =>
-          matchesQuery(query, [
-            source.title,
-            source.publisher,
-            source.note,
-            source.kind,
-            source.url,
-          ])
-        )
-      : sources.filter((source) => matchedSourceIds.has(source.id))
+  const matchedSources = matchesExactCategory(selectedCategory, 'sources')
+    ? sources.filter((source) =>
+        matchesQuery(query, [
+          source.title,
+          source.publisher,
+          source.note,
+          source.kind,
+          source.url,
+          getContentMetadataSearchText(getSourceMetadata(source)),
+        ])
+      )
+    : sources.filter((source) => matchedSourceIds.has(source.id))
 
   return {
     models,

@@ -3,113 +3,121 @@ import {
   comparisonProviderOrder,
   comparisonRows,
   getBenchmarkDomainLabel,
+  getContentMetadataSearchText,
   getSearchTerms,
   getProviderLabel,
   getSources,
+  getSourceMetadata,
   providerCatalog,
   type ProviderId,
   type BenchmarkEntry,
   type BenchmarkDomain,
   type ModelProfile,
-} from "@aidigestdesk/content";
-import { BarChart3, Boxes, ExternalLink, Search, Table2 } from "lucide-react";
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
+} from '@aidigestdesk/content'
+import { BarChart3, Boxes, ExternalLink, Search, Table2 } from 'lucide-react'
+import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 
 import {
   EmptyState,
+  MetadataChips,
+  MultiSegmentBar,
   SectionHeader,
   SegmentBar,
   TextList,
-} from "@/components/app/CommonUi";
+} from '@/components/app/CommonUi'
 import {
   sourceKindFilters,
   sourceKindLabel,
   type SourceKindFilter,
-} from "@/components/app/sourceLabels";
+} from '@/components/app/sourceLabels'
 
-type BenchmarkDomainFilter = BenchmarkDomain | "all";
-type BenchmarkProviderFilter = BenchmarkEntry["providerId"] | "all";
+type BenchmarkDomainFilter = BenchmarkDomain | 'all'
+type BenchmarkProviderFilter = BenchmarkEntry['providerId'] | 'all'
 type BenchmarkSortMode =
-  | "rank"
-  | "model"
-  | "domain"
-  | "provider"
-  | "score"
-  | "price"
-  | "speed"
-  | "latency"
-  | "lastChecked";
-type BenchmarkSortDirection = "asc" | "desc";
-type ModelCardSortMode = "model" | "provider" | "status" | "lastUpdate" | "verified";
-type ModelCardSortDirection = "asc" | "desc";
-type ModelCardStatusFilter = "all" | ModelProfile["status"];
-type ModelCardProviderFilter = "all" | ProviderId;
-type ModelSpecSortMode = "label" | "value";
-type ModelSourceSortMode = "publisher" | "kind" | "checked";
-type ComparisonMatrixSortMode = "axis" | "filled" | "coverage";
-type ComparisonMatrixSortDirection = "asc" | "desc";
-type ListLimit = number;
+  | 'rank'
+  | 'model'
+  | 'domain'
+  | 'provider'
+  | 'score'
+  | 'price'
+  | 'speed'
+  | 'latency'
+  | 'lastChecked'
+type BenchmarkSortDirection = 'asc' | 'desc'
+type ModelCardSortMode = 'model' | 'provider' | 'status' | 'lastUpdate' | 'verified'
+type ModelCardSortDirection = 'asc' | 'desc'
+type ModelCardStatusFilter = 'all' | ModelProfile['status']
+type ModelCardProviderFilter = 'all' | ProviderId
+type ModelSpecSortMode = 'label' | 'value'
+type ModelSourceSortMode = 'publisher' | 'kind' | 'checked'
+type ComparisonMatrixSortMode = 'axis' | 'filled' | 'coverage'
+type ComparisonMatrixSortDirection = 'asc' | 'desc'
+type ListLimit = number
+type ActiveBenchmarkDomainFilter = Exclude<BenchmarkDomainFilter, 'all'>
+type ActiveBenchmarkProviderFilter = Exclude<BenchmarkProviderFilter, 'all'>
+type ActiveModelCardStatusFilter = Exclude<ModelCardStatusFilter, 'all'>
+type ActiveSourceKindFilter = Exclude<SourceKindFilter, 'all'>
 
 function parseNumericMetric(value: string) {
-  const normalized = value.replace(/,/g, "").trim();
-  const match = normalized.match(/-?\d+(?:\.\d+)?/);
-  return match ? Number(match[0]) : null;
+  const normalized = value.replace(/,/g, '').trim()
+  const match = normalized.match(/-?\d+(?:\.\d+)?/)
+  return match ? Number(match[0]) : null
 }
 
 function compareNumericWithDirection(
   a: number | null,
   b: number | null,
-  direction: BenchmarkSortDirection,
+  direction: BenchmarkSortDirection
 ) {
-  if (a == null && b == null) return 0;
-  if (a == null) return 1;
-  if (b == null) return -1;
-  return (a - b) * (direction === "asc" ? 1 : -1);
+  if (a == null && b == null) return 0
+  if (a == null) return 1
+  if (b == null) return -1
+  return (a - b) * (direction === 'asc' ? 1 : -1)
 }
 
 function parseRankValue(rankLabel: string) {
-  const hashMatch = rankLabel.match(/#\s*(\d+(?:\.\d+)?)/);
-  if (hashMatch) return Number(hashMatch[1]);
-  const topMatch = rankLabel.match(/Top\s*(\d+(?:\.\d+)?)/i);
-  if (topMatch) return Number(topMatch[1]);
-  const plainMatch = rankLabel.match(/(\d+(?:\.\d+)?)/);
-  return plainMatch ? Number(plainMatch[1]) : null;
+  const hashMatch = rankLabel.match(/#\s*(\d+(?:\.\d+)?)/)
+  if (hashMatch) return Number(hashMatch[1])
+  const topMatch = rankLabel.match(/Top\s*(\d+(?:\.\d+)?)/i)
+  if (topMatch) return Number(topMatch[1])
+  const plainMatch = rankLabel.match(/(\d+(?:\.\d+)?)/)
+  return plainMatch ? Number(plainMatch[1]) : null
 }
 
 function getLatestSourceCheckedAt(entry: BenchmarkEntry) {
   return getSources(entry.sourceIds)
     .map((source) => source.lastChecked)
     .filter(Boolean)
-    .toSorted((a, b) => b.localeCompare(a))[0];
+    .toSorted((a, b) => b.localeCompare(a))[0]
 }
 
 function accentBorder(profile: ModelProfile) {
   switch (profile.accent) {
-    case "green":
-      return "border-l-emerald-500";
-    case "blue":
-      return "border-l-sky-500";
-    case "amber":
-      return "border-l-amber-500";
-    case "coral":
-      return "border-l-rose-500";
-    case "ink":
-      return "border-l-zinc-800 dark:border-l-zinc-100";
+    case 'green':
+      return 'border-l-emerald-500'
+    case 'blue':
+      return 'border-l-sky-500'
+    case 'amber':
+      return 'border-l-amber-500'
+    case 'coral':
+      return 'border-l-rose-500'
+    case 'ink':
+      return 'border-l-zinc-800 dark:border-l-zinc-100'
   }
 }
 
 function accentText(profile: ModelProfile) {
   switch (profile.accent) {
-    case "green":
-      return "text-emerald-700 dark:text-emerald-300";
-    case "blue":
-      return "text-sky-700 dark:text-sky-300";
-    case "amber":
-      return "text-amber-700 dark:text-amber-300";
-    case "coral":
-      return "text-rose-700 dark:text-rose-300";
-    case "ink":
-      return "text-zinc-900 dark:text-zinc-100";
+    case 'green':
+      return 'text-emerald-700 dark:text-emerald-300'
+    case 'blue':
+      return 'text-sky-700 dark:text-sky-300'
+    case 'amber':
+      return 'text-amber-700 dark:text-amber-300'
+    case 'coral':
+      return 'text-rose-700 dark:text-rose-300'
+    case 'ink':
+      return 'text-zinc-900 dark:text-zinc-100'
   }
 }
 
@@ -118,48 +126,44 @@ export function ModelCards({
   selectedModelId,
   onSelectModel,
 }: {
-  models: ModelProfile[];
-  selectedModelId: string;
-  onSelectModel: (id: string) => void;
+  models: ModelProfile[]
+  selectedModelId: string
+  onSelectModel: (id: string) => void
 }) {
-  const [statusFilter, setStatusFilter] =
-    useState<ModelCardStatusFilter>("all");
-  const [providerFilter, setProviderFilter] =
-    useState<ModelCardProviderFilter>("all");
-  const [modelQuery, setModelQuery] = useState("");
-  const [cardSortMode, setCardSortMode] =
-    useState<ModelCardSortMode>("model");
-  const [cardSortDirection, setCardSortDirection] =
-    useState<ModelCardSortDirection>("asc");
-  const [modelLimit, setModelLimit] = useState<ListLimit>(0);
-  const modelQueryTerms = useMemo(() => getSearchTerms(modelQuery), [modelQuery]);
+  const [statusFilters, setStatusFilters] = useState<ActiveModelCardStatusFilter[]>([])
+  const [providerFilters, setProviderFilters] = useState<ProviderId[]>([])
+  const [modelQuery, setModelQuery] = useState('')
+  const [cardSortMode, setCardSortMode] = useState<ModelCardSortMode>('model')
+  const [cardSortDirection, setCardSortDirection] = useState<ModelCardSortDirection>('asc')
+  const [modelLimit, setModelLimit] = useState<ListLimit>(0)
+  const modelQueryTerms = useMemo(() => getSearchTerms(modelQuery), [modelQuery])
 
   const modelSortDirectionFilters: Array<{
-    id: ModelCardSortDirection;
-    label: string;
+    id: ModelCardSortDirection
+    label: string
   }> = [
-    { id: "asc", label: "오름차순" },
-    { id: "desc", label: "내림차순" },
-  ];
+    { id: 'asc', label: '오름차순' },
+    { id: 'desc', label: '내림차순' },
+  ]
   const modelSortFilters: Array<{ id: ModelCardSortMode; label: string }> = [
-    { id: "model", label: "모델명" },
-    { id: "provider", label: "제공사" },
-    { id: "status", label: "상태" },
-    { id: "lastUpdate", label: "최근 업데이트" },
-    { id: "verified", label: "확인일" },
-  ];
-  const providerOptions = useMemo<Array<ModelCardProviderFilter>>(() => {
-    const options = Array.from(
-      new Set(models.map((model) => model.providerId)),
-    ).toSorted((a, b) => a.localeCompare(b, "ko"));
-    return ["all", ...options] as Array<ModelCardProviderFilter>;
-  }, [models]);
-  const statusOptions = useMemo<Array<ModelCardStatusFilter>>(() => {
-    const options = Array.from(new Set(models.map((model) => model.status))).toSorted(
-      (a, b) => a.localeCompare(b, "ko"),
-    );
-    return ["all", ...options] as Array<ModelCardStatusFilter>;
-  }, [models]);
+    { id: 'model', label: '모델명' },
+    { id: 'provider', label: '제공사' },
+    { id: 'status', label: '상태' },
+    { id: 'lastUpdate', label: '최근 업데이트' },
+    { id: 'verified', label: '확인일' },
+  ]
+  const providerOptions = useMemo<Array<{ id: ModelCardProviderFilter; label: string }>>(() => {
+    const options = Array.from(new Set(models.map((model) => model.providerId))).toSorted((a, b) =>
+      a.localeCompare(b, 'ko')
+    )
+    return [{ id: 'all', label: '전체' }, ...options.map((item) => ({ id: item, label: item }))]
+  }, [models])
+  const statusOptions = useMemo<Array<{ id: ModelCardStatusFilter; label: string }>>(() => {
+    const options = Array.from(new Set(models.map((model) => model.status))).toSorted((a, b) =>
+      a.localeCompare(b, 'ko')
+    )
+    return [{ id: 'all', label: '전체' }, ...options.map((item) => ({ id: item, label: item }))]
+  }, [models])
 
   const filteredCards = useMemo(
     () =>
@@ -177,73 +181,63 @@ export function ModelCards({
             ...profile.caveats,
             ...profile.specs.flatMap((spec) => [spec.label, spec.value]),
           ]
-            .join(" ")
-            .toLocaleLowerCase("ko-KR")
-            .replace(/\s+/g, " ")
-            .trim();
+            .join(' ')
+            .toLocaleLowerCase('ko-KR')
+            .replace(/\s+/g, ' ')
+            .trim()
 
           if (
             modelQueryTerms.length &&
             !modelQueryTerms.some((searchTerm) => searchableText.includes(searchTerm))
           ) {
-            return false;
+            return false
           }
-          if (statusFilter !== "all" && profile.status !== statusFilter) {
-            return false;
+          if (statusFilters.length > 0 && !statusFilters.includes(profile.status)) {
+            return false
           }
-          if (providerFilter !== "all" && profile.providerId !== providerFilter) {
-            return false;
+          if (providerFilters.length > 0 && !providerFilters.includes(profile.providerId)) {
+            return false
           }
-          return true;
+          return true
         })
         .toSorted((left, right) => {
-          const direction = cardSortDirection === "asc" ? 1 : -1;
-          if (cardSortMode === "model") {
-            return left.modelName.localeCompare(right.modelName) * direction;
+          const direction = cardSortDirection === 'asc' ? 1 : -1
+          if (cardSortMode === 'model') {
+            return left.modelName.localeCompare(right.modelName) * direction
           }
-          if (cardSortMode === "provider") {
-            return left.providerName.localeCompare(right.providerName) * direction;
+          if (cardSortMode === 'provider') {
+            return left.providerName.localeCompare(right.providerName) * direction
           }
-          if (cardSortMode === "status") {
-            return left.status.localeCompare(right.status) * direction;
+          if (cardSortMode === 'status') {
+            return left.status.localeCompare(right.status) * direction
           }
-          if (cardSortMode === "lastUpdate") {
-            if (left.lastUpdate === right.lastUpdate) return 0;
-            return left.lastUpdate.localeCompare(right.lastUpdate) * direction;
+          if (cardSortMode === 'lastUpdate') {
+            if (left.lastUpdate === right.lastUpdate) return 0
+            return left.lastUpdate.localeCompare(right.lastUpdate) * direction
           }
-          if (left.verifiedAt === right.verifiedAt) return 0;
-          return left.verifiedAt.localeCompare(right.verifiedAt) * direction;
+          if (left.verifiedAt === right.verifiedAt) return 0
+          return left.verifiedAt.localeCompare(right.verifiedAt) * direction
         }),
-    [
-      cardSortDirection,
-      cardSortMode,
-      modelQueryTerms,
-      models,
-      providerFilter,
-      statusFilter,
-    ],
-  );
-  const visibleCards =
-    modelLimit === 0 ? filteredCards : filteredCards.slice(0, modelLimit);
+    [cardSortDirection, cardSortMode, modelQueryTerms, models, providerFilters, statusFilters]
+  )
+  const visibleCards = modelLimit === 0 ? filteredCards : filteredCards.slice(0, modelLimit)
   const isModelCardsResetDisabled =
-    modelQuery === "" &&
-    statusFilter === "all" &&
-    providerFilter === "all" &&
-    cardSortMode === "model" &&
-    cardSortDirection === "asc" &&
-    modelLimit === 0;
+    modelQuery === '' &&
+    statusFilters.length === 0 &&
+    providerFilters.length === 0 &&
+    cardSortMode === 'model' &&
+    cardSortDirection === 'asc' &&
+    modelLimit === 0
 
   useEffect(() => {
-    const selectedInList = filteredCards.some(
-      (profile) => profile.id === selectedModelId,
-    );
+    const selectedInList = filteredCards.some((profile) => profile.id === selectedModelId)
     if (!selectedInList && filteredCards.length > 0) {
-      const nextModel = filteredCards[0];
+      const nextModel = filteredCards[0]
       if (nextModel) {
-        onSelectModel(nextModel.id);
+        onSelectModel(nextModel.id)
       }
     }
-  }, [filteredCards, onSelectModel, selectedModelId]);
+  }, [filteredCards, onSelectModel, selectedModelId])
 
   return (
     <section id="comparison" className="space-y-4">
@@ -262,78 +256,62 @@ export function ModelCards({
             className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
           />
         </label>
-        <label className="block xl:col-span-2">
-          <span className="text-xs font-semibold text-text-subtle">제공사</span>
-          <select
-            value={providerFilter}
-            onChange={(event) =>
-              setProviderFilter(event.target.value as ModelCardProviderFilter)
-            }
-            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
-          >
-            {providerOptions.map((item) => (
-              <option key={item} value={item}>
-                {item === "all" ? "전체" : item}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="block xl:col-span-2">
-          <span className="text-xs font-semibold text-text-subtle">상태</span>
-          <select
-            value={statusFilter}
-            onChange={(event) =>
-              setStatusFilter(event.target.value as ModelCardStatusFilter)
-            }
-            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
-          >
-            {statusOptions.map((item) => (
-              <option key={item} value={item}>
-                {item === "all" ? "전체" : item}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="xl:col-span-2">
+          <MultiSegmentBar
+            label="제공사"
+            items={providerOptions}
+            value={providerFilters}
+            onChange={setProviderFilters}
+          />
+        </div>
+        <div className="xl:col-span-2">
+          <MultiSegmentBar
+            label="상태"
+            items={statusOptions}
+            value={statusFilters}
+            onChange={setStatusFilters}
+          />
+        </div>
         <SegmentBar
           label="정렬"
           items={modelSortFilters}
           value={cardSortMode}
           onChange={setCardSortMode}
         />
-            <SegmentBar
-              label="정렬 방향"
-              items={modelSortDirectionFilters}
-              value={cardSortDirection}
-              onChange={setCardSortDirection}
-            />
-            <label className="block">
-              <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
-              <select
-                value={modelLimit}
-                onChange={(event) => setModelLimit(Number(event.target.value))}
-                className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
-              >
-                <option value={0}>전체</option>
-                <option value={12}>12개</option>
-                <option value={24}>24개</option>
-                <option value={36}>36개</option>
-              </select>
-            </label>
-          <div className="rounded-md border border-border bg-bg p-3">
-              <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
-              <p className="mt-1 text-lg font-semibold text-text">
-                표시 {visibleCards.length}개 / 전체 {filteredCards.length}개
-              </p>
+        <SegmentBar
+          label="정렬 방향"
+          items={modelSortDirectionFilters}
+          value={cardSortDirection}
+          onChange={setCardSortDirection}
+        />
+        <label className="block">
+          <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
+          <select
+            value={modelLimit}
+            onChange={(event) => setModelLimit(Number(event.target.value))}
+            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+          >
+            <option value={0}>전체</option>
+            <option value={12}>12개</option>
+            <option value={24}>24개</option>
+            <option value={36}>36개</option>
+          </select>
+        </label>
+        <div className="rounded-md border border-border bg-bg p-3">
+          <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
+          <p className="mt-1 text-lg font-semibold text-text">
+            표시 {visibleCards.length}개 / 전체 {filteredCards.length}개
+          </p>
           <button
             type="button"
             disabled={isModelCardsResetDisabled}
             onClick={() => {
-              setProviderFilter("all");
-              setStatusFilter("all");
-              setModelQuery("");
-              setCardSortMode("model");
-              setCardSortDirection("asc");
-              setModelLimit(0);
+              setProviderFilters([])
+              setStatusFilters([])
+              setModelQuery('')
+              setCardSortMode('model')
+              setCardSortDirection('asc')
+              setModelLimit(0)
             }}
             className="mt-3 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text disabled:cursor-not-allowed disabled:opacity-60"
           >
@@ -349,14 +327,12 @@ export function ModelCards({
               type="button"
               onClick={() => onSelectModel(profile.id)}
               className={`min-h-[15rem] rounded-lg border border-border border-l-4 bg-surface p-4 text-left transition hover:border-border-strong ${accentBorder(
-                profile,
-              )} ${selectedModelId === profile.id ? "ring-2 ring-accent" : ""}`}
+                profile
+              )} ${selectedModelId === profile.id ? 'ring-2 ring-accent' : ''}`}
             >
               <span className="flex items-start justify-between gap-3">
                 <span>
-                  <span
-                    className={`block text-xs font-semibold ${accentText(profile)}`}
-                  >
+                  <span className={`block text-xs font-semibold ${accentText(profile)}`}>
                     {profile.providerName}
                   </span>
                   <span className="mt-1 block text-base font-semibold text-text">
@@ -369,8 +345,8 @@ export function ModelCards({
               </span>
               <span className="mt-3 block text-sm leading-6 text-text-muted">
                 {profile.oneLine}
-                </span>
-                <span className="mt-4 grid gap-2">
+              </span>
+              <span className="mt-4 grid gap-2">
                 {profile.specs.slice(0, 3).map((spec) => (
                   <span
                     key={spec.label}
@@ -379,9 +355,7 @@ export function ModelCards({
                     <span className="shrink-0 whitespace-nowrap text-text-subtle">
                       {spec.label}
                     </span>
-                    <span className="text-right font-semibold text-text">
-                      {spec.value}
-                    </span>
+                    <span className="text-right font-semibold text-text">{spec.value}</span>
                   </span>
                 ))}
               </span>
@@ -395,100 +369,77 @@ export function ModelCards({
         />
       )}
     </section>
-  );
+  )
 }
 
 export function ModelDetail({ profile }: { profile: ModelProfile }) {
-  const profileSources = getSources(profile.sourceIds);
-  const [modelSpecSortMode, setModelSpecSortMode] =
-    useState<ModelSpecSortMode>("label");
+  const profileSources = getSources(profile.sourceIds)
+  const [modelSpecSortMode, setModelSpecSortMode] = useState<ModelSpecSortMode>('label')
   const [modelSpecSortDirection, setModelSpecSortDirection] =
-    useState<ModelCardSortDirection>("asc");
-  const [modelSourceSortMode, setModelSourceSortMode] =
-    useState<ModelSourceSortMode>("publisher");
-  const [modelSourceKindFilter, setModelSourceKindFilter] =
-    useState<SourceKindFilter>("all");
+    useState<ModelCardSortDirection>('asc')
+  const [modelSourceSortMode, setModelSourceSortMode] = useState<ModelSourceSortMode>('publisher')
+  const [modelSourceKindFilter, setModelSourceKindFilter] = useState<SourceKindFilter>('all')
   const [modelSourceSortDirection, setModelSourceSortDirection] =
-    useState<ModelCardSortDirection>("asc");
-  const [specLimit, setSpecLimit] = useState<ListLimit>(0);
-  const [sourceLimit, setSourceLimit] = useState<ListLimit>(0);
+    useState<ModelCardSortDirection>('asc')
+  const [specLimit, setSpecLimit] = useState<ListLimit>(0)
+  const [sourceLimit, setSourceLimit] = useState<ListLimit>(0)
   const sortedSpecs = useMemo(
     () =>
       [...profile.specs].toSorted((left, right) => {
-        const direction = modelSpecSortDirection === "asc" ? 1 : -1;
-        if (modelSpecSortMode === "label") {
-          return left.label.localeCompare(right.label, "ko") * direction;
+        const direction = modelSpecSortDirection === 'asc' ? 1 : -1
+        if (modelSpecSortMode === 'label') {
+          return left.label.localeCompare(right.label, 'ko') * direction
         }
-        const leftNumeric = parseNumericMetric(left.value);
-        const rightNumeric = parseNumericMetric(right.value);
+        const leftNumeric = parseNumericMetric(left.value)
+        const rightNumeric = parseNumericMetric(right.value)
         const numericDiff =
-          (leftNumeric ?? Number.MIN_SAFE_INTEGER) -
-          (rightNumeric ?? Number.MIN_SAFE_INTEGER);
+          (leftNumeric ?? Number.MIN_SAFE_INTEGER) - (rightNumeric ?? Number.MIN_SAFE_INTEGER)
         if (Number.isFinite(numericDiff) && numericDiff !== 0) {
-          return numericDiff * direction;
+          return numericDiff * direction
         }
-        return left.value.localeCompare(right.value, "ko") * direction;
+        return left.value.localeCompare(right.value, 'ko') * direction
       }),
-    [modelSpecSortDirection, modelSpecSortMode, profile.specs],
-  );
+    [modelSpecSortDirection, modelSpecSortMode, profile.specs]
+  )
   const sortedSources = useMemo(() => {
     return profileSources
-      .filter(
-        (source) =>
-          modelSourceKindFilter === "all" || source.kind === modelSourceKindFilter,
-      )
+      .filter((source) => modelSourceKindFilter === 'all' || source.kind === modelSourceKindFilter)
       .toSorted((left, right) => {
-        const direction = modelSourceSortDirection === "asc" ? 1 : -1;
-        if (modelSourceSortMode === "publisher") {
-          return left.publisher.localeCompare(right.publisher, "ko") * direction;
+        const direction = modelSourceSortDirection === 'asc' ? 1 : -1
+        if (modelSourceSortMode === 'publisher') {
+          return left.publisher.localeCompare(right.publisher, 'ko') * direction
         }
-        if (modelSourceSortMode === "kind") {
-          return sourceKindLabel(left.kind).localeCompare(
-            sourceKindLabel(right.kind),
-            "ko",
-          ) * direction;
+        if (modelSourceSortMode === 'kind') {
+          return (
+            sourceKindLabel(left.kind).localeCompare(sourceKindLabel(right.kind), 'ko') * direction
+          )
         }
-        return (
-          left.lastChecked.localeCompare(right.lastChecked) * direction
-        );
-      });
-  }, [
-    modelSourceKindFilter,
-    modelSourceSortMode,
-    modelSourceSortDirection,
-    profileSources,
-  ]);
-  const visibleSpecs =
-    specLimit === 0 ? sortedSpecs : sortedSpecs.slice(0, specLimit);
-  const visibleSources =
-    sourceLimit === 0 ? sortedSources : sortedSources.slice(0, sourceLimit);
+        return left.lastChecked.localeCompare(right.lastChecked) * direction
+      })
+  }, [modelSourceKindFilter, modelSourceSortMode, modelSourceSortDirection, profileSources])
+  const visibleSpecs = specLimit === 0 ? sortedSpecs : sortedSpecs.slice(0, specLimit)
+  const visibleSources = sourceLimit === 0 ? sortedSources : sortedSources.slice(0, sourceLimit)
   const isModelDetailResetDisabled =
-    modelSpecSortMode === "label" &&
-    modelSpecSortDirection === "asc" &&
-    modelSourceSortMode === "publisher" &&
-    modelSourceKindFilter === "all" &&
-    modelSourceSortDirection === "asc" &&
+    modelSpecSortMode === 'label' &&
+    modelSpecSortDirection === 'asc' &&
+    modelSourceSortMode === 'publisher' &&
+    modelSourceKindFilter === 'all' &&
+    modelSourceSortDirection === 'asc' &&
     specLimit === 0 &&
-    sourceLimit === 0;
+    sourceLimit === 0
   return (
     <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
       <article className="rounded-lg border border-border bg-surface p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className={`text-xs font-semibold ${accentText(profile)}`}>
-              {profile.productName}
-            </p>
-            <h2 className="mt-1 text-xl font-semibold text-text">
-              {profile.modelName}
-            </h2>
+            <p className={`text-xs font-semibold ${accentText(profile)}`}>{profile.productName}</p>
+            <h2 className="mt-1 text-xl font-semibold text-text">{profile.modelName}</h2>
           </div>
           <p className="rounded-md border border-border bg-bg px-3 py-2 text-xs font-semibold text-text-subtle">
             확인일 {profile.verifiedAt}
           </p>
         </div>
-        <p className="mt-4 text-sm leading-6 text-text-muted">
-          {profile.summary}
-        </p>
+        <p className="mt-4 text-sm leading-6 text-text-muted">{profile.summary}</p>
         <div className="mt-5 grid gap-4 md:grid-cols-3">
           <TextList title="강점" items={profile.strengths} />
           <TextList title="추천 업무" items={profile.bestFor} />
@@ -499,14 +450,10 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
         <h3 className="text-sm font-semibold text-text">스펙 요약</h3>
         <div className="mt-4 grid gap-2 border-t border-border pt-3 xl:grid-cols-3">
           <label>
-            <span className="text-xs font-semibold text-text-subtle">
-              스펙 정렬
-            </span>
+            <span className="text-xs font-semibold text-text-subtle">스펙 정렬</span>
             <select
               value={modelSpecSortMode}
-              onChange={(event) =>
-                setModelSpecSortMode(event.target.value as ModelSpecSortMode)
-              }
+              onChange={(event) => setModelSpecSortMode(event.target.value as ModelSpecSortMode)}
               className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
             >
               <option value="label">항목명</option>
@@ -516,13 +463,11 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
           <button
             type="button"
             onClick={() =>
-              setModelSpecSortDirection((current) =>
-                current === "asc" ? "desc" : "asc",
-              )
+              setModelSpecSortDirection((current) => (current === 'asc' ? 'desc' : 'asc'))
             }
             className="inline-flex h-10 w-full items-center justify-center rounded-md border border-border bg-bg px-3 text-xs font-semibold text-text-subtle transition hover:text-text"
           >
-            스펙 방향 {modelSpecSortDirection === "asc" ? "오름차순" : "내림차순"}
+            스펙 방향 {modelSpecSortDirection === 'asc' ? '오름차순' : '내림차순'}
           </button>
           <label>
             <span className="text-xs font-semibold text-text-subtle">스펙 표시</span>
@@ -538,14 +483,10 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
             </select>
           </label>
           <label>
-            <span className="text-xs font-semibold text-text-subtle">
-              출처 필터
-            </span>
+            <span className="text-xs font-semibold text-text-subtle">출처 필터</span>
             <select
               value={modelSourceKindFilter}
-              onChange={(event) =>
-                setModelSourceKindFilter(event.target.value as SourceKindFilter)
-              }
+              onChange={(event) => setModelSourceKindFilter(event.target.value as SourceKindFilter)}
               className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
             >
               {sourceKindFilters.map((item) => (
@@ -556,9 +497,7 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
             </select>
           </label>
           <label>
-            <span className="text-xs font-semibold text-text-subtle">
-              출처 정렬
-            </span>
+            <span className="text-xs font-semibold text-text-subtle">출처 정렬</span>
             <select
               value={modelSourceSortMode}
               onChange={(event) =>
@@ -574,19 +513,14 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
           <button
             type="button"
             onClick={() =>
-              setModelSourceSortDirection((current) =>
-                current === "asc" ? "desc" : "asc",
-              )
+              setModelSourceSortDirection((current) => (current === 'asc' ? 'desc' : 'asc'))
             }
             className="inline-flex h-10 w-full items-center justify-center rounded-md border border-border bg-bg px-3 text-xs font-semibold text-text-subtle transition hover:text-text"
           >
-            출처 방향{" "}
-            {modelSourceSortDirection === "asc" ? "오름차순" : "내림차순"}
+            출처 방향 {modelSourceSortDirection === 'asc' ? '오름차순' : '내림차순'}
           </button>
           <label>
-            <span className="text-xs font-semibold text-text-subtle">
-              출처 표시
-            </span>
+            <span className="text-xs font-semibold text-text-subtle">출처 표시</span>
             <select
               value={sourceLimit}
               onChange={(event) => setSourceLimit(Number(event.target.value))}
@@ -611,13 +545,13 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
             type="button"
             disabled={isModelDetailResetDisabled}
             onClick={() => {
-              setModelSpecSortMode("label");
-              setModelSpecSortDirection("asc");
-              setModelSourceSortMode("publisher");
-              setModelSourceKindFilter("all");
-              setModelSourceSortDirection("asc");
-              setSpecLimit(0);
-              setSourceLimit(0);
+              setModelSpecSortMode('label')
+              setModelSpecSortDirection('asc')
+              setModelSourceSortMode('publisher')
+              setModelSourceKindFilter('all')
+              setModelSourceSortDirection('asc')
+              setSpecLimit(0)
+              setSourceLimit(0)
             }}
             className="mt-3 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text disabled:cursor-not-allowed disabled:opacity-60"
           >
@@ -625,7 +559,7 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
           </button>
         </div>
         <dl className="mt-4 space-y-2">
-                {visibleSpecs.map((spec) => (
+          {visibleSpecs.map((spec) => (
             <div
               key={spec.label}
               className="flex items-start justify-between gap-4 rounded-md border border-border bg-bg p-3"
@@ -637,87 +571,90 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
             </div>
           ))}
         </dl>
-        <div className="mt-4 flex flex-wrap gap-2">
-                {visibleSources.map((source) => (
-            <a
-              key={source.id}
-              href={source.url}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
-            >
-              {source.publisher} <ExternalLink className="size-3" aria-hidden />
-            </a>
-          ))}
+        <div className="mt-4 grid gap-2 sm:grid-cols-2">
+          {visibleSources.map((source) => {
+            const metadata = getSourceMetadata(source)
+            return (
+              <a
+                key={source.id}
+                href={source.url}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-md border border-border bg-bg p-3 text-xs transition hover:border-border-strong"
+              >
+                <span className="flex items-start justify-between gap-2 font-semibold text-text-muted">
+                  {source.publisher}
+                  <ExternalLink className="size-3 shrink-0" aria-hidden />
+                </span>
+                <span className="mt-1 block font-medium text-text">{source.title}</span>
+                <MetadataChips
+                  items={[
+                    { label: '도메인', value: metadata.sourceDomain },
+                    { label: '자료형', value: metadata.contentType },
+                    { label: '확인일', value: metadata.lastCheckedAt },
+                  ]}
+                  limit={3}
+                />
+              </a>
+            )
+          })}
         </div>
       </article>
     </section>
-  );
+  )
 }
 
 export function BenchmarkBoard() {
-  const [domain, setDomain] = useState<BenchmarkDomainFilter>("all");
-  const [provider, setProvider] = useState<BenchmarkProviderFilter>("all");
-  const [sourceKind, setSourceKind] = useState<SourceKindFilter>("all");
-  const [query, setQuery] = useState("");
-  const [sortMode, setSortMode] = useState<BenchmarkSortMode>("score");
-  const [sortDirection, setSortDirection] =
-    useState<BenchmarkSortDirection>("desc");
-  const [benchmarkLimit, setBenchmarkLimit] = useState<ListLimit>(0);
-  const deferredQuery = useDeferredValue(query);
-  const searchTerms = useMemo(() => getSearchTerms(deferredQuery), [
-    deferredQuery,
-  ]);
+  const [domains, setDomains] = useState<ActiveBenchmarkDomainFilter[]>([])
+  const [providers, setProviders] = useState<ActiveBenchmarkProviderFilter[]>([])
+  const [sourceKinds, setSourceKinds] = useState<ActiveSourceKindFilter[]>([])
+  const [query, setQuery] = useState('')
+  const [sortMode, setSortMode] = useState<BenchmarkSortMode>('score')
+  const [sortDirection, setSortDirection] = useState<BenchmarkSortDirection>('desc')
+  const [benchmarkLimit, setBenchmarkLimit] = useState<ListLimit>(0)
+  const deferredQuery = useDeferredValue(query)
+  const searchTerms = useMemo(() => getSearchTerms(deferredQuery), [deferredQuery])
   const benchmarkDomainFilters: Array<{
-    id: BenchmarkDomainFilter;
-    label: string;
-  }> = [
-    "all",
-    "overall",
-    "coding",
-    "ppt",
-    "research",
-    "multimodal",
-    "cost",
-    "agent",
-  ].map((id) => ({
+    id: BenchmarkDomainFilter
+    label: string
+  }> = ['all', 'overall', 'coding', 'ppt', 'research', 'multimodal', 'cost', 'agent'].map((id) => ({
     id: id as BenchmarkDomainFilter,
     label: getBenchmarkDomainLabel(id as BenchmarkDomainFilter),
-  }));
+  }))
   const benchmarkProviderFilters: Array<{
-    id: BenchmarkProviderFilter;
-    label: string;
+    id: BenchmarkProviderFilter
+    label: string
   }> = [
-    { id: "all", label: "전체 제공사" },
+    { id: 'all', label: '전체 제공사' },
     ...providerCatalog.map((item) => ({
       id: item.id,
       label: item.label,
     })),
-    { id: "other", label: "기타" },
-  ];
+    { id: 'other', label: '기타' },
+  ]
   const sortFilters: Array<{ id: BenchmarkSortMode; label: string }> = [
-    { id: "rank", label: "순위" },
-    { id: "model", label: "모델" },
-    { id: "provider", label: "제공사" },
-    { id: "domain", label: "분야" },
-    { id: "score", label: "점수" },
-    { id: "price", label: "가격" },
-    { id: "speed", label: "속도" },
-    { id: "latency", label: "Latency" },
-    { id: "lastChecked", label: "최근 확인일" },
-  ];
+    { id: 'rank', label: '순위' },
+    { id: 'model', label: '모델' },
+    { id: 'provider', label: '제공사' },
+    { id: 'domain', label: '분야' },
+    { id: 'score', label: '점수' },
+    { id: 'price', label: '가격' },
+    { id: 'speed', label: '속도' },
+    { id: 'latency', label: 'Latency' },
+    { id: 'lastChecked', label: '최근 확인일' },
+  ]
   const sortDirectionFilters: Array<{
-    id: BenchmarkSortDirection;
-    label: string;
+    id: BenchmarkSortDirection
+    label: string
   }> = [
-    { id: "asc", label: "오름차순" },
-    { id: "desc", label: "내림차순" },
-  ];
+    { id: 'asc', label: '오름차순' },
+    { id: 'desc', label: '내림차순' },
+  ]
   const visibleEntries = useMemo(
     () =>
       benchmarkEntries
         .filter((entry) => {
-          const entrySources = getSources(entry.sourceIds);
+          const entrySources = getSources(entry.sourceIds)
           const searchableText = [
             entry.id,
             entry.rankLabel,
@@ -735,128 +672,113 @@ export function BenchmarkBoard() {
               source.publisher,
               source.note,
               sourceKindLabel(source.kind),
+              getContentMetadataSearchText(getSourceMetadata(source)),
             ]),
           ]
-            .join(" ")
-            .toLocaleLowerCase("ko-KR")
-            .replace(/\s+/g, " ")
-            .trim();
+            .join(' ')
+            .toLocaleLowerCase('ko-KR')
+            .replace(/\s+/g, ' ')
+            .trim()
 
           return (
-            (domain === "all" || entry.domain === domain) &&
-            (provider === "all" || entry.providerId === provider) &&
-            (sourceKind === "all" ||
-              entrySources.some((source) => source.kind === sourceKind)) &&
+            (domains.length === 0 || domains.includes(entry.domain)) &&
+            (providers.length === 0 || providers.includes(entry.providerId)) &&
+            (sourceKinds.length === 0 ||
+              entrySources.some((source) => sourceKinds.includes(source.kind))) &&
             (!searchTerms.length ||
               searchTerms.some((searchTerm) => searchableText.includes(searchTerm)))
-          );
+          )
         })
         .toSorted((a, b) => {
-          const directionOrder = sortDirection === "asc" ? 1 : -1;
+          const directionOrder = sortDirection === 'asc' ? 1 : -1
           switch (sortMode) {
-            case "rank": {
-              const rankA = parseRankValue(a.rankLabel);
-              const rankB = parseRankValue(b.rankLabel);
+            case 'rank': {
+              const rankA = parseRankValue(a.rankLabel)
+              const rankB = parseRankValue(b.rankLabel)
               if (rankA == null && rankB == null) {
-                return a.rankLabel.localeCompare(b.rankLabel) * directionOrder;
+                return a.rankLabel.localeCompare(b.rankLabel) * directionOrder
               }
-              if (rankA == null) return 1;
-              if (rankB == null) return -1;
-              return (rankA - rankB) * directionOrder;
+              if (rankA == null) return 1
+              if (rankB == null) return -1
+              return (rankA - rankB) * directionOrder
             }
-            case "model":
-              return a.modelName.localeCompare(b.modelName) * directionOrder;
-            case "provider": {
-              const providerA = getProviderLabel(a.providerId) ?? "미지정";
-              const providerB = getProviderLabel(b.providerId) ?? "미지정";
-              if (providerA === providerB) return 0;
-              return providerA.localeCompare(providerB) * directionOrder;
+            case 'model':
+              return a.modelName.localeCompare(b.modelName) * directionOrder
+            case 'provider': {
+              const providerA = getProviderLabel(a.providerId) ?? '미지정'
+              const providerB = getProviderLabel(b.providerId) ?? '미지정'
+              if (providerA === providerB) return 0
+              return providerA.localeCompare(providerB) * directionOrder
             }
-            case "domain": {
-              const domainA = getBenchmarkDomainLabel(a.domain);
-              const domainB = getBenchmarkDomainLabel(b.domain);
-              if (domainA === domainB) return 0;
-              return domainA.localeCompare(domainB) * directionOrder;
+            case 'domain': {
+              const domainA = getBenchmarkDomainLabel(a.domain)
+              const domainB = getBenchmarkDomainLabel(b.domain)
+              if (domainA === domainB) return 0
+              return domainA.localeCompare(domainB) * directionOrder
             }
-            case "score": {
-              const scoreA = parseNumericMetric(a.score);
-              const scoreB = parseNumericMetric(b.score);
-              const byNumeric = compareNumericWithDirection(
-                scoreA,
-                scoreB,
-                sortDirection,
-              );
-              if (byNumeric !== 0) return byNumeric;
-              return a.modelName.localeCompare(b.modelName) * directionOrder;
+            case 'score': {
+              const scoreA = parseNumericMetric(a.score)
+              const scoreB = parseNumericMetric(b.score)
+              const byNumeric = compareNumericWithDirection(scoreA, scoreB, sortDirection)
+              if (byNumeric !== 0) return byNumeric
+              return a.modelName.localeCompare(b.modelName) * directionOrder
             }
-            case "price": {
-              const priceA = parseNumericMetric(a.price);
-              const priceB = parseNumericMetric(b.price);
-              const byNumeric = compareNumericWithDirection(
-                priceA,
-                priceB,
-                sortDirection,
-              );
-              if (byNumeric !== 0) return byNumeric;
-              return a.modelName.localeCompare(b.modelName) * directionOrder;
+            case 'price': {
+              const priceA = parseNumericMetric(a.price)
+              const priceB = parseNumericMetric(b.price)
+              const byNumeric = compareNumericWithDirection(priceA, priceB, sortDirection)
+              if (byNumeric !== 0) return byNumeric
+              return a.modelName.localeCompare(b.modelName) * directionOrder
             }
-            case "speed": {
-              const speedA = parseNumericMetric(a.speed);
-              const speedB = parseNumericMetric(b.speed);
-              const byNumeric = compareNumericWithDirection(
-                speedA,
-                speedB,
-                sortDirection,
-              );
-              if (byNumeric !== 0) return byNumeric;
-              return a.modelName.localeCompare(b.modelName) * directionOrder;
+            case 'speed': {
+              const speedA = parseNumericMetric(a.speed)
+              const speedB = parseNumericMetric(b.speed)
+              const byNumeric = compareNumericWithDirection(speedA, speedB, sortDirection)
+              if (byNumeric !== 0) return byNumeric
+              return a.modelName.localeCompare(b.modelName) * directionOrder
             }
-            case "latency": {
-              const latencyA = parseNumericMetric(a.latency);
-              const latencyB = parseNumericMetric(b.latency);
-              const byNumeric = compareNumericWithDirection(
-                latencyA,
-                latencyB,
-                sortDirection,
-              );
-              if (byNumeric !== 0) return byNumeric;
-              return a.modelName.localeCompare(b.modelName) * directionOrder;
+            case 'latency': {
+              const latencyA = parseNumericMetric(a.latency)
+              const latencyB = parseNumericMetric(b.latency)
+              const byNumeric = compareNumericWithDirection(latencyA, latencyB, sortDirection)
+              if (byNumeric !== 0) return byNumeric
+              return a.modelName.localeCompare(b.modelName) * directionOrder
             }
-            case "lastChecked": {
-              const latestA = getLatestSourceCheckedAt(a);
-              const latestB = getLatestSourceCheckedAt(b);
-              if (!latestA && !latestB) return 0;
-              if (!latestA) return 1;
-              if (!latestB) return -1;
-              return latestB.localeCompare(latestA) * directionOrder;
+            case 'lastChecked': {
+              const latestA = getLatestSourceCheckedAt(a)
+              const latestB = getLatestSourceCheckedAt(b)
+              if (!latestA && !latestB) return 0
+              if (!latestA) return 1
+              if (!latestB) return -1
+              return latestB.localeCompare(latestA) * directionOrder
             }
             default:
-              return 0;
+              return 0
           }
         }),
-    [domain, provider, searchTerms, sourceKind, sortDirection, sortMode],
-  );
+    [domains, providers, searchTerms, sourceKinds, sortDirection, sortMode]
+  )
   const maxScore = Math.max(
     1,
-    ...visibleEntries.map((entry) => parseNumericMetric(entry.score) ?? 0),
-  );
+    ...visibleEntries.map((entry) => parseNumericMetric(entry.score) ?? 0)
+  )
   const pagedEntries =
-    benchmarkLimit === 0 ? visibleEntries : visibleEntries.slice(0, benchmarkLimit);
+    benchmarkLimit === 0 ? visibleEntries : visibleEntries.slice(0, benchmarkLimit)
   const coverageItems = useMemo(() => {
-    const sources = visibleEntries.flatMap((entry) => getSources(entry.sourceIds));
+    const sources = visibleEntries.flatMap((entry) => getSources(entry.sourceIds))
     return [
-      { label: "항목", value: visibleEntries.length },
-      { label: "출처", value: new Set(sources.map((source) => source.id)).size },
+      { label: '항목', value: visibleEntries.length },
+      { label: '출처', value: new Set(sources.map((source) => source.id)).size },
       {
-        label: "공식",
-        value: sources.filter((source) => source.kind === "official").length,
+        label: '공식',
+        value: sources.filter((source) => source.kind === 'official').length,
       },
       {
-        label: "논문/벤치",
-        value: sources.filter((source) => source.kind === "benchmark").length,
+        label: '논문/벤치',
+        value: sources.filter((source) => source.kind === 'benchmark').length,
       },
-    ];
-  }, [visibleEntries]);
+    ]
+  }, [visibleEntries])
   return (
     <section id="benchmarks" className="space-y-4">
       <SectionHeader
@@ -866,9 +788,7 @@ export function BenchmarkBoard() {
       />
       <div className="grid gap-4 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
         <label className="block xl:col-span-4">
-          <span className="text-xs font-semibold text-text-subtle">
-            벤치마크 검색
-          </span>
+          <span className="text-xs font-semibold text-text-subtle">벤치마크 검색</span>
           <span className="relative mt-2 block">
             <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
             <input
@@ -879,90 +799,69 @@ export function BenchmarkBoard() {
             />
           </span>
         </label>
-        <SegmentBar
+        <MultiSegmentBar
           label="분야"
           items={benchmarkDomainFilters}
-          value={domain}
-          onChange={setDomain}
+          value={domains}
+          onChange={setDomains}
         />
-        <SegmentBar
+        <MultiSegmentBar
           label="출처 성격"
           items={sourceKindFilters}
-          value={sourceKind}
-          onChange={setSourceKind}
+          value={sourceKinds}
+          onChange={setSourceKinds}
         />
-        <SegmentBar
-          label="정렬"
-          items={sortFilters}
-          value={sortMode}
-          onChange={setSortMode}
-        />
+        <SegmentBar label="정렬" items={sortFilters} value={sortMode} onChange={setSortMode} />
         <SegmentBar
           label="정렬 방향"
           items={sortDirectionFilters}
           value={sortDirection}
           onChange={setSortDirection}
         />
-          <label className="block">
-            <span className="text-xs font-semibold text-text-subtle">
-              제공사
-            </span>
+        <MultiSegmentBar
+          label="제공사"
+          items={benchmarkProviderFilters}
+          value={providers}
+          onChange={setProviders}
+        />
+        <label className="block">
+          <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
           <select
-            value={provider}
-            onChange={(event) =>
-              setProvider(event.target.value as BenchmarkProviderFilter)
-            }
+            value={benchmarkLimit}
+            onChange={(event) => setBenchmarkLimit(Number(event.target.value))}
             className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
           >
-            {benchmarkProviderFilters.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.label}
-              </option>
+            <option value={0}>전체</option>
+            <option value={10}>10개</option>
+            <option value={20}>20개</option>
+            <option value={30}>30개</option>
+          </select>
+        </label>
+        <div className="rounded-md border border-border bg-bg p-3 xl:col-span-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap gap-1.5">
+              {coverageItems.map((item) => (
+                <span
+                  key={item.label}
+                  className="rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
+                >
+                  {item.label} {item.value}
+                </span>
               ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className="text-xs font-semibold text-text-subtle">
-              표시 개수
-            </span>
-            <select
-              value={benchmarkLimit}
-              onChange={(event) =>
-                setBenchmarkLimit(Number(event.target.value))
-              }
-              className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
-            >
-              <option value={0}>전체</option>
-              <option value={10}>10개</option>
-              <option value={20}>20개</option>
-              <option value={30}>30개</option>
-            </select>
-          </label>
-          <div className="rounded-md border border-border bg-bg p-3 xl:col-span-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex flex-wrap gap-1.5">
-                {coverageItems.map((item) => (
-                  <span
-                    key={item.label}
-                    className="rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
-                  >
-                    {item.label} {item.value}
-                  </span>
-                ))}
-              </div>
-              <p className="text-xs font-semibold text-text-subtle">
-                표시 {pagedEntries.length}개 / 전체 {visibleEntries.length}개
-              </p>
+            </div>
+            <p className="text-xs font-semibold text-text-subtle">
+              표시 {pagedEntries.length}개 / 전체 {visibleEntries.length}개
+            </p>
             <button
               type="button"
               onClick={() => {
-                setDomain("all");
-                setProvider("all");
-                setSourceKind("all");
-                setSortMode("score");
-                setSortDirection("desc");
-                setQuery("");
-                setBenchmarkLimit(0);
+                setDomains([])
+                setProviders([])
+                setSourceKinds([])
+                setSortMode('score')
+                setSortDirection('desc')
+                setQuery('')
+                setBenchmarkLimit(0)
               }}
               className="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
             >
@@ -981,28 +880,31 @@ export function BenchmarkBoard() {
           <span className="text-right">점수/규모</span>
         </div>
         {pagedEntries.map((entry) => {
-          const numericScore = parseNumericMetric(entry.score) ?? 0;
-          const width = `${Math.max(4, (numericScore / maxScore) * 100)}%`;
-          const entrySources = getSources(entry.sourceIds);
+          const numericScore = parseNumericMetric(entry.score) ?? 0
+          const width = `${Math.max(4, (numericScore / maxScore) * 100)}%`
+          const entrySources = getSources(entry.sourceIds)
+          const entrySourceMetadata = entrySources.map(getSourceMetadata)
           const sourceKinds = [
             ...new Set(entrySources.map((source) => sourceKindLabel(source.kind))),
-          ];
-          const lastChecked = getLatestSourceCheckedAt(entry);
+          ]
+          const sourceDomains = [
+            ...new Set(entrySourceMetadata.flatMap((metadata) => metadata.sourceDomains ?? [])),
+          ]
+          const sourceNames = [
+            ...new Set(entrySourceMetadata.flatMap((metadata) => metadata.newsSources ?? [])),
+          ]
+          const lastChecked = getLatestSourceCheckedAt(entry)
           return (
             <div
               key={entry.id}
               className="grid grid-cols-[4.5rem_1fr_5rem] gap-3 border-b border-border px-4 py-3 last:border-b-0 md:grid-cols-[5rem_1.4fr_1fr_1fr_1fr_5rem]"
             >
-              <span className="text-xs font-semibold text-text-subtle">
-                {entry.rankLabel}
-              </span>
+              <span className="text-xs font-semibold text-text-subtle">{entry.rankLabel}</span>
               <div>
-                <p className="text-sm font-semibold text-text">
-                  {entry.modelName}
-                </p>
+                <p className="text-sm font-semibold text-text">{entry.modelName}</p>
                 <p className="mt-1 text-xs text-text-subtle">
-                  {getProviderLabel(entry.providerId)} ·{" "}
-                  {getBenchmarkDomainLabel(entry.domain)} · {entry.context}
+                  {getProviderLabel(entry.providerId)} · {getBenchmarkDomainLabel(entry.domain)} ·{' '}
+                  {entry.context}
                 </p>
                 <p className="mt-1 text-xs text-text-muted">{entry.metric}</p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
@@ -1032,27 +934,25 @@ export function BenchmarkBoard() {
                     </span>
                   ) : null}
                 </div>
+                <MetadataChips
+                  items={[
+                    { label: '출처', value: sourceNames.slice(0, 2).join(', ') },
+                    { label: '도메인', value: sourceDomains.slice(0, 2).join(', ') },
+                    { label: '수집일', value: lastChecked },
+                    { label: '검증일', value: lastChecked },
+                  ]}
+                  limit={4}
+                />
                 <div className="mt-2 h-1.5 rounded-md bg-surface-2">
-                  <div
-                    className="h-1.5 rounded-md bg-accent"
-                    style={{ width }}
-                  />
+                  <div className="h-1.5 rounded-md bg-accent" style={{ width }} />
                 </div>
               </div>
-              <span className="hidden text-xs text-text-muted md:block">
-                {entry.price}
-              </span>
-              <span className="hidden text-xs text-text-muted md:block">
-                {entry.speed}
-              </span>
-              <span className="hidden text-xs text-text-muted md:block">
-                {entry.latency}
-              </span>
-              <span className="text-right text-sm font-semibold text-text">
-                {entry.score}
-              </span>
+              <span className="hidden text-xs text-text-muted md:block">{entry.price}</span>
+              <span className="hidden text-xs text-text-muted md:block">{entry.speed}</span>
+              <span className="hidden text-xs text-text-muted md:block">{entry.latency}</span>
+              <span className="text-right text-sm font-semibold text-text">{entry.score}</span>
             </div>
-          );
+          )
         })}
         {!pagedEntries.length ? (
           <div className="px-4 py-4">
@@ -1064,70 +964,57 @@ export function BenchmarkBoard() {
         ) : null}
       </div>
     </section>
-  );
+  )
 }
 
 export function ComparisonMatrix() {
-  const [rowQuery, setRowQuery] = useState("");
-  const [matrixSortMode, setMatrixSortMode] =
-    useState<ComparisonMatrixSortMode>("axis");
+  const [rowQuery, setRowQuery] = useState('')
+  const [matrixSortMode, setMatrixSortMode] = useState<ComparisonMatrixSortMode>('axis')
   const [matrixSortDirection, setMatrixSortDirection] =
-    useState<ComparisonMatrixSortDirection>("asc");
-  const [matrixLimit, setMatrixLimit] = useState<ListLimit>(0);
+    useState<ComparisonMatrixSortDirection>('asc')
+  const [matrixLimit, setMatrixLimit] = useState<ListLimit>(0)
   const matrixSortFilters: Array<{
-    id: ComparisonMatrixSortMode;
-    label: string;
+    id: ComparisonMatrixSortMode
+    label: string
   }> = [
-    { id: "axis", label: "축명" },
-    { id: "filled", label: "채워진 항목" },
-    { id: "coverage", label: "내용 길이" },
-  ];
+    { id: 'axis', label: '축명' },
+    { id: 'filled', label: '채워진 항목' },
+    { id: 'coverage', label: '내용 길이' },
+  ]
   const matrixSortDirectionFilters: Array<{
-    id: ComparisonMatrixSortDirection;
-    label: string;
+    id: ComparisonMatrixSortDirection
+    label: string
   }> = [
-    { id: "asc", label: "오름차순" },
-    { id: "desc", label: "내림차순" },
-  ];
+    { id: 'asc', label: '오름차순' },
+    { id: 'desc', label: '내림차순' },
+  ]
   const visibleComparisonRows = useMemo(() => {
-    const normalizedQuery = rowQuery
-      .trim()
-      .toLocaleLowerCase("ko-KR");
+    const normalizedQuery = rowQuery.trim().toLocaleLowerCase('ko-KR')
     const sortedRows = comparisonRows
       .filter((row) =>
-        normalizedQuery
-          ? row.axis
-              .toLocaleLowerCase("ko-KR")
-              .includes(normalizedQuery)
-          : true,
+        normalizedQuery ? row.axis.toLocaleLowerCase('ko-KR').includes(normalizedQuery) : true
       )
       .map((row) => ({
         ...row,
-        filledCount: Object.values(row.cells)
-          .filter((value) => value && value !== "-").length,
-        valueLength: Object.values(row.cells).reduce(
-          (total, value) => total + value.length,
-          0,
-        ),
+        filledCount: Object.values(row.cells).filter((value) => value && value !== '-').length,
+        valueLength: Object.values(row.cells).reduce((total, value) => total + value.length, 0),
       }))
       .toSorted((left, right) => {
-        const direction = matrixSortDirection === "asc" ? 1 : -1;
-        if (matrixSortMode === "axis") {
-          return left.axis.localeCompare(right.axis, "ko") * direction;
+        const direction = matrixSortDirection === 'asc' ? 1 : -1
+        if (matrixSortMode === 'axis') {
+          return left.axis.localeCompare(right.axis, 'ko') * direction
         }
-        if (matrixSortMode === "filled") {
-          const byFilled = left.filledCount - right.filledCount;
-          if (byFilled !== 0) return byFilled * direction;
+        if (matrixSortMode === 'filled') {
+          const byFilled = left.filledCount - right.filledCount
+          if (byFilled !== 0) return byFilled * direction
         }
-        const byLength = left.valueLength - right.valueLength;
-        return byLength * direction;
-      });
-    return sortedRows;
-  }, [matrixSortDirection, matrixSortMode, rowQuery]);
+        const byLength = left.valueLength - right.valueLength
+        return byLength * direction
+      })
+    return sortedRows
+  }, [matrixSortDirection, matrixSortMode, rowQuery])
   const pagedComparisonRows =
-    matrixLimit === 0
-      ? visibleComparisonRows
-      : visibleComparisonRows.slice(0, matrixLimit);
+    matrixLimit === 0 ? visibleComparisonRows : visibleComparisonRows.slice(0, matrixLimit)
 
   return (
     <section className="space-y-4">
@@ -1138,9 +1025,7 @@ export function ComparisonMatrix() {
       />
       <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1.2fr_1fr_1fr_0.8fr]">
         <label className="block xl:col-span-2">
-          <span className="text-xs font-semibold text-text-subtle">
-            축 검색
-          </span>
+          <span className="text-xs font-semibold text-text-subtle">축 검색</span>
           <input
             value={rowQuery}
             onChange={(event) => setRowQuery(event.target.value)}
@@ -1161,9 +1046,7 @@ export function ComparisonMatrix() {
           onChange={setMatrixSortDirection}
         />
         <label className="block">
-          <span className="text-xs font-semibold text-text-subtle">
-            표시 개수
-          </span>
+          <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
           <select
             value={matrixLimit}
             onChange={(event) => setMatrixLimit(Number(event.target.value))}
@@ -1188,23 +1071,18 @@ export function ComparisonMatrix() {
             <tr className="border-b border-border text-xs text-text-subtle">
               <th className="w-36 px-4 py-3 font-semibold">축</th>
               {comparisonProviderOrder.map((providerId) => {
-                const provider = providerCatalog.find(
-                  (item) => item.id === providerId,
-                );
+                const provider = providerCatalog.find((item) => item.id === providerId)
                 return (
                   <th key={providerId} className="px-4 py-3 font-semibold">
                     {provider?.shortLabel ?? getProviderLabel(providerId)}
                   </th>
-                );
+                )
               })}
             </tr>
           </thead>
           <tbody>
             {pagedComparisonRows.map((row) => (
-              <tr
-                key={row.id}
-                className="border-b border-border last:border-b-0"
-              >
+              <tr key={row.id} className="border-b border-border last:border-b-0">
                 <th className="bg-bg px-4 py-4 align-top text-xs font-semibold text-text">
                   {row.axis}
                 </th>
@@ -1222,5 +1100,5 @@ export function ComparisonMatrix() {
         </table>
       </div>
     </section>
-  );
+  )
 }
