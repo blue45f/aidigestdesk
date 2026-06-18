@@ -20,6 +20,7 @@ import {
   LogIn,
   LogOut,
   ShieldCheck,
+  Search,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -35,6 +36,31 @@ const stats = getCatalogStats();
 const contentAudit = runContentAudit();
 
 type AdminRouteTarget = "portal";
+type SortDirection = "asc" | "desc";
+type SnapshotSortMode = "priority" | "publisher" | "source" | "nextCheck" | "cadence";
+type SnapshotSortDirection = SortDirection;
+type SnapshotPriorityFilter = "all" | "P0" | "P1" | "P2";
+type SnapshotStatusFilter = "all" | "자동화 후보" | "정상" | "확인 필요";
+type AuditSortMode = "status" | "label";
+type AuditSortDirection = SortDirection;
+type AuditStatusFilter = "all" | "pass" | "warn" | "fail";
+
+function getSearchTerms(query: string) {
+  return query
+    .toLocaleLowerCase("ko-KR")
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(" ")
+    .filter(Boolean);
+}
+
+function matchSearchTerms(target: string, terms: string[]) {
+  return terms.every((term) => target.includes(term));
+}
+
+function candidateCompare(a: string, b: string) {
+  return a.localeCompare(b, "ko");
+}
 
 function AdminLogin({
   onLogin,
@@ -196,6 +222,114 @@ function AdminConsole({
   const koreanResourceCount = learningResources.filter(
     (resource) => resource.language === "한국어",
   ).length;
+  const [snapshotQuery, setSnapshotQuery] = useState("");
+  const [snapshotPriorityFilter, setSnapshotPriorityFilter] =
+    useState<SnapshotPriorityFilter>("all");
+  const [snapshotStatusFilter, setSnapshotStatusFilter] =
+    useState<SnapshotStatusFilter>("all");
+  const [snapshotSortMode, setSnapshotSortMode] =
+    useState<SnapshotSortMode>("priority");
+  const [snapshotSortDirection, setSnapshotSortDirection] =
+    useState<SnapshotSortDirection>("asc");
+  const [checkQuery, setCheckQuery] = useState("");
+  const [checkSortMode, setCheckSortMode] = useState<AuditSortMode>("status");
+  const [checkSortDirection, setCheckSortDirection] =
+    useState<AuditSortDirection>("asc");
+  const [checkStatusFilter, setCheckStatusFilter] =
+    useState<AuditStatusFilter>("all");
+  const snapshotTerms = useMemo(() => getSearchTerms(snapshotQuery), [
+    snapshotQuery,
+  ]);
+  const checkTerms = useMemo(() => getSearchTerms(checkQuery), [checkQuery]);
+  const filteredSnapshotCandidates = useMemo(
+    () =>
+      snapshotCandidates
+        .filter((candidate) => {
+          if (
+            snapshotPriorityFilter !== "all" &&
+            candidate.priority !== snapshotPriorityFilter
+          ) {
+            return false;
+          }
+          if (
+            snapshotStatusFilter !== "all" &&
+            candidate.monitorStatus !== snapshotStatusFilter
+          ) {
+            return false;
+          }
+          if (!snapshotTerms.length) return true;
+          return matchSearchTerms(
+            `${candidate.source.publisher} ${candidate.source.title} ${candidate.source.kind} ${candidate.priority} ${candidate.monitorStatus}`.toLocaleLowerCase("ko-KR"),
+            snapshotTerms,
+          );
+        })
+        .toSorted((a, b) => {
+          const direction = snapshotSortDirection === "asc" ? 1 : -1;
+          if (snapshotSortMode === "priority") {
+            if (a.priority === b.priority) return 0;
+            if (a.priority === "P0") return -1 * direction;
+            if (a.priority === "P1" && b.priority !== "P0") return -1 * direction;
+            if (a.priority === "P2" && b.priority === "P0") return 1 * direction;
+            return -1 * direction;
+          }
+          if (snapshotSortMode === "publisher") {
+            const byPublisher = candidateCompare(
+              a.source.publisher,
+              b.source.publisher,
+            );
+            if (byPublisher !== 0) return byPublisher * direction;
+          }
+          if (snapshotSortMode === "source") {
+            const byTitle = candidateCompare(a.source.title, b.source.title);
+            if (byTitle !== 0) return byTitle * direction;
+          }
+          if (snapshotSortMode === "cadence") {
+            const byCadence = a.cadence.localeCompare(b.cadence, "ko");
+            if (byCadence !== 0) return byCadence * direction;
+          }
+          const byDate = b.nextCheck.localeCompare(a.nextCheck, "ko");
+          return byDate * direction;
+        }),
+    [
+      snapshotCandidates,
+      snapshotPriorityFilter,
+      snapshotStatusFilter,
+      snapshotSortDirection,
+      snapshotSortMode,
+      snapshotTerms,
+    ],
+  );
+
+  const visibleChecks = useMemo(
+    () =>
+      contentAudit.checks
+        .filter((check) =>
+          checkStatusFilter === "all" ? true : check.status === checkStatusFilter,
+        )
+        .filter((check) => {
+          if (!checkTerms.length) return true;
+          return matchSearchTerms(
+            `${check.label} ${check.detail} ${check.status}`.toLocaleLowerCase("ko-KR"),
+            checkTerms,
+          );
+        })
+        .toSorted((a, b) => {
+          const direction = checkSortDirection === "asc" ? 1 : -1;
+          if (checkSortMode === "label") {
+            return a.label.localeCompare(b.label, "ko") * direction;
+          }
+          if (a.status === b.status) {
+            return a.label.localeCompare(b.label, "ko") * direction;
+          }
+          return a.status.localeCompare(b.status, "ko") * direction;
+        }),
+    [
+      checkStatusFilter,
+      checkSortDirection,
+      checkSortMode,
+      checkTerms,
+    ],
+  );
 
   return (
     <main
@@ -304,8 +438,67 @@ function AdminConsole({
                 {contentAudit.passed ? "PASS" : "CHECK"}
               </span>
             </div>
+            <div className="mt-3 grid gap-2 rounded-md border border-border bg-surface/70 p-3 sm:grid-cols-2 lg:grid-cols-5">
+              <label className="lg:col-span-2">
+                <span className="text-xs font-semibold text-text-subtle">
+                  검색
+                </span>
+                <span className="relative mt-2 block">
+                  <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
+                  <input
+                    value={checkQuery}
+                    onChange={(event) => setCheckQuery(event.target.value)}
+                    placeholder="점검 항목명, 상세"
+                    className="h-10 w-full rounded-md border border-border bg-bg pl-9 pr-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+                  />
+                </span>
+              </label>
+              <label>
+                <span className="text-xs font-semibold text-text-subtle">
+                  상태
+                </span>
+                <select
+                  value={checkStatusFilter}
+                  onChange={(event) =>
+                    setCheckStatusFilter(event.target.value as AuditStatusFilter)
+                  }
+                  className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+                >
+                  <option value="all">전체</option>
+                  <option value="pass">pass</option>
+                  <option value="warn">warn</option>
+                  <option value="fail">fail</option>
+                </select>
+              </label>
+              <label>
+                <span className="text-xs font-semibold text-text-subtle">정렬</span>
+                <select
+                  value={checkSortMode}
+                  onChange={(event) =>
+                    setCheckSortMode(event.target.value as AuditSortMode)
+                  }
+                  className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+                >
+                  <option value="status">상태</option>
+                  <option value="label">항목명</option>
+                </select>
+              </label>
+              <div className="flex items-end">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setCheckSortDirection(
+                      checkSortDirection === "asc" ? "desc" : "asc",
+                    )
+                  }
+                  className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-md border border-border bg-bg px-3 text-xs font-semibold text-text-subtle transition hover:text-text"
+                >
+                  방향 {checkSortDirection === "asc" ? "올림" : "내림"}
+                </button>
+              </div>
+            </div>
             <div className="mt-4 space-y-2">
-              {contentAudit.checks.map((check) => (
+              {visibleChecks.map((check) => (
                 <div
                   key={check.id}
                   className="rounded-md border border-border bg-bg p-3"
@@ -323,6 +516,13 @@ function AdminConsole({
                   </p>
                 </div>
               ))}
+              {!visibleChecks.length ? (
+                <div className="p-4 rounded-md border border-dashed border-border">
+                  <p className="text-xs text-text-subtle">
+                    조건에 맞는 감사 항목이 없습니다.
+                  </p>
+                </div>
+              ) : null}
             </div>
           </article>
 
@@ -332,11 +532,90 @@ function AdminConsole({
                 스냅샷 우선 후보
               </h2>
               <span className="text-xs font-semibold text-text-subtle">
-                {snapshotCandidates.length}개
+                {filteredSnapshotCandidates.length}개
               </span>
             </div>
+            <div className="mt-3 grid gap-2 rounded-md border border-border bg-surface/70 p-3 md:grid-cols-2">
+              <label className="lg:col-span-2">
+                <span className="text-xs font-semibold text-text-subtle">검색</span>
+                <span className="relative mt-2 block">
+                  <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
+                  <input
+                    value={snapshotQuery}
+                    onChange={(event) => setSnapshotQuery(event.target.value)}
+                    placeholder="출처, 제공사, 우선순위"
+                    className="h-10 w-full rounded-md border border-border bg-bg pl-9 pr-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+                  />
+                </span>
+              </label>
+              <label>
+                <span className="text-xs font-semibold text-text-subtle">
+                  우선순위
+                </span>
+                <select
+                  value={snapshotPriorityFilter}
+                  onChange={(event) =>
+                    setSnapshotPriorityFilter(
+                      event.target.value as SnapshotPriorityFilter,
+                    )
+                  }
+                  className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+                >
+                  <option value="all">전체</option>
+                  <option value="P0">P0</option>
+                  <option value="P1">P1</option>
+                  <option value="P2">P2</option>
+                </select>
+              </label>
+              <label>
+                <span className="text-xs font-semibold text-text-subtle">상태</span>
+                <select
+                  value={snapshotStatusFilter}
+                  onChange={(event) =>
+                    setSnapshotStatusFilter(
+                      event.target.value as SnapshotStatusFilter,
+                    )
+                  }
+                  className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+                >
+                  <option value="all">전체</option>
+                  <option value="정상">정상</option>
+                  <option value="확인 필요">확인 필요</option>
+                  <option value="자동화 후보">자동화 후보</option>
+                </select>
+              </label>
+              <label>
+                <span className="text-xs font-semibold text-text-subtle">정렬</span>
+                <select
+                  value={snapshotSortMode}
+                  onChange={(event) =>
+                    setSnapshotSortMode(event.target.value as SnapshotSortMode)
+                  }
+                  className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+                >
+                  <option value="priority">우선순위</option>
+                  <option value="publisher">출처명</option>
+                  <option value="source">제목</option>
+                  <option value="nextCheck">다음 확인</option>
+                  <option value="cadence">주기</option>
+                </select>
+              </label>
+              <div className="flex items-end">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSnapshotSortDirection(
+                      snapshotSortDirection === "asc" ? "desc" : "asc",
+                    )
+                  }
+                  className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-md border border-border bg-bg px-3 text-xs font-semibold text-text-subtle transition hover:text-text"
+                >
+                  방향 {snapshotSortDirection === "asc" ? "올림" : "내림"}
+                </button>
+              </div>
+            </div>
             <div className="mt-4 grid gap-2 md:grid-cols-2">
-              {snapshotCandidates.slice(0, 8).map((candidate) => (
+              {filteredSnapshotCandidates.map((candidate) => (
                 <a
                   key={candidate.source.id}
                   href={candidate.source.url}
@@ -361,6 +640,13 @@ function AdminConsole({
                   </span>
                 </a>
               ))}
+              {!filteredSnapshotCandidates.length ? (
+                <div className="rounded-md border border-dashed border-border p-4">
+                  <p className="text-xs text-text-subtle">
+                    조건에 맞는 스냅샷 후보가 없습니다.
+                  </p>
+                </div>
+              ) : null}
             </div>
           </article>
         </section>
