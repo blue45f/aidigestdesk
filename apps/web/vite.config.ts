@@ -10,12 +10,44 @@ export default defineConfig({
   base,
   plugins: [
     react(),
-    babel({ presets: [reactCompilerPreset()] }),
+    babel({
+      exclude: [
+        /[\/\\]node_modules[\/\\]/,
+        /\0rolldown\/runtime\.js/,
+        /packages[\/\\]content[\/\\]dist[\/\\]/,
+      ],
+      presets: [reactCompilerPreset()],
+    }),
     tailwindcss(),
   ],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
+  },
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              name: "content-catalog",
+              test: /packages[\\/]content[\\/]dist[\\/]index/,
+              priority: 3,
+            },
+            {
+              name: "react-vendor",
+              test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+              priority: 2,
+            },
+            {
+              name: "vendor",
+              test: /node_modules[\\/]/,
+              priority: 1,
+            },
+          ],
+        },
+      },
     },
   },
   server: {
