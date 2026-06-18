@@ -60,6 +60,12 @@ VITE_BASE_PATH=/aidigestdesk/ pnpm run verify
 pnpm run snapshot:sources
 ```
 
+이벤트 스케줄 정합성 검증(중복, TECA 교차검증, 날짜/상태 규칙)은 아래로 실행할 수 있습니다.
+
+```bash
+pnpm run verify:events
+```
+
 공식 문서와 벤치마크 출처를 가져와 이전 스냅샷과 본문 해시를 비교하고 `packages/content/data/source-snapshots.json`에 저장합니다. 네트워크 실패는 레코드의 `failed` 상태로 남기며 기존 콘텐츠 데이터는 변경하지 않습니다.
 
 느린 소스만 재시도할 때는 환경변수로 타임아웃과 sourceId를 좁힐 수 있습니다.

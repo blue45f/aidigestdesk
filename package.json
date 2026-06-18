@@ -22,6 +22,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "snapshot:sources": "pnpm --filter @aidigestdesk/content run snapshot:sources",
+    "verify:events": "pnpm --filter @aidigestdesk/content run verify:events",
     "verify": "pnpm run lint:ci && pnpm run typecheck && pnpm run test && pnpm run build && pnpm run check:bundle",
     "ci": "pnpm run verify"
   },

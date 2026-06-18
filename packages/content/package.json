@@ -20,6 +20,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
+    "verify:events": "node scripts/verify-events.mjs",
     "snapshot:sources": "pnpm run build && node scripts/snapshot-sources.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
