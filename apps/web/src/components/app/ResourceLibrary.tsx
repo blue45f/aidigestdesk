@@ -114,8 +114,12 @@ function matchesResourceFocus(
           searchable.includes("yes24") ||
           searchable.includes("알라딘") ||
           searchable.includes("교보") ||
+          searchable.includes("서점") ||
           searchable.includes("길벗") ||
-          searchable.includes("위키북스"))
+          searchable.includes("위키북스") ||
+          searchable.includes("한빛미디어") ||
+          searchable.includes("제이펍") ||
+          searchable.includes("에이콘"))
       );
     case "community":
       return resource.type === "커뮤니티";

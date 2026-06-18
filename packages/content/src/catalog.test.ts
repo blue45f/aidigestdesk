@@ -185,6 +185,48 @@ describe('catalog search', () => {
       )
     ).toBe(true)
 
+    const officialManualResults = searchCatalog('한국어 공식 매뉴얼', 'all', 'learning')
+    expect(
+      officialManualResults.resources.some(
+        (resource) => resource.id === 'res-korean-official-manual-matrix'
+      )
+    ).toBe(true)
+
+    const geminiCodeAssistResults = searchCatalog('Gemini Code Assist', 'all', 'learning')
+    expect(
+      geminiCodeAssistResults.resources.some(
+        (resource) => resource.id === 'res-korean-official-manual-matrix'
+      )
+    ).toBe(true)
+
+    const fastCampusResults = searchCatalog('패스트캠퍼스', 'all', 'learning')
+    expect(
+      fastCampusResults.resources.some(
+        (resource) => resource.id === 'res-korean-course-marketplace-matrix'
+      )
+    ).toBe(true)
+
+    const codeitResults = searchCatalog('코드잇', 'all', 'learning')
+    expect(
+      codeitResults.resources.some(
+        (resource) => resource.id === 'res-korean-course-marketplace-matrix'
+      )
+    ).toBe(true)
+
+    const hanbitResults = searchCatalog('한빛미디어', 'all', 'books')
+    expect(
+      hanbitResults.resources.some(
+        (resource) => resource.id === 'res-korean-bookstore-publisher-matrix'
+      )
+    ).toBe(true)
+
+    const jpubResults = searchCatalog('제이펍', 'all', 'books')
+    expect(
+      jpubResults.resources.some(
+        (resource) => resource.id === 'res-korean-bookstore-publisher-matrix'
+      )
+    ).toBe(true)
+
     const opsResults = searchCatalog('국내 AI 교육 모집 상태', 'all', 'ops')
     expect(
       opsResults.pipelineItems.some((item) => item.id === 'pipe-korean-education-status-watch')
