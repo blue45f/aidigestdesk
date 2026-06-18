@@ -58,6 +58,7 @@ type EventScheduleRegionFilter = EventScheduleItem["region"] | "all";
 type EventScheduleLanguageFilter = EventScheduleItem["language"] | "all";
 type EventScheduleFormatFilter = EventScheduleItem["format"] | "all";
 type EventScheduleStatusFilter = EventScheduleItem["status"] | "all";
+type EventScheduleAreaScope = "all" | "국내" | "국외";
 
 const scheduleRegionFilters: Array<{ id: EventScheduleRegionFilter; label: string }> = [
   { id: "all", label: "전체" },
@@ -90,6 +91,12 @@ const scheduleStatusFilters: Array<{ id: EventScheduleStatusFilter; label: strin
   { id: "진행예정", label: "진행예정" },
   { id: "종료", label: "종료" },
   { id: "상시 확인", label: "상시 확인" },
+];
+
+const scheduleAreaScopeFilters: Array<{ id: EventScheduleAreaScope; label: string }> = [
+  { id: "국내", label: "국내" },
+  { id: "국외", label: "국외" },
+  { id: "all", label: "전체" },
 ];
 
 function toIcsDate(date: Date) {
@@ -522,6 +529,8 @@ function EventCalendarBoard() {
   const [selectedType, setSelectedType] = useState<EventScheduleType | "all">(
     "all",
   );
+  const [selectedAreaScope, setSelectedAreaScope] =
+    useState<EventScheduleAreaScope>("국내");
   const [selectedRegion, setSelectedRegion] =
     useState<EventScheduleRegionFilter>("all");
   const [selectedLanguage, setSelectedLanguage] =
@@ -536,6 +545,7 @@ function EventCalendarBoard() {
 
   const resetFilters = () => {
     setSelectedType("all");
+    setSelectedAreaScope("국내");
     setSelectedRegion("all");
     setSelectedLanguage("all");
     setSelectedFormat("all");
@@ -548,6 +558,13 @@ function EventCalendarBoard() {
     () =>
       eventScheduleItems
         .filter((item) => selectedType === "all" || item.type === selectedType)
+        .filter((item) =>
+          selectedAreaScope === "all"
+            ? true
+            : selectedAreaScope === "국내"
+              ? item.region === "국내"
+              : item.region !== "국내",
+        )
         .filter((item) => selectedRegion === "all" || item.region === selectedRegion)
         .filter((item) => selectedLanguage === "all" || item.language === selectedLanguage)
         .filter((item) => selectedFormat === "all" || item.format === selectedFormat)
@@ -564,7 +581,15 @@ function EventCalendarBoard() {
             : true,
         )
         .toSorted((a, b) => a.startDate.localeCompare(b.startDate)),
-    [queryLower, selectedFormat, selectedLanguage, selectedRegion, selectedStatus, selectedType],
+    [
+      queryLower,
+      selectedAreaScope,
+      selectedFormat,
+      selectedLanguage,
+      selectedRegion,
+      selectedStatus,
+      selectedType,
+    ],
   );
 
   const monthEvents = filteredEvents.filter((item) =>
@@ -664,6 +689,28 @@ function EventCalendarBoard() {
           ))}
         </div>
 
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          {scheduleAreaScopeFilters.map((filter) => (
+            <FilterButton
+              key={filter.id}
+              value={filter.id}
+              selected={selectedAreaScope}
+              label={filter.label}
+              onSelect={(nextScope) => {
+                setSelectedAreaScope(nextScope);
+                setSelectedDate(null);
+                if (nextScope === "국내") {
+                  setSelectedRegion("국내");
+                } else if (nextScope === "all") {
+                  setSelectedRegion("all");
+                } else {
+                  setSelectedRegion("all");
+                }
+              }}
+            />
+          ))}
+        </div>
+
         <div className="mt-4 space-y-2">
           <div className="relative">
             <label htmlFor="event-search" className="sr-only">
@@ -690,7 +737,17 @@ function EventCalendarBoard() {
               value={filter.id}
               selected={selectedRegion}
               label={filter.label}
-              onSelect={setSelectedRegion}
+              onSelect={(nextRegion) => {
+                setSelectedRegion(nextRegion);
+                setSelectedDate(null);
+                if (nextRegion === "국내") {
+                  setSelectedAreaScope("국내");
+                } else if (nextRegion === "all") {
+                  setSelectedAreaScope("all");
+                } else {
+                  setSelectedAreaScope("국외");
+                }
+              }}
             />
           ))}
         </div>
@@ -701,7 +758,10 @@ function EventCalendarBoard() {
               value={filter.id}
               selected={selectedLanguage}
               label={filter.label}
-              onSelect={setSelectedLanguage}
+              onSelect={(nextLanguage) => {
+                setSelectedLanguage(nextLanguage);
+                setSelectedDate(null);
+              }}
             />
           ))}
         </div>
@@ -712,7 +772,10 @@ function EventCalendarBoard() {
               value={filter.id}
               selected={selectedFormat}
               label={filter.label}
-              onSelect={setSelectedFormat}
+              onSelect={(nextFormat) => {
+                setSelectedFormat(nextFormat);
+                setSelectedDate(null);
+              }}
             />
           ))}
         </div>
@@ -723,7 +786,10 @@ function EventCalendarBoard() {
               value={filter.id}
               selected={selectedStatus}
               label={filter.label}
-              onSelect={setSelectedStatus}
+              onSelect={(nextStatus) => {
+                setSelectedStatus(nextStatus);
+                setSelectedDate(null);
+              }}
             />
           ))}
         </div>

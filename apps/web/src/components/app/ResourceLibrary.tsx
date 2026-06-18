@@ -15,10 +15,21 @@ import {
   type SourceKindFilter,
 } from "@/components/app/sourceLabels";
 
-type ResourceLanguageFilter = LearningResource["language"] | "all";
+type ResourceLanguageFilter =
+  | LearningResource["language"]
+  | "all"
+  | "koreanOrCaption";
 type ResourceTypeFilter = LearningResource["type"] | "all";
 type ResourceLevelFilter = LearningResource["level"] | "all";
 type ResourceProviderFilter = ProviderId | "all";
+type ResourceSortMode =
+  | "language"
+  | "type"
+  | "title"
+  | "level"
+  | "provider"
+  | "lastChecked";
+type ResourceSortDirection = "asc" | "desc";
 type ResourceAccessFilter =
   | "all"
   | "free"
@@ -264,7 +275,7 @@ export function ResourceLibrary({
 }: {
   resources: LearningResource[];
 }) {
-  const [language, setLanguage] = useState<ResourceLanguageFilter>("all");
+  const [language, setLanguage] = useState<ResourceLanguageFilter>("koreanOrCaption");
   const [resourceType, setResourceType] = useState<ResourceTypeFilter>("all");
   const [level, setLevel] = useState<ResourceLevelFilter>("all");
   const [resourceProvider, setResourceProvider] =
@@ -272,6 +283,9 @@ export function ResourceLibrary({
   const [focus, setFocus] = useState<ResourceFocusFilter>("all");
   const [access, setAccess] = useState<ResourceAccessFilter>("all");
   const [sourceKind, setSourceKind] = useState<SourceKindFilter>("all");
+  const [sortMode, setSortMode] = useState<ResourceSortMode>("language");
+  const [sortDirection, setSortDirection] =
+    useState<ResourceSortDirection>("asc");
   const [tag, setTag] = useState("all");
   const [resourceQuery, setResourceQuery] = useState("");
   const deferredResourceQuery = useDeferredValue(resourceQuery);
@@ -279,8 +293,18 @@ export function ResourceLibrary({
     () => getSearchTerms(deferredResourceQuery),
     [deferredResourceQuery],
   );
+
+  const supportsKoreanOrCaption = useMemo(
+    () => (resource: LearningResource) => {
+      if (resource.language === "한국어") return true;
+      const searchable = getResourceSearchableText(resource);
+      return searchable.includes("자막");
+    },
+    [],
+  );
   const languageFilters: Array<{ id: ResourceLanguageFilter; label: string }> =
     [
+      { id: "koreanOrCaption", label: "기본(한국어/자막)" },
       { id: "all", label: "전체" },
       { id: "한국어", label: "한국어" },
       { id: "영어", label: "영어" },
@@ -339,6 +363,26 @@ export function ResourceLibrary({
     { id: "hackathons", label: "해커톤/대회" },
     { id: "openSource", label: "오픈소스/로컬" },
   ];
+  const sortFilters: Array<{ id: ResourceSortMode; label: string }> = [
+    { id: "language", label: "언어" },
+    { id: "type", label: "자료형" },
+    { id: "title", label: "제목" },
+    { id: "level", label: "난이도" },
+    { id: "provider", label: "제공사" },
+    { id: "lastChecked", label: "최근 확인일" },
+  ];
+  const sortDirectionFilters: Array<{
+    id: ResourceSortDirection;
+    label: string;
+  }> = [
+    { id: "asc", label: "오름차순" },
+    { id: "desc", label: "내림차순" },
+  ];
+  const getLatestSourceCheckDate = (resource: LearningResource) => {
+    return getSources(resource.sourceIds)
+      .map((source) => source.lastChecked)
+      .toSorted((a, b) => b.localeCompare(a))[0];
+  };
   const tagFilters = useMemo(() => {
     const tags = new Set<string>();
     for (const resource of resources) {
@@ -351,7 +395,11 @@ export function ResourceLibrary({
       resources
         .filter(
           (resource) =>
-            (language === "all" || resource.language === language) &&
+            (language === "all"
+              ? true
+              : language === "koreanOrCaption"
+                ? supportsKoreanOrCaption(resource)
+                : resource.language === language) &&
             (resourceType === "all" || resource.type === resourceType) &&
             (level === "all" || resource.level === level) &&
             (resourceProvider === "all" ||
@@ -386,9 +434,50 @@ export function ResourceLibrary({
                   .includes(searchTerm),
               )),
         )
-        .toSorted((a, b) =>
-          a.language === b.language ? 0 : a.language === "한국어" ? -1 : 1,
-        ),
+        .toSorted((a, b) => {
+          const direction = sortDirection === "asc" ? 1 : -1;
+          switch (sortMode) {
+            case "language": {
+              if (a.language === b.language) return a.type.localeCompare(b.type);
+              return (a.language === "한국어" ? -1 : 1) * direction;
+            }
+            case "type": {
+              const byType = a.type.localeCompare(b.type);
+              if (byType !== 0) return byType * direction;
+              return a.title.localeCompare(b.title) * direction;
+            }
+            case "title":
+              return a.title.localeCompare(b.title) * direction;
+            case "level": {
+              const order: Record<LearningResource["level"], number> = {
+                입문: 0,
+                실무: 1,
+                고급: 2,
+              };
+              const byLevel = order[a.level] - order[b.level];
+              if (byLevel !== 0) return byLevel * direction;
+              return a.title.localeCompare(b.title) * direction;
+            }
+            case "provider": {
+              const firstProviderA = a.providerIds?.[0] ?? "zzzz";
+              const firstProviderB = b.providerIds?.[0] ?? "zzzz";
+              if (firstProviderA === firstProviderB) {
+                return a.title.localeCompare(b.title) * direction;
+              }
+              return firstProviderA.localeCompare(firstProviderB) * direction;
+            }
+            case "lastChecked": {
+              const checkedA = getLatestSourceCheckDate(a);
+              const checkedB = getLatestSourceCheckDate(b);
+              if (!checkedA && !checkedB) return 0;
+              if (!checkedA) return 1 * direction;
+              if (!checkedB) return -1 * direction;
+              return checkedB.localeCompare(checkedA) * direction;
+            }
+            default:
+              return a.title.localeCompare(b.title);
+          }
+        }),
     [
       access,
       focus,
@@ -398,8 +487,11 @@ export function ResourceLibrary({
       resourceType,
       resources,
       resourceSearchTerms,
+      supportsKoreanOrCaption,
       sourceKind,
       tag,
+      sortMode,
+      sortDirection,
     ],
   );
   const grouped = useMemo(() => {
@@ -479,6 +571,18 @@ export function ResourceLibrary({
           items={levelFilters}
           value={level}
           onChange={setLevel}
+        />
+        <SegmentBar
+          label="정렬"
+          items={sortFilters}
+          value={sortMode}
+          onChange={setSortMode}
+        />
+        <SegmentBar
+          label="정렬 방향"
+          items={sortDirectionFilters}
+          value={sortDirection}
+          onChange={setSortDirection}
         />
         <SegmentBar
           label="출처 성격"
@@ -569,9 +673,11 @@ export function ResourceLibrary({
             <button
               type="button"
               onClick={() => {
-                setLanguage("all");
+                setLanguage("koreanOrCaption");
                 setResourceType("all");
                 setLevel("all");
+                setSortMode("language");
+                setSortDirection("asc");
                 setResourceProvider("all");
                 setFocus("all");
                 setAccess("all");
