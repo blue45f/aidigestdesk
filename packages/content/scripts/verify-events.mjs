@@ -38,6 +38,16 @@ const parseRawField = (entry, key) => {
   return m[1].trim();
 };
 
+const EVENT_URL_CHECK_ENABLED =
+  process.env.CHECK_EVENT_URLS !== "0" &&
+  process.env.SKIP_EVENT_URL_VALIDATION !== "1";
+const EVENT_URL_CHECK_TIMEOUT_MS = Number(
+  process.env.EVENT_URL_CHECK_TIMEOUT_MS || "4500",
+);
+const EVENT_URL_CHECK_CONCURRENCY = Number(
+  process.env.EVENT_URL_CHECK_CONCURRENCY || "8",
+);
+
 const normalizeString = (value) =>
   value.replace(/^['\"]|['\"]$/g, "").trim();
 
@@ -81,6 +91,17 @@ const normalizeUrlForCompare = (value) =>
 const tokenSetFromTitle = (value) =>
   new Set(normalizeEventTitleForCompare(value).split(" ").filter(Boolean));
 
+const withTimeout = (signalMs) => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, signalMs);
+  return {
+    signal: controller.signal,
+    clear: () => clearTimeout(timeout),
+  };
+};
+
 const calculateTitleMatchScore = (leftTitle, rightTitle) => {
   const left = normalizeEventTitleForCompare(leftTitle);
   const right = normalizeEventTitleForCompare(rightTitle);
@@ -103,6 +124,7 @@ const calculateTitleMatchScore = (leftTitle, rightTitle) => {
 
 const tecaMappedEvents = [];
 const TECA_MATCH_THRESHOLD = 65;
+const eventUrlChecks = [];
 
 for (const entry of entries) {
   const id = normalizeString(parseRawField(entry, "id"));
@@ -152,6 +174,12 @@ for (const entry of entries) {
     urlSet.set(normalizedUrl, url);
     const nextCount = (urlCounts.get(normalizedUrl) ?? 0) + 1;
     urlCounts.set(normalizedUrl, nextCount);
+
+    eventUrlChecks.push({
+      id,
+      title,
+      url,
+    });
   }
 
   if (status === "진행중" && startAt && startAt > snapshotAt) {
@@ -210,6 +238,7 @@ for (const [normalizedUrl, count] of urlCounts) {
 }
 
 const tecaResult = await compareWithTecaData(tecaMappedEvents);
+const urlValidationWarnings = await validateEventUrls(eventUrlChecks);
 
 const statusLine = `이벤트 항목: ${entries.length}건`; 
 console.log(statusLine);
@@ -221,7 +250,11 @@ if (errors.length > 0) {
 }
 
 if (warnings.length > 0 || tecaResult.warnings.length > 0) {
-  const totalWarnings = [...warnings, ...tecaResult.warnings];
+  const totalWarnings = [
+    ...warnings,
+    ...tecaResult.warnings,
+    ...urlValidationWarnings,
+  ];
   console.log(`\n[WARN] ${totalWarnings.length}건`);
   for (const item of totalWarnings) console.log(`- ${item}`);
 }
@@ -457,4 +490,107 @@ function convertKoreanDateToISO(value) {
   const month = String(Number(match[1])).padStart(2, "0");
   const day = String(Number(match[2])).padStart(2, "0");
   return `${match[3]}-${month}-${day}`;
+}
+
+async function validateEventUrls(items) {
+  if (!EVENT_URL_CHECK_ENABLED) return [];
+  if (items.length === 0) return [];
+
+  const warnings = [];
+  const unique = deduplicateByUrl(items);
+  const queue = [...unique];
+  const workerCount = Math.max(1, EVENT_URL_CHECK_CONCURRENCY);
+  const workers = Array.from({ length: workerCount }, () => runUrlWorker(queue, warnings));
+  await Promise.all(workers);
+
+  return warnings;
+}
+
+async function runUrlWorker(queue, warnings) {
+  while (queue.length) {
+    const item = queue.shift();
+    if (!item) break;
+    const result = await checkSingleUrl(item);
+    if (result) warnings.push(result);
+  }
+}
+
+function deduplicateByUrl(items) {
+  const map = new Map();
+  for (const item of items) {
+    const url = item.url.trim();
+    if (!url) continue;
+    if (!map.has(url)) {
+      map.set(url, item);
+    }
+  }
+  return [...map.values()];
+}
+
+async function checkSingleUrl(item) {
+  const rawUrl = item.url.trim();
+  if (!isValidHttpUrl(rawUrl)) {
+    return `이벤트 링크 형식 오류: ${rawUrl} (id=${item.id}, title=${item.title})`;
+  }
+
+  const headResult = await requestWithRetry(rawUrl);
+  if (headResult.ok) return null;
+
+  if (headResult.status >= 400) {
+    return `이벤트 링크 응답 비정상: ${rawUrl} (${headResult.status}) id=${item.id}, title=${item.title}`;
+  }
+
+  const fallbackResult = await requestWithRetry(rawUrl, true);
+  if (!fallbackResult.ok) {
+    return `이벤트 링크 접근 실패: ${rawUrl} (${fallbackResult.error}) id=${item.id}, title=${item.title}`;
+  }
+
+  return null;
+}
+
+function isValidHttpUrl(rawUrl) {
+  if (!rawUrl) return false;
+  if (!/^https?:\/\//i.test(rawUrl)) return false;
+  try {
+    new URL(rawUrl);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function requestWithRetry(url, useGetFallback = false) {
+  const method = useGetFallback ? "GET" : "HEAD";
+  const startHeaders = {
+    "user-agent": "AIDigestDesk/0.1 (internal-verifier)",
+  };
+
+  try {
+    const { signal, clear } = withTimeout(
+      EVENT_URL_CHECK_TIMEOUT_MS,
+    );
+    const response = await fetch(url, {
+      method,
+      redirect: "follow",
+      headers: startHeaders,
+      signal,
+    });
+    const ok = response.ok || response.status === 405;
+    const status = response.status;
+    clear();
+    return {
+      ok: useGetFallback ? response.ok : ok,
+      status,
+    };
+  } catch (error) {
+    if (!useGetFallback) {
+      return { ok: false, status: 0, error: error instanceof Error ? error.message : String(error) };
+    }
+
+    return {
+      ok: false,
+      status: 0,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
 }
