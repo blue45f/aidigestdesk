@@ -175,6 +175,35 @@ describe("catalog search", () => {
       ),
     ).toBe(true);
 
+    const domesticLlmResults = searchCatalog(
+      "HyperCLOVA X",
+      "all",
+      "learning",
+    );
+    expect(
+      domesticLlmResults.resources.some(
+        (resource) => resource.id === "res-korean-llm-official-products",
+      ),
+    ).toBe(true);
+
+    const exaoneResults = searchCatalog("EXAONE", "all", "learning");
+    expect(
+      exaoneResults.resources.some(
+        (resource) => resource.id === "res-korean-open-llm-technical-reports",
+      ),
+    ).toBe(true);
+
+    const koreanBenchmarkResourceResults = searchCatalog(
+      "KMMLU",
+      "all",
+      "learning",
+    );
+    expect(
+      koreanBenchmarkResourceResults.resources.some(
+        (resource) => resource.id === "res-korean-llm-benchmark-suite",
+      ),
+    ).toBe(true);
+
     const opsResults = searchCatalog("국내 AI 교육 모집 상태", "all", "ops");
     expect(
       opsResults.pipelineItems.some(
@@ -189,6 +218,13 @@ describe("catalog search", () => {
     expect(results.updates.length).toBeGreaterThan(0);
     expect(
       results.updates.some((update) => update.id === "event-manus-promotions"),
+    ).toBe(true);
+
+    const upstageResults = searchCatalog("Solar Pro 3", "all", "events");
+    expect(
+      upstageResults.updates.some(
+        (update) => update.id === "update-upstage-solar-pro3-pricing",
+      ),
     ).toBe(true);
   });
 
@@ -423,6 +459,20 @@ describe("catalog search", () => {
       ),
     ).toBe(true);
 
+    const kmmluResults = searchCatalog("KMMLU", "all", "benchmarks");
+    expect(
+      kmmluResults.benchmarks.some(
+        (entry) => entry.id === "kmmlu-korean-exam-understanding",
+      ),
+    ).toBe(true);
+
+    const kmmmuResults = searchCatalog("KMMMU", "all", "benchmarks");
+    expect(
+      kmmmuResults.benchmarks.some(
+        (entry) => entry.id === "kmmmu-korean-multimodal",
+      ),
+    ).toBe(true);
+
     const webAgentResults = searchCatalog("웹 에이전트", "all", "learning");
     expect(
       webAgentResults.resources.some(
@@ -538,14 +588,14 @@ describe("catalog search", () => {
   it("exposes summary stats", () => {
     expect(getCatalogStats()).toMatchObject({
       providers: 10,
-      updates: 43,
-      benchmarkRows: 91,
+      updates: 46,
+      benchmarkRows: 97,
       vibeCommands: 9,
       aiCodingTools: 14,
       personaGuides: 5,
       taskRecommendations: 8,
-      monitors: 50,
-      pipelineItems: 13,
+      monitors: 53,
+      pipelineItems: 14,
       costProfiles: 10,
     });
   });
@@ -566,6 +616,17 @@ describe("catalog search", () => {
     expect(
       results.featureBacklog.some(
         (item) => item.id === "feature-source-crawler",
+      ),
+    ).toBe(true);
+
+    const koreanLlmOpsResults = searchCatalog(
+      "국내 LLM/한국어 벤치마크 감시 큐",
+      "all",
+      "ops",
+    );
+    expect(
+      koreanLlmOpsResults.pipelineItems.some(
+        (item) => item.id === "pipe-korean-llm-benchmark-watch",
       ),
     ).toBe(true);
   });
