@@ -182,6 +182,50 @@ describe("catalog search", () => {
     ).toBe(true);
   });
 
+  it("finds official agent implementation resources", () => {
+    const cookbookResults = searchCatalog("Cookbook", "all", "learning");
+    expect(
+      cookbookResults.resources.some(
+        (resource) => resource.id === "res-official-agent-cookbooks",
+      ),
+    ).toBe(true);
+
+    const langGraphResults = searchCatalog("LangGraph", "all", "learning");
+    expect(
+      langGraphResults.resources.some(
+        (resource) => resource.id === "res-agent-frameworks-official",
+      ),
+    ).toBe(true);
+
+    const mcpResults = searchCatalog("MCP", "all", "learning");
+    expect(
+      mcpResults.resources.some(
+        (resource) => resource.id === "res-mcp-local-open-stack",
+      ),
+    ).toBe(true);
+
+    const ollamaResults = searchCatalog("Ollama", "all", "learning");
+    expect(
+      ollamaResults.resources.some(
+        (resource) => resource.id === "res-mcp-local-open-stack",
+      ),
+    ).toBe(true);
+
+    const langSmithResults = searchCatalog("LangSmith", "all", "learning");
+    expect(
+      langSmithResults.resources.some(
+        (resource) => resource.id === "res-agent-observability-evals",
+      ),
+    ).toBe(true);
+
+    const opsResults = searchCatalog("공식 에이전트 구현", "all", "ops");
+    expect(
+      opsResults.pipelineItems.some(
+        (item) => item.id === "pipe-official-agent-recipes",
+      ),
+    ).toBe(true);
+  });
+
   it("finds expanded benchmark and Korean course sources", () => {
     const sweBenchResults = searchCatalog("SWE-bench", "all", "benchmarks");
     expect(
@@ -340,8 +384,8 @@ describe("catalog search", () => {
       aiCodingTools: 14,
       personaGuides: 5,
       taskRecommendations: 8,
-      monitors: 36,
-      pipelineItems: 9,
+      monitors: 39,
+      pipelineItems: 10,
       costProfiles: 10,
     });
   });
