@@ -23,6 +23,7 @@ import {
   Newspaper,
   SlidersHorizontal,
   Sparkles,
+  Search,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -52,6 +53,126 @@ const scheduleTypeFilters: Array<{ id: EventScheduleType | "all"; label: string 
     { id: "공모전/챌린지", label: "챌린지" },
     { id: "프로모션/지원", label: "지원" },
   ];
+
+type EventScheduleRegionFilter = EventScheduleItem["region"] | "all";
+type EventScheduleLanguageFilter = EventScheduleItem["language"] | "all";
+type EventScheduleFormatFilter = EventScheduleItem["format"] | "all";
+type EventScheduleStatusFilter = EventScheduleItem["status"] | "all";
+
+const scheduleRegionFilters: Array<{ id: EventScheduleRegionFilter; label: string }> = [
+  { id: "all", label: "전체" },
+  { id: "국내", label: "국내" },
+  { id: "북미", label: "북미" },
+  { id: "유럽", label: "유럽" },
+  { id: "글로벌", label: "글로벌" },
+];
+
+const scheduleLanguageFilters: Array<{ id: EventScheduleLanguageFilter; label: string }> =
+  [
+    { id: "all", label: "전체" },
+    { id: "한국어", label: "한국어" },
+    { id: "영어", label: "영어" },
+    { id: "다국어", label: "다국어" },
+  ];
+
+const scheduleFormatFilters: Array<{ id: EventScheduleFormatFilter; label: string }> = [
+  { id: "all", label: "전체" },
+  { id: "온라인", label: "온라인" },
+  { id: "오프라인", label: "오프라인" },
+  { id: "하이브리드", label: "하이브리드" },
+  { id: "상시 확인", label: "상시 확인" },
+];
+
+const scheduleStatusFilters: Array<{ id: EventScheduleStatusFilter; label: string }> = [
+  { id: "all", label: "전체" },
+  { id: "모집중", label: "모집중" },
+  { id: "진행중", label: "진행중" },
+  { id: "진행예정", label: "진행예정" },
+  { id: "종료", label: "종료" },
+  { id: "상시 확인", label: "상시 확인" },
+];
+
+function toIcsDate(date: Date) {
+  return date.toISOString().slice(0, 10).replaceAll("-", "");
+}
+
+function toNextDate(date: Date) {
+  const nextDate = new Date(date);
+  nextDate.setDate(date.getDate() + 1);
+  return nextDate;
+}
+
+function escapeICSText(value: string) {
+  return value.replace(/([\\;,])/g, "\\$1").replace(/\r?\n/g, "\\n");
+}
+
+function buildEventIcs(items: EventScheduleItem[]) {
+  const now = new Date();
+  const stamp = now.toISOString().replace(/[-:.]/g, "").replace("Z", "Z");
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "CALSCALE:GREGORIAN",
+    "PRODID:-//AIDigestDesk//Event Calendar//KO",
+  ];
+
+  for (const item of items) {
+    const startDate = parseDate(item.startDate);
+    const endDate = toNextDate(parseDate(item.endDate ?? item.startDate));
+
+    lines.push("BEGIN:VEVENT");
+    lines.push(`UID:${item.id}@aidigestdesk`);
+    lines.push(`DTSTAMP:${stamp}`);
+    lines.push(`DTSTART;VALUE=DATE:${toIcsDate(startDate)}`);
+    lines.push(`DTEND;VALUE=DATE:${toIcsDate(endDate)}`);
+    lines.push(`SUMMARY:${escapeICSText(item.title)}`);
+    lines.push(`DESCRIPTION:${escapeICSText(`${item.summary} / ${item.relevance}`)}`);
+    lines.push(`LOCATION:${escapeICSText(item.location)}`);
+    lines.push("END:VEVENT");
+  }
+
+  lines.push("END:VCALENDAR");
+  return `${lines.join("\n")}\n`;
+}
+
+function downloadEventsAsIcs(items: EventScheduleItem[]) {
+  const safeFileName = `aidigestdesk-events-${new Date().toISOString().slice(0, 10)}.ics`;
+  const blob = new Blob([buildEventIcs(items)], {
+    type: "text/calendar;charset=utf-8",
+  });
+  const link = document.createElement("a");
+  const blobUrl = URL.createObjectURL(blob);
+  link.href = blobUrl;
+  link.download = safeFileName;
+  link.click();
+  URL.revokeObjectURL(blobUrl);
+}
+
+function FilterButton<T extends string>({
+  value,
+  label,
+  selected,
+  onSelect,
+}: {
+  label: string;
+  value: T;
+  selected: T;
+  onSelect: (next: T) => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(value)}
+      className={
+        selected === value
+          ? "rounded-md border border-ink bg-ink px-2.5 py-1.5 text-xs font-semibold text-ink-fg"
+          : "rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+      }
+    >
+      {label}
+    </button>
+  );
+}
 
 const weekdayLabels = ["월", "화", "수", "목", "금", "토", "일"] as const;
 
@@ -401,13 +522,49 @@ function EventCalendarBoard() {
   const [selectedType, setSelectedType] = useState<EventScheduleType | "all">(
     "all",
   );
+  const [selectedRegion, setSelectedRegion] =
+    useState<EventScheduleRegionFilter>("all");
+  const [selectedLanguage, setSelectedLanguage] =
+    useState<EventScheduleLanguageFilter>("all");
+  const [selectedFormat, setSelectedFormat] =
+    useState<EventScheduleFormatFilter>("all");
+  const [selectedStatus, setSelectedStatus] =
+    useState<EventScheduleStatusFilter>("all");
+  const [query, setQuery] = useState("");
+
+  const queryLower = query.trim().toLowerCase();
+
+  const resetFilters = () => {
+    setSelectedType("all");
+    setSelectedRegion("all");
+    setSelectedLanguage("all");
+    setSelectedFormat("all");
+    setSelectedStatus("all");
+    setQuery("");
+    setSelectedDate(null);
+  };
 
   const filteredEvents = useMemo(
     () =>
       eventScheduleItems
         .filter((item) => selectedType === "all" || item.type === selectedType)
+        .filter((item) => selectedRegion === "all" || item.region === selectedRegion)
+        .filter((item) => selectedLanguage === "all" || item.language === selectedLanguage)
+        .filter((item) => selectedFormat === "all" || item.format === selectedFormat)
+        .filter((item) => selectedStatus === "all" || item.status === selectedStatus)
+        .filter((item) =>
+          queryLower
+            ? `${item.title} ${item.organizer} ${item.location} ${item.summary} ${
+                item.relevance
+              } ${item.type} ${item.format} ${item.language} ${item.region} ${
+                item.status
+              } ${item.tags.join(" ")}`
+                .toLowerCase()
+                .includes(queryLower)
+            : true,
+        )
         .toSorted((a, b) => a.startDate.localeCompare(b.startDate)),
-    [selectedType],
+    [queryLower, selectedFormat, selectedLanguage, selectedRegion, selectedStatus, selectedType],
   );
 
   const monthEvents = filteredEvents.filter((item) =>
@@ -417,7 +574,8 @@ function EventCalendarBoard() {
     selectedDate
       ? filteredEvents.filter((item) => eventTouchesDate(item, selectedDate))
       : monthEvents
-  ).slice(0, 8);
+  );
+  const exportEvents = selectedDate ? agendaEvents : monthEvents;
 
   const leadingBlankCount = (startOfMonth(activeMonth).getDay() + 6) % 7;
   const firstCellDate = new Date(
@@ -458,7 +616,10 @@ function EventCalendarBoard() {
           <div className="flex items-center gap-1.5">
             <button
               type="button"
-              onClick={() => setActiveMonth((date) => addMonths(date, -1))}
+              onClick={() => {
+                setActiveMonth((date) => addMonths(date, -1));
+                setSelectedDate(null);
+              }}
               className="grid size-9 place-items-center rounded-md border border-border bg-bg text-text-muted transition hover:text-text"
               aria-label="이전 달"
             >
@@ -476,7 +637,10 @@ function EventCalendarBoard() {
             </button>
             <button
               type="button"
-              onClick={() => setActiveMonth((date) => addMonths(date, 1))}
+              onClick={() => {
+                setActiveMonth((date) => addMonths(date, 1));
+                setSelectedDate(null);
+              }}
               className="grid size-9 place-items-center rounded-md border border-border bg-bg text-text-muted transition hover:text-text"
               aria-label="다음 달"
             >
@@ -487,22 +651,93 @@ function EventCalendarBoard() {
 
         <div className="mt-4 flex flex-wrap gap-1.5">
           {scheduleTypeFilters.map((filter) => (
-            <button
+            <FilterButton
               key={filter.id}
-              type="button"
-              onClick={() => {
-                setSelectedType(filter.id);
+              value={filter.id}
+              selected={selectedType}
+              label={filter.label}
+              onSelect={(nextType) => {
+                setSelectedType(nextType);
                 setSelectedDate(null);
               }}
-              className={
-                selectedType === filter.id
-                  ? "rounded-md border border-ink bg-ink px-2.5 py-1.5 text-xs font-semibold text-ink-fg"
-                  : "rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
-              }
-            >
-              {filter.label}
-            </button>
+            />
           ))}
+        </div>
+
+        <div className="mt-4 space-y-2">
+          <div className="relative">
+            <label htmlFor="event-search" className="sr-only">
+              일정 검색
+            </label>
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-text-subtle" />
+            <input
+              id="event-search"
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setSelectedDate(null);
+              }}
+              placeholder="일정명·주최·요약으로 검색"
+              className="h-10 w-full rounded-md border border-border bg-bg px-9 text-sm text-text outline-none ring-0 transition placeholder:text-text-subtle focus:border-accent/70 focus:ring-2 focus:ring-accent/20"
+            />
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          {scheduleRegionFilters.map((filter) => (
+            <FilterButton
+              key={filter.id}
+              value={filter.id}
+              selected={selectedRegion}
+              label={filter.label}
+              onSelect={setSelectedRegion}
+            />
+          ))}
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          {scheduleLanguageFilters.map((filter) => (
+            <FilterButton
+              key={filter.id}
+              value={filter.id}
+              selected={selectedLanguage}
+              label={filter.label}
+              onSelect={setSelectedLanguage}
+            />
+          ))}
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          {scheduleFormatFilters.map((filter) => (
+            <FilterButton
+              key={filter.id}
+              value={filter.id}
+              selected={selectedFormat}
+              label={filter.label}
+              onSelect={setSelectedFormat}
+            />
+          ))}
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          {scheduleStatusFilters.map((filter) => (
+            <FilterButton
+              key={filter.id}
+              value={filter.id}
+              selected={selectedStatus}
+              label={filter.label}
+              onSelect={setSelectedStatus}
+            />
+          ))}
+        </div>
+        <div className="mt-3 flex items-center gap-2 text-xs text-text-subtle">
+          <span className="inline-flex items-center rounded-md border border-border bg-bg px-2 py-1">
+            검색 결과 {filteredEvents.length}건
+          </span>
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="rounded-md border border-border bg-bg px-2 py-1 font-semibold text-text-subtle transition hover:text-text"
+          >
+            필터 초기화
+          </button>
         </div>
 
         <div className="mt-4 grid grid-cols-7 gap-1.5 text-center text-[0.6875rem] font-semibold text-text-subtle">
@@ -580,13 +815,23 @@ function EventCalendarBoard() {
                 : `${formatMonth(activeMonth)} 전체`}
             </h3>
           </div>
-          <button
-            type="button"
-            onClick={() => setSelectedDate(null)}
-            className="rounded-md border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
-          >
-            월간 전체
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setSelectedDate(null)}
+              className="rounded-md border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+            >
+              월간 전체
+            </button>
+            <button
+              type="button"
+              onClick={() => downloadEventsAsIcs(exportEvents)}
+              disabled={exportEvents.length === 0}
+              className="rounded-md border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              iCal 내보내기
+            </button>
+          </div>
         </div>
 
         <div className="mt-4 space-y-3">
