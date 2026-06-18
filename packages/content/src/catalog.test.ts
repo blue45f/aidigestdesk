@@ -103,6 +103,38 @@ describe("catalog search", () => {
       ),
     ).toBe(true);
 
+    const bbanghyongResults = searchCatalog("빵형", "all", "learning");
+    expect(
+      bbanghyongResults.resources.some(
+        (resource) => resource.id === "res-korean-dev-youtube-core-channels",
+      ),
+    ).toBe(true);
+
+    const codingNoonaResults = searchCatalog(
+      "코딩 알려주는 누나",
+      "all",
+      "learning",
+    );
+    expect(
+      codingNoonaResults.resources.some(
+        (resource) => resource.id === "res-korean-ai-youtube-creator-watchlist",
+      ),
+    ).toBe(true);
+
+    const okkyResults = searchCatalog("OKKY", "all", "learning");
+    expect(
+      okkyResults.resources.some(
+        (resource) => resource.id === "res-korean-community-ai-writing",
+      ),
+    ).toBe(true);
+
+    const velogResults = searchCatalog("Velog", "all", "learning");
+    expect(
+      velogResults.resources.some(
+        (resource) => resource.id === "res-korean-community-ai-writing",
+      ),
+    ).toBe(true);
+
     const cursorResults = searchCatalog("Cursor", "all", "learning");
     expect(
       cursorResults.resources.some(
@@ -308,7 +340,7 @@ describe("catalog search", () => {
       aiCodingTools: 14,
       personaGuides: 5,
       taskRecommendations: 8,
-      monitors: 35,
+      monitors: 36,
       pipelineItems: 9,
       costProfiles: 10,
     });
