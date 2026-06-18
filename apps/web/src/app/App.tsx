@@ -15,20 +15,26 @@ import {
   FileJson,
   FileText,
   Gauge,
+  Home,
+  KeyRound,
   Library,
+  LayoutDashboard,
+  LogIn,
+  LogOut,
   Moon,
   Newspaper,
   PanelLeft,
   Palette,
   Search,
   Settings2,
+  ShieldCheck,
   Sparkles,
   Sun,
   Table2,
   Users,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentType, FormEvent, ReactNode } from "react";
 
 import {
   benchmarkEntries,
@@ -125,6 +131,15 @@ const navItems = [
 const stats = getCatalogStats();
 const contentAudit = runContentAudit();
 const WORKBENCH_STORAGE_KEY = "aidigestdesk.editorWorkbench.v1";
+const ADMIN_SESSION_STORAGE_KEY = "aidigestdesk.adminSession.v1";
+
+type AppRoute = "portal" | "admin";
+
+type AdminSession = {
+  email: string;
+  role: "콘텐츠 관리자";
+  signedInAt: string;
+};
 
 type PipelineDraft = {
   stage: PipelineStage;
@@ -136,6 +151,44 @@ type WorkbenchStorage = {
   version: 1;
   drafts: Record<string, PipelineDraft>;
 };
+
+function getCurrentRoute(): AppRoute {
+  if (typeof window === "undefined") return "portal";
+  return window.location.pathname.startsWith("/admin") ? "admin" : "portal";
+}
+
+function getInitialAdminSession(): AdminSession | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const raw = window.localStorage.getItem(ADMIN_SESSION_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<AdminSession>;
+    return parsed.email && parsed.role === "콘텐츠 관리자"
+      ? {
+          email: parsed.email,
+          role: "콘텐츠 관리자",
+          signedInAt: parsed.signedInAt ?? new Date().toISOString(),
+        }
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveAdminSession(session: AdminSession | null) {
+  if (typeof window === "undefined") return;
+
+  if (!session) {
+    window.localStorage.removeItem(ADMIN_SESSION_STORAGE_KEY);
+    return;
+  }
+
+  window.localStorage.setItem(
+    ADMIN_SESSION_STORAGE_KEY,
+    JSON.stringify(session),
+  );
+}
 
 function getInitialWorkbenchDrafts(): Record<string, PipelineDraft> {
   if (typeof window === "undefined") return {};
@@ -269,18 +322,38 @@ function IconButton({
 function Header({
   query,
   onQueryChange,
+  route,
+  onNavigate,
+  adminSession,
   dark,
   onToggleDark,
 }: {
   query: string;
   onQueryChange: (value: string) => void;
+  route: AppRoute;
+  onNavigate: (route: AppRoute) => void;
+  adminSession: AdminSession | null;
   dark: boolean;
   onToggleDark: () => void;
 }) {
+  const routeButtonClass = (targetRoute: AppRoute) =>
+    route === targetRoute
+      ? "inline-flex h-9 items-center gap-1.5 rounded-md border border-ink bg-ink px-3 text-xs font-semibold text-ink-fg"
+      : "inline-flex h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-3 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text";
+
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-bg/90 backdrop-blur">
       <div className="flex h-16 items-center gap-3 px-4 lg:px-5">
-        <a href="#main" className="flex min-w-0 items-center gap-3">
+        <a
+          href={route === "portal" ? "#main" : "/"}
+          onClick={(event) => {
+            if (route === "admin") {
+              event.preventDefault();
+              onNavigate("portal");
+            }
+          }}
+          className="flex min-w-0 items-center gap-3"
+        >
           <span className="grid size-9 shrink-0 place-items-center rounded-md bg-ink text-ink-fg">
             <Sparkles className="size-4" aria-hidden />
           </span>
@@ -294,13 +367,43 @@ function Header({
           </span>
         </a>
         <div className="relative ml-auto hidden w-full max-w-xl md:block">
-          <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
-          <input
-            value={query}
-            onChange={(event) => onQueryChange(event.target.value)}
-            placeholder="모델, 기능, 벤치마크, 강좌 검색"
-            className="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
-          />
+          {route === "portal" ? (
+            <>
+              <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
+              <input
+                value={query}
+                onChange={(event) => onQueryChange(event.target.value)}
+                placeholder="모델, 기능, 벤치마크, 강좌 검색"
+                className="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+              />
+            </>
+          ) : (
+            <div className="flex h-10 items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm text-text-muted">
+              <ShieldCheck className="size-4 text-accent" aria-hidden />
+              <span className="truncate">
+                관리자 콘솔
+                {adminSession ? ` · ${adminSession.email}` : " · 로그인 필요"}
+              </span>
+            </div>
+          )}
+        </div>
+        <div className="hidden items-center gap-1 sm:flex">
+          <button
+            type="button"
+            onClick={() => onNavigate("portal")}
+            className={routeButtonClass("portal")}
+          >
+            <Home className="size-3.5" aria-hidden />
+            포털
+          </button>
+          <button
+            type="button"
+            onClick={() => onNavigate("admin")}
+            className={routeButtonClass("admin")}
+          >
+            <LayoutDashboard className="size-3.5" aria-hidden />
+            Admin
+          </button>
         </div>
         <IconButton label="사이드바">
           <PanelLeft className="size-4" aria-hidden />
@@ -315,20 +418,49 @@ function Header({
             <Moon className="size-4" aria-hidden />
           )}
         </IconButton>
-        <IconButton label="설정">
-          <Settings2 className="size-4" aria-hidden />
+        <IconButton
+          label={route === "admin" ? "포털로 이동" : "관리자 콘솔"}
+          onClick={() => onNavigate(route === "admin" ? "portal" : "admin")}
+        >
+          {route === "admin" ? (
+            <Home className="size-4" aria-hidden />
+          ) : (
+            <Settings2 className="size-4" aria-hidden />
+          )}
         </IconButton>
       </div>
       <div className="border-t border-border px-4 py-3 md:hidden">
-        <div className="relative">
-          <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
-          <input
-            value={query}
-            onChange={(event) => onQueryChange(event.target.value)}
-            placeholder="검색"
-            className="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-3 text-sm text-text outline-none focus:border-accent"
-          />
-        </div>
+        {route === "portal" ? (
+          <div className="relative">
+            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
+            <input
+              value={query}
+              onChange={(event) => onQueryChange(event.target.value)}
+              placeholder="검색"
+              className="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-3 text-sm text-text outline-none focus:border-accent"
+            />
+          </div>
+        ) : (
+          <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-surface px-3 py-2 text-sm text-text-muted">
+            <span className="inline-flex min-w-0 items-center gap-2">
+              <ShieldCheck
+                className="size-4 shrink-0 text-accent"
+                aria-hidden
+              />
+              <span className="truncate">
+                관리자 콘솔
+                {adminSession ? ` · ${adminSession.email}` : " · 로그인 필요"}
+              </span>
+            </span>
+            <button
+              type="button"
+              onClick={() => onNavigate("portal")}
+              className="shrink-0 text-xs font-semibold text-accent"
+            >
+              포털
+            </button>
+          </div>
+        )}
       </div>
     </header>
   );
@@ -704,9 +836,24 @@ function VibeCodingSection({ commands }: { commands: VibeCodingCommand[] }) {
               <p className="mt-3 text-sm leading-6 text-text-muted">
                 {command.useCase}
               </p>
-              <pre className="mt-3 overflow-x-auto rounded-md border border-border bg-bg p-3 text-xs leading-5 text-text">
-                <code>{command.command}</code>
-              </pre>
+              <div className="mt-3 grid gap-3 md:grid-cols-2">
+                <div className="min-w-0">
+                  <p className="mb-1 text-xs font-semibold text-text-subtle">
+                    설치/준비
+                  </p>
+                  <pre className="min-h-24 overflow-x-auto rounded-md border border-border bg-bg p-3 text-xs leading-5 text-text">
+                    <code>{command.installCommand}</code>
+                  </pre>
+                </div>
+                <div className="min-w-0">
+                  <p className="mb-1 text-xs font-semibold text-text-subtle">
+                    실행 예시
+                  </p>
+                  <pre className="min-h-24 overflow-x-auto rounded-md border border-border bg-bg p-3 text-xs leading-5 text-text">
+                    <code>{command.command}</code>
+                  </pre>
+                </div>
+              </div>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 <TextList title="셋업 포인트" items={command.setupNotes} />
                 <TextList title="주의점" items={command.caveats} />
@@ -2097,6 +2244,391 @@ function SourcesSection({ sourceItems }: { sourceItems: SourceRef[] }) {
   );
 }
 
+function AdminMetricCard({
+  label,
+  value,
+  detail,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  detail: string;
+  icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
+}) {
+  return (
+    <article className="rounded-lg border border-border bg-surface p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold text-text-subtle">{label}</p>
+          <p className="mt-1 text-2xl font-semibold text-text">{value}</p>
+        </div>
+        <span className="grid size-9 shrink-0 place-items-center rounded-md border border-border bg-bg text-accent">
+          <Icon className="size-4" aria-hidden />
+        </span>
+      </div>
+      <p className="mt-2 text-xs leading-5 text-text-muted">{detail}</p>
+    </article>
+  );
+}
+
+function AdminLogin({
+  onLogin,
+  onNavigate,
+}: {
+  onLogin: (session: AdminSession) => void;
+  onNavigate: (route: AppRoute) => void;
+}) {
+  const [email, setEmail] = useState("admin@aidigestdesk.local");
+  const [accessCode, setAccessCode] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const normalizedEmail = email.trim();
+
+    if (!normalizedEmail.includes("@")) {
+      setError("관리자 이메일 형식으로 입력하세요.");
+      return;
+    }
+
+    if (accessCode.trim().length < 4) {
+      setError("운영 세션 코드를 4자 이상 입력하세요.");
+      return;
+    }
+
+    onLogin({
+      email: normalizedEmail,
+      role: "콘텐츠 관리자",
+      signedInAt: new Date().toISOString(),
+    });
+  };
+
+  return (
+    <main
+      id="admin-main"
+      className="min-h-[calc(100vh-4rem)] px-4 py-8 lg:px-6"
+    >
+      <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[1fr_24rem]">
+        <section className="rounded-lg border border-border bg-surface p-6">
+          <div className="flex items-start gap-3">
+            <span className="grid size-10 shrink-0 place-items-center rounded-md bg-ink text-ink-fg">
+              <ShieldCheck className="size-5" aria-hidden />
+            </span>
+            <div>
+              <p className="text-xs font-semibold text-accent">/admin 라우트</p>
+              <h1 className="mt-1 text-2xl font-semibold text-text">
+                관리자 로그인
+              </h1>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-text-muted">
+                콘텐츠 큐레이션, 소스 모니터, 파이프라인 메모, 내보내기 기능을
+                공개 포털과 분리해 관리합니다.
+              </p>
+            </div>
+          </div>
+          <div className="mt-6 grid gap-3 md:grid-cols-3">
+            <AdminMetricCard
+              label="모델"
+              value={`${stats.providers}`}
+              detail="주요 제공사 비교"
+              icon={Boxes}
+            />
+            <AdminMetricCard
+              label="모니터"
+              value={`${curationMonitors.length}`}
+              detail="소스 점검 대상"
+              icon={Gauge}
+            />
+            <AdminMetricCard
+              label="감사"
+              value={contentAudit.passed ? "PASS" : "WARN"}
+              detail={`${contentAudit.checks.length}개 품질 체크`}
+              icon={CheckCircle2}
+            />
+          </div>
+          <div className="mt-6 rounded-lg border border-border bg-bg p-4">
+            <p className="text-sm font-semibold text-text">인증 범위 안내</p>
+            <p className="mt-2 text-sm leading-6 text-text-muted">
+              현재 배포는 정적 Vite 앱이라 서버 비밀키 검증이 없는 로컬 관리자
+              세션입니다. 실제 권한 통제는 Supabase, Auth.js, Vercel Edge
+              Middleware 같은 서버 인증을 붙이는 단계에서 완성해야 합니다.
+            </p>
+          </div>
+        </section>
+
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-lg border border-border bg-surface p-5"
+        >
+          <div className="flex items-center gap-2">
+            <KeyRound className="size-4 text-accent" aria-hidden />
+            <h2 className="text-base font-semibold text-text">
+              로컬 관리자 세션
+            </h2>
+          </div>
+          <label className="mt-5 block">
+            <span className="text-xs font-semibold text-text-subtle">
+              관리자 이메일
+            </span>
+            <input
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              className="mt-1 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+            />
+          </label>
+          <label className="mt-3 block">
+            <span className="text-xs font-semibold text-text-subtle">
+              운영 세션 코드
+            </span>
+            <input
+              type="password"
+              value={accessCode}
+              onChange={(event) => setAccessCode(event.target.value)}
+              placeholder="4자 이상"
+              className="mt-1 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+            />
+          </label>
+          {error ? (
+            <p className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300">
+              {error}
+            </p>
+          ) : null}
+          <button
+            type="submit"
+            className="mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-md bg-ink px-4 text-sm font-semibold text-ink-fg"
+          >
+            <LogIn className="size-4" aria-hidden />
+            로그인
+          </button>
+          <button
+            type="button"
+            onClick={() => onNavigate("portal")}
+            className="mt-2 inline-flex h-10 w-full items-center justify-center gap-2 rounded-md border border-border bg-bg px-4 text-sm font-semibold text-text-muted transition hover:text-text"
+          >
+            <Home className="size-4" aria-hidden />
+            공개 포털로 이동
+          </button>
+        </form>
+      </div>
+    </main>
+  );
+}
+
+function AdminConsole({
+  session,
+  onLogout,
+  onNavigate,
+}: {
+  session: AdminSession;
+  onLogout: () => void;
+  onNavigate: (route: AppRoute) => void;
+}) {
+  const snapshotCandidates = useMemo(() => getSourceSnapshotCandidates(), []);
+  const p0Monitors = curationMonitors.filter(
+    (monitor) => monitor.priority === "P0",
+  );
+  const koreanResourceCount = learningResources.filter(
+    (resource) => resource.language === "한국어",
+  ).length;
+
+  return (
+    <main id="admin-main" className="px-4 py-5 lg:px-6">
+      <div className="mx-auto max-w-[96rem] space-y-6">
+        <section
+          id="admin-overview"
+          className="rounded-lg border border-border bg-surface p-5"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold text-accent">
+                관리자 콘솔 · /admin
+              </p>
+              <h1 className="mt-1 text-2xl font-semibold text-text">
+                콘텐츠 운영 대시보드
+              </h1>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
+                AI 바이브 코딩 자료, 모델 업데이트, 출처 스냅샷, 편집
+                파이프라인을 공개 포털과 분리해 관리합니다.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => onNavigate("portal")}
+                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-3 py-2 text-xs font-semibold text-text-muted transition hover:text-text"
+              >
+                <Home className="size-3.5" aria-hidden />
+                포털
+              </button>
+              <button
+                type="button"
+                onClick={onLogout}
+                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-3 py-2 text-xs font-semibold text-text-muted transition hover:text-text"
+              >
+                <LogOut className="size-3.5" aria-hidden />
+                로그아웃
+              </button>
+            </div>
+          </div>
+
+          <nav className="mt-5 flex flex-wrap gap-2">
+            {[
+              ["#admin-overview", "개요"],
+              ["#ops", "운영 편집실"],
+              ["#exports", "내보내기"],
+              ["#sources", "출처"],
+            ].map(([href, label]) => (
+              <a
+                key={href}
+                href={href}
+                className="rounded-md border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
+        </section>
+
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <AdminMetricCard
+            label="로그인 계정"
+            value={session.role}
+            detail={`${session.email} · ${new Date(
+              session.signedInAt,
+            ).toLocaleString("ko-KR")}`}
+            icon={ShieldCheck}
+          />
+          <AdminMetricCard
+            label="소스 스냅샷"
+            value={`${snapshotCandidates.length}`}
+            detail="공식/벤치마크/모니터링 대상"
+            icon={FileText}
+          />
+          <AdminMetricCard
+            label="P0 모니터"
+            value={`${p0Monitors.length}`}
+            detail="매일 또는 최우선 확인 대상"
+            icon={Gauge}
+          />
+          <AdminMetricCard
+            label="한국어 자료"
+            value={`${koreanResourceCount}`}
+            detail="강좌, 문서, 블로그, 도서"
+            icon={BookOpen}
+          />
+        </div>
+
+        <section className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
+          <article className="rounded-lg border border-border bg-surface p-5">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-sm font-semibold text-text">
+                콘텐츠 감사 상태
+              </h2>
+              <span
+                className={`rounded-md border px-2 py-1 text-xs font-semibold ${
+                  contentAudit.passed
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300"
+                    : "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300"
+                }`}
+              >
+                {contentAudit.passed ? "PASS" : "CHECK"}
+              </span>
+            </div>
+            <div className="mt-4 space-y-2">
+              {contentAudit.checks.map((check) => (
+                <div
+                  key={check.id}
+                  className="rounded-md border border-border bg-bg p-3"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-sm font-semibold text-text">
+                      {check.label}
+                    </p>
+                    <span className="text-xs font-semibold text-accent">
+                      {check.status}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs leading-5 text-text-muted">
+                    {check.detail}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article className="rounded-lg border border-border bg-surface p-5">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-sm font-semibold text-text">
+                스냅샷 우선 후보
+              </h2>
+              <span className="text-xs font-semibold text-text-subtle">
+                {snapshotCandidates.length}개
+              </span>
+            </div>
+            <div className="mt-4 grid gap-2 md:grid-cols-2">
+              {snapshotCandidates.slice(0, 8).map((candidate) => (
+                <a
+                  key={candidate.source.id}
+                  href={candidate.source.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-md border border-border bg-bg p-3 transition hover:border-border-strong"
+                >
+                  <span className="flex items-center justify-between gap-3">
+                    <span className="text-xs font-semibold text-accent">
+                      {candidate.priority} · {candidate.cadence}
+                    </span>
+                    <ExternalLink
+                      className="size-3.5 text-text-subtle"
+                      aria-hidden
+                    />
+                  </span>
+                  <span className="mt-2 block text-sm font-semibold text-text">
+                    {candidate.source.title}
+                  </span>
+                  <span className="mt-1 block text-xs text-text-subtle">
+                    {candidate.source.publisher}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </article>
+        </section>
+
+        <EditorialOpsSection
+          monitors={curationMonitors}
+          pipelineItems={updatePipeline}
+          backlog={featureBacklog}
+        />
+        <ExportDeskSection />
+        <SourcesSection sourceItems={sources} />
+      </div>
+    </main>
+  );
+}
+
+function AdminRoute({
+  session,
+  onLogin,
+  onLogout,
+  onNavigate,
+}: {
+  session: AdminSession | null;
+  onLogin: (session: AdminSession) => void;
+  onLogout: () => void;
+  onNavigate: (route: AppRoute) => void;
+}) {
+  return session ? (
+    <AdminConsole
+      session={session}
+      onLogout={onLogout}
+      onNavigate={onNavigate}
+    />
+  ) : (
+    <AdminLogin onLogin={onLogin} onNavigate={onNavigate} />
+  );
+}
+
 function EmptyState({ title, body }: { title: string; body: string }) {
   return (
     <div className="rounded-lg border border-dashed border-border-strong bg-surface p-5">
@@ -2137,11 +2669,39 @@ export default function App() {
   const [selectedModelId, setSelectedModelId] = useState(
     modelProfiles[0]?.id ?? "",
   );
+  const [route, setRoute] = useState<AppRoute>(getCurrentRoute);
+  const [adminSession, setAdminSession] = useState<AdminSession | null>(
+    getInitialAdminSession,
+  );
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
+
+  useEffect(() => {
+    const syncRoute = () => setRoute(getCurrentRoute());
+    window.addEventListener("popstate", syncRoute);
+    return () => window.removeEventListener("popstate", syncRoute);
+  }, []);
+
+  const navigateToRoute = (nextRoute: AppRoute) => {
+    const nextPath = nextRoute === "admin" ? "/admin" : "/";
+    if (window.location.pathname !== nextPath) {
+      window.history.pushState(null, "", nextPath);
+    }
+    setRoute(nextRoute);
+  };
+
+  const handleAdminLogin = (session: AdminSession) => {
+    saveAdminSession(session);
+    setAdminSession(session);
+  };
+
+  const handleAdminLogout = () => {
+    saveAdminSession(null);
+    setAdminSession(null);
+  };
 
   const results = useMemo(
     () => searchCatalog(query, provider, category),
@@ -2222,65 +2782,80 @@ export default function App() {
       <Header
         query={query}
         onQueryChange={setQuery}
+        route={route}
+        onNavigate={navigateToRoute}
+        adminSession={adminSession}
         dark={dark}
         onToggleDark={() => setDark((value) => !value)}
       />
-      <div className="grid lg:grid-cols-[15rem_1fr]">
-        <Sidebar />
-        <main id="main" className="min-w-0 px-4 py-5 lg:px-6">
-          <div className="mx-auto max-w-[96rem] space-y-6">
-            <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1.25fr]">
-              <SegmentBar
-                label="제공사"
-                items={providerFilters}
-                value={provider}
-                onChange={setProvider}
+      {route === "admin" ? (
+        <AdminRoute
+          session={adminSession}
+          onLogin={handleAdminLogin}
+          onLogout={handleAdminLogout}
+          onNavigate={navigateToRoute}
+        />
+      ) : (
+        <div className="grid lg:grid-cols-[15rem_1fr]">
+          <Sidebar />
+          <main id="main" className="min-w-0 px-4 py-5 lg:px-6">
+            <div className="mx-auto max-w-[96rem] space-y-6">
+              <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1.25fr]">
+                <SegmentBar
+                  label="제공사"
+                  items={providerFilters}
+                  value={provider}
+                  onChange={setProvider}
+                />
+                <SegmentBar
+                  label="카테고리"
+                  items={categoryFilters}
+                  value={category}
+                  onChange={setCategory}
+                />
+              </div>
+
+              <Briefing results={results} useFallback={!hasActiveFilter} />
+              <WebzineSection
+                results={results}
+                useFallback={!hasActiveFilter}
               />
-              <SegmentBar
-                label="카테고리"
-                items={categoryFilters}
-                value={category}
-                onChange={setCategory}
+              <VibeCodingSection commands={visibleVibeCommands} />
+              <DesignWorkflowSection />
+              <ModelCards
+                models={visibleModels}
+                selectedModelId={selectedModel?.id ?? ""}
+                onSelectModel={setSelectedModelId}
               />
+              {selectedModel ? <ModelDetail profile={selectedModel} /> : null}
+              <BenchmarkBoard />
+              <ComparisonMatrix />
+              <ManualGuides guides={visibleGuides} />
+              <PersonaPlaybooks guides={visiblePersonaGuides} />
+              <ResourceLibrary resources={visibleResources} />
+              <EditorialOpsSection
+                monitors={visibleMonitors}
+                pipelineItems={visiblePipelineItems}
+                backlog={visibleBacklog}
+              />
+              <ExportDeskSection />
+              <ModelCostCalculator />
+              <SourcesSection sourceItems={visibleSources} />
+
+              <footer className="flex flex-col gap-2 border-t border-border py-6 text-xs text-text-subtle sm:flex-row sm:items-center sm:justify-between">
+                <span>AIDigestDesk · {SNAPSHOT_DATE} 스냅샷</span>
+                <a
+                  href="#main"
+                  className="inline-flex items-center gap-1 font-semibold text-text-muted hover:text-text"
+                >
+                  맨 위로{" "}
+                  <ChevronRight className="size-3.5 -rotate-90" aria-hidden />
+                </a>
+              </footer>
             </div>
-
-            <Briefing results={results} useFallback={!hasActiveFilter} />
-            <WebzineSection results={results} useFallback={!hasActiveFilter} />
-            <VibeCodingSection commands={visibleVibeCommands} />
-            <DesignWorkflowSection />
-            <ModelCards
-              models={visibleModels}
-              selectedModelId={selectedModel?.id ?? ""}
-              onSelectModel={setSelectedModelId}
-            />
-            {selectedModel ? <ModelDetail profile={selectedModel} /> : null}
-            <BenchmarkBoard />
-            <ComparisonMatrix />
-            <ManualGuides guides={visibleGuides} />
-            <PersonaPlaybooks guides={visiblePersonaGuides} />
-            <ResourceLibrary resources={visibleResources} />
-            <EditorialOpsSection
-              monitors={visibleMonitors}
-              pipelineItems={visiblePipelineItems}
-              backlog={visibleBacklog}
-            />
-            <ExportDeskSection />
-            <ModelCostCalculator />
-            <SourcesSection sourceItems={visibleSources} />
-
-            <footer className="flex flex-col gap-2 border-t border-border py-6 text-xs text-text-subtle sm:flex-row sm:items-center sm:justify-between">
-              <span>AIDigestDesk · {SNAPSHOT_DATE} 스냅샷</span>
-              <a
-                href="#main"
-                className="inline-flex items-center gap-1 font-semibold text-text-muted hover:text-text"
-              >
-                맨 위로{" "}
-                <ChevronRight className="size-3.5 -rotate-90" aria-hidden />
-              </a>
-            </footer>
-          </div>
-        </main>
-      </div>
+          </main>
+        </div>
+      )}
     </div>
   );
 }

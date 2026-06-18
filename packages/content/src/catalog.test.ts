@@ -42,6 +42,13 @@ describe("catalog search", () => {
 
     const vibeResults = searchCatalog("aider", "all", "vibe");
     expect(vibeResults.vibeCodingCommands.length).toBeGreaterThan(0);
+
+    const installResults = searchCatalog("curl -fsSL", "all", "vibe");
+    expect(
+      installResults.vibeCodingCommands.some(
+        (command) => command.id === "cmd-openai-codex",
+      ),
+    ).toBe(true);
   });
 
   it("finds learning books only in books category", () => {
@@ -64,6 +71,29 @@ describe("catalog search", () => {
     ).toBe(true);
   });
 
+  it("finds expanded Korean vibe coding resources", () => {
+    const hermesResults = searchCatalog("헤르메스", "all", "learning");
+    expect(
+      hermesResults.resources.some(
+        (resource) => resource.id === "res-hermes-agent-video",
+      ),
+    ).toBe(true);
+
+    const codeFactoryResults = searchCatalog("코드팩토리", "all", "learning");
+    expect(
+      codeFactoryResults.resources.some(
+        (resource) => resource.id === "res-codefactory-ai-coding",
+      ),
+    ).toBe(true);
+
+    const devDongsaengResults = searchCatalog("개발동생", "all", "learning");
+    expect(
+      devDongsaengResults.resources.some(
+        (resource) => resource.id === "res-dev-dongsaeng-ai-coding",
+      ),
+    ).toBe(true);
+  });
+
   it("resolves source references", () => {
     expect(getSources(["openai-gpt55"])[0]?.publisher).toBe(
       "OpenAI Developers",
@@ -77,7 +107,7 @@ describe("catalog search", () => {
       benchmarkRows: 12,
       vibeCommands: 8,
       personaGuides: 5,
-      monitors: 13,
+      monitors: 17,
       pipelineItems: 6,
       costProfiles: 10,
     });
