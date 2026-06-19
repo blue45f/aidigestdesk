@@ -15,6 +15,9 @@ allowBuilds:
   "@swc/core": true
   "@scarf/scarf": false
   '@sentry/cli': true
-  protobufjs: true
+  # firebase(통합 회원 로그인) 의존성. 이메일/익명 인증엔 빌드 스크립트가 불필요
+  # (선택적 native/proto 최적화)하므로 빌드하지 않음 — 설치 통과 + 런타임 정상.
+  protobufjs: false
+  '@firebase/util': false
 minimumReleaseAgeExclude:
   - '@heejun/deskcloud@0.1.0'

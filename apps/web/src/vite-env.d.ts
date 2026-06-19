@@ -17,6 +17,13 @@ interface ImportMetaEnv {
   readonly VITE_TERMSDESK_ORG?: string
   /** desk-platform 문의 게시판 API 베이스 URL(미설정 시 prod 기본값). */
   readonly VITE_DESK_PLATFORM_URL?: string
+  /** 통합 회원 로그인(Firebase Auth) 웹 config — 리터럴 금지, env로만 주입(`.env.local`/Vercel). */
+  readonly VITE_FIREBASE_API_KEY?: string
+  readonly VITE_FIREBASE_AUTH_DOMAIN?: string
+  readonly VITE_FIREBASE_PROJECT_ID?: string
+  readonly VITE_FIREBASE_STORAGE_BUCKET?: string
+  readonly VITE_FIREBASE_SENDER_ID?: string
+  readonly VITE_FIREBASE_APP_ID?: string
 }
 
 interface ImportMeta {

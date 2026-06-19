@@ -27,6 +27,7 @@ import type { MemberSession } from '@/components/app/memberAuth'
 import type { ComponentType } from 'react'
 
 import { IconButton } from '@/components/app/CommonUi'
+import { MemberAuthControl } from '@/components/layout/MemberAuthControl'
 
 type NavIcon = ComponentType<{ className?: string; 'aria-hidden'?: boolean }>
 
@@ -151,6 +152,7 @@ export function Header({
           )}
         </div>
         <div className="ml-auto flex items-center gap-1.5 md:ml-0">
+          <MemberAuthControl />
           <IconButton label={dark ? '라이트 모드' : '다크 모드'} onClick={onToggleDark}>
             {dark ? (
               <Sun className="size-4" aria-hidden />
