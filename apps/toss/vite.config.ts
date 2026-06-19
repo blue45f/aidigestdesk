@@ -10,9 +10,11 @@ const tdsShim = fileURLToPath(new URL('./src/tds-shim.tsx', import.meta.url));
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  // shamefully-hoist 모노레포에서 web(React19)과 toss(React18)가 섞이지 않도록
-  // 이 앱의 React 18 단일 인스턴스로 강제 정렬해요. (invalid hook 방지)
+  // React Compiler(babel-plugin-react-compiler) — React 19 컴포넌트 자동 메모이즈.
+  // plugin-react 의 babel.plugins 경로로 주입(형제 desk-platform 표준과 동일, 런타임 폴리필 불필요).
+  plugins: [react({ babel: { plugins: [['babel-plugin-react-compiler', {}]] } })],
+  // shamefully-hoist 모노레포에서 web 과 toss 의 React(둘 다 19)가 섞이지 않도록
+  // 이 앱의 React 단일 인스턴스로 강제 정렬해요. (invalid hook 방지)
   resolve: {
     dedupe: ['react', 'react-dom'],
     alias: previewNoTds ? { '@toss/tds-mobile-ait': tdsShim, '@toss/tds-mobile': tdsShim } : {},
