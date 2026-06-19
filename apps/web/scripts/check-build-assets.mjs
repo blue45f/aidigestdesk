@@ -7,10 +7,11 @@ const distAssetsDir = new URL('../dist/assets/', import.meta.url)
 // content-catalog 청크는 순수 데이터(모델·벤치마크·할인·도구 확장 등)라 항목이
 // 늘면 raw 크기가 커진다. 실제 전송 비용인 gzip 기준을 1차 가드로 삼고, raw는
 // 런어웨이 방지용 상한으로 둔다.
-// 2026-06-19: 하네스/플러그인/로컬 모델 UI/설치형 모델 비교, Gemma/Llama 모델 카드와 매뉴얼 추가로 상향 조정.
+// 2026-06-19: 하네스/플러그인/로컬 모델 UI/설치형 모델 비교, Gemma/Llama 모델 카드,
+// GLM-5.2, 정부지원사업, 에이전트 프레임워크 quickstart 매뉴얼 추가로 상향 조정.
 const budgets = {
-  maxJavaScriptBytes: 650 * 1024,
-  maxJavaScriptGzipBytes: 182 * 1024,
+  maxJavaScriptBytes: 680 * 1024,
+  maxJavaScriptGzipBytes: 192 * 1024,
   maxCssBytes: 80 * 1024,
 }
 

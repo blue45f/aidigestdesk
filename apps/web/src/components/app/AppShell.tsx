@@ -61,6 +61,7 @@ const routeSections: Partial<
     { href: '#cli-manual', label: 'CLI 실전 매뉴얼', icon: Code2 },
     { href: '#vibe-coding', label: 'CLI 명령어', icon: Code2 },
     { href: '#cli-comparison', label: 'CLI 비교표', icon: Code2 },
+    { href: '#design', label: '디자인 워크플로', icon: FileText },
   ],
   deals: [
     { href: '#deals', label: '할인·혜택', icon: BadgePercent },

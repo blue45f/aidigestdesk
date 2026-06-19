@@ -1,5 +1,6 @@
 import {
   aiCodingTools,
+  getExtensionStats,
   learningResources,
   llmCliManuals,
   manualGuides,
@@ -18,9 +19,13 @@ import {
   BookOpen,
   Boxes,
   ChevronRight,
+  Code2,
+  FileText,
   MessagesSquare,
   RotateCcw,
+  Sparkles,
   Table2,
+  Workflow,
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -101,7 +106,7 @@ const routeMeta: Record<ContentRoute, { eyebrow: string; title: string; descript
     eyebrow: '도구 · /tools',
     title: 'AI 도구·확장·CLI',
     description:
-      '작업별 추천부터 IDE·CLI 도구, 플러그인·훅·스킬·MCP 확장 디렉터리, LLM CLI 실전 매뉴얼과 명령어 비교표까지 모았습니다.',
+      '작업별 추천, IDE·CLI 도구, 플러그인·훅·스킬·MCP 확장, LLM CLI 매뉴얼을 영역별로 전환해 필요한 정보만 확인합니다.',
   },
   deals: {
     eyebrow: '할인 · /deals',
@@ -200,6 +205,151 @@ function ExploreGrid({ onNavigate }: { onNavigate: (route: AppRoute) => void }) 
   )
 }
 
+const toolsPaneIds = [
+  'task-recommendations',
+  'ai-tools',
+  'extensions',
+  'cli-manual',
+  'vibe-coding',
+  'cli-comparison',
+  'design',
+] as const
+
+type ToolsPaneId = (typeof toolsPaneIds)[number]
+
+const defaultToolsPane: ToolsPaneId = 'task-recommendations'
+
+const toolsPaneMeta: Array<{
+  id: ToolsPaneId
+  title: string
+  description: string
+  icon: typeof Table2
+}> = [
+  {
+    id: 'task-recommendations',
+    title: '작업 추천',
+    description: '업무별 모델·명령 조합',
+    icon: Sparkles,
+  },
+  {
+    id: 'ai-tools',
+    title: 'AI 도구',
+    description: 'IDE·CLI·PR 리뷰·에이전트',
+    icon: Boxes,
+  },
+  {
+    id: 'extensions',
+    title: '확장 디렉터리',
+    description: '플러그인·하네스·위젯·스킬',
+    icon: Workflow,
+  },
+  {
+    id: 'cli-manual',
+    title: 'CLI 매뉴얼',
+    description: '설치·운영·보안 절차',
+    icon: FileText,
+  },
+  {
+    id: 'vibe-coding',
+    title: 'CLI 명령어',
+    description: '실행 명령과 사용 조건',
+    icon: Code2,
+  },
+  {
+    id: 'cli-comparison',
+    title: 'CLI 비교표',
+    description: '표면·강점·주의점 비교',
+    icon: Table2,
+  },
+  {
+    id: 'design',
+    title: '디자인 워크플로',
+    description: '프롬프트·산출물 제작 흐름',
+    icon: Workflow,
+  },
+]
+
+function getToolsPaneFromHash(): ToolsPaneId {
+  if (typeof window === 'undefined') return defaultToolsPane
+  const hashId = window.location.hash.replace(/^#/, '')
+  return toolsPaneIds.includes(hashId as ToolsPaneId) ? (hashId as ToolsPaneId) : defaultToolsPane
+}
+
+function ToolsPaneSwitcher({
+  activePane,
+  counts,
+  onSelect,
+}: {
+  activePane: ToolsPaneId
+  counts: Record<ToolsPaneId, number>
+  onSelect: (paneId: ToolsPaneId) => void
+}) {
+  return (
+    <section id="tools-workbench" className="scroll-mt-32 space-y-3">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-text-subtle">
+            도구 워크벤치
+          </p>
+          <h2 className="mt-1 text-lg font-semibold text-text">필요한 영역만 열어 보기</h2>
+        </div>
+        <span className="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-subtle">
+          링크 공유 가능
+        </span>
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+        {toolsPaneMeta.map((pane) => {
+          const Icon = pane.icon
+          const active = pane.id === activePane
+
+          return (
+            <button
+              key={pane.id}
+              type="button"
+              onClick={() => onSelect(pane.id)}
+              aria-pressed={active}
+              className={
+                active
+                  ? 'flex min-h-24 items-start gap-3 rounded-lg border border-ink bg-ink p-3 text-left text-ink-fg'
+                  : 'flex min-h-24 items-start gap-3 rounded-lg border border-border bg-surface p-3 text-left text-text-muted transition hover:border-border-strong hover:text-text'
+              }
+            >
+              <span
+                className={
+                  active
+                    ? 'grid size-9 shrink-0 place-items-center rounded-md border border-white/20 bg-white/10'
+                    : 'grid size-9 shrink-0 place-items-center rounded-md border border-border bg-bg text-accent'
+                }
+              >
+                <Icon className="size-4" aria-hidden />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="flex flex-wrap items-center gap-1.5 text-sm font-semibold">
+                  {pane.title}
+                  <span
+                    className={
+                      active
+                        ? 'rounded border border-white/20 px-1.5 py-px text-[0.6875rem] text-white/80'
+                        : 'rounded border border-border bg-bg px-1.5 py-px text-[0.6875rem] text-text-subtle'
+                    }
+                  >
+                    {counts[pane.id]}개
+                  </span>
+                </span>
+                <span
+                  className={active ? 'mt-1 block text-xs text-white/70' : 'mt-1 block text-xs'}
+                >
+                  {pane.description}
+                </span>
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    </section>
+  )
+}
+
 export default function App() {
   const [query, setQuery] = useState('')
   const [providers, setProviders] = useState<ProviderId[]>([])
@@ -208,6 +358,7 @@ export default function App() {
   const [adminSession, setAdminSession] = useState<AdminSession | null>(getInitialAdminSession)
   const [memberSession, setMemberSession] = useState<MemberSession | null>(getInitialMemberSession)
   const [dark, setDark] = useState(false)
+  const [toolsPane, setToolsPane] = useState<ToolsPaneId>(getToolsPaneFromHash)
 
   useDocumentTitle(routeTitles[route])
 
@@ -216,16 +367,38 @@ export default function App() {
   }, [dark])
 
   useEffect(() => {
-    const syncRoute = () => setRoute(getCurrentRoute())
+    const syncRoute = () => {
+      const nextRoute = getCurrentRoute()
+      setRoute(nextRoute)
+      if (nextRoute === 'tools') setToolsPane(getToolsPaneFromHash())
+    }
     window.addEventListener('popstate', syncRoute)
     return () => window.removeEventListener('popstate', syncRoute)
   }, [])
+
+  useEffect(() => {
+    const syncToolsPane = () => {
+      if (getCurrentRoute() === 'tools') setToolsPane(getToolsPaneFromHash())
+    }
+    window.addEventListener('hashchange', syncToolsPane)
+    return () => window.removeEventListener('hashchange', syncToolsPane)
+  }, [])
+
+  useEffect(() => {
+    if (route !== 'tools') return
+    if (window.location.hash !== `#${toolsPane}`) return
+
+    window.requestAnimationFrame(() => {
+      document.getElementById(toolsPane)?.scrollIntoView({ block: 'start' })
+    })
+  }, [route, toolsPane])
 
   const navigateToRoute = (nextRoute: AppRoute) => {
     const nextPath = routePath[nextRoute]
     if (window.location.pathname !== nextPath) {
       window.history.pushState(null, '', nextPath)
     }
+    if (nextRoute === 'tools') setToolsPane(getToolsPaneFromHash())
     setRoute(nextRoute)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -290,6 +463,50 @@ export default function App() {
     setProviders([])
   }
 
+  const selectToolsPane = (paneId: ToolsPaneId) => {
+    setToolsPane(paneId)
+    const nextUrl = `${routePath.tools}#${paneId}`
+    if (window.location.pathname !== routePath.tools || window.location.hash !== `#${paneId}`) {
+      window.history.pushState(null, '', nextUrl)
+    }
+    window.requestAnimationFrame(() => {
+      document.getElementById('tools-workbench')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    })
+  }
+
+  const toolPaneCounts: Record<ToolsPaneId, number> = {
+    'task-recommendations': visibleTaskRecommendations.length,
+    'ai-tools': visibleAiCodingTools.length,
+    extensions: getExtensionStats().total,
+    'cli-manual': visibleLlmCliManuals.length,
+    'vibe-coding': visibleVibeCommands.length,
+    'cli-comparison': visibleVibeCommands.length,
+    design: 1,
+  }
+
+  const renderToolsPane = () => {
+    switch (toolsPane) {
+      case 'ai-tools':
+        return <CodingToolDirectorySection tools={visibleAiCodingTools} />
+      case 'extensions':
+        return <ExtensionsSection />
+      case 'cli-manual':
+        return <LlmCliManualSection manuals={visibleLlmCliManuals} />
+      case 'vibe-coding':
+        return <VibeCodingSection commands={visibleVibeCommands} />
+      case 'cli-comparison':
+        return <CliComparisonSection commands={visibleVibeCommands} />
+      case 'design':
+        return <DesignWorkflowSection />
+      case 'task-recommendations':
+      default:
+        return <TaskRecommendationSection recommendations={visibleTaskRecommendations} />
+    }
+  }
+
   const renderFilterBar = () => (
     <div className="sticky top-[7.25rem] z-30 -mx-4 border-b border-border bg-bg/85 px-4 py-3 backdrop-blur lg:-mx-6 lg:px-6">
       <div className="mx-auto flex max-w-[96rem] flex-wrap items-center gap-x-4 gap-y-2">
@@ -340,13 +557,12 @@ export default function App() {
           <>
             {renderFilterBar()}
             <PageHeader route="tools" />
-            <TaskRecommendationSection recommendations={visibleTaskRecommendations} />
-            <CodingToolDirectorySection tools={visibleAiCodingTools} />
-            <ExtensionsSection />
-            <LlmCliManualSection manuals={visibleLlmCliManuals} />
-            <VibeCodingSection commands={visibleVibeCommands} />
-            <CliComparisonSection commands={visibleVibeCommands} />
-            <DesignWorkflowSection />
+            <ToolsPaneSwitcher
+              activePane={toolsPane}
+              counts={toolPaneCounts}
+              onSelect={selectToolsPane}
+            />
+            {renderToolsPane()}
           </>
         )
       case 'deals':

@@ -306,6 +306,35 @@ describe('catalog search', () => {
     ).toBe(true)
   })
 
+  it('finds AI government support and public data deals', () => {
+    const bizinfoResults = searchCatalog('기업마당 AI/AX 정부지원사업', 'all', 'deals')
+    expect(
+      bizinfoResults.deals.some((deal) => deal.id === 'deal-gov-bizinfo-ai-support-hub')
+    ).toBe(true)
+
+    const onDeviceResults = searchCatalog('온디바이스 AI 스케일업', 'all', 'deals')
+    expect(
+      onDeviceResults.deals.some((deal) => deal.id === 'deal-gov-gwangju-ondevice-ai-scaleup')
+    ).toBe(true)
+
+    const manufacturingResults = searchCatalog('첨단로봇 AI 제조혁신', 'all', 'deals')
+    expect(
+      manufacturingResults.deals.some(
+        (deal) => deal.id === 'deal-gov-jeonnam-robot-ai-manufacturing'
+      )
+    ).toBe(true)
+
+    const startupResults = searchCatalog('딥테크 특화 창업중심대학', 'all', 'deals')
+    expect(
+      startupResults.deals.some((deal) => deal.id === 'deal-gov-deeptech-startup-college')
+    ).toBe(true)
+
+    const aihubResults = searchCatalog('AI-Hub 공공 AI 학습데이터', 'all', 'deals')
+    expect(aihubResults.deals.some((deal) => deal.id === 'deal-gov-aihub-public-datasets')).toBe(
+      true
+    )
+  })
+
   it('finds AI hackathon and conference schedule items', () => {
     expect(eventScheduleItems.length).toBeGreaterThan(8)
 
@@ -480,9 +509,30 @@ describe('catalog search', () => {
         (manual) => manual.id === 'llm-cli-model-router-observability'
       )
     ).toBe(true)
+
+    const glmServingResults = searchCatalog('GLM-5.2 KTransformers xLLM', 'zhipu', 'manuals')
+    expect(
+      glmServingResults.llmCliManuals.some(
+        (manual) => manual.id === 'llm-cli-glm-local-serving'
+      )
+    ).toBe(true)
+
+    const frameworkResults = searchCatalog('Agent framework quickstart', 'all', 'manuals')
+    expect(
+      frameworkResults.llmCliManuals.some(
+        (manual) => manual.id === 'llm-cli-agent-frameworks-quickstart'
+      )
+    ).toBe(true)
   })
 
   it('finds local open model comparison profiles', () => {
+    const glm52Results = searchCatalog('GLM-5.2 KTransformers xLLM', 'zhipu', 'comparison')
+    expect(
+      glm52Results.localModelComparisons.some(
+        (profile) => profile.id === 'local-glm-52-long-horizon'
+      )
+    ).toBe(true)
+
     const glmResults = searchCatalog('GLM-5.1 vLLM', 'zhipu', 'comparison')
     expect(
       glmResults.localModelComparisons.some((profile) => profile.id === 'local-glm-51-serving')
@@ -539,6 +589,148 @@ describe('catalog search', () => {
       langfuseResults.extensions.some(
         (extension) => extension.id === 'ext-langfuse-observability-evals'
       )
+    ).toBe(true)
+
+    const deepevalResults = searchCatalog('DeepEval deepeval test run', 'all', 'tools')
+    expect(
+      deepevalResults.extensions.some(
+        (extension) => extension.id === 'ext-deepeval-ci-agent-evals'
+      )
+    ).toBe(true)
+
+    const openaiEvalsResults = searchCatalog('OpenAI Evals private eval', 'all', 'tools')
+    expect(
+      openaiEvalsResults.extensions.some(
+        (extension) => extension.id === 'ext-openai-evals-registry'
+      )
+    ).toBe(true)
+
+    const mcpAgentResults = searchCatalog('mcp-agent lifecycle', 'all', 'tools')
+    expect(
+      mcpAgentResults.extensions.some((extension) => extension.id === 'ext-mcp-agent-workflows')
+    ).toBe(true)
+
+    const aguiResults = searchCatalog('AG-UI create-ag-ui-app', 'all', 'tools')
+    expect(
+      aguiResults.extensions.some((extension) => extension.id === 'ext-ag-ui-agent-protocol')
+    ).toBe(true)
+
+    const agnoResults = searchCatalog('Agno AgentOS', 'all', 'tools')
+    expect(
+      agnoResults.extensions.some((extension) => extension.id === 'ext-agno-agent-platform')
+    ).toBe(true)
+
+    const ktransformersResults = searchCatalog('KTransformers GLM-5.2 Day0', 'all', 'tools')
+    expect(
+      ktransformersResults.extensions.some(
+        (extension) => extension.id === 'ext-ktransformers-heterogeneous-inference'
+      )
+    ).toBe(true)
+
+    const xllmResults = searchCatalog('xLLM Chinese accelerators', 'all', 'tools')
+    expect(
+      xllmResults.extensions.some(
+        (extension) => extension.id === 'ext-xllm-accelerator-serving'
+      )
+    ).toBe(true)
+
+    const langGraphResults = searchCatalog('LangGraph stateful agents', 'all', 'tools')
+    expect(
+      langGraphResults.extensions.some(
+        (extension) => extension.id === 'ext-langgraph-stateful-agents'
+      )
+    ).toBe(true)
+
+    const llamaIndexResults = searchCatalog('LlamaIndex RAG agents', 'all', 'tools')
+    expect(
+      llamaIndexResults.extensions.some((extension) => extension.id === 'ext-llamaindex-rag-agents')
+    ).toBe(true)
+
+    const pydanticResults = searchCatalog('Pydantic AI type-safe agents', 'all', 'tools')
+    expect(
+      pydanticResults.extensions.some(
+        (extension) => extension.id === 'ext-pydantic-ai-type-safe-agents'
+      )
+    ).toBe(true)
+
+    const crewAiResults = searchCatalog('CrewAI flows', 'all', 'tools')
+    expect(
+      crewAiResults.extensions.some((extension) => extension.id === 'ext-crewai-multi-agent-flows')
+    ).toBe(true)
+
+    const autogenResults = searchCatalog('AutoGen AgentChat Studio', 'all', 'tools')
+    expect(
+      autogenResults.extensions.some((extension) => extension.id === 'ext-autogen-agentchat-studio')
+    ).toBe(true)
+
+    const mastraResults = searchCatalog('Mastra TypeScript agents', 'all', 'tools')
+    expect(
+      mastraResults.extensions.some((extension) => extension.id === 'ext-mastra-typescript-agents')
+    ).toBe(true)
+
+    const braintrustResults = searchCatalog('Braintrust evals', 'all', 'tools')
+    expect(
+      braintrustResults.extensions.some(
+        (extension) => extension.id === 'ext-braintrust-evals-observability'
+      )
+    ).toBe(true)
+
+    const phoenixResults = searchCatalog('Arize Phoenix OpenInference', 'all', 'tools')
+    expect(
+      phoenixResults.extensions.some(
+        (extension) => extension.id === 'ext-phoenix-openinference-evals'
+      )
+    ).toBe(true)
+
+    const giskardResults = searchCatalog('Giskard red teaming', 'all', 'tools')
+    expect(
+      giskardResults.extensions.some(
+        (extension) => extension.id === 'ext-giskard-agent-redteam-harness'
+      )
+    ).toBe(true)
+
+    const giskardSkillResults = searchCatalog('Giskard Agent Skills', 'all', 'tools')
+    expect(
+      giskardSkillResults.extensions.some((extension) => extension.id === 'ext-giskard-agent-skills')
+    ).toBe(true)
+
+    const claudeSkillResults = searchCatalog('Claude run verify skill', 'all', 'tools')
+    expect(
+      claudeSkillResults.extensions.some(
+        (extension) => extension.id === 'ext-skill-run-verify-generator'
+      )
+    ).toBe(true)
+
+    const ragSkillResults = searchCatalog('RAG evaluation skill template', 'all', 'tools')
+    expect(
+      ragSkillResults.extensions.some((extension) => extension.id === 'ext-skill-rag-eval-template')
+    ).toBe(true)
+
+    const releaseSkillResults = searchCatalog('release documentation skill', 'all', 'tools')
+    expect(
+      releaseSkillResults.extensions.some(
+        (extension) => extension.id === 'ext-skill-release-docs-template'
+      )
+    ).toBe(true)
+
+    const uiSkillResults = searchCatalog('UI QA skill template', 'all', 'tools')
+    expect(
+      uiSkillResults.extensions.some((extension) => extension.id === 'ext-skill-ui-qa-template')
+    ).toBe(true)
+
+    const mlflowResults = searchCatalog('MLflow GenAI evaluation', 'all', 'tools')
+    expect(
+      mlflowResults.extensions.some((extension) => extension.id === 'ext-mlflow-genai-evaluation')
+    ).toBe(true)
+
+    const trulensResults = searchCatalog('TruLens RAG triad', 'all', 'tools')
+    expect(
+      trulensResults.extensions.some((extension) => extension.id === 'ext-trulens-rag-triad-evals')
+    ).toBe(true)
+
+    const weaveResults = searchCatalog('W&B Weave', 'all', 'tools')
+    expect(
+      weaveResults.extensions.some((extension) => extension.id === 'ext-wandb-weave-llm-evals')
     ).toBe(true)
   })
 
@@ -710,11 +902,11 @@ describe('catalog search', () => {
   it('exposes summary stats', () => {
     expect(getCatalogStats()).toMatchObject({
       providers: 12,
-      localModelComparisons: 7,
+      localModelComparisons: 8,
       updates: 46,
       benchmarkRows: 97,
       vibeCommands: 17,
-      cliManuals: 17,
+      cliManuals: 18,
       aiCodingTools: 14,
       personaGuides: 5,
       taskRecommendations: 8,

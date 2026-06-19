@@ -24,6 +24,7 @@ import {
   FileCode2,
   Gauge,
   LayoutPanelTop,
+  Layers3,
   Medal,
   Monitor,
   PackageCheck,
@@ -58,6 +59,7 @@ type PlatformFilter = ExtensionPlatform | 'all'
 type CategoryFilter = ExtensionCategory | 'all'
 type DifficultyFilter = ExtensionInstallDifficulty | 'all'
 type SortMode = 'rank' | 'name-asc' | 'name-desc' | 'kind' | 'platform' | 'difficulty'
+type FocusFilter = 'all' | 'install' | 'skills' | 'evals' | 'runtime' | 'ui' | 'frameworks'
 
 /** 종류 → lucide 아이콘. 카드의 시각적 분류 신호. */
 const kindIcons: Record<ExtensionKind, IconComponent> = {
@@ -127,6 +129,56 @@ const difficultyOrder: Record<ExtensionInstallDifficulty, number> = {
 
 const initialVisibleCount = 18
 
+const focusPresets: Array<{
+  id: FocusFilter
+  label: string
+  description: string
+  icon: IconComponent
+}> = [
+  {
+    id: 'all',
+    label: '전체',
+    description: '필터 없이 전체 디렉터리',
+    icon: PackageCheck,
+  },
+  {
+    id: 'install',
+    label: '설치·스킬',
+    description: '플러그인, 훅, 스킬, MCP',
+    icon: Puzzle,
+  },
+  {
+    id: 'skills',
+    label: '스킬',
+    description: 'SKILL.md와 agent skills',
+    icon: Wand2,
+  },
+  {
+    id: 'evals',
+    label: '하네스',
+    description: '평가, 회귀 테스트, 벤치마크',
+    icon: Gauge,
+  },
+  {
+    id: 'runtime',
+    label: '모델·서빙',
+    description: '로컬 UI와 inference 런타임',
+    icon: Cpu,
+  },
+  {
+    id: 'ui',
+    label: '위젯·화면',
+    description: 'Chat UI, 앱 위젯, agent UI',
+    icon: LayoutPanelTop,
+  },
+  {
+    id: 'frameworks',
+    label: '프레임워크',
+    description: 'agent workflow와 orchestration',
+    icon: Layers3,
+  },
+]
+
 const gradeTones = {
   S: 'accent',
   A: 'blue',
@@ -163,6 +215,26 @@ function compareExtensions(a: AgentExtension, b: AgentExtension, sort: SortMode)
 
 function extensionDifficultyRank(extension: AgentExtension) {
   return extension.installDifficulty ? difficultyOrder[extension.installDifficulty] : 99
+}
+
+function matchesFocusPreset(extension: AgentExtension, focus: FocusFilter) {
+  switch (focus) {
+    case 'install':
+      return ['플러그인', '훅', '스킬', '슬래시 명령', 'MCP 서버'].includes(extension.kind)
+    case 'skills':
+      return extension.kind === '스킬' || extension.tags.some((tag) => /skill/i.test(tag))
+    case 'evals':
+      return extension.kind === '하네스' || extension.category === '평가/하네스'
+    case 'runtime':
+      return ['로컬 모델 UI', '모델 런타임'].includes(extension.kind) || extension.category === '모델 서빙'
+    case 'ui':
+      return extension.kind === '위젯' || extension.category === '에이전트 UI'
+    case 'frameworks':
+      return extension.kind === '워크플로우' || extension.tags.some((tag) => /agent|framework|workflow/i.test(tag))
+    case 'all':
+    default:
+      return true
+  }
 }
 
 function CodeRow({ label, value }: { label: string; value: string }) {
@@ -300,18 +372,29 @@ function ExtensionCard({ extension }: { extension: AgentExtension }) {
 
 export function ExtensionsSection() {
   const [query, setQuery] = useState('')
+  const [focus, setFocus] = useState<FocusFilter>('all')
   const [kind, setKind] = useState<KindFilter>('all')
   const [platform, setPlatform] = useState<PlatformFilter>('all')
   const [category, setCategory] = useState<CategoryFilter>('all')
   const [difficulty, setDifficulty] = useState<DifficultyFilter>('all')
   const [sort, setSort] = useState<SortMode>('rank')
-  const filterKey = `${query}\u0000${kind}\u0000${platform}\u0000${category}\u0000${difficulty}\u0000${sort}`
+  const filterKey = `${query}\u0000${focus}\u0000${kind}\u0000${platform}\u0000${category}\u0000${difficulty}\u0000${sort}`
   const [visibleLimitState, setVisibleLimitState] = useState({
     key: filterKey,
     limit: initialVisibleCount,
   })
 
   const stats = getExtensionStats()
+  const focusCounts = useMemo(
+    () =>
+      Object.fromEntries(
+        focusPresets.map((preset) => [
+          preset.id,
+          agentExtensions.filter((extension) => matchesFocusPreset(extension, preset.id)).length,
+        ])
+      ) as Record<FocusFilter, number>,
+    []
+  )
   const rankedHighlights = useMemo(
     () =>
       agentExtensions
@@ -325,6 +408,7 @@ export function ExtensionsSection() {
     const needle = query.trim().toLocaleLowerCase('ko-KR')
     return agentExtensions
       .filter((extension) => {
+        if (!matchesFocusPreset(extension, focus)) return false
         if (kind !== 'all' && extension.kind !== kind) return false
         if (platform !== 'all' && extension.platform !== platform) return false
         if (category !== 'all' && extension.category !== category) return false
@@ -337,7 +421,7 @@ export function ExtensionsSection() {
         return true
       })
       .sort((a, b) => compareExtensions(a, b, sort))
-  }, [query, kind, platform, category, difficulty, sort])
+  }, [query, focus, kind, platform, category, difficulty, sort])
 
   const visibleLimit =
     visibleLimitState.key === filterKey ? visibleLimitState.limit : initialVisibleCount
@@ -350,6 +434,7 @@ export function ExtensionsSection() {
 
   const hasActiveFilter =
     query.trim() !== '' ||
+    focus !== 'all' ||
     kind !== 'all' ||
     platform !== 'all' ||
     category !== 'all' ||
@@ -357,6 +442,7 @@ export function ExtensionsSection() {
 
   const resetAll = () => {
     setQuery('')
+    setFocus('all')
     setKind('all')
     setPlatform('all')
     setCategory('all')
@@ -364,6 +450,14 @@ export function ExtensionsSection() {
   }
 
   const chips: Array<{ key: string; label: string; onRemove: () => void }> = []
+  if (focus !== 'all') {
+    const preset = focusPresets.find((item) => item.id === focus)
+    chips.push({
+      key: 'focus',
+      label: `탐색 · ${preset?.label ?? focus}`,
+      onRemove: () => setFocus('all'),
+    })
+  }
   if (kind !== 'all')
     chips.push({ key: 'kind', label: `종류 · ${kind}`, onRemove: () => setKind('all') })
   if (platform !== 'all')
@@ -451,6 +545,41 @@ export function ExtensionsSection() {
             )
           })}
         </div>
+      </div>
+
+      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-7">
+        {focusPresets.map((preset) => {
+          const PresetIcon = preset.icon
+          const selected = preset.id === focus
+          return (
+            <button
+              key={preset.id}
+              type="button"
+              aria-pressed={selected}
+              onClick={() => {
+                setFocus(preset.id)
+                setSort('rank')
+                setVisibleLimitForCurrentFilter(initialVisibleCount)
+              }}
+              className={`min-h-24 rounded-lg border p-3 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+                selected
+                  ? 'border-accent/60 bg-accent/10 text-text'
+                  : 'border-border bg-surface text-text-muted hover:border-border-strong hover:text-text'
+              }`}
+            >
+              <span className="flex items-center justify-between gap-2">
+                <span className="grid size-8 place-items-center rounded-md border border-border bg-bg">
+                  <PresetIcon className="size-4" aria-hidden />
+                </span>
+                <Chip tone={selected ? 'accent' : 'neutral'}>{focusCounts[preset.id]}개</Chip>
+              </span>
+              <span className="mt-3 block text-xs font-semibold text-text">{preset.label}</span>
+              <span className="mt-1 block text-[0.6875rem] leading-4 text-text-muted">
+                {preset.description}
+              </span>
+            </button>
+          )
+        })}
       </div>
 
       <div className="space-y-4 rounded-lg border border-border bg-surface p-4">

@@ -94,7 +94,20 @@ const manualLevelOrderMap: Record<LlmCliManual['level'], number> = {
   고급: 2,
 }
 
-const initialManualVisibleCount = 4
+const recommendedManualIds = [
+  'llm-cli-quickstart',
+  'llm-cli-plugin-skill-installation',
+  'llm-cli-model-router-observability',
+  'llm-cli-eval-harness-playbook',
+  'llm-cli-local-model-ui-stack',
+  'llm-cli-glm-local-serving',
+] as const
+
+const recommendedManualRankMap: Map<string, number> = new Map(
+  recommendedManualIds.map((manualId, index) => [manualId, index])
+)
+
+const initialManualVisibleCount = 6
 
 const manualProviderItems: Array<{ id: ProviderId | 'all'; label: string }> = [
   { id: 'all', label: '전체' },
@@ -105,6 +118,14 @@ const manualProviderItems: Array<{ id: ProviderId | 'all'; label: string }> = [
 ]
 
 const commandById = new Map(vibeCodingCommands.map((command) => [command.id, command]))
+
+function getRecommendedManualRank(manualId: string) {
+  const curatedRank = recommendedManualRankMap.get(manualId)
+  if (curatedRank !== undefined) return curatedRank
+
+  const sourceRank = llmCliManuals.findIndex((manual) => manual.id === manualId)
+  return recommendedManualIds.length + (sourceRank === -1 ? llmCliManuals.length : sourceRank)
+}
 
 /** 클립보드 복사. navigator.clipboard 부재 환경에서도 조용히 실패 상태만 돌려준다. */
 async function copyCommand(text: string) {
@@ -522,10 +543,7 @@ export function LlmCliManualSection({ manuals = llmCliManuals }: { manuals?: Llm
           }
           case 'recommended':
           default:
-            return (
-              llmCliManuals.findIndex((manual) => manual.id === left.id) -
-              llmCliManuals.findIndex((manual) => manual.id === right.id)
-            )
+            return getRecommendedManualRank(left.id) - getRecommendedManualRank(right.id)
         }
       })
   }, [levels, manuals, providers, query, sortMode])

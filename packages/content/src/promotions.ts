@@ -10,6 +10,7 @@
 import type { ProviderId } from "./catalog";
 
 export type DealType =
+  | "정부지원사업"
   | "학생/교육"
   | "무료 크레딧"
   | "API 가격 인하"
@@ -362,6 +363,111 @@ export const llmDeals: LlmDeal[] = [
     lastVerified: VERIFIED,
   },
   {
+    id: "deal-gov-bizinfo-ai-support-hub",
+    provider: "market",
+    providerName: "기업마당",
+    dealType: "정부지원사업",
+    audience: "전체",
+    region: "국내",
+    title: "기업마당 AI/AX 정부지원사업 모니터링",
+    summary:
+      "중소벤처기업부 기업마당에서 AI, AX, 온디바이스 AI, 딥테크, 제조혁신 관련 최신 정부지원사업 공고를 통합 확인합니다.",
+    discountLabel: "공고 1,571건",
+    period: { alwaysOn: true },
+    eligibility: "중소기업, 스타트업, 예비창업자, 지역 기업 등 공고별 상이.",
+    howToClaim: "기업마당에서 AI/AX/딥테크 키워드로 검색 후 해당 공고의 주관기관 시스템에서 신청.",
+    koreanNote:
+      "공고별 접수기간이 짧으므로 마감임박 필터와 지역/부처 필터를 함께 확인하세요. 2026-06-19 기준 온디바이스 AI, 스마트그린 AX, 첨단로봇ㆍAI 활용 제조혁신 공고가 노출됩니다.",
+    url: "https://www.bizinfo.go.kr/",
+    sourceIds: ["bizinfo-2026-support"],
+    tags: ["정부지원사업", "AI", "AX", "중소기업", "스타트업"],
+    lastVerified: "2026-06-19",
+  },
+  {
+    id: "deal-gov-gwangju-ondevice-ai-scaleup",
+    provider: "market",
+    providerName: "기업마당",
+    dealType: "정부지원사업",
+    audience: "스타트업",
+    region: "국내",
+    title: "광주 온디바이스 AI 스케일업 밸리 성장스케일업",
+    summary:
+      "차세대 지능형 반도체 적용 온디바이스 AI 스케일업 밸리 육성사업의 성장스케일업 수혜기업 추가모집 공고입니다.",
+    discountLabel: "AI 스케일업",
+    period: { start: "2026-06-17", end: "2026-07-01" },
+    eligibility: "광주 차세대 지능형 반도체/온디바이스 AI 관련 수혜기업. 세부 요건은 공고 확인.",
+    howToClaim: "기업마당 공고에서 주관기관, 신청서류, 접수 시스템을 확인해 기한 내 제출.",
+    koreanNote:
+      "온디바이스 AI, 반도체, 엣지 모델 PoC 기업은 모델 경량화·데이터·시제품 계획을 함께 준비하세요.",
+    url: "https://www.bizinfo.go.kr/",
+    sourceIds: ["bizinfo-2026-support"],
+    tags: ["정부지원사업", "온디바이스 AI", "광주", "딥테크", "반도체"],
+    lastVerified: "2026-06-19",
+  },
+  {
+    id: "deal-gov-jeonnam-robot-ai-manufacturing",
+    provider: "market",
+    providerName: "기업마당",
+    dealType: "정부지원사업",
+    audience: "팀/조직",
+    region: "국내",
+    title: "전남 첨단로봇ㆍAI 활용 제조혁신 기획 컨설팅",
+    summary:
+      "전남 지역 중소기업을 대상으로 첨단로봇과 AI를 활용한 제조혁신 사업 기업지원 기획 컨설팅을 모집합니다.",
+    discountLabel: "AI 제조혁신",
+    period: { start: "2026-06-17", end: "2026-07-10" },
+    eligibility: "전남 제조 중소기업 등 지역/업종 요건 충족 기업. 세부 요건은 공고 확인.",
+    howToClaim: "기업마당 공고의 신청서와 사업계획서 양식에 제조공정 AI 활용 계획을 작성해 제출.",
+    koreanNote:
+      "로봇 비전, 예지보전, 품질검사, 공정 자동화 LLM/멀티모달 적용 기업이 우선 검토할 만합니다.",
+    url: "https://www.bizinfo.go.kr/",
+    sourceIds: ["bizinfo-2026-support"],
+    tags: ["정부지원사업", "첨단로봇 AI 제조혁신", "제조AI", "전남", "로봇", "컨설팅"],
+    lastVerified: "2026-06-19",
+  },
+  {
+    id: "deal-gov-deeptech-startup-college",
+    provider: "market",
+    providerName: "K-Startup",
+    dealType: "정부지원사업",
+    audience: "스타트업",
+    region: "국내",
+    title: "딥테크 특화 창업중심대학 창업기업 모집",
+    summary:
+      "딥테크 특화 창업중심대학을 통해 AI, 로봇, 반도체, 바이오 등 고기술 창업기업을 모집하는 정부 창업지원 트랙입니다.",
+    discountLabel: "딥테크 창업",
+    period: { start: "2026-06-19", end: "2026-07-08" },
+    eligibility: "딥테크 분야 창업기업. 업력, 분야, 대학/주관기관별 요건은 공고 확인.",
+    howToClaim: "K-Startup 또는 기업마당 공고에서 주관 대학과 신청 요건을 확인한 뒤 온라인 신청.",
+    koreanNote:
+      "AI 모델/API 기반 서비스도 기술성, 시장성, 데이터/보안 계획을 명확히 써야 평가 대응이 쉽습니다.",
+    url: "https://www.k-startup.go.kr/",
+    sourceIds: ["bizinfo-2026-support", "kstartup-portal"],
+    tags: ["정부지원사업", "딥테크", "창업", "AI 스타트업", "K-Startup"],
+    lastVerified: "2026-06-19",
+  },
+  {
+    id: "deal-gov-aihub-public-datasets",
+    provider: "market",
+    providerName: "AI-Hub",
+    dealType: "정부지원사업",
+    audience: "전체",
+    region: "국내",
+    title: "AI-Hub 공공 AI 학습데이터 활용",
+    summary:
+      "AI-Hub에서 한국어, 멀티모달, 로봇·피지컬AI, 헬스케어, 제조, 법률, 금융 등 공공 AI 학습데이터와 리더보드를 제공합니다.",
+    discountLabel: "공공 데이터",
+    period: { alwaysOn: true },
+    eligibility: "AI-Hub 회원 및 데이터별 이용정책 준수 사용자.",
+    howToClaim: "AI-Hub 회원가입 후 필요한 데이터셋, API, 안심존 이용 정책을 확인하고 다운로드/활용 신청.",
+    koreanNote:
+      "LLM/RAG 평가용 한국어 데이터와 공공 민원 상담 LLM 데이터, 멀티모달 데이터 후보를 먼저 검색하세요.",
+    url: "https://www.aihub.or.kr/",
+    sourceIds: ["aihub"],
+    tags: ["정부지원사업", "공공데이터", "한국어 데이터", "LLM", "RAG"],
+    lastVerified: "2026-06-19",
+  },
+  {
     id: "deal-xai-free-credits",
     provider: "xai",
     providerName: "xAI",
@@ -384,6 +490,7 @@ export const llmDeals: LlmDeal[] = [
 ];
 
 const DEAL_TYPE_ORDER: DealType[] = [
+  "정부지원사업",
   "국내 혜택",
   "학생/교육",
   "무료 크레딧",

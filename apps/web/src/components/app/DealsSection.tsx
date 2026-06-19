@@ -47,6 +47,7 @@ function isProviderId(value: LlmDeal['provider']): value is ProviderId {
 }
 
 const DEAL_TYPES: DealType[] = [
+  '정부지원사업',
   '국내 혜택',
   '학생/교육',
   '무료 크레딧',
@@ -89,6 +90,7 @@ const sortOptions: Array<{ value: DealSortMode; label: string }> = [
 
 /** dealType → 할인 배지 톤. 국내 혜택과 무료 크레딧을 가장 강조한다. */
 const dealTypeTone: Record<DealType, ChipTone> = {
+  정부지원사업: 'blue',
   '국내 혜택': 'accent',
   '학생/교육': 'blue',
   '무료 크레딧': 'accent',
