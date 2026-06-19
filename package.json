@@ -16,6 +16,8 @@
     "lint": "eslint .",
     "lint:strict": "eslint . --max-warnings=0",
     "lint:ci": "pnpm run lint:strict",
+    "audit:security": "pnpm audit --audit-level high --ignore GHSA-2p57-rm9w-gvfp",
+    "lint:security": "pnpm run lint:strict && pnpm run audit:security",
     "typecheck": "pnpm run build:libs && pnpm -r run typecheck",
     "test": "pnpm -r run test",
     "check:bundle": "pnpm --filter @aidigestdesk/web run check:bundle",
@@ -24,6 +26,7 @@
     "snapshot:sources": "pnpm --filter @aidigestdesk/content run snapshot:sources",
     "verify:events": "pnpm --filter @aidigestdesk/content run verify:events",
     "verify": "pnpm run lint:ci && pnpm run typecheck && pnpm run test && pnpm run build && pnpm run check:bundle",
+    "verify:push": "pnpm run verify && pnpm run lint:security",
     "ci": "pnpm run verify"
   },
   "devDependencies": {
