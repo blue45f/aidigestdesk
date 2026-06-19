@@ -1,6 +1,7 @@
 import {
   aiCodingTools,
   learningResources,
+  llmCliManuals,
   manualGuides,
   modelProfiles,
   personaGuides,
@@ -38,7 +39,7 @@ import {
 } from '@/components/app/AiCodingSections'
 import { getCurrentRoute, routePath, routeTitles, type AppRoute } from '@/components/app/appRoutes'
 import { Header, Sidebar } from '@/components/app/AppShell'
-import { CliComparisonSection } from '@/components/app/CliComparisonSection'
+import { CliComparisonSection, LlmCliManualSection } from '@/components/app/CliComparisonSection'
 import { ActiveFilterChips, MultiSegmentBar } from '@/components/app/CommonUi'
 import { CommunityRoute } from '@/components/app/CommunityRoute'
 import { EventCostComparisonSection, ModelCostCalculator } from '@/components/app/CostSections'
@@ -98,12 +99,13 @@ const routeMeta: Record<ContentRoute, { eyebrow: string; title: string; descript
     eyebrow: '도구 · /tools',
     title: 'AI 도구·확장·CLI',
     description:
-      '작업별 추천부터 IDE·CLI 도구, 플러그인·훅·스킬·MCP 확장 디렉터리, LLM별 CLI 명령어 비교·매뉴얼까지 모았습니다.',
+      '작업별 추천부터 IDE·CLI 도구, 플러그인·훅·스킬·MCP 확장 디렉터리, LLM CLI 실전 매뉴얼과 명령어 비교표까지 모았습니다.',
   },
   deals: {
     eyebrow: '할인 · /deals',
     title: 'LLM 할인·혜택과 일정',
-    description: '학생/교육, 무료 크레딧, API 가격 인하, 국내 혜택과 해커톤·컨퍼런스 일정을 추적합니다.',
+    description:
+      '학생/교육, 무료 크레딧, API 가격 인하, 국내 혜택과 해커톤·컨퍼런스 일정을 추적합니다.',
   },
   resources: {
     eyebrow: '자료 · /resources',
@@ -258,6 +260,8 @@ export default function App() {
       : hasActiveFilter
         ? []
         : vibeCodingCommands
+  const visibleLlmCliManuals =
+    results.llmCliManuals.length > 0 ? results.llmCliManuals : hasActiveFilter ? [] : llmCliManuals
   const visibleAiCodingTools =
     results.aiCodingTools.length > 0 ? results.aiCodingTools : hasActiveFilter ? [] : aiCodingTools
   const visibleTaskRecommendations =
@@ -266,7 +270,8 @@ export default function App() {
       : hasActiveFilter
         ? []
         : taskRecommendations
-  const visibleSources = results.sources.length > 0 ? results.sources : hasActiveFilter ? [] : sources
+  const visibleSources =
+    results.sources.length > 0 ? results.sources : hasActiveFilter ? [] : sources
 
   const activeChips = [
     ...(query.trim()
@@ -335,6 +340,7 @@ export default function App() {
             <TaskRecommendationSection recommendations={visibleTaskRecommendations} />
             <CodingToolDirectorySection tools={visibleAiCodingTools} />
             <ExtensionsSection />
+            <LlmCliManualSection manuals={visibleLlmCliManuals} />
             <VibeCodingSection commands={visibleVibeCommands} />
             <CliComparisonSection commands={visibleVibeCommands} />
             <DesignWorkflowSection />
@@ -373,8 +379,8 @@ export default function App() {
               className="flex w-full items-center justify-between gap-3 rounded-lg border border-accent/30 bg-accent/5 px-4 py-3 text-left transition hover:bg-accent/10"
             >
               <span className="text-sm text-text-muted">
-                <strong className="font-semibold text-text">처음 오셨나요?</strong> 사이트 소개와 사용
-                가이드를 먼저 둘러보세요.
+                <strong className="font-semibold text-text">처음 오셨나요?</strong> 사이트 소개와
+                사용 가이드를 먼저 둘러보세요.
               </span>
               <span className="shrink-0 text-xs font-semibold text-accent">소개·가이드 →</span>
             </button>

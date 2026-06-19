@@ -1,4 +1,4 @@
-import { SNAPSHOT_DATE } from "@aidigestdesk/content";
+import { SNAPSHOT_DATE } from '@aidigestdesk/content'
 import {
   BadgePercent,
   BookOpen,
@@ -19,59 +19,61 @@ import {
   Sun,
   Table2,
   UserRound,
-} from "lucide-react";
+} from 'lucide-react'
 
-import type { AdminSession } from "@/components/app/adminSession";
-import type { AppRoute } from "@/components/app/appRoutes";
-import type { MemberSession } from "@/components/app/memberAuth";
-import type { ComponentType } from "react";
+import type { AdminSession } from '@/components/app/adminSession'
+import type { AppRoute } from '@/components/app/appRoutes'
+import type { MemberSession } from '@/components/app/memberAuth'
+import type { ComponentType } from 'react'
 
-import { IconButton } from "@/components/app/CommonUi";
+import { IconButton } from '@/components/app/CommonUi'
 
-type NavIcon = ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
+type NavIcon = ComponentType<{ className?: string; 'aria-hidden'?: boolean }>
 
 // 전역 내비게이션(GNB) — 라우트 전환. 디자인 시스템은 사이트맵에서만 노출한다.
 const primaryNav: Array<{ id: AppRoute; label: string; icon: NavIcon }> = [
-  { id: "portal", label: "홈", icon: Home },
-  { id: "models", label: "모델·벤치마크", icon: Table2 },
-  { id: "tools", label: "도구·확장", icon: Boxes },
-  { id: "deals", label: "할인·혜택", icon: BadgePercent },
-  { id: "resources", label: "강좌·자료", icon: BookOpen },
-  { id: "community", label: "커뮤니티", icon: MessagesSquare },
-];
+  { id: 'portal', label: '홈', icon: Home },
+  { id: 'models', label: '모델·벤치마크', icon: Table2 },
+  { id: 'tools', label: '도구·확장', icon: Boxes },
+  { id: 'deals', label: '할인·혜택', icon: BadgePercent },
+  { id: 'resources', label: '강좌·자료', icon: BookOpen },
+  { id: 'community', label: '커뮤니티', icon: MessagesSquare },
+]
 
 // 라우트별 섹션 목차 — 사이드바(데스크톱)에서 현재 페이지 내 이동을 돕는다.
-const routeSections: Partial<Record<AppRoute, Array<{ href: string; label: string; icon: NavIcon }>>> =
-  {
-    portal: [
-      { href: "#updates", label: "브리핑", icon: Newspaper },
-      { href: "#fresh", label: "신규 등록", icon: Flame },
-    ],
-    models: [
-      { href: "#comparison", label: "모델 카드", icon: Table2 },
-      { href: "#benchmarks", label: "벤치마크", icon: Table2 },
-      { href: "#costs", label: "비용", icon: Calculator },
-    ],
-    tools: [
-      { href: "#task-recommendations", label: "작업 추천", icon: Sparkles },
-      { href: "#ai-tools", label: "AI 도구", icon: Boxes },
-      { href: "#extensions", label: "확장 디렉터리", icon: Boxes },
-      { href: "#vibe-coding", label: "CLI 명령어", icon: Code2 },
-      { href: "#cli-manual", label: "CLI 비교·매뉴얼", icon: Code2 },
-    ],
-    deals: [
-      { href: "#deals", label: "할인·혜택", icon: BadgePercent },
-      { href: "#events", label: "일정/이벤트", icon: Sparkles },
-    ],
-    resources: [
-      { href: "#learning", label: "강좌/자료", icon: BookOpen },
-      { href: "#glossary", label: "용어 사전", icon: BookOpen },
-      { href: "#manuals", label: "사용법", icon: FileText },
-      { href: "#webzine", label: "뉴스 웹진", icon: Newspaper },
-      { href: "#translated", label: "해외 소식(번역)", icon: Newspaper },
-      { href: "#sources", label: "출처", icon: FileText },
-    ],
-  };
+const routeSections: Partial<
+  Record<AppRoute, Array<{ href: string; label: string; icon: NavIcon }>>
+> = {
+  portal: [
+    { href: '#updates', label: '브리핑', icon: Newspaper },
+    { href: '#fresh', label: '신규 등록', icon: Flame },
+  ],
+  models: [
+    { href: '#comparison', label: '모델 카드', icon: Table2 },
+    { href: '#benchmarks', label: '벤치마크', icon: Table2 },
+    { href: '#costs', label: '비용', icon: Calculator },
+  ],
+  tools: [
+    { href: '#task-recommendations', label: '작업 추천', icon: Sparkles },
+    { href: '#ai-tools', label: 'AI 도구', icon: Boxes },
+    { href: '#extensions', label: '확장 디렉터리', icon: Boxes },
+    { href: '#cli-manual', label: 'CLI 실전 매뉴얼', icon: Code2 },
+    { href: '#vibe-coding', label: 'CLI 명령어', icon: Code2 },
+    { href: '#cli-comparison', label: 'CLI 비교표', icon: Code2 },
+  ],
+  deals: [
+    { href: '#deals', label: '할인·혜택', icon: BadgePercent },
+    { href: '#events', label: '일정/이벤트', icon: Sparkles },
+  ],
+  resources: [
+    { href: '#learning', label: '강좌/자료', icon: BookOpen },
+    { href: '#glossary', label: '용어 사전', icon: BookOpen },
+    { href: '#manuals', label: '사용법', icon: FileText },
+    { href: '#webzine', label: '뉴스 웹진', icon: Newspaper },
+    { href: '#translated', label: '해외 소식(번역)', icon: Newspaper },
+    { href: '#sources', label: '출처', icon: FileText },
+  ],
+}
 
 export function Header({
   query,
@@ -83,31 +85,31 @@ export function Header({
   dark,
   onToggleDark,
 }: {
-  query: string;
-  onQueryChange: (value: string) => void;
-  route: AppRoute;
-  onNavigate: (route: AppRoute) => void;
-  adminSession: AdminSession | null;
-  memberSession: MemberSession | null;
-  dark: boolean;
-  onToggleDark: () => void;
+  query: string
+  onQueryChange: (value: string) => void
+  route: AppRoute
+  onNavigate: (route: AppRoute) => void
+  adminSession: AdminSession | null
+  memberSession: MemberSession | null
+  dark: boolean
+  onToggleDark: () => void
 }) {
   const navButtonClass = (targetRoute: AppRoute) =>
     route === targetRoute
-      ? "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-ink bg-ink px-3 text-xs font-semibold text-ink-fg"
-      : "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-transparent px-3 text-xs font-semibold text-text-muted transition hover:bg-surface-2 hover:text-text";
+      ? 'inline-flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-ink bg-ink px-3 text-xs font-semibold text-ink-fg'
+      : 'inline-flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-transparent px-3 text-xs font-semibold text-text-muted transition hover:bg-surface-2 hover:text-text'
 
-  const showSearch = route !== "admin";
+  const showSearch = route !== 'admin'
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-bg/90 backdrop-blur">
       <div className="flex h-16 items-center gap-3 px-4 lg:px-5">
         <a
-          href={route === "portal" ? "#main-content" : "/"}
+          href={route === 'portal' ? '#main-content' : '/'}
           onClick={(event) => {
-            if (route !== "portal") {
-              event.preventDefault();
-              onNavigate("portal");
+            if (route !== 'portal') {
+              event.preventDefault()
+              onNavigate('portal')
             }
           }}
           className="flex min-w-0 items-center gap-3"
@@ -122,9 +124,7 @@ export function Header({
                 beta
               </span>
             </span>
-            <span className="block truncate text-xs text-text-subtle">
-              {SNAPSHOT_DATE} 기준
-            </span>
+            <span className="block truncate text-xs text-text-subtle">{SNAPSHOT_DATE} 기준</span>
           </span>
         </a>
         <div className="relative ml-auto hidden w-full max-w-md md:block">
@@ -143,16 +143,13 @@ export function Header({
               <ShieldCheck className="size-4 text-accent" aria-hidden />
               <span className="truncate">
                 관리자 콘솔
-                {adminSession ? ` · ${adminSession.email}` : " · 로그인 필요"}
+                {adminSession ? ` · ${adminSession.email}` : ' · 로그인 필요'}
               </span>
             </div>
           )}
         </div>
         <div className="ml-auto flex items-center gap-1.5 md:ml-0">
-          <IconButton
-            label={dark ? "라이트 모드" : "다크 모드"}
-            onClick={onToggleDark}
-          >
+          <IconButton label={dark ? '라이트 모드' : '다크 모드'} onClick={onToggleDark}>
             {dark ? (
               <Sun className="size-4" aria-hidden />
             ) : (
@@ -162,12 +159,12 @@ export function Header({
           {memberSession ? (
             <button
               type="button"
-              onClick={() => onNavigate("account")}
+              onClick={() => onNavigate('account')}
               title="내 계정"
               className={`hidden h-9 items-center gap-1.5 rounded-md border px-2.5 text-xs font-semibold transition sm:inline-flex ${
-                route === "account"
-                  ? "border-ink bg-ink text-ink-fg"
-                  : "border-border bg-surface text-text-muted hover:border-border-strong hover:text-text"
+                route === 'account'
+                  ? 'border-ink bg-ink text-ink-fg'
+                  : 'border-border bg-surface text-text-muted hover:border-border-strong hover:text-text'
               }`}
             >
               <UserRound className="size-3.5" aria-hidden />
@@ -176,7 +173,7 @@ export function Header({
           ) : (
             <button
               type="button"
-              onClick={() => onNavigate("account")}
+              onClick={() => onNavigate('account')}
               className="hidden h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text sm:inline-flex"
             >
               <UserRound className="size-3.5" aria-hidden />
@@ -184,15 +181,15 @@ export function Header({
             </button>
           )}
           <span className="sm:hidden">
-            <IconButton label="내 계정" onClick={() => onNavigate("account")}>
+            <IconButton label="내 계정" onClick={() => onNavigate('account')}>
               <UserRound className="size-4" aria-hidden />
             </IconButton>
           </span>
           <IconButton
-            label={route === "admin" ? "포털로 이동" : "관리자 콘솔"}
-            onClick={() => onNavigate(route === "admin" ? "portal" : "admin")}
+            label={route === 'admin' ? '포털로 이동' : '관리자 콘솔'}
+            onClick={() => onNavigate(route === 'admin' ? 'portal' : 'admin')}
           >
-            {route === "admin" ? (
+            {route === 'admin' ? (
               <Home className="size-4" aria-hidden />
             ) : (
               <Settings2 className="size-4" aria-hidden />
@@ -211,7 +208,7 @@ export function Header({
             key={item.id}
             type="button"
             onClick={() => onNavigate(item.id)}
-            aria-current={route === item.id ? "page" : undefined}
+            aria-current={route === item.id ? 'page' : undefined}
             className={navButtonClass(item.id)}
           >
             <item.icon className="size-3.5" aria-hidden />
@@ -235,17 +232,17 @@ export function Header({
         </div>
       ) : null}
     </header>
-  );
+  )
 }
 
 export function Sidebar({
   route,
   onNavigate,
 }: {
-  route: AppRoute;
-  onNavigate: (route: AppRoute) => void;
+  route: AppRoute
+  onNavigate: (route: AppRoute) => void
 }) {
-  const sections = routeSections[route] ?? [];
+  const sections = routeSections[route] ?? []
 
   return (
     <aside className="hidden border-r border-border bg-surface/70 lg:block">
@@ -270,7 +267,7 @@ export function Sidebar({
         <div className="mt-auto space-y-2">
           <button
             type="button"
-            onClick={() => onNavigate("sitemap")}
+            onClick={() => onNavigate('sitemap')}
             className="flex w-full items-center gap-3 rounded-md border border-border bg-bg px-3 py-2 text-sm font-medium text-text-muted transition hover:border-border-strong hover:text-text"
           >
             <MapPin className="size-4" aria-hidden />
@@ -285,5 +282,5 @@ export function Sidebar({
         </div>
       </div>
     </aside>
-  );
+  )
 }

@@ -192,6 +192,32 @@ export type VibeCodingCommand = {
   sourceIds: string[]
 }
 
+export type LlmCliManualLevel = '입문' | '실무' | '고급'
+
+export type LlmCliManualStep = {
+  title: string
+  body: string
+  commands?: string[]
+}
+
+export type LlmCliManual = {
+  id: string
+  title: string
+  level: LlmCliManualLevel
+  providerIds: ProviderId[]
+  commandIds: string[]
+  summary: string
+  overview: string
+  prerequisites: string[]
+  steps: LlmCliManualStep[]
+  promptTemplate: string
+  verification: string[]
+  troubleshooting: string[]
+  securityChecklist: string[]
+  sourceIds: string[]
+  tags: string[]
+}
+
 export type AiCodingToolCategory =
   | 'AI IDE'
   | 'IDE 확장'
@@ -377,6 +403,7 @@ export type SearchResults = {
   personaGuides: PersonaGuide[]
   resources: LearningResource[]
   vibeCodingCommands: VibeCodingCommand[]
+  llmCliManuals: LlmCliManual[]
   curationMonitors: CurationMonitor[]
   pipelineItems: UpdatePipelineItem[]
   featureBacklog: FeatureBacklogItem[]
@@ -7835,6 +7862,367 @@ export const vibeCodingCommands: VibeCodingCommand[] = [
   },
 ]
 
+export const llmCliManuals: LlmCliManual[] = [
+  {
+    id: 'llm-cli-quickstart',
+    title: '전용 LLM CLI 빠른 시작',
+    level: '입문',
+    providerIds: ['openai', 'anthropic', 'google'],
+    commandIds: ['cmd-openai-codex', 'cmd-claude-code', 'cmd-gemini-cli'],
+    summary:
+      'Codex, Claude Code, Gemini CLI를 처음 쓰는 사용자가 설치, 로그인, 현재 저장소 열기, 첫 요청까지 안전하게 통과하는 기본 루트.',
+    overview:
+      '전용 CLI는 모델 API 호출보다 repo 파일, 터미널 명령, diff, 테스트 로그를 같은 작업 공간에서 다룰 수 있다는 점이 핵심이다. 처음에는 읽기 중심 질문으로 컨텍스트 품질을 확인하고, 그 다음 작은 수정과 검증 명령을 맡기는 흐름이 안정적이다.',
+    prerequisites: [
+      'Node, npm/npx, curl 또는 각 CLI가 요구하는 런타임을 준비한다.',
+      '개인/조직 계정, API 키, SSO 정책, 결제 상태를 CLI 실행 전에 확인한다.',
+      '작업 저장소는 git status가 깨끗하거나 의도한 변경만 남아 있는 상태에서 시작한다.',
+      '민감 파일(.env, 키, 고객 데이터)은 CLI 권한과 프롬프트에 들어가지 않도록 분리한다.',
+    ],
+    steps: [
+      {
+        title: '설치와 버전 확인',
+        body: '공식 설치 경로를 우선 사용하고, 설치 직후 버전과 로그인 상태를 확인한다. 팀 환경에서는 Homebrew, npx, curl 설치 방식 중 하나를 표준으로 정한다.',
+        commands: [
+          'curl -fsSL https://chatgpt.com/codex/install.sh | sh',
+          'curl -fsSL https://claude.ai/install.sh | bash',
+          'npx @google/gemini-cli',
+        ],
+      },
+      {
+        title: '읽기 전용 스모크 테스트',
+        body: '처음 요청은 파일 수정이 아니라 구조 설명, 테스트 명령 추정, 위험 파일 식별처럼 되돌릴 필요 없는 작업으로 시작한다.',
+        commands: [
+          'codex "이 저장소의 앱 구조와 검증 명령을 먼저 설명해줘. 파일은 수정하지 마."',
+          'claude "현재 브랜치의 변경 범위와 리스크를 요약해줘. 아직 코드는 건드리지 마."',
+          'gemini "이 앱의 라우팅과 상태 흐름을 설명하고 리팩터링 후보를 정리해줘"',
+        ],
+      },
+      {
+        title: '작은 패치와 검증 명령 묶기',
+        body: '수정 요청에는 변경 범위, 금지할 리팩터링, 성공 조건, 실행할 검증 명령을 함께 넣는다. CLI가 낸 diff는 사람이 한 번 읽고 적용한다.',
+        commands: [
+          'codex "이 실패 테스트를 최소 수정으로 고치고 pnpm --filter @aidigestdesk/web run test 결과를 요약해줘"',
+          'claude "이 PR diff에서 P1 버그 위험과 누락된 테스트만 파일/라인 기준으로 리뷰해줘"',
+        ],
+      },
+      {
+        title: '결과를 기록하고 재현 가능하게 남기기',
+        body: '성공한 프롬프트, 검증 명령, 실패 원인, 비용이 큰 호출을 작업 로그에 남기면 다음 CLI 교체나 팀 온보딩이 쉬워진다.',
+      },
+    ],
+    promptTemplate:
+      '목표: {작업 목표}\n범위: {수정 가능한 파일/섹션}\n금지: 대규모 리팩터링, unrelated formatting, 파괴적 git 명령\n컨텍스트: {실패 로그/요구사항/관련 파일}\n검증: {실행할 테스트 또는 빌드 명령}\n출력: 변경 요약, 검증 결과, 남은 리스크',
+    verification: [
+      'CLI가 제안한 설치 명령이 공식 문서의 현재 경로와 맞는지 확인한다.',
+      '처음 실행 후 파일 변경이 발생했다면 git diff로 의도한 범위인지 확인한다.',
+      '작업 완료 전 lint, typecheck, test, build 중 최소 하나 이상을 실행한다.',
+    ],
+    troubleshooting: [
+      '인증 오류가 나면 CLI 로그인 상태, SSO 승인, 조직 정책, API 키 스코프를 분리해 확인한다.',
+      '명령 실행 권한이 막히면 CLI 권한 모드와 로컬 sandbox 정책을 먼저 본다.',
+      '모델이 파일을 잘못 찾으면 관련 파일 경로와 실패 로그를 직접 지정해 재요청한다.',
+    ],
+    securityChecklist: [
+      '시크릿 파일과 프로덕션 데이터는 프롬프트에 직접 붙이지 않는다.',
+      '자동 실행 권한은 테스트, 빌드, 읽기 명령부터 열고 배포/삭제 명령은 수동 승인으로 둔다.',
+      '생성된 diff에는 라이선스, 개인정보, 토큰이 섞이지 않았는지 확인한다.',
+    ],
+    sourceIds: ['openai-codex-cli', 'claude-code-docs', 'claude-code-setup', 'gemini-cli-github'],
+    tags: ['CLI', '설치', '온보딩', 'Codex', 'Claude Code', 'Gemini CLI'],
+  },
+  {
+    id: 'llm-cli-repo-fix-loop',
+    title: '기존 레포 버그 수정 루프',
+    level: '실무',
+    providerIds: ['openai', 'anthropic', 'cursor'],
+    commandIds: [
+      'cmd-openai-codex',
+      'cmd-claude-code',
+      'cmd-cursor-agent',
+      'cmd-github-copilot-cli',
+    ],
+    summary:
+      '실패 테스트, 타입 오류, 런타임 콘솔 에러를 CLI/IDE 에이전트에게 맡길 때 재현, 최소 수정, 검증, 리뷰를 분리하는 운영 절차.',
+    overview:
+      '버그 수정은 모델 성능보다 재현 로그와 범위 제한이 더 중요하다. CLI에게 한 번에 “고쳐줘”라고 맡기기보다 실패를 재현하게 하고, 원인 후보와 최소 수정안을 받은 뒤, 검증과 리뷰를 별도 패스로 돌리는 것이 회귀 위험을 줄인다.',
+    prerequisites: [
+      '현재 브랜치, 실패 명령, 에러 로그, 기대 동작을 한 메시지에 모을 수 있어야 한다.',
+      '테스트가 없다면 최소한 수동 재현 경로와 스크린샷/콘솔 로그를 준비한다.',
+      '수정 범위를 특정 패키지, 라우트, 컴포넌트, 함수로 제한한다.',
+    ],
+    steps: [
+      {
+        title: '재현 명령을 먼저 고정',
+        body: 'CLI가 바로 구현에 들어가기 전에 실패를 재현할 명령과 관찰해야 할 증상을 쓰게 한다. 재현이 틀리면 구현도 흔들린다.',
+        commands: [
+          'pnpm --filter @aidigestdesk/web run typecheck',
+          'pnpm --filter @aidigestdesk/web run test',
+          'pnpm --filter @aidigestdesk/web run build',
+        ],
+      },
+      {
+        title: '최소 수정 후보 받기',
+        body: '원인 후보를 2개 이하로 좁히고, 가장 작은 수정부터 적용하게 한다. 주변 리팩터링과 스타일 정리는 별도 작업으로 미룬다.',
+        commands: [
+          'codex "아래 실패 로그를 재현하고 최소 수정만 제안해줘. 관련 없는 파일은 건드리지 마."',
+          'claude "이 diff에서 회귀 가능성이 큰 부분과 누락 테스트를 먼저 찾아줘."',
+        ],
+      },
+      {
+        title: '검증과 리뷰를 다른 관점으로 반복',
+        body: '수정한 모델과 리뷰한 모델을 분리하거나, 같은 CLI라도 구현 프롬프트와 리뷰 프롬프트를 분리한다.',
+        commands: [
+          'gh copilot suggest "pnpm workspace에서 web 앱만 빌드하는 명령"',
+          'gh copilot explain "git rebase --onto main feature-old feature-new"',
+        ],
+      },
+      {
+        title: '결과 요약을 PR 설명으로 변환',
+        body: '변경 파일, 사용자 영향, 검증 명령, 남은 리스크를 PR 설명 초안으로 남긴다. 이 기록이 다음 에이전트 실행의 컨텍스트가 된다.',
+      },
+    ],
+    promptTemplate:
+      '버그: {사용자가 보는 증상}\n재현: {명령 또는 클릭 경로}\n로그: {에러/스택/콘솔}\n수정 범위: {파일 또는 모듈}\n성공 조건: {테스트/빌드/수동 확인}\n요청: 원인 후보를 좁힌 뒤 최소 수정하고, 검증 결과와 남은 리스크를 요약해줘.',
+    verification: [
+      '수정 전 실패 명령과 수정 후 통과 명령이 같은지 비교한다.',
+      '검색, 필터, 정렬처럼 상태가 있는 UI는 상호작용 후 DOM 상태를 확인한다.',
+      'PR 설명에 재현 경로, 변경 요약, 검증 명령을 남긴다.',
+    ],
+    troubleshooting: [
+      'CLI가 너무 많은 파일을 바꾸면 변경 범위를 파일 단위로 다시 제한한다.',
+      '테스트가 없어서 확신이 낮으면 최소 회귀 테스트 또는 Playwright 스모크를 추가한다.',
+      '동일 오류가 반복되면 구현 요청 대신 코드 리뷰 요청으로 관점을 바꾼다.',
+    ],
+    securityChecklist: [
+      '자동 커밋/푸시는 팀 정책이 허용할 때만 켠다.',
+      '테스트를 통과하지 않은 diff를 PR에 올리지 않는다.',
+      '코드 리뷰 결과를 그대로 적용하기 전에 파일/라인과 실제 코드 맥락을 확인한다.',
+    ],
+    sourceIds: ['openai-codex-cli', 'claude-code-docs', 'cursor-docs', 'github-copilot-docs'],
+    tags: ['버그 수정', '테스트', 'PR 리뷰', 'Cursor', 'Copilot', 'Codex'],
+  },
+  {
+    id: 'llm-cli-openai-compatible-aider',
+    title: 'OpenAI 호환 API와 Aider 모델 교체',
+    level: '실무',
+    providerIds: ['openai', 'kimi', 'deepseek', 'xai', 'qwen', 'mistral'],
+    commandIds: [
+      'cmd-aider-openai-compatible-matrix',
+      'cmd-kimi-openai-compatible',
+      'cmd-deepseek-openai-compatible',
+      'cmd-xai-openai-compatible',
+      'cmd-qwen-local-vllm',
+      'cmd-mistral-api',
+    ],
+    summary:
+      'Aider 같은 서드파티 CLI에서 base URL, 모델명, API 키를 바꿔 Kimi, DeepSeek, Grok, Qwen, Mistral 후보를 같은 UX로 비교하는 방법.',
+    overview:
+      'OpenAI 호환 API는 동일한 CLI 흐름으로 여러 모델을 비교할 수 있다는 장점이 있다. 다만 tool calling, JSON mode, thinking mode, context limit, cache 가격은 제공사마다 다르므로 같은 프롬프트라도 완전한 동등 비교는 아니다.',
+    prerequisites: [
+      '각 제공사의 API 키와 base URL, 모델명을 확인한다.',
+      'Aider, Continue, OpenAI SDK 래퍼 중 어떤 표면에서 비교할지 정한다.',
+      '비교할 작업 샘플, 성공 기준, 비용 기록 양식을 먼저 만든다.',
+      '로컬/온프레미스 모델은 GPU 메모리, 컨텍스트, 라이선스를 별도로 확인한다.',
+    ],
+    steps: [
+      {
+        title: '공통 CLI 표면 고정',
+        body: '먼저 Aider 같은 하나의 CLI 표면을 고정한다. UX를 고정해야 모델별 품질, 비용, 속도 차이를 관찰하기 쉽다.',
+        commands: ['pipx install aider-chat'],
+      },
+      {
+        title: 'base URL과 키를 제공사별로 분리',
+        body: '환경 변수 이름을 제공사별로 분리하고, 기록에는 모델명과 snapshot 날짜를 함께 남긴다.',
+        commands: [
+          'OPENAI_BASE_URL=https://api.moonshot.ai/v1 OPENAI_API_KEY=$MOONSHOT_API_KEY aider --model openai/kimi-k2.7-code',
+          'OPENAI_BASE_URL=https://api.deepseek.com OPENAI_API_KEY=$DEEPSEEK_API_KEY aider --model openai/deepseek-v4-flash',
+          'OPENAI_BASE_URL=https://api.x.ai/v1 OPENAI_API_KEY=$XAI_API_KEY aider --model grok-4.3',
+        ],
+      },
+      {
+        title: '설계 모델과 편집 모델 분리',
+        body: '비싼 모델은 architect 역할, 저렴한 모델은 editor 역할로 나누면 비용을 낮추면서 품질을 비교할 수 있다.',
+        commands: ['aider --model openai/gpt-5.5 --architect --editor-model openai/gpt-5.4-mini'],
+      },
+      {
+        title: '로컬 OpenAI 호환 서버 연결',
+        body: 'Qwen/Mistral 같은 오픈웨이트 후보는 vLLM, SGLang, Ollama, LM Studio 등으로 OpenAI 호환 endpoint를 열고 같은 CLI에서 붙인다.',
+        commands: [
+          'vllm serve Qwen/Qwen3-32B --served-model-name qwen3-local --enable-auto-tool-choice',
+        ],
+      },
+    ],
+    promptTemplate:
+      '비교 작업: {동일 repo 작업 샘플}\nCLI 표면: Aider\n모델 후보: {모델명/base URL}\n측정: 성공 여부, 수정 파일 수, 테스트 통과, 입력/출력 토큰, latency, 비용, 수동 리뷰 메모\n요청: 각 모델 결과를 같은 표로 정리하고 다음 실험 후보를 추천해줘.',
+    verification: [
+      '모델별 base URL, 모델 ID, API 키 스코프가 맞는지 호출 전 확인한다.',
+      '동일 프롬프트와 동일 파일 세트로 비교한다.',
+      '성공/실패뿐 아니라 diff 크기, 재시도 횟수, 테스트 통과 여부를 기록한다.',
+    ],
+    troubleshooting: [
+      '모델명 오류가 나면 provider 문서의 현재 alias와 deprecation 공지를 확인한다.',
+      'tool call 오류는 OpenAI 호환이라고 해도 파라미터 지원 차이가 있는지 확인한다.',
+      '로컬 모델이 느리면 양자화, context window, batch 설정을 분리해 측정한다.',
+    ],
+    securityChecklist: [
+      '여러 provider 키를 하나의 OPENAI_API_KEY로 덮어쓰지 않고 쉘 프로파일을 분리한다.',
+      '사내 코드 반출 금지 프로젝트는 외부 API 대신 로컬 endpoint만 허용한다.',
+      '모델 비교 로그에 소스 코드 전문과 시크릿이 남지 않게 마스킹한다.',
+    ],
+    sourceIds: [
+      'aider-docs',
+      'kimi-k27-code',
+      'deepseek-pricing',
+      'xai-quickstart',
+      'qwen-quickstart',
+      'mistral-api',
+    ],
+    tags: ['OpenAI 호환', 'Aider', 'base URL', '모델 비교', '로컬 배포'],
+  },
+  {
+    id: 'llm-cli-security-permissions',
+    title: '권한·보안·MCP 안전 운용',
+    level: '고급',
+    providerIds: ['openai', 'anthropic', 'qwen', 'mistral'],
+    commandIds: [
+      'cmd-cline-roo-vscode-agent',
+      'cmd-continue-local-open-model',
+      'cmd-openhands-agent',
+      'cmd-openai-codex',
+      'cmd-claude-code',
+    ],
+    summary:
+      '파일 시스템, 터미널, 브라우저, GitHub, DB, MCP 도구를 CLI/에이전트에 연결할 때 권한을 단계적으로 여는 체크리스트.',
+    overview:
+      '에이전트형 CLI는 강력할수록 권한 관리가 제품 품질의 일부가 된다. 읽기, 쓰기, 명령 실행, 네트워크, 배포, 시크릿 접근을 같은 권한으로 묶지 말고, 작업별 최소 권한과 감사 로그를 남기는 흐름이 필요하다.',
+    prerequisites: [
+      'CLI가 접근할 수 있는 디렉터리, 명령, 네트워크, MCP 서버 목록을 문서화한다.',
+      '읽기 전용, 패치 가능, 명령 실행 가능, 배포 가능 권한을 분리한다.',
+      '시크릿은 로컬 env, vault, CI secret 등 관리 주체별로 구분한다.',
+      '팀 환경에서는 에이전트 로그 보관 기간과 민감 정보 마스킹 정책을 정한다.',
+    ],
+    steps: [
+      {
+        title: '권한을 네 단계로 나누기',
+        body: '처음에는 읽기 전용으로 시작하고, 패치, 테스트 명령, 네트워크/API 호출, 배포 명령 순서로 권한을 연다.',
+      },
+      {
+        title: 'MCP와 외부 도구를 allowlist로 관리',
+        body: 'GitHub, 브라우저, DB, 사내 API MCP는 모두 도구별 목적과 접근 범위를 기록하고 필요할 때만 활성화한다.',
+        commands: [
+          'Cline/Roo Task: "읽기 전용으로 현재 저장소 구조와 테스트 명령만 파악해줘"',
+          'OpenHands Task: "배포 명령은 실행하지 말고 실패 원인과 수정 후보만 정리해줘"',
+        ],
+      },
+      {
+        title: '시크릿과 고객 데이터 마스킹',
+        body: '프롬프트, 로그, 스크린샷, diff에 토큰과 개인정보가 들어가지 않게 마스킹한다. 에이전트에게 원본 대신 축약 로그를 준다.',
+      },
+      {
+        title: '실행 로그와 승인 기록 보관',
+        body: '어떤 모델이 어떤 명령을 실행했는지, 실패와 재시도 이유가 무엇인지 남기면 사고 대응과 품질 개선이 가능하다.',
+      },
+    ],
+    promptTemplate:
+      '역할: 보안 중심 코드 에이전트\n권한: 읽기/패치/테스트 명령까지만 허용, 배포와 삭제는 금지\n민감 정보: .env, key, 고객 데이터는 열람 금지\n작업: {목표}\n출력: 필요한 권한, 실행할 명령, 변경 파일, 보안 리스크를 먼저 보고한 뒤 진행해줘.',
+    verification: [
+      '허용된 명령 목록 밖의 명령을 실행하지 않았는지 로그를 확인한다.',
+      'diff와 콘솔 로그에 토큰, 이메일, 사용자 식별자가 포함되지 않았는지 검색한다.',
+      'MCP 서버 연결은 작업 종료 후 끄거나 최소 권한 설정으로 되돌린다.',
+    ],
+    troubleshooting: [
+      '에이전트가 권한이 필요하다고 반복하면 실제 필요한 리소스와 편의상 원하는 리소스를 분리해 질문한다.',
+      '브라우저나 DB 도구에서 과도한 접근이 필요하면 샘플 데이터와 read-only 계정을 별도로 만든다.',
+      '로그에 민감 정보가 남았다면 저장소가 아니라 비밀 관리/감사 로그 쪽에서 폐기 절차를 따른다.',
+    ],
+    securityChecklist: [
+      '읽기 권한과 쓰기 권한을 같은 프롬프트에서 무조건 열지 않는다.',
+      '배포, 결제, 삭제, 마이그레이션 명령은 수동 승인 없이 실행하지 않는다.',
+      '팀 도입 시 모델/provider별 데이터 보관 정책을 확인한다.',
+    ],
+    sourceIds: [
+      'openai-codex-cli',
+      'claude-code-docs',
+      'roo-code-docs',
+      'continue-docs',
+      'openhands-docs',
+    ],
+    tags: ['보안', 'MCP', '권한', '시크릿', '감사 로그', 'OpenHands', 'Roo Code'],
+  },
+  {
+    id: 'llm-cli-team-rollout',
+    title: '팀 도입과 비용·품질 로그',
+    level: '고급',
+    providerIds: ['cursor', 'openai', 'anthropic', 'google'],
+    commandIds: [
+      'cmd-cursor-agent',
+      'cmd-github-copilot-cli',
+      'cmd-openai-codex',
+      'cmd-claude-code',
+      'cmd-gemini-cli',
+    ],
+    summary:
+      '개인 생산성 실험을 팀 표준으로 바꿀 때 도구 선택, 프롬프트 템플릿, 사용량, 품질 리뷰, 온보딩 문서를 묶는 운영 매뉴얼.',
+    overview:
+      '팀 도입은 가장 강한 모델 하나를 고르는 문제가 아니다. IDE/CLI 표면, GitHub/CI 통합, 보안 정책, 비용 예산, 한국어 온보딩 자료를 함께 관리해야 실제 채택률이 올라간다.',
+    prerequisites: [
+      '팀의 주요 작업 유형을 버그 수정, 신규 기능, 리뷰, 문서화, 리서치로 나눈다.',
+      '표준 CLI/IDE, 허용 모델, 금지 데이터, 승인 명령을 짧은 문서로 만든다.',
+      '비용은 좌석 플랜, API 사용량, agent run, CI 재시도 비용을 분리해 본다.',
+      '품질은 “테스트 통과”, “리뷰 지적 감소”, “작업 시간 단축”처럼 관찰 가능한 지표로 잡는다.',
+    ],
+    steps: [
+      {
+        title: '파일럿 팀과 작업 유형 고르기',
+        body: '모든 팀에 동시에 도입하지 말고 반복 업무가 많은 파일럿 팀을 정한다. 첫 달은 성공 사례보다 실패 유형 수집이 중요하다.',
+      },
+      {
+        title: '프롬프트 템플릿과 명령 프리셋 만들기',
+        body: '버그 수정, PR 리뷰, 테스트 작성, 마이그레이션처럼 반복되는 작업에는 검증 명령과 금지 범위를 포함한 템플릿을 둔다.',
+        commands: [
+          'codex "이 PR을 리뷰어 관점으로 점검하고 P0/P1 위험만 파일/라인 기준으로 알려줘"',
+          'claude "이 기능 요구사항을 작은 구현 단계와 테스트 계획으로 나눠줘"',
+        ],
+      },
+      {
+        title: '비용과 품질 로그를 같은 표로 기록',
+        body: '도구별 월 비용만 보지 말고, 실패 재시도, 리뷰 수정 횟수, 테스트 통과율을 함께 본다.',
+      },
+      {
+        title: '온보딩과 금지 사례를 업데이트',
+        body: '신규 입사자용 빠른 시작, 좋은 프롬프트 예시, 금지 프롬프트, 사고 사례를 한 문서로 유지한다.',
+      },
+    ],
+    promptTemplate:
+      '팀 표준 작업: {작업 유형}\n도구 표면: {Cursor/Codex/Claude Code/Gemini/Copilot}\n정책: {허용 모델, 금지 데이터, 승인 필요 명령}\n품질 지표: {테스트 통과, 리뷰 지적, 처리 시간}\n요청: 팀 템플릿, 검증 체크리스트, 로그 항목을 만들어줘.',
+    verification: [
+      '파일럿 기간 전후로 리뷰 지적, 테스트 실패, 작업 리드타임을 비교한다.',
+      '사용량 로그가 개인 감시가 아니라 도구 품질 개선 목적으로 설계되었는지 확인한다.',
+      '온보딩 문서가 실제 CLI 설치와 첫 작업까지 15분 안에 안내하는지 테스트한다.',
+    ],
+    troubleshooting: [
+      '채택률이 낮으면 모델 품질보다 IDE/CLI 전환 비용과 팀 정책 마찰을 먼저 본다.',
+      '비용이 튀면 agent run, 큰 컨텍스트, 반복 실패 프롬프트를 분리해 분석한다.',
+      '품질 문제가 반복되면 허용 작업을 줄이고 리뷰 전용 또는 읽기 전용 모드부터 다시 시작한다.',
+    ],
+    securityChecklist: [
+      '조직 계정, SSO, 퇴사자 접근 해제 흐름을 도구별로 확인한다.',
+      '개인 API 키를 팀 자동화에 쓰지 않는다.',
+      '팀 템플릿에는 금지 데이터와 승인 필요 명령을 항상 포함한다.',
+    ],
+    sourceIds: [
+      'cursor-docs',
+      'cursor-pricing',
+      'github-copilot-docs',
+      'openai-codex-cli',
+      'claude-code-docs',
+      'gemini-cli-github',
+    ],
+    tags: ['팀 도입', '비용', '품질 로그', '온보딩', 'Cursor', 'Copilot'],
+  },
+]
+
 export const aiCodingTools: AiCodingToolProfile[] = [
   {
     id: 'tool-cursor',
@@ -12843,6 +13231,7 @@ function collectReferencedSourceIds() {
   for (const eventSchedule of eventScheduleItems) addMany(eventSchedule.sourceIds)
   for (const benchmark of benchmarkEntries) addMany(benchmark.sourceIds)
   for (const command of vibeCodingCommands) addMany(command.sourceIds)
+  for (const manual of llmCliManuals) addMany(manual.sourceIds)
   for (const tool of aiCodingTools) addMany(tool.sourceIds)
   for (const guide of manualGuides) addMany(guide.sourceIds)
   for (const guide of personaGuides) addMany(guide.sourceIds)
@@ -12896,6 +13285,7 @@ export function runContentAudit(): ContentAuditResult {
   const duplicateUpdateIds = duplicateIds(updates)
   const duplicateEventScheduleIds = duplicateIds(eventScheduleItems)
   const duplicateCommandIds = duplicateIds(vibeCodingCommands)
+  const duplicateLlmCliManualIds = duplicateIds(llmCliManuals)
   const duplicateAiCodingToolIds = duplicateIds(aiCodingTools)
   const duplicatePersonaIds = duplicateIds(personaGuides)
   const duplicateTaskRecommendationIds = duplicateIds(taskRecommendations)
@@ -12928,6 +13318,7 @@ export function runContentAudit(): ContentAuditResult {
           duplicateUpdateIds.length +
           duplicateEventScheduleIds.length +
           duplicateCommandIds.length +
+          duplicateLlmCliManualIds.length +
           duplicateAiCodingToolIds.length +
           duplicatePersonaIds.length +
           duplicateTaskRecommendationIds.length +
@@ -12941,6 +13332,7 @@ export function runContentAudit(): ContentAuditResult {
           duplicateUpdateIds.length +
           duplicateEventScheduleIds.length +
           duplicateCommandIds.length +
+          duplicateLlmCliManualIds.length +
           duplicateAiCodingToolIds.length +
           duplicatePersonaIds.length +
           duplicateTaskRecommendationIds.length +
@@ -12953,6 +13345,7 @@ export function runContentAudit(): ContentAuditResult {
               ...duplicateUpdateIds,
               ...duplicateEventScheduleIds,
               ...duplicateCommandIds,
+              ...duplicateLlmCliManualIds,
               ...duplicateAiCodingToolIds,
               ...duplicatePersonaIds,
               ...duplicateTaskRecommendationIds,
@@ -13614,6 +14007,36 @@ export function searchCatalog(
       )
     : []
 
+  const filteredLlmCliManuals = matchesAnyCategory(selectedCategory, [
+    'vibe',
+    'tools',
+    'manuals',
+    'learning',
+  ])
+    ? llmCliManuals.filter(
+        (manual) =>
+          matchesAnyProvider(selectedProvider, (providerId) =>
+            manual.providerIds.includes(providerId)
+          ) &&
+          matchesQuery(query, [
+            manual.title,
+            manual.level,
+            manual.summary,
+            manual.overview,
+            manual.promptTemplate,
+            ...manual.providerIds,
+            ...manual.commandIds,
+            ...manual.prerequisites,
+            ...manual.steps.flatMap((step) => [step.title, step.body, ...(step.commands ?? [])]),
+            ...manual.verification,
+            ...manual.troubleshooting,
+            ...manual.securityChecklist,
+            ...manual.tags,
+            getSourceMetadataSearchText(manual.sourceIds),
+          ])
+      )
+    : []
+
   const filteredAiCodingTools = matchesAnyCategory(selectedCategory, ['tools', 'vibe', 'learning'])
     ? aiCodingTools.filter(
         (tool) =>
@@ -13764,7 +14187,9 @@ export function searchCatalog(
     : []
 
   const extensions = matchesAnyCategory(selectedCategory, ['extensions', 'tools', 'vibe'])
-    ? agentExtensions.filter((extension) => matchesQuery(query, [getExtensionSearchText(extension)]))
+    ? agentExtensions.filter((extension) =>
+        matchesQuery(query, [getExtensionSearchText(extension)])
+      )
     : []
 
   const matchedSourceIds = new Set<string>()
@@ -13775,6 +14200,7 @@ export function searchCatalog(
     ...filteredTaskRecommendations,
     ...benchmarks,
     ...filteredVibeCodingCommands,
+    ...filteredLlmCliManuals,
     ...filteredAiCodingTools,
     ...manuals,
     ...filteredPersonaGuides,
@@ -13810,6 +14236,7 @@ export function searchCatalog(
     personaGuides: filteredPersonaGuides,
     resources,
     vibeCodingCommands: filteredVibeCodingCommands,
+    llmCliManuals: filteredLlmCliManuals,
     curationMonitors: filteredCurationMonitors,
     pipelineItems: filteredPipelineItems,
     featureBacklog: filteredFeatureBacklog,
@@ -13827,6 +14254,7 @@ export function getCatalogStats() {
     eventSchedules: eventScheduleItems.length,
     benchmarkRows: benchmarkEntries.length,
     vibeCommands: vibeCodingCommands.length,
+    cliManuals: llmCliManuals.length,
     aiCodingTools: aiCodingTools.length,
     personaGuides: personaGuides.length,
     taskRecommendations: taskRecommendations.length,

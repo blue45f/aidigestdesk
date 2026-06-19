@@ -1,26 +1,46 @@
 import {
   getProviderLabel,
   getSources,
+  llmCliManuals,
+  providerCatalog,
   vibeCodingCommands,
+  type LlmCliManual,
+  type ProviderId,
   type VibeCodingCommand,
 } from '@aidigestdesk/content'
-import { ChevronDown, Copy, ExternalLink, Terminal } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import {
+  BookOpenCheck,
+  ChevronDown,
+  CheckCircle2,
+  Copy,
+  ExternalLink,
+  GitBranch,
+  KeyRound,
+  ShieldCheck,
+  Terminal,
+} from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   BrandMark,
   Chip,
   EmptyState,
+  MetadataChips,
   ResultSummary,
   SearchField,
   SectionHeader,
+  MultiSegmentBar,
   SegmentBar,
   SortSelect,
+  TextList,
   type ChipTone,
 } from '@/components/app/CommonUi'
 
 type SurfaceFilter = VibeCodingCommand['surface'] | 'all'
 type SortMode = 'fit' | 'model' | 'provider'
+type ManualLevelFilter = LlmCliManual['level'] | 'all'
+type ManualSortMode = 'recommended' | 'level' | 'title' | 'source'
+type ActiveManualLevelFilter = Exclude<ManualLevelFilter, 'all'>
 
 /** 적합도 칩 톤 매핑 — CommonUi.Chip 톤 어휘에 맞춘다. */
 const fitToneMap: Record<VibeCodingCommand['vibeCodingFit'], ChipTone> = {
@@ -54,33 +74,82 @@ const sortOptions: Array<{ value: SortMode; label: string }> = [
   { value: 'provider', label: '제공사' },
 ]
 
-/** 클립보드 복사. navigator.clipboard 부재 환경에서도 조용히 무시한다. */
+const manualLevelFilters: Array<{ id: ManualLevelFilter; label: string }> = [
+  { id: 'all', label: '전체' },
+  { id: '입문', label: '입문' },
+  { id: '실무', label: '실무' },
+  { id: '고급', label: '고급' },
+]
+
+const manualSortOptions: Array<{ value: ManualSortMode; label: string }> = [
+  { value: 'recommended', label: '추천 흐름순' },
+  { value: 'level', label: '난이도순' },
+  { value: 'title', label: '제목 A→Z' },
+  { value: 'source', label: '출처 많은 순' },
+]
+
+const manualLevelOrderMap: Record<LlmCliManual['level'], number> = {
+  입문: 0,
+  실무: 1,
+  고급: 2,
+}
+
+const manualProviderItems: Array<{ id: ProviderId | 'all'; label: string }> = [
+  { id: 'all', label: '전체' },
+  ...providerCatalog.map((provider) => ({
+    id: provider.id,
+    label: provider.shortLabel,
+  })),
+]
+
+const commandById = new Map(vibeCodingCommands.map((command) => [command.id, command]))
+
+/** 클립보드 복사. navigator.clipboard 부재 환경에서도 조용히 실패 상태만 돌려준다. */
 async function copyCommand(text: string) {
   try {
     await navigator.clipboard?.writeText(text)
+    return true
   } catch {
-    // 클립보드 권한/지원이 없으면 무시한다.
+    return false
   }
 }
 
 /** 라벨이 달린 모노스페이스 명령어 행. 카드 간 비교를 위해 일관된 형태를 유지한다. */
 function CommandRow({ label, value }: { label: string; value: string }) {
+  const [copied, setCopied] = useState(false)
+  const timerRef = useRef<number | null>(null)
+
+  useEffect(
+    () => () => {
+      if (timerRef.current !== null) window.clearTimeout(timerRef.current)
+    },
+    []
+  )
+
+  const handleCopy = async () => {
+    const didCopy = await copyCommand(value)
+    if (!didCopy) return
+    setCopied(true)
+    if (timerRef.current !== null) window.clearTimeout(timerRef.current)
+    timerRef.current = window.setTimeout(() => setCopied(false), 1400)
+  }
+
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between gap-2">
         <span className="text-xs font-semibold text-text-subtle">{label}</span>
         <button
           type="button"
-          onClick={() => void copyCommand(value)}
+          onClick={() => void handleCopy()}
           title={`${label} 명령어 복사`}
           aria-label={`${label} 명령어 복사`}
           className="inline-flex items-center gap-1 rounded-md border border-border bg-surface px-1.5 py-0.5 text-[0.6875rem] font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
         >
           <Copy className="size-3" aria-hidden />
-          복사
+          {copied ? '복사됨' : '복사'}
         </button>
       </div>
-      <code className="block overflow-x-auto rounded bg-surface-2 px-2 py-1 font-mono text-xs text-text">
+      <code className="block overflow-x-auto whitespace-pre rounded bg-surface-2 px-2 py-1 font-mono text-xs text-text">
         {value}
       </code>
     </div>
@@ -181,6 +250,349 @@ function CommandCard({ command }: { command: VibeCodingCommand }) {
   )
 }
 
+function ManualOverviewPanel({ manuals }: { manuals: LlmCliManual[] }) {
+  const linkedCommandCount = new Set(manuals.flatMap((manual) => manual.commandIds)).size
+  const coveredProviderLabels = [
+    ...new Set(
+      manuals.flatMap((manual) =>
+        manual.providerIds.map((providerId) => getProviderLabel(providerId) ?? providerId)
+      )
+    ),
+  ]
+
+  const panels = [
+    {
+      icon: Terminal,
+      title: '시작 순서',
+      body: '처음에는 전용 CLI 빠른 시작으로 설치와 읽기 전용 점검을 끝내고, 그 다음 버그 수정 루프나 Aider 비교로 넘어갑니다.',
+    },
+    {
+      icon: GitBranch,
+      title: '실전 범위',
+      body: `${linkedCommandCount}개 명령어 흐름과 연결되어 repo 수정, PR 리뷰, OpenAI 호환 API, 로컬 모델, 팀 도입까지 이어집니다.`,
+    },
+    {
+      icon: KeyRound,
+      title: '운영 기준',
+      body: 'API 키, base URL, 권한 모드, MCP, 검증 명령을 같은 매뉴얼 안에서 확인하도록 구성했습니다.',
+    },
+    {
+      icon: ShieldCheck,
+      title: '커버리지',
+      body: coveredProviderLabels.length
+        ? coveredProviderLabels.slice(0, 7).join(' · ')
+        : '현재 필터에 맞는 제공사가 없습니다.',
+    },
+  ]
+
+  return (
+    <div className="grid gap-3 lg:grid-cols-4">
+      {panels.map((panel) => (
+        <article key={panel.title} className="rounded-lg border border-border bg-surface p-4">
+          <div className="flex items-center gap-2">
+            <span className="grid size-8 shrink-0 place-items-center rounded-md border border-border bg-bg text-accent">
+              <panel.icon className="size-4" aria-hidden />
+            </span>
+            <h3 className="text-sm font-semibold text-text">{panel.title}</h3>
+          </div>
+          <p className="mt-3 text-xs leading-5 text-text-muted">{panel.body}</p>
+        </article>
+      ))}
+    </div>
+  )
+}
+
+function ManualSourceLinks({ manual }: { manual: LlmCliManual }) {
+  const sources = getSources(manual.sourceIds)
+  const sourceDomains = [
+    ...new Set(
+      sources.flatMap((source) => {
+        try {
+          return new URL(source.url).hostname.replace(/^www\./, '')
+        } catch {
+          return []
+        }
+      })
+    ),
+  ]
+  const lastChecked = sources
+    .map((source) => source.lastChecked)
+    .toSorted((left, right) => right.localeCompare(left))[0]
+
+  return (
+    <div className="space-y-2">
+      <p className="text-xs font-semibold text-text-subtle">근거 문서</p>
+      <div className="flex flex-wrap gap-2">
+        {sources.slice(0, 5).map((source) => (
+          <a
+            key={source.id}
+            href={source.url}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
+          >
+            {source.publisher}
+            <ExternalLink className="size-3" aria-hidden />
+          </a>
+        ))}
+      </div>
+      <MetadataChips
+        items={[
+          { label: '출처', value: sources.map((source) => source.publisher).join(', ') },
+          { label: '도메인', value: sourceDomains.slice(0, 4).join(', ') },
+          { label: '검증일', value: lastChecked },
+        ]}
+        limit={3}
+      />
+    </div>
+  )
+}
+
+function ManualCard({ manual }: { manual: LlmCliManual }) {
+  const relatedCommands = manual.commandIds
+    .map((commandId) => commandById.get(commandId))
+    .filter((command): command is VibeCodingCommand => Boolean(command))
+  const providerLabels = manual.providerIds.map(
+    (providerId) => getProviderLabel(providerId) ?? providerId
+  )
+
+  return (
+    <article className="rounded-lg border border-border bg-surface p-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <Chip
+              tone={manual.level === '고급' ? 'amber' : manual.level === '실무' ? 'blue' : 'accent'}
+            >
+              {manual.level}
+            </Chip>
+            <span className="text-xs font-semibold text-text-subtle">
+              {providerLabels.slice(0, 5).join(' · ')}
+            </span>
+          </div>
+          <h3 className="mt-2 text-base font-semibold text-text">{manual.title}</h3>
+          <p className="mt-2 max-w-4xl text-sm leading-6 text-text-muted">{manual.summary}</p>
+        </div>
+        <Chip tone="neutral">{manual.commandIds.length}개 명령 연결</Chip>
+      </div>
+
+      <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1.1fr)_minmax(20rem,0.9fr)]">
+        <div className="space-y-5">
+          <div className="rounded-md border border-border bg-bg p-4">
+            <p className="text-xs font-semibold text-text-subtle">전체 흐름</p>
+            <p className="mt-2 text-sm leading-6 text-text-muted">{manual.overview}</p>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-semibold text-text">절차</h4>
+            <ol className="mt-3 space-y-3">
+              {manual.steps.map((step, index) => (
+                <li
+                  key={`${manual.id}-${step.title}`}
+                  className="rounded-md border border-border bg-bg p-3"
+                >
+                  <div className="flex gap-3">
+                    <span className="grid size-7 shrink-0 place-items-center rounded-md border border-border bg-surface text-xs font-bold text-accent">
+                      {index + 1}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-text">{step.title}</p>
+                      <p className="mt-1 text-xs leading-5 text-text-muted">{step.body}</p>
+                      {step.commands?.length ? (
+                        <div className="mt-3 space-y-2">
+                          {step.commands.map((command) => (
+                            <CommandRow key={command} label="예시 명령" value={command} />
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div>
+            <div className="mb-2 flex items-center gap-2">
+              <CheckCircle2 className="size-4 text-accent" aria-hidden />
+              <h4 className="text-sm font-semibold text-text">프롬프트 템플릿</h4>
+            </div>
+            <pre className="overflow-x-auto whitespace-pre-wrap break-words rounded-md border border-border bg-bg p-3 font-mono text-xs leading-5 text-text">
+              <code>{manual.promptTemplate}</code>
+            </pre>
+          </div>
+        </div>
+
+        <aside className="space-y-5">
+          <TextList title="시작 전 준비" items={manual.prerequisites} />
+          <TextList title="검증 체크" items={manual.verification} />
+          <TextList title="문제 해결" items={manual.troubleshooting} />
+          <div className="rounded-md border border-accent-3/30 bg-accent-3/10 p-3">
+            <TextList title="보안 체크" items={manual.securityChecklist} />
+          </div>
+
+          {relatedCommands.length ? (
+            <div>
+              <p className="text-xs font-semibold text-text-subtle">연결 명령어</p>
+              <div className="mt-2 space-y-2">
+                {relatedCommands.slice(0, 6).map((command) => (
+                  <div
+                    key={command.id}
+                    className="flex min-w-0 items-center gap-2 rounded-md border border-border bg-bg p-2"
+                  >
+                    <BrandMark
+                      providerId={command.providerId}
+                      label={command.modelName}
+                      size="sm"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-semibold text-text">
+                        {command.modelName}
+                      </p>
+                      <p className="text-[0.6875rem] text-text-subtle">
+                        {command.surface} · {command.vibeCodingFit}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          <ManualSourceLinks manual={manual} />
+        </aside>
+      </div>
+    </article>
+  )
+}
+
+export function LlmCliManualSection({ manuals = llmCliManuals }: { manuals?: LlmCliManual[] }) {
+  const [levels, setLevels] = useState<ActiveManualLevelFilter[]>([])
+  const [providers, setProviders] = useState<ProviderId[]>([])
+  const [query, setQuery] = useState('')
+  const [sortMode, setSortMode] = useState<ManualSortMode>('recommended')
+
+  const filteredManuals = useMemo(() => {
+    const normalizedQuery = query.toLocaleLowerCase('ko-KR').trim()
+
+    return manuals
+      .filter((manual) => {
+        const searchable = [
+          manual.title,
+          manual.level,
+          manual.summary,
+          manual.overview,
+          manual.promptTemplate,
+          ...manual.prerequisites,
+          ...manual.steps.flatMap((step) => [step.title, step.body, ...(step.commands ?? [])]),
+          ...manual.verification,
+          ...manual.troubleshooting,
+          ...manual.securityChecklist,
+          ...manual.tags,
+        ]
+          .join(' ')
+          .toLocaleLowerCase('ko-KR')
+
+        return (
+          (levels.length === 0 || levels.includes(manual.level)) &&
+          (providers.length === 0 ||
+            providers.some((providerId) => manual.providerIds.includes(providerId))) &&
+          (!normalizedQuery || searchable.includes(normalizedQuery))
+        )
+      })
+      .toSorted((left, right) => {
+        switch (sortMode) {
+          case 'level': {
+            const byLevel = manualLevelOrderMap[left.level] - manualLevelOrderMap[right.level]
+            if (byLevel !== 0) return byLevel
+            return left.title.localeCompare(right.title)
+          }
+          case 'title':
+            return left.title.localeCompare(right.title)
+          case 'source': {
+            const bySource = right.sourceIds.length - left.sourceIds.length
+            if (bySource !== 0) return bySource
+            return left.title.localeCompare(right.title)
+          }
+          case 'recommended':
+          default:
+            return (
+              llmCliManuals.findIndex((manual) => manual.id === left.id) -
+              llmCliManuals.findIndex((manual) => manual.id === right.id)
+            )
+        }
+      })
+  }, [levels, manuals, providers, query, sortMode])
+
+  const hasActiveFilter = levels.length > 0 || providers.length > 0 || query.trim() !== ''
+  const resetFilters = () => {
+    setLevels([])
+    setProviders([])
+    setQuery('')
+    setSortMode('recommended')
+  }
+
+  return (
+    <section id="cli-manual" className="space-y-4">
+      <SectionHeader
+        icon={BookOpenCheck}
+        title="LLM CLI 실전 매뉴얼"
+        description="설치·인증부터 repo 수정, OpenAI 호환 API, MCP/권한, 팀 운영까지 LLM CLI를 실제 업무에 붙이는 절차를 한곳에서 확인합니다."
+        badge={<Chip tone="accent">{manuals.length}개 매뉴얼</Chip>}
+      />
+
+      <ManualOverviewPanel manuals={manuals} />
+
+      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1.1fr_1.1fr_1fr_10rem]">
+        <MultiSegmentBar
+          label="난이도"
+          items={manualLevelFilters}
+          value={levels}
+          onChange={setLevels}
+        />
+        <MultiSegmentBar
+          label="제공사"
+          items={manualProviderItems}
+          value={providers}
+          onChange={setProviders}
+        />
+        <SearchField
+          label="매뉴얼 검색"
+          value={query}
+          onChange={setQuery}
+          placeholder="Aider, 보안, 팀 도입, base URL"
+        />
+        <SortSelect
+          label="정렬"
+          value={sortMode}
+          onChange={setSortMode}
+          options={manualSortOptions}
+        />
+      </div>
+
+      <ResultSummary
+        shown={filteredManuals.length}
+        total={manuals.length}
+        onReset={resetFilters}
+        resetDisabled={!hasActiveFilter && sortMode === 'recommended'}
+      />
+
+      {filteredManuals.length ? (
+        <div className="space-y-4">
+          {filteredManuals.map((manual) => (
+            <ManualCard key={manual.id} manual={manual} />
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          title="조건에 맞는 LLM CLI 매뉴얼이 없습니다"
+          body="난이도와 제공사 필터를 전체로 바꾸거나 검색어를 줄이면 매뉴얼이 다시 표시됩니다."
+        />
+      )}
+    </section>
+  )
+}
+
 export function CliComparisonSection({
   commands = vibeCodingCommands,
 }: {
@@ -236,16 +648,21 @@ export function CliComparisonSection({
   }
 
   return (
-    <section id="cli-manual" className="space-y-4">
+    <section id="cli-comparison" className="space-y-4">
       <SectionHeader
         icon={Terminal}
-        title="LLM CLI 명령어 비교·매뉴얼"
-        description="모델별 CLI·에이전트의 설치·실행 명령어와 바이브 코딩 적합도를 나란히 비교하고, 셋업·운영 주의점을 함께 확인합니다."
+        title="LLM CLI 명령어 비교표"
+        description="모델별 CLI·에이전트의 설치·실행 명령어와 바이브 코딩 적합도를 나란히 비교하고, 셋업·운영 주의점을 빠르게 훑습니다."
         badge={<Chip tone="accent">{commands.length}개</Chip>}
       />
 
       <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1.6fr_1fr_10rem]">
-        <SegmentBar label="실행 표면" items={surfaceFilters} value={surface} onChange={setSurface} />
+        <SegmentBar
+          label="실행 표면"
+          items={surfaceFilters}
+          value={surface}
+          onChange={setSurface}
+        />
         <SearchField
           label="명령어 검색"
           value={query}

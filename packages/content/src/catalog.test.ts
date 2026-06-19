@@ -417,6 +417,23 @@ describe('catalog search', () => {
     )
   })
 
+  it('finds detailed LLM CLI manuals', () => {
+    const codexResults = searchCatalog('빠른 시작', 'openai', 'manuals')
+    expect(codexResults.llmCliManuals.some((manual) => manual.id === 'llm-cli-quickstart')).toBe(
+      true
+    )
+
+    const aiderResults = searchCatalog('base URL', 'all', 'vibe')
+    expect(
+      aiderResults.llmCliManuals.some((manual) => manual.id === 'llm-cli-openai-compatible-aider')
+    ).toBe(true)
+
+    const securityResults = searchCatalog('MCP', 'anthropic', 'tools')
+    expect(
+      securityResults.llmCliManuals.some((manual) => manual.id === 'llm-cli-security-permissions')
+    ).toBe(true)
+  })
+
   it('finds expanded benchmark and Korean course sources', () => {
     const sweBenchResults = searchCatalog('SWE-bench', 'all', 'benchmarks')
     expect(
@@ -588,6 +605,7 @@ describe('catalog search', () => {
       updates: 46,
       benchmarkRows: 97,
       vibeCommands: 16,
+      cliManuals: 5,
       aiCodingTools: 14,
       personaGuides: 5,
       taskRecommendations: 8,
