@@ -10,7 +10,7 @@ import {
 } from '@aidigestdesk/content'
 import { BookOpen, CalendarDays, Flame, PlayCircle, FileText, ExternalLink } from 'lucide-react'
 
-import type { ComponentType } from 'react'
+import type { ComponentType, CSSProperties } from 'react'
 
 import { Chip, NewBadge, SectionHeader, Thumbnail } from '@/components/app/CommonUi'
 
@@ -96,22 +96,25 @@ export function FreshRail() {
         badge={newCount ? <Chip tone="coral">신규 {newCount}건</Chip> : undefined}
       />
       <div className="-mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-2">
-        {items.map((item) => (
+        {items.map((item, index) => (
           <a
             key={item.key}
             href={item.url}
             target="_blank"
             rel="noreferrer"
-            className="group relative w-60 shrink-0 snap-start overflow-hidden rounded-lg border border-border bg-surface transition hover:border-border-strong"
+            style={{ '--reveal-delay': Math.min(index, 8) * 55 } as CSSProperties}
+            className="reveal is-revealed group relative w-60 shrink-0 snap-start overflow-hidden rounded-lg border border-border bg-surface transition-[transform,border-color,box-shadow] duration-200 ease-[var(--ease-out-quart)] hover:-translate-y-1 hover:border-border-strong hover:shadow-[0_14px_30px_-20px_color-mix(in_oklch,var(--color-ink),transparent_50%)]"
           >
-            <div className="relative">
-              <Thumbnail
-                src={item.imageSrc}
-                alt={item.title}
-                ratio={item.ratio === 'cover' ? 'video' : item.ratio}
-                icon={item.icon}
-                caption={item.kind}
-              />
+            <div className="relative overflow-hidden">
+              <div className="transition-transform duration-500 ease-[var(--ease-out-quart)] group-hover:scale-[1.06]">
+                <Thumbnail
+                  src={item.imageSrc}
+                  alt={item.title}
+                  ratio={item.ratio === 'cover' ? 'video' : item.ratio}
+                  icon={item.icon}
+                  caption={item.kind}
+                />
+              </div>
               {item.isNew ? (
                 <span className="absolute left-2 top-2">
                   <NewBadge />

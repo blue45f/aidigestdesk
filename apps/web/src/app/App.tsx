@@ -30,6 +30,8 @@ import {
 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import type { CSSProperties } from 'react'
+
 import { AboutRoute } from '@/components/app/AboutRoute'
 import { AccountRoute } from '@/components/app/AccountRoute'
 import { AdminRoute } from '@/components/app/AdminRoute'
@@ -68,6 +70,8 @@ import {
   ModelCards,
   ModelDetail,
 } from '@/components/app/ModelBenchmarkSections'
+import { Reveal } from '@/components/app/Motion'
+import { PortalHero } from '@/components/app/PortalHero'
 import {
   Briefing,
   EventPromotionsSection,
@@ -182,21 +186,23 @@ function ExploreGrid({ onNavigate }: { onNavigate: (route: AppRoute) => void }) 
     <section className="space-y-3">
       <h2 className="text-lg font-semibold text-text">둘러보기</h2>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {exploreCards.map((card) => (
+        {exploreCards.map((card, index) => (
           <button
             key={card.route}
             type="button"
             onClick={() => onNavigate(card.route)}
-            className="group flex items-start gap-3 rounded-lg border border-border bg-surface p-4 text-left transition hover:border-border-strong"
+            style={{ '--reveal-delay': index * 60 } as CSSProperties}
+            className="reveal is-revealed group relative flex items-start gap-3 overflow-hidden rounded-lg border border-border bg-surface p-4 text-left transition-[transform,border-color,box-shadow] duration-200 ease-[var(--ease-out-quart)] hover:-translate-y-0.5 hover:border-border-strong hover:shadow-[0_12px_28px_-18px_color-mix(in_oklch,var(--color-ink),transparent_55%)]"
           >
-            <span className="grid size-10 shrink-0 place-items-center rounded-md border border-border bg-bg text-accent">
+            <span className="sheen" aria-hidden />
+            <span className="grid size-10 shrink-0 place-items-center rounded-md border border-border bg-bg text-accent transition-colors duration-200 group-hover:border-accent/40 group-hover:bg-accent/10">
               <card.icon className="size-5" aria-hidden />
             </span>
             <span className="min-w-0">
               <span className="flex items-center gap-1 text-sm font-semibold text-text">
                 {card.title}
                 <ChevronRight
-                  className="size-3.5 -translate-x-0.5 text-text-subtle transition group-hover:translate-x-0"
+                  className="size-3.5 -translate-x-1 text-text-subtle opacity-0 transition-all duration-200 ease-[var(--ease-out-quart)] group-hover:translate-x-0 group-hover:text-accent group-hover:opacity-100"
                   aria-hidden
                 />
               </span>
@@ -623,22 +629,17 @@ export default function App() {
       default:
         return (
           <>
-            <PageHeader route="portal" />
-            <button
-              type="button"
-              onClick={() => navigateToRoute('about')}
-              className="flex w-full items-center justify-between gap-3 rounded-lg border border-accent/30 bg-accent/5 px-4 py-3 text-left transition hover:bg-accent/10"
-            >
-              <span className="text-sm text-text-muted">
-                <strong className="font-semibold text-text">처음 오셨나요?</strong> 사이트 소개와
-                사용 가이드를 먼저 둘러보세요.
-              </span>
-              <span className="shrink-0 text-xs font-semibold text-accent">소개·가이드 →</span>
-            </button>
-            <Briefing results={results} useFallback={!hasActiveFilter} />
-            <FreshRail />
+            <PortalHero onNavigate={navigateToRoute} />
+            <Reveal variant="soft">
+              <Briefing results={results} useFallback={!hasActiveFilter} />
+            </Reveal>
+            <Reveal>
+              <FreshRail />
+            </Reveal>
             <BookmarksRail onNavigate={navigateToRoute} />
-            <ExploreGrid onNavigate={navigateToRoute} />
+            <Reveal>
+              <ExploreGrid onNavigate={navigateToRoute} />
+            </Reveal>
           </>
         )
     }
@@ -738,9 +739,13 @@ export default function App() {
                   </button>
                   <a
                     href="#main-content"
-                    className="inline-flex items-center gap-1 font-semibold text-text-muted hover:text-text"
+                    className="group inline-flex items-center gap-1 font-semibold text-text-muted transition-colors duration-200 hover:text-text"
                   >
-                    맨 위로 <ChevronRight className="size-3.5 -rotate-90" aria-hidden />
+                    맨 위로{' '}
+                    <ChevronRight
+                      className="size-3.5 -rotate-90 transition-transform duration-200 ease-[var(--ease-out-quart)] group-hover:-translate-y-0.5"
+                      aria-hidden
+                    />
                   </a>
                 </nav>
               </footer>

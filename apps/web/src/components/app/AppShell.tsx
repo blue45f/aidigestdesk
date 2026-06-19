@@ -100,8 +100,8 @@ export function Header({
 }) {
   const navButtonClass = (targetRoute: AppRoute) =>
     route === targetRoute
-      ? 'inline-flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-ink bg-ink px-3 text-xs font-semibold text-ink-fg'
-      : 'inline-flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-transparent px-3 text-xs font-semibold text-text-muted transition hover:bg-surface-2 hover:text-text'
+      ? 'inline-flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-ink bg-ink px-3 text-xs font-semibold text-ink-fg transition-[transform,box-shadow] duration-200 ease-[var(--ease-out-quart)]'
+      : 'inline-flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-transparent px-3 text-xs font-semibold text-text-muted transition-[color,background-color,transform] duration-200 ease-[var(--ease-out-quart)] hover:-translate-y-px hover:bg-surface-2 hover:text-text'
 
   const showSearch = route !== 'admin'
 
@@ -116,15 +116,19 @@ export function Header({
               onNavigate('portal')
             }
           }}
-          className="flex min-w-0 items-center gap-3"
+          className="group flex min-w-0 items-center gap-3"
         >
-          <span className="grid size-9 shrink-0 place-items-center rounded-md bg-ink text-ink-fg">
-            <Sparkles className="size-4" aria-hidden />
+          <span className="grid size-9 shrink-0 place-items-center rounded-md bg-ink text-ink-fg transition-shadow duration-200 ease-[var(--ease-out-quart)] group-hover:shadow-[0_0_0_3px_color-mix(in_oklch,var(--color-accent),transparent_80%)]">
+            <Sparkles
+              className="size-4 transition-transform duration-300 ease-[var(--ease-out-quart)] group-hover:rotate-12 group-hover:scale-110"
+              aria-hidden
+            />
           </span>
           <span className="min-w-0">
             <span className="flex items-center gap-1.5 text-sm font-semibold text-text">
               AI Digest Desk
-              <span className="rounded-full border border-accent-3/40 bg-accent-3/10 px-1.5 py-px text-[0.625rem] font-bold tracking-wide text-accent-3 uppercase">
+              <span className="inline-flex items-center gap-1 rounded-full border border-accent-3/40 bg-accent-3/10 px-1.5 py-px text-[0.625rem] font-bold tracking-wide text-accent-3 uppercase">
+                <span className="live-dot !size-1.5 !bg-accent-3" aria-hidden />
                 beta
               </span>
             </span>

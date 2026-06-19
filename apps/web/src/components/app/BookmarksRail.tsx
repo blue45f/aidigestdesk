@@ -61,7 +61,7 @@ export function BookmarksRail({ onNavigate }: { onNavigate: (route: AppRoute) =>
               <button
                 type="button"
                 onClick={openItem}
-                className="flex w-full items-start gap-3 rounded-lg border border-border bg-surface p-3.5 pr-10 text-left transition hover:border-border-strong"
+                className="flex w-full items-start gap-3 rounded-lg border border-border bg-surface p-3.5 pr-10 text-left transition-[transform,border-color,box-shadow] duration-200 ease-[var(--ease-out-quart)] hover:-translate-y-0.5 hover:border-border-strong hover:shadow-[0_12px_28px_-18px_color-mix(in_oklch,var(--color-ink),transparent_55%)]"
               >
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-1.5">

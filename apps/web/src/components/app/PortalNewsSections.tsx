@@ -41,16 +41,17 @@ import {
   SectionHeader,
   SortSelect,
 } from '@/components/app/CommonUi'
+import { CountUp } from '@/components/app/Motion'
 import { type LocaleAwareFilterDefaults, getLocaleAwareFilterDefaults } from '@/utils/environment'
 
 const stats = getCatalogStats()
 
 const providerSummary = [
-  { label: '제공사', value: `${stats.providers}` },
-  { label: '업데이트', value: `${stats.updates}` },
-  { label: 'AI 도구', value: `${stats.aiCodingTools}` },
-  { label: '벤치마크', value: `${stats.benchmarkRows}` },
-  { label: '출처', value: `${stats.sources}` },
+  { label: '제공사', value: stats.providers },
+  { label: '업데이트', value: stats.updates },
+  { label: 'AI 도구', value: stats.aiCodingTools },
+  { label: '벤치마크', value: stats.benchmarkRows },
+  { label: '출처', value: stats.sources },
 ] as const
 
 function sourceUrl(sourceId: string) {
@@ -495,9 +496,14 @@ export function Briefing({
         </div>
         <div className="mt-5 grid gap-2 sm:grid-cols-5">
           {providerSummary.map((item) => (
-            <div key={item.label} className="rounded-md border border-border bg-bg p-3">
+            <div
+              key={item.label}
+              className="rounded-md border border-border bg-bg p-3 transition-colors duration-200 hover:border-border-strong"
+            >
               <p className="text-xs text-text-subtle">{item.label}</p>
-              <p className="mt-1 text-xl font-semibold text-text">{item.value}</p>
+              <p className="mt-1 text-xl font-semibold tabular-nums text-text">
+                <CountUp value={item.value} />
+              </p>
             </div>
           ))}
         </div>
