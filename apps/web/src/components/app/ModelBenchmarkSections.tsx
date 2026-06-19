@@ -51,6 +51,7 @@ import {
   sourceKindLabel,
   type SourceKindFilter,
 } from '@/components/app/sourceLabels'
+import { BookmarkButton } from '@/lib/bookmarks'
 
 type BenchmarkDomainFilter = BenchmarkDomain | 'all'
 type BenchmarkProviderFilter = BenchmarkEntry['providerId'] | 'all'
@@ -411,44 +412,55 @@ export function ModelCards({
       {filteredCards.length ? (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
           {visibleCards.map((profile) => (
-            <button
-              key={profile.id}
-              type="button"
-              onClick={() => onSelectModel(profile.id)}
-              className={`min-h-[15rem] rounded-lg border border-border border-l-4 bg-surface p-4 text-left transition hover:border-border-strong ${accentBorder(
-                profile
-              )} ${selectedModelId === profile.id ? 'ring-2 ring-accent' : ''}`}
-            >
-              <span className="flex items-start justify-between gap-3">
-                <span>
-                  <span className={`block text-xs font-semibold ${accentText(profile)}`}>
-                    {profile.providerName}
-                  </span>
-                  <span className="mt-1 block text-base font-semibold text-text">
-                    {profile.modelName}
-                  </span>
-                </span>
-                <span className="whitespace-nowrap rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle">
-                  {profile.status}
-                </span>
-              </span>
-              <span className="mt-3 block text-sm leading-6 text-text-muted">
-                {profile.oneLine}
-              </span>
-              <span className="mt-4 grid gap-2">
-                {profile.specs.slice(0, 3).map((spec) => (
-                  <span
-                    key={spec.label}
-                    className="flex items-center justify-between gap-3 border-t border-border pt-2 text-xs"
-                  >
-                    <span className="shrink-0 whitespace-nowrap text-text-subtle">
-                      {spec.label}
+            <div key={profile.id} className="relative">
+              <button
+                type="button"
+                onClick={() => onSelectModel(profile.id)}
+                className={`min-h-[15rem] w-full rounded-lg border border-border border-l-4 bg-surface p-4 text-left transition hover:border-border-strong ${accentBorder(
+                  profile
+                )} ${selectedModelId === profile.id ? 'ring-2 ring-accent' : ''}`}
+              >
+                <span className="flex items-start justify-between gap-3">
+                  <span>
+                    <span className={`block text-xs font-semibold ${accentText(profile)}`}>
+                      {profile.providerName}
                     </span>
-                    <span className="text-right font-semibold text-text">{spec.value}</span>
+                    <span className="mt-1 block text-base font-semibold text-text">
+                      {profile.modelName}
+                    </span>
                   </span>
-                ))}
+                  <span className="mr-9 whitespace-nowrap rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle">
+                    {profile.status}
+                  </span>
+                </span>
+                <span className="mt-3 block text-sm leading-6 text-text-muted">
+                  {profile.oneLine}
+                </span>
+                <span className="mt-4 grid gap-2">
+                  {profile.specs.slice(0, 3).map((spec) => (
+                    <span
+                      key={spec.label}
+                      className="flex items-center justify-between gap-3 border-t border-border pt-2 text-xs"
+                    >
+                      <span className="shrink-0 whitespace-nowrap text-text-subtle">
+                        {spec.label}
+                      </span>
+                      <span className="text-right font-semibold text-text">{spec.value}</span>
+                    </span>
+                  ))}
+                </span>
+              </button>
+              <span className="absolute top-3 right-3">
+                <BookmarkButton
+                  sourceId={profile.id}
+                  kind="model"
+                  title={profile.modelName}
+                  subtitle={profile.providerName}
+                  route="models"
+                  anchor="comparison"
+                />
               </span>
-            </button>
+            </div>
           ))}
         </div>
       ) : (

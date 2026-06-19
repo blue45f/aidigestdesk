@@ -28,6 +28,7 @@ import type { ComponentType } from 'react'
 
 import { IconButton } from '@/components/app/CommonUi'
 import { MemberAuthControl } from '@/components/layout/MemberAuthControl'
+import { SEARCH_INPUT_ID } from '@/hooks/useSearchHotkey'
 
 type NavIcon = ComponentType<{ className?: string; 'aria-hidden'?: boolean }>
 
@@ -135,11 +136,18 @@ export function Header({
             <>
               <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
               <input
+                id={SEARCH_INPUT_ID}
                 value={query}
                 onChange={(event) => onQueryChange(event.target.value)}
                 placeholder="모델, 기능, 벤치마크, 강좌, 할인 검색"
-                className="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
+                className="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-10 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
               />
+              <kbd
+                aria-hidden
+                className="pointer-events-none absolute top-1/2 right-2.5 hidden -translate-y-1/2 rounded border border-border bg-bg px-1.5 py-0.5 text-[0.6875rem] font-semibold text-text-subtle lg:block"
+              >
+                /
+              </kbd>
             </>
           ) : (
             <div className="flex h-10 items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm text-text-muted">

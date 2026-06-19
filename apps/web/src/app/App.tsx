@@ -23,11 +23,12 @@ import {
   FileText,
   MessagesSquare,
   RotateCcw,
+  Share2,
   Sparkles,
   Table2,
   Workflow,
 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { AboutRoute } from '@/components/app/AboutRoute'
 import { AccountRoute } from '@/components/app/AccountRoute'
@@ -44,6 +45,7 @@ import {
 } from '@/components/app/AiCodingSections'
 import { getCurrentRoute, routePath, routeTitles, type AppRoute } from '@/components/app/appRoutes'
 import { Header, Sidebar } from '@/components/app/AppShell'
+import { BookmarksRail } from '@/components/app/BookmarksRail'
 import { CliComparisonSection, LlmCliManualSection } from '@/components/app/CliComparisonSection'
 import { ActiveFilterChips, MultiSegmentBar } from '@/components/app/CommonUi'
 import { CommunityRoute } from '@/components/app/CommunityRoute'
@@ -79,7 +81,11 @@ import { TermsRoute } from '@/components/app/TermsRoute'
 import { TranslatedNewsSection } from '@/components/app/TranslatedNewsSection'
 import { RouteAnnouncer } from '@/components/layout/RouteAnnouncer'
 import { SkipLink } from '@/components/layout/SkipLink'
+import { useColorScheme } from '@/hooks/useColorScheme'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
+import { useSearchHotkey } from '@/hooks/useSearchHotkey'
+import { shareOrCopy } from '@/lib/share'
+import { useToast } from '@/lib/toast'
 
 const providerFilters: Array<{ id: ProviderId | 'all'; label: string }> = [
   { id: 'all', label: '전체' },
@@ -279,11 +285,14 @@ function ToolsPaneSwitcher({
   activePane,
   counts,
   onSelect,
+  onShare,
 }: {
   activePane: ToolsPaneId
   counts: Record<ToolsPaneId, number>
   onSelect: (paneId: ToolsPaneId) => void
+  onShare: () => void
 }) {
+  const activeMeta = toolsPaneMeta.find((pane) => pane.id === activePane)
   return (
     <section id="tools-workbench" className="scroll-mt-32 space-y-3">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -293,9 +302,14 @@ function ToolsPaneSwitcher({
           </p>
           <h2 className="mt-1 text-lg font-semibold text-text">필요한 영역만 열어 보기</h2>
         </div>
-        <span className="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-subtle">
-          링크 공유 가능
-        </span>
+        <button
+          type="button"
+          onClick={onShare}
+          title={`${activeMeta?.title ?? '현재 도구'} 링크 공유`}
+          className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
+        >
+          <Share2 className="size-3.5" aria-hidden />이 도구 공유
+        </button>
       </div>
       <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
         {toolsPaneMeta.map((pane) => {
@@ -357,14 +371,14 @@ export default function App() {
   const [route, setRoute] = useState<AppRoute>(getCurrentRoute)
   const [adminSession, setAdminSession] = useState<AdminSession | null>(getInitialAdminSession)
   const [memberSession, setMemberSession] = useState<MemberSession | null>(getInitialMemberSession)
-  const [dark, setDark] = useState(false)
+  const { dark, toggle: toggleDark } = useColorScheme()
   const [toolsPane, setToolsPane] = useState<ToolsPaneId>(getToolsPaneFromHash)
+  const toast = useToast()
 
   useDocumentTitle(routeTitles[route])
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', dark)
-  }, [dark])
+  const clearSearch = useCallback(() => setQuery(''), [])
+  useSearchHotkey(clearSearch)
 
   useEffect(() => {
     const syncRoute = () => {
@@ -477,6 +491,23 @@ export default function App() {
     })
   }
 
+  const handleShareTools = async () => {
+    const paneTitle = toolsPaneMeta.find((pane) => pane.id === toolsPane)?.title ?? '도구'
+    const url = `${window.location.origin}${routePath.tools}#${toolsPane}`
+    const result = await shareOrCopy({
+      title: `AIDigestDesk · ${paneTitle}`,
+      text: `AIDigestDesk 도구 워크벤치 — ${paneTitle}`,
+      url,
+    })
+    if (result === 'shared') {
+      toast.show({ message: '공유를 시작했습니다', tone: 'success' })
+    } else if (result === 'copied') {
+      toast.show({ message: '링크를 클립보드에 복사했습니다', tone: 'success' })
+    } else if (result === 'unsupported') {
+      toast.show({ message: '이 브라우저에서는 공유를 지원하지 않습니다', tone: 'error' })
+    }
+  }
+
   const toolPaneCounts: Record<ToolsPaneId, number> = {
     'task-recommendations': visibleTaskRecommendations.length,
     'ai-tools': visibleAiCodingTools.length,
@@ -561,6 +592,7 @@ export default function App() {
               activePane={toolsPane}
               counts={toolPaneCounts}
               onSelect={selectToolsPane}
+              onShare={() => void handleShareTools()}
             />
             {renderToolsPane()}
           </>
@@ -605,6 +637,7 @@ export default function App() {
             </button>
             <Briefing results={results} useFallback={!hasActiveFilter} />
             <FreshRail />
+            <BookmarksRail onNavigate={navigateToRoute} />
             <ExploreGrid onNavigate={navigateToRoute} />
           </>
         )
@@ -626,7 +659,7 @@ export default function App() {
         adminSession={adminSession}
         memberSession={memberSession}
         dark={dark}
-        onToggleDark={() => setDark((value) => !value)}
+        onToggleDark={toggleDark}
       />
       {route === 'admin' ? (
         <AdminRoute
