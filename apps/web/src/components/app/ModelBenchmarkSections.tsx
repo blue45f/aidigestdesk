@@ -8,22 +8,43 @@ import {
   getProviderLabel,
   getSources,
   getSourceMetadata,
+  localModelComparisonProfiles,
   providerCatalog,
+  resolveDirectoryImage,
   type ProviderId,
   type BenchmarkEntry,
   type BenchmarkDomain,
+  type LocalModelComparisonProfile,
+  type LocalModelInstallDifficulty,
+  type LocalModelRankGrade,
   type ModelProfile,
 } from '@aidigestdesk/content'
-import { BarChart3, Boxes, ExternalLink, Search, Table2 } from 'lucide-react'
+import {
+  BarChart3,
+  Boxes,
+  Cpu,
+  ExternalLink,
+  Medal,
+  Monitor,
+  PackageCheck,
+  Search,
+  Server,
+  Table2,
+} from 'lucide-react'
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 
 import {
+  Chip,
   EmptyState,
   MetadataChips,
   MultiSegmentBar,
+  ResultSummary,
+  SearchField,
   SectionHeader,
   SortSelect,
   TextList,
+  Thumbnail,
+  type ChipTone,
 } from '@/components/app/CommonUi'
 import {
   sourceKindFilters,
@@ -52,6 +73,14 @@ type ModelSpecSortMode = 'label' | 'value'
 type ModelSourceSortMode = 'publisher' | 'kind' | 'checked'
 type ComparisonMatrixSortMode = 'axis' | 'filled' | 'coverage'
 type ComparisonMatrixSortDirection = 'asc' | 'desc'
+type LocalModelSortMode =
+  | 'rank'
+  | 'model-asc'
+  | 'model-desc'
+  | 'difficulty-asc'
+  | 'difficulty-desc'
+  | 'runtime-desc'
+  | 'frontend-desc'
 type ListLimit = number
 type ActiveBenchmarkDomainFilter = Exclude<BenchmarkDomainFilter, 'all'>
 type ActiveBenchmarkProviderFilter = Exclude<BenchmarkProviderFilter, 'all'>
@@ -119,6 +148,66 @@ function accentText(profile: ModelProfile) {
     case 'ink':
       return 'text-zinc-900 dark:text-zinc-100'
   }
+}
+
+const localDifficultyOrder: Record<LocalModelInstallDifficulty, number> = {
+  쉬움: 0,
+  보통: 1,
+  고급: 2,
+}
+
+const localGradeTones = {
+  S: 'accent',
+  A: 'blue',
+  B: 'amber',
+} satisfies Record<LocalModelRankGrade, ChipTone>
+
+const localModelSortOptions: Array<{ value: LocalModelSortMode; label: string }> = [
+  { value: 'rank', label: '추천 순위' },
+  { value: 'model-asc', label: '모델 A→Z' },
+  { value: 'model-desc', label: '모델 Z→A' },
+  { value: 'difficulty-asc', label: '쉬운 설치순' },
+  { value: 'difficulty-desc', label: '고급 설치순' },
+  { value: 'runtime-desc', label: '런타임 많은순' },
+  { value: 'frontend-desc', label: '프론트엔드 많은순' },
+]
+
+function uniqueSorted(values: readonly string[]) {
+  return [...new Set(values)].toSorted((a, b) => a.localeCompare(b, 'ko-KR'))
+}
+
+function compareLocalModels(
+  a: LocalModelComparisonProfile,
+  b: LocalModelComparisonProfile,
+  sortMode: LocalModelSortMode
+) {
+  switch (sortMode) {
+    case 'model-asc':
+      return a.modelName.localeCompare(b.modelName, 'ko-KR')
+    case 'model-desc':
+      return b.modelName.localeCompare(a.modelName, 'ko-KR')
+    case 'difficulty-asc':
+      return (
+        localDifficultyOrder[a.installDifficulty] - localDifficultyOrder[b.installDifficulty] ||
+        a.rank - b.rank
+      )
+    case 'difficulty-desc':
+      return (
+        localDifficultyOrder[b.installDifficulty] - localDifficultyOrder[a.installDifficulty] ||
+        a.rank - b.rank
+      )
+    case 'runtime-desc':
+      return b.recommendedRuntimes.length - a.recommendedRuntimes.length || a.rank - b.rank
+    case 'frontend-desc':
+      return b.frontends.length - a.frontends.length || a.rank - b.rank
+    case 'rank':
+    default:
+      return a.rank - b.rank
+  }
+}
+
+function getLocalModelSourceUrl(profile: LocalModelComparisonProfile) {
+  return getSources(profile.sourceIds)[0]?.url ?? `https://${profile.thumbnailDomain}`
 }
 
 export function ModelCards({
@@ -242,7 +331,7 @@ export function ModelCards({
   }, [filteredCards, onSelectModel, selectedModelId])
 
   return (
-    <section id="comparison" className="space-y-4">
+    <section id="comparison" className="scroll-mt-32 space-y-4">
       <SectionHeader
         icon={Boxes}
         title="현재 주요 모델"
@@ -604,6 +693,315 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
   )
 }
 
+function LocalModelCard({ profile }: { profile: LocalModelComparisonProfile }) {
+  const sources = getSources(profile.sourceIds)
+  const image = resolveDirectoryImage({
+    url: getLocalModelSourceUrl(profile),
+    thumbnailDomain: profile.thumbnailDomain,
+    thumbnailRatio: 'square',
+  })
+  const primarySource = sources[0]
+
+  return (
+    <article className="flex flex-col rounded-lg border border-border bg-surface p-4">
+      <div className="flex items-start gap-3">
+        <div className="w-16 shrink-0">
+          <Thumbnail
+            src={image?.src}
+            alt={`${profile.modelName} 썸네일`}
+            ratio={image?.ratio ?? 'square'}
+            icon={Server}
+            caption={profile.modelName}
+            fit="contain"
+          />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-[0.6875rem] font-semibold text-text-subtle">
+                #{profile.rank} · {getProviderLabel(profile.providerId)}
+              </p>
+              <h3 className="mt-1 text-base font-semibold text-text">{profile.modelName}</h3>
+            </div>
+            <Chip tone={localGradeTones[profile.grade]} icon={Medal}>
+              {profile.grade} 등급
+            </Chip>
+          </div>
+          <p className="mt-2 text-xs leading-5 text-text-muted">{profile.rankReason}</p>
+        </div>
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        <Chip tone="neutral" icon={PackageCheck}>
+          설치 {profile.installDifficulty}
+        </Chip>
+        <Chip tone="blue" icon={Cpu}>
+          {profile.sizeLabel}
+        </Chip>
+        <Chip tone="neutral">{profile.license}</Chip>
+      </div>
+
+      <div className="mt-3 rounded-md border border-border bg-bg p-3">
+        <p className="text-[0.6875rem] font-semibold text-text-subtle">설치/서빙 힌트</p>
+        <code className="mt-1 block break-words font-mono text-xs leading-5 text-text-muted">
+          {profile.installHint}
+        </code>
+      </div>
+
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div>
+          <p className="text-[0.6875rem] font-semibold text-text-subtle">권장 런타임</p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {profile.recommendedRuntimes.map((runtime) => (
+              <Chip key={runtime} tone="blue" icon={Server}>
+                {runtime}
+              </Chip>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p className="text-[0.6875rem] font-semibold text-text-subtle">연결 프론트엔드</p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {profile.frontends.map((frontend) => (
+              <Chip key={frontend} tone="accent" icon={Monitor}>
+                {frontend}
+              </Chip>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-2">
+        <TextList title="추천 용도" items={profile.bestFor.slice(0, 4)} />
+        <TextList title="주의점" items={profile.caveats.slice(0, 4)} />
+      </div>
+
+      <p className="mt-3 rounded-md border border-border bg-surface-2 px-3 py-2 text-xs leading-5 text-text-subtle">
+        <span className="font-semibold text-text-muted">신뢰 신호 · </span>
+        {profile.adoptionSignal}
+      </p>
+
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {sources.slice(0, 4).map((source) => (
+          <a
+            key={source.id}
+            href={source.url}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle transition hover:text-text"
+          >
+            {source.publisher}
+            <ExternalLink className="size-3" aria-hidden />
+          </a>
+        ))}
+      </div>
+      {primarySource ? (
+        <p className="mt-2 text-[0.6875rem] text-text-subtle">
+          기준 출처 확인일 {primarySource.lastChecked}
+        </p>
+      ) : null}
+    </article>
+  )
+}
+
+export function LocalModelComparison() {
+  const [query, setQuery] = useState('')
+  const [providers, setProviders] = useState<ProviderId[]>([])
+  const [difficulties, setDifficulties] = useState<LocalModelInstallDifficulty[]>([])
+  const [runtimes, setRuntimes] = useState<string[]>([])
+  const [frontends, setFrontends] = useState<string[]>([])
+  const [sortMode, setSortMode] = useState<LocalModelSortMode>('rank')
+  const deferredQuery = useDeferredValue(query)
+  const searchTerms = useMemo(() => getSearchTerms(deferredQuery), [deferredQuery])
+  const providerItems = useMemo<Array<{ id: ProviderId | 'all'; label: string }>>(
+    () => [
+      { id: 'all', label: '전체' },
+      ...uniqueSorted(localModelComparisonProfiles.map((profile) => profile.providerId)).map(
+        (providerId) => ({
+          id: providerId as ProviderId,
+          label: getProviderLabel(providerId as ProviderId) ?? providerId,
+        })
+      ),
+    ],
+    []
+  )
+  const difficultyItems: Array<{ id: LocalModelInstallDifficulty | 'all'; label: string }> = [
+    { id: 'all', label: '전체' },
+    { id: '쉬움', label: '쉬움' },
+    { id: '보통', label: '보통' },
+    { id: '고급', label: '고급' },
+  ]
+  const runtimeItems = useMemo<Array<{ id: string | 'all'; label: string }>>(
+    () => [
+      { id: 'all', label: '전체' },
+      ...uniqueSorted(
+        localModelComparisonProfiles.flatMap((profile) => profile.recommendedRuntimes)
+      ).map((runtime) => ({ id: runtime, label: runtime })),
+    ],
+    []
+  )
+  const frontendItems = useMemo<Array<{ id: string | 'all'; label: string }>>(
+    () => [
+      { id: 'all', label: '전체' },
+      ...uniqueSorted(localModelComparisonProfiles.flatMap((profile) => profile.frontends)).map(
+        (frontend) => ({ id: frontend, label: frontend })
+      ),
+    ],
+    []
+  )
+  const filteredProfiles = useMemo(
+    () =>
+      localModelComparisonProfiles
+        .filter((profile) => {
+          const sources = getSources(profile.sourceIds)
+          const searchableText = [
+            profile.modelName,
+            profile.modelId,
+            getProviderLabel(profile.providerId),
+            profile.sizeLabel,
+            profile.license,
+            profile.installDifficulty,
+            profile.installHint,
+            profile.rankReason,
+            profile.adoptionSignal,
+            ...profile.recommendedRuntimes,
+            ...profile.frontends,
+            ...profile.bestFor,
+            ...profile.caveats,
+            ...profile.tags,
+            ...sources.flatMap((source) => [
+              source.title,
+              source.publisher,
+              source.note,
+              getContentMetadataSearchText(getSourceMetadata(source)),
+            ]),
+          ]
+            .join(' ')
+            .toLocaleLowerCase('ko-KR')
+            .replace(/\s+/g, ' ')
+            .trim()
+
+          return (
+            (providers.length === 0 || providers.includes(profile.providerId)) &&
+            (difficulties.length === 0 || difficulties.includes(profile.installDifficulty)) &&
+            (runtimes.length === 0 ||
+              runtimes.some((runtime) => profile.recommendedRuntimes.includes(runtime))) &&
+            (frontends.length === 0 ||
+              frontends.some((frontend) => profile.frontends.includes(frontend))) &&
+            (!searchTerms.length ||
+              searchTerms.some((searchTerm) => searchableText.includes(searchTerm)))
+          )
+        })
+        .toSorted((a, b) => compareLocalModels(a, b, sortMode)),
+    [difficulties, frontends, providers, runtimes, searchTerms, sortMode]
+  )
+  const totalRuntimeCount = uniqueSorted(
+    localModelComparisonProfiles.flatMap((profile) => profile.recommendedRuntimes)
+  ).length
+  const totalFrontendCount = uniqueSorted(
+    localModelComparisonProfiles.flatMap((profile) => profile.frontends)
+  ).length
+  const resetDisabled =
+    query === '' &&
+    providers.length === 0 &&
+    difficulties.length === 0 &&
+    runtimes.length === 0 &&
+    frontends.length === 0 &&
+    sortMode === 'rank'
+
+  return (
+    <section id="local-models" className="scroll-mt-32 space-y-4">
+      <SectionHeader
+        icon={Cpu}
+        title="설치형 오픈소스 모델 비교"
+        description="모델 자체 성능표와 별도로, 로컬/온프레미스에서 실제 설치·서빙·프론트엔드 연결을 시작하기 좋은 후보를 등급화했습니다."
+      />
+      <div className="grid gap-4 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div className="xl:col-span-2">
+          <SearchField
+            label="로컬 모델 검색"
+            value={query}
+            onChange={setQuery}
+            placeholder="GLM, Qwen, Open WebUI, vLLM, SGLang, LM Studio"
+          />
+        </div>
+        <SortSelect
+          label="정렬"
+          value={sortMode}
+          onChange={setSortMode}
+          options={localModelSortOptions}
+        />
+        <ResultSummary
+          shown={filteredProfiles.length}
+          total={localModelComparisonProfiles.length}
+          unit="개"
+          onReset={() => {
+            setQuery('')
+            setProviders([])
+            setDifficulties([])
+            setRuntimes([])
+            setFrontends([])
+            setSortMode('rank')
+          }}
+          resetDisabled={resetDisabled}
+        />
+        <MultiSegmentBar
+          label="제공사"
+          items={providerItems}
+          value={providers}
+          onChange={setProviders}
+        />
+        <MultiSegmentBar
+          label="설치 난이도"
+          items={difficultyItems}
+          value={difficulties}
+          onChange={setDifficulties}
+        />
+        <MultiSegmentBar
+          label="런타임"
+          items={runtimeItems}
+          value={runtimes}
+          onChange={setRuntimes}
+        />
+        <MultiSegmentBar
+          label="프론트엔드"
+          items={frontendItems}
+          value={frontends}
+          onChange={setFrontends}
+        />
+        <div className="grid gap-2 rounded-md border border-border bg-bg p-3 sm:grid-cols-4 xl:col-span-4">
+          {[
+            { label: '비교 후보', value: localModelComparisonProfiles.length },
+            { label: '런타임', value: totalRuntimeCount },
+            { label: '프론트엔드', value: totalFrontendCount },
+            {
+              label: 'S등급',
+              value: localModelComparisonProfiles.filter((profile) => profile.grade === 'S').length,
+            },
+          ].map((item) => (
+            <div key={item.label} className="rounded-md border border-border bg-surface px-3 py-2">
+              <p className="text-[0.6875rem] font-semibold text-text-subtle">{item.label}</p>
+              <p className="mt-1 text-lg font-semibold text-text">{item.value}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      {filteredProfiles.length ? (
+        <div className="grid gap-3 xl:grid-cols-2">
+          {filteredProfiles.map((profile) => (
+            <LocalModelCard key={profile.id} profile={profile} />
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          title="조건에 맞는 설치형 모델이 없습니다"
+          body="런타임, 프론트엔드, 제공사 필터를 줄이거나 검색어를 바꿔보세요."
+        />
+      )}
+    </section>
+  )
+}
+
 export function BenchmarkBoard() {
   const [domains, setDomains] = useState<ActiveBenchmarkDomainFilter[]>([])
   const [providers, setProviders] = useState<ActiveBenchmarkProviderFilter[]>([])
@@ -786,7 +1184,7 @@ export function BenchmarkBoard() {
     ]
   }, [visibleEntries])
   return (
-    <section id="benchmarks" className="space-y-4">
+    <section id="benchmarks" className="scroll-mt-32 space-y-4">
       <SectionHeader
         icon={BarChart3}
         title="벤치마크와 비용"

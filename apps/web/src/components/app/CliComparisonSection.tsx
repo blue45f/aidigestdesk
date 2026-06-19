@@ -94,6 +94,8 @@ const manualLevelOrderMap: Record<LlmCliManual['level'], number> = {
   고급: 2,
 }
 
+const initialManualVisibleCount = 4
+
 const manualProviderItems: Array<{ id: ProviderId | 'all'; label: string }> = [
   { id: 'all', label: '전체' },
   ...providerCatalog.map((provider) => ({
@@ -135,7 +137,7 @@ function CommandRow({ label, value }: { label: string; value: string }) {
   }
 
   return (
-    <div className="space-y-1">
+    <div className="min-w-0 space-y-1">
       <div className="flex items-center justify-between gap-2">
         <span className="text-xs font-semibold text-text-subtle">{label}</span>
         <button
@@ -149,7 +151,7 @@ function CommandRow({ label, value }: { label: string; value: string }) {
           {copied ? '복사됨' : '복사'}
         </button>
       </div>
-      <code className="block overflow-x-auto whitespace-pre rounded bg-surface-2 px-2 py-1 font-mono text-xs text-text">
+      <code className="block w-full max-w-full overflow-x-auto whitespace-pre rounded bg-surface-2 px-2 py-1 font-mono text-xs text-text">
         {value}
       </code>
     </div>
@@ -163,7 +165,7 @@ function CommandCard({ command }: { command: VibeCodingCommand }) {
   const hasMoreNotes = command.setupNotes.length > 3
 
   return (
-    <article className="space-y-3 rounded-lg border border-border bg-surface p-4">
+    <article className="min-w-0 space-y-3 rounded-lg border border-border bg-surface p-4">
       <div className="flex flex-wrap items-center gap-2">
         <BrandMark providerId={command.providerId} label={command.modelName} size="sm" />
         <h3 className="min-w-0 flex-1 text-sm font-bold text-text">{command.modelName}</h3>
@@ -357,7 +359,7 @@ function ManualCard({ manual }: { manual: LlmCliManual }) {
   )
 
   return (
-    <article className="rounded-lg border border-border bg-surface p-5">
+    <article className="min-w-0 rounded-lg border border-border bg-surface p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -376,8 +378,8 @@ function ManualCard({ manual }: { manual: LlmCliManual }) {
         <Chip tone="neutral">{manual.commandIds.length}개 명령 연결</Chip>
       </div>
 
-      <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1.1fr)_minmax(20rem,0.9fr)]">
-        <div className="space-y-5">
+      <div className="mt-5 grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.1fr)_minmax(20rem,0.9fr)]">
+        <div className="min-w-0 space-y-5">
           <div className="rounded-md border border-border bg-bg p-4">
             <p className="text-xs font-semibold text-text-subtle">전체 흐름</p>
             <p className="mt-2 text-sm leading-6 text-text-muted">{manual.overview}</p>
@@ -389,7 +391,7 @@ function ManualCard({ manual }: { manual: LlmCliManual }) {
               {manual.steps.map((step, index) => (
                 <li
                   key={`${manual.id}-${step.title}`}
-                  className="rounded-md border border-border bg-bg p-3"
+                  className="min-w-0 rounded-md border border-border bg-bg p-3"
                 >
                   <div className="flex gap-3">
                     <span className="grid size-7 shrink-0 place-items-center rounded-md border border-border bg-surface text-xs font-bold text-accent">
@@ -417,13 +419,13 @@ function ManualCard({ manual }: { manual: LlmCliManual }) {
               <CheckCircle2 className="size-4 text-accent" aria-hidden />
               <h4 className="text-sm font-semibold text-text">프롬프트 템플릿</h4>
             </div>
-            <pre className="overflow-x-auto whitespace-pre-wrap break-words rounded-md border border-border bg-bg p-3 font-mono text-xs leading-5 text-text">
+            <pre className="min-w-0 max-w-full overflow-x-auto whitespace-pre-wrap break-words rounded-md border border-border bg-bg p-3 font-mono text-xs leading-5 text-text">
               <code>{manual.promptTemplate}</code>
             </pre>
           </div>
         </div>
 
-        <aside className="space-y-5">
+        <aside className="min-w-0 space-y-5">
           <TextList title="시작 전 준비" items={manual.prerequisites} />
           <TextList title="검증 체크" items={manual.verification} />
           <TextList title="문제 해결" items={manual.troubleshooting} />
@@ -471,6 +473,10 @@ export function LlmCliManualSection({ manuals = llmCliManuals }: { manuals?: Llm
   const [providers, setProviders] = useState<ProviderId[]>([])
   const [query, setQuery] = useState('')
   const [sortMode, setSortMode] = useState<ManualSortMode>('recommended')
+  const [visibleLimitState, setVisibleLimitState] = useState({
+    key: '',
+    limit: initialManualVisibleCount,
+  })
 
   const filteredManuals = useMemo(() => {
     const normalizedQuery = query.toLocaleLowerCase('ko-KR').trim()
@@ -524,6 +530,20 @@ export function LlmCliManualSection({ manuals = llmCliManuals }: { manuals?: Llm
       })
   }, [levels, manuals, providers, query, sortMode])
 
+  const visibleFilterKey = [
+    levels.join('|'),
+    providers.join('|'),
+    query.trim(),
+    sortMode,
+    manuals.map((manual) => manual.id).join('|'),
+  ].join('::')
+  const visibleLimit =
+    visibleLimitState.key === visibleFilterKey ? visibleLimitState.limit : initialManualVisibleCount
+  const visibleManuals = filteredManuals.slice(0, visibleLimit)
+  const hasMoreManuals = visibleManuals.length < filteredManuals.length
+  const setVisibleLimitForCurrentFilter = (limit: number) => {
+    setVisibleLimitState({ key: visibleFilterKey, limit })
+  }
   const hasActiveFilter = levels.length > 0 || providers.length > 0 || query.trim() !== ''
   const resetFilters = () => {
     setLevels([])
@@ -533,7 +553,7 @@ export function LlmCliManualSection({ manuals = llmCliManuals }: { manuals?: Llm
   }
 
   return (
-    <section id="cli-manual" className="space-y-4">
+    <section id="cli-manual" className="scroll-mt-32 space-y-4">
       <SectionHeader
         icon={BookOpenCheck}
         title="LLM CLI 실전 매뉴얼"
@@ -578,11 +598,46 @@ export function LlmCliManualSection({ manuals = llmCliManuals }: { manuals?: Llm
       />
 
       {filteredManuals.length ? (
-        <div className="space-y-4">
-          {filteredManuals.map((manual) => (
-            <ManualCard key={manual.id} manual={manual} />
-          ))}
-        </div>
+        <>
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-surface px-3 py-2 text-xs text-text-subtle">
+            <span>
+              현재 <span className="font-semibold text-text">{visibleManuals.length}</span>개 표시 ·
+              필터 결과 {filteredManuals.length}개
+            </span>
+            <span>긴 매뉴얼은 필터와 더 보기로 단계적으로 확인합니다.</span>
+          </div>
+          <div className="space-y-4">
+            {visibleManuals.map((manual) => (
+              <ManualCard key={manual.id} manual={manual} />
+            ))}
+          </div>
+          {hasMoreManuals || filteredManuals.length > initialManualVisibleCount ? (
+            <div className="flex justify-center">
+              {hasMoreManuals ? (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setVisibleLimitForCurrentFilter(
+                      Math.min(filteredManuals.length, visibleLimit + initialManualVisibleCount)
+                    )
+                  }
+                  className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-2 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
+                >
+                  <ChevronDown className="size-3.5" aria-hidden />더 보기 ·{' '}
+                  {filteredManuals.length - visibleManuals.length}개 남음
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setVisibleLimitForCurrentFilter(initialManualVisibleCount)}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-2 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
+                >
+                  처음 {initialManualVisibleCount}개만 보기
+                </button>
+              )}
+            </div>
+          ) : null}
+        </>
       ) : (
         <EmptyState
           title="조건에 맞는 LLM CLI 매뉴얼이 없습니다"
@@ -648,7 +703,7 @@ export function CliComparisonSection({
   }
 
   return (
-    <section id="cli-comparison" className="space-y-4">
+    <section id="cli-comparison" className="scroll-mt-32 space-y-4">
       <SectionHeader
         icon={Terminal}
         title="LLM CLI 명령어 비교표"

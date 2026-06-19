@@ -369,28 +369,41 @@ export function Thumbnail({
   ratio = 'video',
   icon: Icon,
   caption,
+  fit = 'cover',
 }: {
   src?: string | null
   alt: string
   ratio?: keyof typeof thumbnailRatios
   icon?: ComponentType<{ className?: string; 'aria-hidden'?: boolean }>
   caption?: string
+  fit?: 'cover' | 'contain'
 }) {
   const [failed, setFailed] = useState(false)
   const showImage = src && !failed
+  const imageFitClass = fit === 'contain' ? 'object-contain p-5' : 'object-cover'
 
   return (
     <div
       className={`relative ${thumbnailRatios[ratio]} w-full overflow-hidden rounded-md border border-border bg-surface-2`}
     >
       {showImage ? (
-        <img
-          src={src}
-          alt={alt}
-          loading="lazy"
-          onError={() => setFailed(true)}
-          className="size-full object-cover"
-        />
+        <>
+          <img
+            src={src}
+            alt={alt}
+            loading="lazy"
+            onError={() => setFailed(true)}
+            className={`size-full ${imageFitClass}`}
+          />
+          {fit === 'contain' && Icon ? (
+            <span
+              className="absolute right-1.5 bottom-1.5 grid size-5 place-items-center rounded border border-border bg-surface/90 text-text-subtle shadow-sm"
+              aria-hidden
+            >
+              <Icon className="size-3" aria-hidden />
+            </span>
+          ) : null}
+        </>
       ) : (
         <div className="grid size-full place-items-center bg-gradient-to-br from-surface-2 to-surface text-text-subtle">
           <div className="flex flex-col items-center gap-1.5 px-3 text-center">

@@ -10,7 +10,9 @@ export type ProviderId =
   | 'kimi'
   | 'deepseek'
   | 'qwen'
+  | 'zhipu'
   | 'mistral'
+  | 'meta'
   | 'cursor'
 
 export type ContentCategory =
@@ -101,6 +103,32 @@ export type ModelProfile = {
   aliases: string[]
   sourceIds: string[]
   accent: 'green' | 'blue' | 'amber' | 'coral' | 'ink'
+}
+
+export type LocalModelInstallDifficulty = '쉬움' | '보통' | '고급'
+export type LocalModelRankGrade = 'S' | 'A' | 'B'
+
+export type LocalModelComparisonProfile = {
+  id: string
+  rank: number
+  grade: LocalModelRankGrade
+  providerId: ProviderId
+  modelProfileId?: string
+  modelName: string
+  modelId: string
+  sizeLabel: string
+  license: string
+  installDifficulty: LocalModelInstallDifficulty
+  installHint: string
+  recommendedRuntimes: string[]
+  frontends: string[]
+  bestFor: string[]
+  caveats: string[]
+  rankReason: string
+  adoptionSignal: string
+  thumbnailDomain: string
+  sourceIds: string[]
+  tags: string[]
 }
 
 export type UpdateItem = {
@@ -394,6 +422,7 @@ export type TaskRecommendation = {
 
 export type SearchResults = {
   models: ModelProfile[]
+  localModelComparisons: LocalModelComparisonProfile[]
   updates: UpdateItem[]
   eventSchedules: EventScheduleItem[]
   taskRecommendations: TaskRecommendation[]
@@ -469,10 +498,22 @@ export const providerCatalog: Array<{
     productLabel: 'Qwen',
   },
   {
+    id: 'zhipu',
+    label: 'Z.ai / Zhipu AI',
+    shortLabel: 'GLM',
+    productLabel: 'GLM / Z.ai',
+  },
+  {
     id: 'mistral',
     label: 'Mistral AI',
     shortLabel: 'Mistral',
     productLabel: 'Mistral / Ministral',
+  },
+  {
+    id: 'meta',
+    label: 'Meta',
+    shortLabel: 'Llama',
+    productLabel: 'Llama',
   },
   {
     id: 'cursor',
@@ -540,6 +581,24 @@ export const sources: SourceRef[] = [
     note: 'Gemini 3 계열, Gemini 3.5 Flash, Live Translate, Nano Banana 계열 모델 목록 출처.',
   },
   {
+    id: 'google-gemma4-overview',
+    title: 'Gemma 4 Model Overview',
+    publisher: 'Google AI for Developers',
+    kind: 'official',
+    url: 'https://ai.google.dev/gemma/docs/core',
+    lastChecked: '2026-06-19',
+    note: 'Gemma 4 오픈웨이트, 상업적 사용 허용, E2B/E4B/12B/26B A4B/31B 모델 크기, 128K/256K 컨텍스트, QAT와 런타임 라우팅 출처.',
+  },
+  {
+    id: 'google-gemma-models',
+    title: 'Gemma',
+    publisher: 'Google DeepMind',
+    kind: 'official',
+    url: 'https://deepmind.google/models/gemma/',
+    lastChecked: '2026-06-19',
+    note: 'Gemma 4, Gemma 4 QAT, DiffusionGemma, Kaggle/Hugging Face/Ollama/LM Studio/Google AI Edge 등 공식 통합 목록 출처.',
+  },
+  {
     id: 'xai-grok43',
     title: 'Grok 4.3',
     publisher: 'xAI Docs',
@@ -572,7 +631,7 @@ export const sources: SourceRef[] = [
     publisher: 'xAI Docs',
     kind: 'official',
     url: 'https://docs.x.ai/developers/quickstart',
-    lastChecked: SNAPSHOT_DATE,
+    lastChecked: '2026-06-19',
     note: 'xAI API OpenAI 호환 호출, base URL, 인증 헤더, 예시 요청을 확인하는 빠른 시작 문서.',
   },
   {
@@ -612,6 +671,24 @@ export const sources: SourceRef[] = [
     note: 'Manus API v2의 태스크, 프로젝트, 파일, 웹훅, 스킬, 에이전트 기능과 base URL 출처.',
   },
   {
+    id: 'meta-llama4-maverick-hf',
+    title: 'Llama 4 Maverick Model Card',
+    publisher: 'Meta Llama on Hugging Face',
+    kind: 'official',
+    url: 'https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct',
+    lastChecked: '2026-06-19',
+    note: 'Llama 4 Maverick의 17B active/128 experts/400B total, 1M context, native multimodal MoE, vLLM/SGLang/Docker/quantization 실행 경로와 Llama 4 Community License 출처.',
+  },
+  {
+    id: 'meta-llama4-scout-hf',
+    title: 'Llama 4 Scout Model Card',
+    publisher: 'Meta Llama on Hugging Face',
+    kind: 'official',
+    url: 'https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct',
+    lastChecked: '2026-06-19',
+    note: 'Llama 4 Scout의 17B active/16 experts/109B total, 10M context, native multimodal MoE, vLLM/SGLang/Docker/quantization 실행 경로 출처.',
+  },
+  {
     id: 'openai-codex-cli',
     title: 'Codex CLI Docs',
     publisher: 'OpenAI Developers',
@@ -621,6 +698,60 @@ export const sources: SourceRef[] = [
     note: 'Codex CLI, IDE, 앱, 워크플로와 명령행 옵션을 확인하는 OpenAI 공식 문서.',
   },
   {
+    id: 'openai-codex-plugins',
+    title: 'Codex Plugins',
+    publisher: 'OpenAI Developers',
+    kind: 'official',
+    url: 'https://developers.openai.com/codex/plugins',
+    lastChecked: '2026-06-19',
+    note: 'Codex 플러그인의 개념, 설치 표면, 플러그인으로 묶을 수 있는 skills/hooks/MCP/apps 구조 출처.',
+  },
+  {
+    id: 'openai-codex-plugin-build',
+    title: 'Build a Codex Plugin',
+    publisher: 'OpenAI Developers',
+    kind: 'official',
+    url: 'https://developers.openai.com/codex/plugins/build',
+    lastChecked: '2026-06-19',
+    note: '.codex-plugin/plugin.json manifest, skills/hooks/.mcp.json/.app.json/assets 구성과 bundled MCP policy 출처.',
+  },
+  {
+    id: 'openai-codex-skills',
+    title: 'Codex Skills',
+    publisher: 'OpenAI Developers',
+    kind: 'official',
+    url: 'https://developers.openai.com/codex/skills',
+    lastChecked: '2026-06-19',
+    note: 'SKILL.md frontmatter, scripts/references/assets/agents 폴더, skill-creator와 config.toml 비활성화 흐름 출처.',
+  },
+  {
+    id: 'openai-codex-hooks',
+    title: 'Codex Hooks',
+    publisher: 'OpenAI Developers',
+    kind: 'official',
+    url: 'https://developers.openai.com/codex/hooks',
+    lastChecked: '2026-06-19',
+    note: 'PreToolUse/PostToolUse/Stop managed hooks, requirements.toml, hooks feature flag와 allow_managed_hooks_only 정책 출처.',
+  },
+  {
+    id: 'openai-apps-sdk',
+    title: 'OpenAI Apps SDK',
+    publisher: 'OpenAI Developers',
+    kind: 'official',
+    url: 'https://developers.openai.com/apps-sdk',
+    lastChecked: '2026-06-19',
+    note: 'ChatGPT 앱, MCP tool descriptor, widget resource, ChatKit/Apps SDK 개발 표면 출처.',
+  },
+  {
+    id: 'openai-apps-sdk-chatgpt-ui',
+    title: 'ChatGPT UI Components',
+    publisher: 'OpenAI Developers',
+    kind: 'official',
+    url: 'https://developers.openai.com/apps-sdk/build/chatgpt-ui',
+    lastChecked: '2026-06-19',
+    note: 'window.openai 브리지, 파일 업로드/다운로드, 모달, display mode, widget CSP와 domain 메타데이터 출처.',
+  },
+  {
     id: 'claude-code-docs',
     title: 'Claude Code Overview',
     publisher: 'Anthropic',
@@ -628,6 +759,24 @@ export const sources: SourceRef[] = [
     url: 'https://code.claude.com/docs/en/overview',
     lastChecked: SNAPSHOT_DATE,
     note: 'Claude Code 설치, CLI 명령, VS Code/JetBrains/웹/데스크톱 사용면과 자동화 예시 출처.',
+  },
+  {
+    id: 'claude-code-plugin-marketplace',
+    title: 'Claude Code Plugin Discovery',
+    publisher: 'Anthropic',
+    kind: 'official',
+    url: 'https://code.claude.com/docs/en/discover-plugins',
+    lastChecked: '2026-06-19',
+    note: '공식/커뮤니티 플러그인 마켓플레이스, /plugin install 명령, LSP/MCP/security/PR review 플러그인 목록 출처.',
+  },
+  {
+    id: 'claude-code-plugin-create',
+    title: 'Create Claude Code Plugins',
+    publisher: 'Anthropic',
+    kind: 'official',
+    url: 'https://code.claude.com/docs/en/plugins',
+    lastChecked: '2026-06-19',
+    note: '.claude-plugin/plugin.json, skills/commands/agents/hooks/.mcp.json/.lsp.json 구조와 claude --plugin-dir 테스트 출처.',
   },
   {
     id: 'claude-code-setup',
@@ -648,6 +797,69 @@ export const sources: SourceRef[] = [
     note: 'Gemini CLI 설치 명령, npx 실행, npm/Homebrew 설치, 코드 이해·생성 기능 출처.',
   },
   {
+    id: 'gemini-cli-mcp',
+    title: 'Gemini CLI MCP Server',
+    publisher: 'Google Gemini CLI',
+    kind: 'official',
+    url: 'https://geminicli.com/docs/tools/mcp-server/',
+    lastChecked: '2026-06-19',
+    note: 'settings.json mcpServers, stdio/SSE/Streamable HTTP transport, /mcp 상태 확인과 도구/리소스 노출 방식 출처.',
+  },
+  {
+    id: 'gemini-cli-skills',
+    title: 'Gemini CLI Skills',
+    publisher: 'Google Gemini CLI',
+    kind: 'official',
+    url: 'https://geminicli.com/docs/cli/skills/',
+    lastChecked: '2026-06-19',
+    note: 'Gemini CLI skill 개념, skill 작성 가이드와 CLI 작업 흐름 확장 출처.',
+  },
+  {
+    id: 'copilotkit-docs',
+    title: 'CopilotKit Documentation',
+    publisher: 'CopilotKit',
+    kind: 'official',
+    url: 'https://docs.copilotkit.ai/',
+    lastChecked: '2026-06-19',
+    note: 'CopilotChat, CopilotSidebar, CopilotPopup, AG-UI backend, shared state와 HITL agentic UX 출처.',
+  },
+  {
+    id: 'assistant-ui-docs',
+    title: 'assistant-ui Docs',
+    publisher: 'assistant-ui',
+    kind: 'official',
+    url: 'https://www.assistant-ui.com/docs',
+    lastChecked: '2026-06-19',
+    note: 'React AI chat UI, npx assistant-ui create, minimal/cloud/langgraph/mcp 템플릿, generative UI와 devtools 출처.',
+  },
+  {
+    id: 'vercel-ai-elements',
+    title: 'Vercel AI Elements',
+    publisher: 'Vercel',
+    kind: 'official',
+    url: 'https://elements.ai-sdk.dev/',
+    lastChecked: '2026-06-19',
+    note: 'shadcn/ui 기반 AI-native component registry, conversation/code/voice/workflow 컴포넌트 설치 명령 출처.',
+  },
+  {
+    id: 'zai-glm51-hf',
+    title: 'GLM-5.1 Model Card',
+    publisher: 'Z.ai on Hugging Face',
+    kind: 'official',
+    url: 'https://huggingface.co/zai-org/GLM-5.1',
+    lastChecked: '2026-06-19',
+    note: 'GLM-5.1 MIT 라이선스, 754B 모델 크기, Transformers/vLLM/SGLang/Docker Model Runner 실행 예시와 공식 벤치마크 표 출처.',
+  },
+  {
+    id: 'zai-glm51-docs',
+    title: 'GLM-5.1 Guide',
+    publisher: 'Z.ai Docs',
+    kind: 'official',
+    url: 'https://docs.z.ai/guides/llm/glm-5.1',
+    lastChecked: '2026-06-19',
+    note: 'GLM-5.1 사용 가이드와 Z.ai 공식 문서 기반 모델 설명 출처.',
+  },
+  {
     id: 'kimi-models',
     title: 'Kimi API Model List',
     publisher: 'Moonshot AI',
@@ -662,7 +874,7 @@ export const sources: SourceRef[] = [
     publisher: 'Moonshot AI',
     kind: 'official',
     url: 'https://platform.kimi.ai/docs/guide/kimi-k2-7-code-quickstart',
-    lastChecked: SNAPSHOT_DATE,
+    lastChecked: '2026-06-19',
     note: 'Kimi K2.7 Code의 코딩/에이전트 성격, 256K 컨텍스트, OpenAI SDK 호환, 멀티모달 도구 사용 제약 출처.',
   },
   {
@@ -671,8 +883,17 @@ export const sources: SourceRef[] = [
     publisher: 'DeepSeek API Docs',
     kind: 'official',
     url: 'https://api-docs.deepseek.com/quick_start/pricing',
-    lastChecked: SNAPSHOT_DATE,
+    lastChecked: '2026-06-19',
     note: 'DeepSeek V4 Flash/Pro의 1M 컨텍스트, 384K 최대 출력, OpenAI/Anthropic 호환 URL, 공식 토큰 가격 출처.',
+  },
+  {
+    id: 'deepseek-first-api-call',
+    title: 'DeepSeek Your First API Call',
+    publisher: 'DeepSeek API Docs',
+    kind: 'official',
+    url: 'https://api-docs.deepseek.com/',
+    lastChecked: '2026-06-19',
+    note: 'DeepSeek API의 OpenAI/Anthropic 호환 base URL, deepseek-v4-pro 예시 호출, thinking/reasoning_effort 사용 출처.',
   },
   {
     id: 'deepseek-updates',
@@ -743,8 +964,17 @@ export const sources: SourceRef[] = [
     publisher: 'Mistral AI',
     kind: 'official',
     url: 'https://docs.mistral.ai/api',
-    lastChecked: SNAPSHOT_DATE,
+    lastChecked: '2026-06-19',
     note: 'Mistral Chat Completions API, TypeScript/Python SDK와 curl 호출 예시, model/messages/tools 파라미터 출처.',
+  },
+  {
+    id: 'mistral-function-calling',
+    title: 'Mistral Function Calling',
+    publisher: 'Mistral AI',
+    kind: 'official',
+    url: 'https://docs.mistral.ai/studio-api/conversations/function-calling',
+    lastChecked: '2026-06-19',
+    note: 'Mistral tool calling 흐름, tool_choice, parallel_tool_calls, function schema와 지원 모델 목록 출처.',
   },
   {
     id: 'anthropic-pricing',
@@ -1197,6 +1427,42 @@ export const sources: SourceRef[] = [
     note: 'BrowseComp, SimpleQA, HealthBench, HumanEval 등 lightweight eval reference implementation을 담은 OpenAI 저장소.',
   },
   {
+    id: 'inspect-ai-docs',
+    title: 'Inspect AI',
+    publisher: 'UK AI Security Institute / Meridian',
+    kind: 'official',
+    url: 'https://inspect.aisi.org.uk/',
+    lastChecked: '2026-06-19',
+    note: 'Inspect eval framework, pip install inspect-ai, Inspect View, sandbox, 외부 에이전트 평가와 MCP/custom tools 출처.',
+  },
+  {
+    id: 'mini-swe-agent-docs',
+    title: 'mini-SWE-agent Documentation',
+    publisher: 'SWE-agent',
+    kind: 'official',
+    url: 'https://mini-swe-agent.com/latest/',
+    lastChecked: '2026-06-19',
+    note: 'mini-SWE-agent v2, SWE-agent 대비 기본 선택지 안내, LiteLLM/OpenRouter/Portkey와 격리 환경 지원 출처.',
+  },
+  {
+    id: 'mini-swe-agent-quickstart',
+    title: 'mini-SWE-agent Quickstart',
+    publisher: 'SWE-agent',
+    kind: 'official',
+    url: 'https://mini-swe-agent.com/latest/quickstart/',
+    lastChecked: '2026-06-19',
+    note: 'pip, uv, pipx, source install, pytest 검증 명령과 mini/mini-extra CLI 출처.',
+  },
+  {
+    id: 'lm-eval-harness-github',
+    title: 'LM Evaluation Harness',
+    publisher: 'EleutherAI GitHub',
+    kind: 'benchmark',
+    url: 'https://github.com/EleutherAI/lm-evaluation-harness',
+    lastChecked: '2026-06-19',
+    note: 'lm-eval 설치, hf/vllm/api optional backend, 표준 benchmark task와 GGUF/local model 평가 예시 출처.',
+  },
+  {
     id: 'kernelbench-paper',
     title: 'KernelBench',
     publisher: 'arXiv',
@@ -1456,6 +1722,42 @@ export const sources: SourceRef[] = [
     url: 'https://www.tbench.ai/',
     lastChecked: SNAPSHOT_DATE,
     note: 'Linux terminal에서 복합 개발/운영 작업을 수행하는 agent 능력을 평가하는 터미널 벤치마크.',
+  },
+  {
+    id: 'terminal-bench-install',
+    title: 'Terminal-Bench Installation',
+    publisher: 'Terminal-Bench',
+    kind: 'official',
+    url: 'https://www.tbench.ai/docs/installation',
+    lastChecked: '2026-06-19',
+    note: 'git/Docker prerequisite, uv tool install terminal-bench, tb alias와 CLI command 목록 출처.',
+  },
+  {
+    id: 'opencompass-install',
+    title: 'OpenCompass Installation',
+    publisher: 'OpenCompass',
+    kind: 'official',
+    url: 'https://opencompass.readthedocs.io/en/latest/get_started/installation.html',
+    lastChecked: '2026-06-19',
+    note: 'pip install -U opencompass, full/api/vllm/lmdeploy extra, dataset preparation과 backend 설치 출처.',
+  },
+  {
+    id: 'browsergym-github',
+    title: 'BrowserGym GitHub',
+    publisher: 'ServiceNow Research',
+    kind: 'community',
+    url: 'https://github.com/ServiceNow/BrowserGym',
+    lastChecked: '2026-06-19',
+    note: '웹 태스크 자동화 agent를 Gym 환경으로 평가하는 BrowserGym 저장소와 WebArena류 실험 출처.',
+  },
+  {
+    id: 'helm-install',
+    title: 'CRFM HELM Installation',
+    publisher: 'Stanford CRFM',
+    kind: 'official',
+    url: 'https://crfm-helm.readthedocs.io/en/latest/installation/',
+    lastChecked: '2026-06-19',
+    note: 'Python 3.10 가상환경, pip install crfm-helm, HEIM/VHELM multimodal support 안내 출처.',
   },
   {
     id: 'osworld-benchmark',
@@ -1953,6 +2255,87 @@ export const sources: SourceRef[] = [
     note: 'OpenHands 에이전트 개발 환경, 로컬/클라우드 실행, LLM 설정을 확인하는 공식 문서.',
   },
   {
+    id: 'ollama-github',
+    title: 'Ollama GitHub',
+    publisher: 'Ollama',
+    kind: 'official',
+    url: 'https://github.com/ollama/ollama',
+    lastChecked: '2026-06-19',
+    note: 'Ollama 설치 스크립트, Docker image, ollama run, REST API, Python/JS client와 Open WebUI/IDE/agent 통합 목록 출처.',
+  },
+  {
+    id: 'open-webui-quickstart',
+    title: 'Open WebUI Quick Start',
+    publisher: 'Open WebUI',
+    kind: 'official',
+    url: 'https://docs.openwebui.com/getting-started/quick-start/',
+    lastChecked: '2026-06-19',
+    note: 'Open WebUI Docker 실행, CUDA/Ollama image variants, localhost:3000 접속과 persistent volume 안내 출처.',
+  },
+  {
+    id: 'vllm-install',
+    title: 'vLLM Installation',
+    publisher: 'vLLM',
+    kind: 'official',
+    url: 'https://docs.vllm.ai/en/latest/getting_started/installation/',
+    lastChecked: '2026-06-19',
+    note: 'vLLM 설치와 OpenAI-compatible serving engine 사용을 확인하는 공식 설치 문서.',
+  },
+  {
+    id: 'sglang-github',
+    title: 'SGLang GitHub',
+    publisher: 'SGLang',
+    kind: 'official',
+    url: 'https://github.com/sgl-project/sglang',
+    lastChecked: '2026-06-19',
+    note: 'SGLang 고성능 serving framework, GLM/Kimi/DeepSeek/Qwen/Mistral 등 모델 지원, OpenAI-compatible API와 하드웨어 지원 출처.',
+  },
+  {
+    id: 'llama-cpp-github',
+    title: 'llama.cpp GitHub',
+    publisher: 'ggml-org',
+    kind: 'community',
+    url: 'https://github.com/ggml-org/llama.cpp',
+    lastChecked: '2026-06-19',
+    note: 'GGUF 로컬 추론, llama-cli/llama-server, CPU/Metal/CUDA/Vulkan backend와 OpenAI-compatible endpoint 출처.',
+  },
+  {
+    id: 'hf-tgi-install',
+    title: 'Text Generation Inference Installation',
+    publisher: 'Hugging Face',
+    kind: 'official',
+    url: 'https://huggingface.co/docs/text-generation-inference/en/installation',
+    lastChecked: '2026-06-19',
+    note: 'TGI Docker 권장 설치, source build, text-generation server 실행 출처.',
+  },
+  {
+    id: 'docker-model-runner',
+    title: 'Docker Model Runner',
+    publisher: 'Docker Docs',
+    kind: 'official',
+    url: 'https://docs.docker.com/ai/model-runner/',
+    lastChecked: '2026-06-19',
+    note: 'Docker Model Runner REST API, docker model run, Open WebUI/IDE/agent integration 출처.',
+  },
+  {
+    id: 'anythingllm-docker',
+    title: 'AnythingLLM Local Docker',
+    publisher: 'Mintplex Labs',
+    kind: 'official',
+    url: 'https://docs.anythingllm.com/installation-docker/local-docker',
+    lastChecked: '2026-06-19',
+    note: 'AnythingLLM Docker image pull, persistent storage volume, localhost:3001 접속과 local/cloud LLM setup 출처.',
+  },
+  {
+    id: 'lmstudio-docs',
+    title: 'LM Studio Docs',
+    publisher: 'LM Studio',
+    kind: 'official',
+    url: 'https://lmstudio.ai/docs',
+    lastChecked: '2026-06-19',
+    note: 'LM Studio 데스크톱 앱, 로컬 모델 다운로드/채팅, local server와 개발자 사용면 출처.',
+  },
+  {
     id: 'lovable-docs',
     title: 'Lovable Documentation',
     publisher: 'Lovable',
@@ -2284,6 +2667,114 @@ export const sources: SourceRef[] = [
     url: 'https://docs.langchain.com/langsmith/observability',
     lastChecked: SNAPSHOT_DATE,
     note: '에이전트 tracing, evaluation, prompt, deployment 관측성을 관리하는 LangSmith 공식 문서.',
+  },
+  {
+    id: 'langsmith-evaluation-concepts',
+    title: 'LangSmith Evaluation Concepts',
+    publisher: 'LangChain',
+    kind: 'official',
+    url: 'https://docs.langchain.com/langsmith/evaluation-concepts',
+    lastChecked: '2026-06-19',
+    note: 'LangSmith의 offline/online evaluation, dataset, target function, evaluator, production monitoring과 regression testing 개념 출처.',
+  },
+  {
+    id: 'langsmith-evaluation-quickstart',
+    title: 'LangSmith Evaluation Quickstart',
+    publisher: 'LangChain',
+    kind: 'official',
+    url: 'https://docs.langchain.com/langsmith/evaluation-quickstart',
+    lastChecked: '2026-06-19',
+    note: 'pip install -U langsmith openevals openai, LANGSMITH/API key 설정, client.evaluate 실행 흐름 출처.',
+  },
+  {
+    id: 'langsmith-evaluators',
+    title: 'LangSmith Evaluators',
+    publisher: 'LangChain',
+    kind: 'official',
+    url: 'https://docs.langchain.com/langsmith/evaluators',
+    lastChecked: '2026-06-19',
+    note: 'workspace-level evaluator, template category, Engine 기반 evaluator 생성과 보안/품질/대화/trajectory evaluator 출처.',
+  },
+  {
+    id: 'promptfoo-intro',
+    title: 'Promptfoo Introduction',
+    publisher: 'Promptfoo',
+    kind: 'official',
+    url: 'https://www.promptfoo.dev/docs/intro/',
+    lastChecked: '2026-06-19',
+    note: 'Promptfoo가 OpenAI 소속이 되었고, LLM 앱 평가/red teaming, prompt/model/RAG 벤치마크, CI/CD, matrix/risk report를 지원한다는 공식 문서.',
+  },
+  {
+    id: 'promptfoo-install',
+    title: 'Promptfoo Installation',
+    publisher: 'Promptfoo',
+    kind: 'official',
+    url: 'https://www.promptfoo.dev/docs/installation/',
+    lastChecked: '2026-06-19',
+    note: 'npm install -g promptfoo, npx promptfoo@latest, brew install promptfoo, Node 버전 요건과 promptfoo init 설치 흐름 출처.',
+  },
+  {
+    id: 'ragas-docs',
+    title: 'Ragas Documentation',
+    publisher: 'Ragas',
+    kind: 'official',
+    url: 'https://docs.ragas.io/en/stable/',
+    lastChecked: '2026-06-19',
+    note: 'RAG/agent 평가 루프, context precision/recall, faithfulness, response relevancy, tool call accuracy, agent goal accuracy metric 출처.',
+  },
+  {
+    id: 'ragas-install',
+    title: 'Ragas Installation',
+    publisher: 'Ragas',
+    kind: 'official',
+    url: 'https://docs.ragas.io/en/stable/getstarted/install/',
+    lastChecked: '2026-06-19',
+    note: 'pip install ragas와 main branch 설치, LangChain/OpenAI 연동 의존성 안내 출처.',
+  },
+  {
+    id: 'litellm-docs',
+    title: 'LiteLLM Getting Started',
+    publisher: 'LiteLLM',
+    kind: 'official',
+    url: 'https://docs.litellm.ai/docs/',
+    lastChecked: '2026-06-19',
+    note: '100개 이상 LLM을 OpenAI 형식으로 호출하는 통합 인터페이스, SDK 설치, self-hosted proxy, virtual keys, cost tracking, observability callback 출처.',
+  },
+  {
+    id: 'litellm-proxy-quickstart',
+    title: 'LiteLLM Proxy CLI Quick Start',
+    publisher: 'LiteLLM',
+    kind: 'official',
+    url: 'https://docs.litellm.ai/docs/proxy/quick_start',
+    lastChecked: '2026-06-19',
+    note: "uv tool install 'litellm[proxy]', litellm --model, litellm --test, OpenAI/Anthropic/Vertex/Ollama/vLLM/TGI routing과 load balancing 출처.",
+  },
+  {
+    id: 'openrouter-quickstart',
+    title: 'OpenRouter Quickstart',
+    publisher: 'OpenRouter',
+    kind: 'official',
+    url: 'https://openrouter.ai/docs/quickstart',
+    lastChecked: '2026-06-19',
+    note: '단일 endpoint로 수백 개 모델 접근, 자동 fallback/비용 효율 옵션, @openrouter/sdk, Agent SDK, OpenAI SDK baseURL 호환 출처.',
+  },
+  {
+    id: 'langfuse-docs',
+    title: 'Langfuse Documentation',
+    publisher: 'Langfuse',
+    kind: 'official',
+    url: 'https://langfuse.com/docs',
+    lastChecked: '2026-06-19',
+    note: '오픈소스 LLM observability, prompt management, evaluation, production trace 평가, dataset/experiment, Python/JS SDK와 LangChain/LlamaIndex/OpenAI 연동 출처.',
+  },
+  {
+    id: 'langfuse-self-hosting',
+    title: 'Self-host Langfuse',
+    publisher: 'Langfuse',
+    kind: 'official',
+    url: 'https://langfuse.com/self-hosting',
+    lastChecked: '2026-06-19',
+    note: 'Docker 기반 self-hosting, Docker Compose 저규모 배포, Kubernetes/Cloud production 배포, Postgres/ClickHouse/Redis/S3 구성 출처.',
   },
   {
     id: 'llamaindex-docs',
@@ -4080,6 +4571,47 @@ export const modelProfiles: ModelProfile[] = [
     accent: 'amber',
   },
   {
+    id: 'gemma-4',
+    providerId: 'google',
+    providerName: 'Google DeepMind',
+    productName: 'Gemma',
+    modelName: 'Gemma 4',
+    modelId: 'google/gemma-4',
+    status: '일반 제공',
+    lastUpdate: '2026-06-08',
+    verifiedAt: '2026-06-19',
+    oneLine: '모바일·엣지·로컬 PC·서버를 한 계열로 잇는 Google DeepMind의 최신 오픈웨이트 모델군.',
+    summary:
+      'Gemma 4는 E2B/E4B, 12B, 26B A4B, 31B 크기로 제공되는 오픈웨이트 모델군이다. 텍스트·이미지·비디오·오디오 입력, 128K/256K 컨텍스트, function calling, system role, MTP, 공식 QAT 체크포인트와 llama.cpp/LM Studio/vLLM/SGLang/LiteRT-LM 라우팅을 함께 봐야 한다.',
+    strengths: [
+      '오픈웨이트와 상업적 사용 허용',
+      '모바일부터 서버까지 크기 선택지',
+      'Gemma 4 QAT와 GGUF/Compressed Tensor 경로',
+      '멀티모달·코딩·에이전트 기능',
+    ],
+    caveats: [
+      '오디오 native 지원은 E2B/E4B/12B 중심으로 모델별 차이가 있다.',
+      'QAT, GGUF, mobile, server 변형 suffix를 런타임별로 정확히 골라야 한다.',
+      '컨텍스트를 길게 쓰면 base memory 외 KV cache 비용이 빠르게 증가한다.',
+    ],
+    bestFor: [
+      '온디바이스/브라우저/모바일 PoC',
+      '로컬 멀티모달 챗봇',
+      'QAT 기반 저메모리 배포',
+      '오픈웨이트 모델 비교와 교육용 실습',
+    ],
+    specs: [
+      { label: '크기', value: 'E2B, E4B, 12B, 26B A4B, 31B', tone: 'good' },
+      { label: '컨텍스트', value: '128K small · 256K medium', tone: 'good' },
+      { label: '입력', value: 'Text, Image, Video, Audio(모델별)' },
+      { label: 'QAT 라우팅', value: 'GGUF, w4a16-ct, mobile-ct, MTP drafters' },
+      { label: '메모리 예시', value: 'E2B Q4 2.9GB · 12B Q4 6.7GB · 31B Q4 17.5GB' },
+    ],
+    aliases: ['Gemma', '젬마', 'Google open model', 'Gemma 4', 'Gemma QAT', 'GGUF'],
+    sourceIds: ['google-gemma4-overview', 'google-gemma-models'],
+    accent: 'green',
+  },
+  {
     id: 'grok-43',
     providerId: 'xai',
     providerName: 'xAI',
@@ -4281,6 +4813,48 @@ export const modelProfiles: ModelProfile[] = [
     accent: 'amber',
   },
   {
+    id: 'glm-51',
+    providerId: 'zhipu',
+    providerName: 'Z.ai / Zhipu AI',
+    productName: 'GLM / Z.ai',
+    modelName: 'GLM-5.1',
+    modelId: 'zai-org/GLM-5.1',
+    status: '일반 제공',
+    lastUpdate: '2026-06-19',
+    verifiedAt: SNAPSHOT_DATE,
+    oneLine:
+      'MIT 라이선스 오픈웨이트 754B급 GLM 플래그십으로 코딩·에이전트·로컬/서빙 실험에 적합한 모델.',
+    summary:
+      'GLM-5.1은 Z.ai가 Hugging Face에 공개한 차세대 flagship 모델 카드 기준 754B 모델이며, Transformers, vLLM, SGLang, Docker Model Runner, GGUF/Ollama/LM Studio 계열 실행 경로를 안내한다. SWE-Bench Pro, Terminal-Bench 2.0, CyberGym, BrowseComp 등 점수는 공식 모델 카드의 자체 보고 벤치마크로 분리해 해석해야 한다.',
+    strengths: [
+      'MIT 오픈웨이트',
+      '코딩/에이전트 벤치마크 지향',
+      'vLLM/SGLang 서빙 경로',
+      'GLM 생태계와 양자화 후보',
+    ],
+    caveats: [
+      '754B급 모델이라 로컬 노트북 단독 실행보다 서버/양자화/프록시 비용 검토가 필요',
+      '벤치마크 점수는 공식 모델 카드 값과 외부 leaderboard 값을 분리해 표시',
+      'GLM-5.1 지원 런타임 버전(vLLM/SGLang/Transformers)을 고정 확인 필요',
+    ],
+    bestFor: [
+      '오픈웨이트 코딩 모델 비교',
+      '자체 호스팅 GLM PoC',
+      '에이전트/터미널 benchmark 실험',
+      'vLLM/SGLang 서빙 성능 비교',
+    ],
+    specs: [
+      { label: '파라미터', value: '754B', tone: 'good' },
+      { label: '라이선스', value: 'MIT', tone: 'good' },
+      { label: '실행', value: 'Transformers, vLLM, SGLang, Docker Model Runner' },
+      { label: '로컬 후보', value: 'GGUF, Ollama, LM Studio quantization 경로 확인' },
+      { label: '공식 카드 벤치마크', value: 'SWE-Bench Pro 58.4 · Terminal-Bench 2.0 63.5' },
+    ],
+    aliases: ['GLM', 'Z.ai', 'Zhipu', '지푸', '쯔푸', 'GLM-5.1', 'zai-org/GLM-5.1'],
+    sourceIds: ['zai-glm51-hf', 'zai-glm51-docs', 'vllm-install', 'sglang-github'],
+    accent: 'blue',
+  },
+  {
     id: 'mistral-medium-35',
     providerId: 'mistral',
     providerName: 'Mistral AI',
@@ -4346,6 +4920,48 @@ export const modelProfiles: ModelProfile[] = [
     accent: 'ink',
   },
   {
+    id: 'llama-4-maverick',
+    providerId: 'meta',
+    providerName: 'Meta',
+    productName: 'Llama',
+    modelName: 'Llama 4 Maverick',
+    modelId: 'meta-llama/Llama-4-Maverick-17B-128E-Instruct',
+    status: '일반 제공',
+    lastUpdate: '2025-04-05',
+    verifiedAt: '2026-06-19',
+    oneLine:
+      '텍스트와 이미지를 함께 처리하는 Meta Llama 4 계열의 대형 멀티모달 MoE 오픈 모델 후보.',
+    summary:
+      'Llama 4 Maverick은 Hugging Face 모델 카드 기준 17B active, 128 experts, 400B total의 native multimodal MoE 모델이다. Llama 4 Scout는 17B active, 16 experts, 109B total과 10M context로 별도 축을 이루며, 두 모델 모두 vLLM/SGLang/Docker Model Runner와 quantization 탐색 경로가 제공된다.',
+    strengths: [
+      'Native multimodal MoE',
+      '1M context Maverick과 10M context Scout 축',
+      'vLLM/SGLang/Docker 실행 예시',
+      'Llama 생태계와 quantization 후보',
+    ],
+    caveats: [
+      'Llama 4 Community License는 일반 오픈소스 라이선스가 아니므로 상업/재배포 조건 검토 필요',
+      'Hugging Face 모델 접근 조건과 HF_TOKEN, 런타임 버전 요구사항을 확인해야 한다.',
+      '공식 지원 언어는 12개 언어로, 한국어 품질은 별도 자체 평가가 필요하다.',
+    ],
+    bestFor: [
+      '오픈웨이트 멀티모달 비교',
+      '이미지 reasoning과 문서/차트 이해',
+      'vLLM/SGLang 자체 서빙 PoC',
+      'Llama 생태계 기반 fine-tune/quantization 실험',
+    ],
+    specs: [
+      { label: 'Maverick 파라미터', value: '17B active · 128 experts · 400B total' },
+      { label: 'Scout 파라미터', value: '17B active · 16 experts · 109B total' },
+      { label: '컨텍스트', value: 'Maverick 1M · Scout 10M', tone: 'good' },
+      { label: '입력/출력', value: 'Multilingual text+image / text+code' },
+      { label: '라이선스', value: 'Llama 4 Community License' },
+    ],
+    aliases: ['Llama', '라마', 'Meta', 'Llama 4', 'Maverick', 'Scout', 'Llama4'],
+    sourceIds: ['meta-llama4-maverick-hf', 'meta-llama4-scout-hf'],
+    accent: 'blue',
+  },
+  {
     id: 'cursor-ai-ide',
     providerId: 'cursor',
     providerName: 'Cursor',
@@ -4384,6 +5000,274 @@ export const modelProfiles: ModelProfile[] = [
     aliases: ['Cursor', '커서', 'Anysphere', 'AI IDE', 'Composer', 'Bugbot'],
     sourceIds: ['cursor-docs', 'cursor-pricing', 'cursor-changelog', 'cursor-students'],
     accent: 'ink',
+  },
+]
+
+export const localModelComparisonProfiles: LocalModelComparisonProfile[] = [
+  {
+    id: 'local-glm-51-serving',
+    rank: 1,
+    grade: 'S',
+    providerId: 'zhipu',
+    modelProfileId: 'glm-51',
+    modelName: 'GLM-5.1',
+    modelId: 'zai-org/GLM-5.1',
+    sizeLabel: '754B급 플래그십',
+    license: 'MIT',
+    installDifficulty: '고급',
+    installHint: 'vllm serve "zai-org/GLM-5.1"',
+    recommendedRuntimes: ['vLLM', 'SGLang', 'Docker Model Runner', 'Transformers'],
+    frontends: ['Open WebUI', 'AnythingLLM', 'Continue', 'Aider'],
+    bestFor: [
+      '코딩/에이전트 오픈웨이트 PoC',
+      'vLLM·SGLang 서빙 성능 비교',
+      '하네스 기반 Terminal-Bench/SWE-Bench 재평가',
+      'OpenAI 호환 endpoint 실험',
+    ],
+    caveats: [
+      '754B급이라 단일 노트북 설치보다 GPU 서버, 양자화, 원격 endpoint 전략이 현실적',
+      '공식 모델 카드 점수와 독립 하네스 점수를 분리해 기록',
+      '런타임 버전 고정과 VRAM 계획을 먼저 확인',
+    ],
+    rankReason:
+      'MIT 라이선스, 공식 GLM-5.1 카드의 vLLM/SGLang/Docker 실행 경로, 코딩·에이전트 벤치마크 포지션을 모두 갖춘 고급 자체 서빙 후보.',
+    adoptionSignal:
+      'Hugging Face 모델 카드와 Z.ai 문서가 실행 경로를 직접 안내하며, vLLM/SGLang 문서형 serving stack과 연결된다.',
+    thumbnailDomain: 'z.ai',
+    sourceIds: ['zai-glm51-hf', 'zai-glm51-docs', 'vllm-install', 'sglang-github'],
+    tags: ['GLM', 'MIT', 'vLLM', 'SGLang', 'OpenAI compatible', 'agent benchmark'],
+  },
+  {
+    id: 'local-qwen3-open-stack',
+    rank: 2,
+    grade: 'S',
+    providerId: 'qwen',
+    modelProfileId: 'qwen3-2507',
+    modelName: 'Qwen3-2507 계열',
+    modelId: 'qwen3-2507 / Qwen3 open weights',
+    sizeLabel: '0.6B~235B Dense/MoE 계열',
+    license: '모델별 라이선스 확인',
+    installDifficulty: '보통',
+    installHint: 'vllm serve <Qwen3 모델 repo> # 예: Qwen/Qwen3 계열 repo를 문서에서 확인',
+    recommendedRuntimes: ['vLLM', 'SGLang', 'llama.cpp', 'Ollama', 'TGI'],
+    frontends: ['Open WebUI', 'LM Studio', 'AnythingLLM', 'Continue', 'Aider'],
+    bestFor: [
+      '한국어 포함 다국어 로컬 실험',
+      '소형~대형 모델 크기별 품질/비용 비교',
+      '사내 챗봇, 코드 보조, 문서 QnA',
+      '온프레미스 프론트엔드 연결성 검증',
+    ],
+    caveats: [
+      'Qwen3-2507 문서와 실제 배포명/양자화 파일명을 구분',
+      '모델 크기별 VRAM, 속도, 품질 차이가 커서 한 행으로 일반화 금지',
+      '서비스 API 단가와 자체 서빙 비용은 별도 계산',
+    ],
+    rankReason:
+      '로컬 실행 생태계가 넓고 vLLM/SGLang/llama.cpp/Ollama/LM Studio 연결 후보가 풍부해 입문부터 운영 PoC까지 이어가기 쉽다.',
+    adoptionSignal:
+      'Qwen 공식 문서가 Quickstart와 배포 프레임워크를 안내하고, Ollama·Open WebUI·LM Studio 계열 프론트엔드와 함께 쓰기 좋다.',
+    thumbnailDomain: 'qwen.ai',
+    sourceIds: [
+      'qwen-docs',
+      'qwen-quickstart',
+      'ollama-github',
+      'open-webui-quickstart',
+      'lmstudio-docs',
+    ],
+    tags: ['Qwen', '다국어', 'Ollama', 'LM Studio', 'Open WebUI', 'vLLM'],
+  },
+  {
+    id: 'local-gemma4-edge',
+    rank: 3,
+    grade: 'S',
+    providerId: 'google',
+    modelProfileId: 'gemma-4',
+    modelName: 'Gemma 4',
+    modelId: 'google/gemma-4',
+    sizeLabel: 'E2B/E4B/12B/26B A4B/31B',
+    license: 'Gemma 4 license / open weights',
+    installDifficulty: '쉬움',
+    installHint: 'LM Studio 또는 Ollama에서 Gemma 4 QAT/GGUF 변형 선택',
+    recommendedRuntimes: ['llama.cpp', 'Ollama', 'LM Studio', 'vLLM', 'SGLang', 'LiteRT-LM'],
+    frontends: ['LM Studio', 'Open WebUI', 'AnythingLLM', 'Google AI Edge'],
+    bestFor: [
+      '모바일·노트북·엣지 배포 실험',
+      'QAT/GGUF 기반 저메모리 로컬 챗',
+      '멀티모달 입력과 function calling PoC',
+      '초보자도 시작 가능한 설치형 모델 데모',
+    ],
+    caveats: [
+      'Gemma 4 QAT suffix를 llama.cpp/LM Studio, vLLM/SGLang, mobile 배포별로 다르게 골라야 함',
+      '모델 크기별 메모리와 컨텍스트 KV cache를 별도로 산정',
+      '오디오 native 지원과 mobile 최적화는 모델별 차이를 확인',
+    ],
+    rankReason:
+      '공식 QAT, GGUF, mobile, server 라우팅이 명확하고 DeepMind 페이지가 Ollama·LM Studio·Google AI Edge까지 안내해 입문성과 운영 확장성이 모두 좋다.',
+    adoptionSignal:
+      'Google AI 문서는 Gemma 4 QAT 체크포인트와 llama.cpp/LM Studio/vLLM/SGLang/mobile suffix를 직접 안내하고, DeepMind 페이지는 주요 플랫폼 통합을 노출한다.',
+    thumbnailDomain: 'deepmind.google',
+    sourceIds: [
+      'google-gemma4-overview',
+      'google-gemma-models',
+      'ollama-github',
+      'lmstudio-docs',
+      'llama-cpp-github',
+    ],
+    tags: ['Gemma', 'Gemma 4', 'QAT', 'GGUF', 'mobile', 'edge', 'LM Studio', 'Ollama'],
+  },
+  {
+    id: 'local-llama4-maverick',
+    rank: 4,
+    grade: 'A',
+    providerId: 'meta',
+    modelProfileId: 'llama-4-maverick',
+    modelName: 'Llama 4 Maverick / Scout',
+    modelId: 'meta-llama/Llama-4-Maverick-17B-128E-Instruct',
+    sizeLabel: '17B active · 400B total Maverick / 109B Scout',
+    license: 'Llama 4 Community License',
+    installDifficulty: '고급',
+    installHint:
+      'vllm serve "meta-llama/Llama-4-Maverick-17B-128E-Instruct" # HF_TOKEN 필요 여부 확인',
+    recommendedRuntimes: ['vLLM', 'SGLang', 'Docker Model Runner', 'Transformers'],
+    frontends: ['Open WebUI', 'AnythingLLM', 'Continue', 'Aider'],
+    bestFor: [
+      '오픈웨이트 멀티모달 MoE 서빙',
+      '이미지 reasoning과 문서/차트 이해',
+      'Llama 생태계 quantization 비교',
+      'Scout 10M context와 Maverick 1M context 실험',
+    ],
+    caveats: [
+      'Llama 4 Community License와 Hugging Face access 조건을 운영 전에 검토',
+      'Maverick 400B total은 고급 GPU/서빙 튜닝이 필요',
+      '한국어 성능은 공식 언어 목록 밖이므로 자체 평가 세트가 필요',
+    ],
+    rankReason:
+      'Llama 생태계와 vLLM/SGLang 실행 경로가 강하지만, 라이선스·HF access·자원 요구가 있어 고급 설치 후보로 둔다.',
+    adoptionSignal:
+      'Meta Llama Hugging Face 카드가 vLLM, SGLang, Docker Model Runner, quantization 탐색 경로와 다운로드/Spaces 신호를 제공한다.',
+    thumbnailDomain: 'meta.com',
+    sourceIds: [
+      'meta-llama4-maverick-hf',
+      'meta-llama4-scout-hf',
+      'vllm-install',
+      'sglang-github',
+      'docker-model-runner',
+    ],
+    tags: [
+      'Llama',
+      'Meta',
+      'Maverick',
+      'Scout',
+      'MoE',
+      'vLLM',
+      'SGLang',
+      'Llama Maverick vLLM',
+      '멀티모달',
+    ],
+  },
+  {
+    id: 'local-ministral-3-14b-edge',
+    rank: 5,
+    grade: 'A',
+    providerId: 'mistral',
+    modelProfileId: 'ministral-3-14b',
+    modelName: 'Ministral 3 14B',
+    modelId: 'ministral-14b-2512',
+    sizeLabel: '14B 경량 로컬 후보',
+    license: '오픈웨이트 계열, 세부 조건 확인',
+    installDifficulty: '쉬움',
+    installHint: 'llama-server -hf <Ministral GGUF 또는 HF 변환 모델>',
+    recommendedRuntimes: ['llama.cpp', 'vLLM', 'TGI', 'Transformers'],
+    frontends: ['LM Studio', 'Open WebUI', 'AnythingLLM', 'Continue'],
+    bestFor: [
+      'GPU/메모리 제약이 있는 로컬 PoC',
+      '문서 QnA와 사내 챗봇 기준선',
+      '대형 모델 대비 비용/품질 tradeoff 확인',
+      '학습용 설치형 LLM 데모',
+    ],
+    caveats: [
+      '14B급은 프런티어 모델과 직접 비교하지 말고 경량 배포 축으로 평가',
+      'GGUF/양자화 파일은 배포자별 품질과 라이선스를 재확인',
+      '공식 API 단가와 자체 서빙 GPU 비용을 혼동하지 않기',
+    ],
+    rankReason:
+      '상대적으로 작은 크기와 로컬 배포 포지션 때문에 설치형 프론트엔드 검증에 가장 빨리 투입하기 좋다.',
+    adoptionSignal:
+      'Mistral 모델 카드가 로컬 배포 포지션과 256K 컨텍스트를 안내하며, llama.cpp·LM Studio·Open WebUI와 결합하기 쉽다.',
+    thumbnailDomain: 'mistral.ai',
+    sourceIds: ['mistral-models', 'mistral-ministral-3-14b', 'llama-cpp-github'],
+    tags: ['Ministral', '14B', 'llama.cpp', 'LM Studio', 'Open WebUI', 'edge'],
+  },
+  {
+    id: 'local-mistral-medium-35-frontier',
+    rank: 6,
+    grade: 'A',
+    providerId: 'mistral',
+    modelProfileId: 'mistral-medium-35',
+    modelName: 'Mistral Medium 3.5',
+    modelId: 'mistral-medium-3-5',
+    sizeLabel: 'Frontier-class 오픈웨이트',
+    license: 'Modified MIT',
+    installDifficulty: '고급',
+    installHint: 'mistral-common 또는 provider endpoint를 먼저 검증한 뒤 vLLM/TGI 후보를 분리 평가',
+    recommendedRuntimes: ['vLLM', 'TGI', 'Transformers', 'Mistral API'],
+    frontends: ['Open WebUI', 'AnythingLLM', 'Continue', 'Aider'],
+    bestFor: [
+      '오픈웨이트 frontier 후보 비교',
+      'OCR/문서 QnA와 코딩 에이전트',
+      '유럽/온프레미스 전략 검토',
+      '상용 API와 자체 배포 비용 비교',
+    ],
+    caveats: [
+      'Modified MIT 조건을 사내 법무/보안 기준과 대조',
+      '멀티모달/OCR 기능은 프론트엔드와 서빙 런타임 지원 범위를 별도 확인',
+      '고급 서빙은 GPU, 캐시, batching, observability 설계가 필요',
+    ],
+    rankReason:
+      '오픈웨이트 전략과 문서/OCR 기능 폭은 좋지만, 설치 난이도와 라이선스 검토가 있어 고급 후보로 분리한다.',
+    adoptionSignal:
+      'Mistral 공식 모델 카드와 모델 개요가 Medium 3.5, Agents, OCR, function calling 축을 문서화한다.',
+    thumbnailDomain: 'mistral.ai',
+    sourceIds: ['mistral-models', 'mistral-medium-35', 'vllm-install', 'hf-tgi-install'],
+    tags: ['Mistral', 'Modified MIT', 'OCR', 'TGI', 'vLLM', 'frontier open weights'],
+  },
+  {
+    id: 'local-runtime-ui-baseline',
+    rank: 7,
+    grade: 'A',
+    providerId: 'qwen',
+    modelName: 'Ollama + Open WebUI 기준선',
+    modelId: 'local-openai-compatible-stack',
+    sizeLabel: '모델 교체형 설치 스택',
+    license: '선택 모델별 확인',
+    installDifficulty: '쉬움',
+    installHint:
+      'docker run -d -p 3000:8080 -v open-webui:/app/backend/data ghcr.io/open-webui/open-webui:main',
+    recommendedRuntimes: ['Ollama', 'Docker Model Runner', 'llama.cpp'],
+    frontends: ['Open WebUI', 'AnythingLLM', 'LM Studio'],
+    bestFor: [
+      '비개발자용 로컬 챗 UI',
+      '모델 교체 실험과 프롬프트 비교',
+      'RAG/파일 업로드 PoC',
+      '사내 데모와 교육 환경',
+    ],
+    caveats: [
+      '프론트엔드는 모델 품질을 보장하지 않으므로 모델/런타임/프롬프트 로그를 따로 저장',
+      '브라우저 local/demo 환경과 운영 auth/storage를 분리',
+      'Docker 볼륨과 네트워크 노출 범위를 먼저 정리',
+    ],
+    rankReason:
+      '특정 모델 하나보다 설치 진입장벽을 낮추는 프론트엔드 기준선으로, 로컬 모델 비교를 빠르게 시작할 때 유용하다.',
+    adoptionSignal:
+      'Ollama, Open WebUI, AnythingLLM, Docker Model Runner 문서가 빠른 설치와 로컬 endpoint 흐름을 제공한다.',
+    thumbnailDomain: 'openwebui.com',
+    sourceIds: [
+      'ollama-github',
+      'open-webui-quickstart',
+      'anythingllm-docker',
+      'docker-model-runner',
+    ],
+    tags: ['Ollama', 'Open WebUI', 'AnythingLLM', 'Docker', 'local UI'],
   },
 ]
 
@@ -7635,6 +8519,29 @@ export const vibeCodingCommands: VibeCodingCommand[] = [
     ],
   },
   {
+    id: 'cmd-glm-local-serving',
+    providerId: 'zhipu',
+    modelId: 'glm-51',
+    modelName: 'GLM-5.1 Local Serving',
+    surface: '서드파티 CLI',
+    installCommand: 'pip install vllm sglang',
+    command:
+      'vllm serve "zai-org/GLM-5.1" # 또는 python3 -m sglang.launch_server --model-path "zai-org/GLM-5.1" --host 0.0.0.0 --port 30000',
+    useCase:
+      'MIT 오픈웨이트 GLM-5.1을 vLLM/SGLang/Docker Model Runner로 띄워 OpenAI 호환 API처럼 호출하고 코딩·에이전트 평가에 연결.',
+    vibeCodingFit: '높음',
+    setupNotes: [
+      'Hugging Face 모델 카드 기준으로 vLLM, SGLang, Docker Model Runner 실행 경로를 먼저 확인한다.',
+      '754B급 모델은 로컬 노트북보다 GPU 서버, 양자화 변형, 원격 endpoint, 비용 로그를 함께 검토한다.',
+      'OpenAI 호환 endpoint를 만든 뒤 Aider, Continue, Open WebUI, 자체 앱에서 같은 프롬프트로 비교한다.',
+    ],
+    caveats: [
+      '공식 모델 카드 벤치마크와 외부 leaderboard 점수는 별도 칼럼으로 분리한다.',
+      '런타임별 GLM-5.1 지원 버전, GPU 메모리, 컨텍스트 길이, 라이선스 조건을 배포 전에 고정한다.',
+    ],
+    sourceIds: ['zai-glm51-hf', 'zai-glm51-docs', 'vllm-install', 'sglang-github'],
+  },
+  {
     id: 'cmd-mistral-api',
     providerId: 'mistral',
     modelId: 'mistral-medium-3-5',
@@ -8081,6 +8988,301 @@ export const llmCliManuals: LlmCliManual[] = [
     tags: ['OpenAI 호환', 'Aider', 'base URL', '모델 비교', '로컬 배포'],
   },
   {
+    id: 'llm-cli-grok-realtime-research',
+    title: 'Grok/xAI 최신 리서치 API 루트',
+    level: '실무',
+    providerIds: ['xai'],
+    commandIds: ['cmd-xai-openai-compatible'],
+    summary:
+      'Grok 4.3을 xAI SDK, OpenAI SDK 호환 base URL, curl Responses API로 호출하고 Web/X Search, 구조화 출력, 비용 추적을 분리해 검증하는 매뉴얼.',
+    overview:
+      'xAI는 Grok 모델을 전용 SDK와 OpenAI 호환 SDK 양쪽으로 호출할 수 있다. 최신 이슈 리서치에서는 검색 도구와 모델 응답을 분리해 기록하고, 이미지/음성/파일 기능은 텍스트 API와 별도 표면으로 관리하는 것이 좋다.',
+    prerequisites: [
+      'xAI 계정, 크레딧, API 키를 준비하고 XAI_API_KEY로 분리한다.',
+      '사용 표면을 xai-sdk, OpenAI SDK, Vercel AI SDK, curl 중 하나로 고정한다.',
+      '최신 리서치 작업은 검색 도구 사용 여부와 출처 기록 방식을 먼저 정한다.',
+    ],
+    steps: [
+      {
+        title: 'API 키와 SDK 준비',
+        body: '공식 quickstart 기준으로 XAI_API_KEY를 설정하고 xai-sdk 또는 OpenAI SDK를 설치한다. 팀 공용 환경에서는 키와 비용 태그를 사용자별로 분리한다.',
+        commands: ['export XAI_API_KEY="your_api_key"', 'pip install xai-sdk openai'],
+      },
+      {
+        title: 'Responses API 스모크 호출',
+        body: 'OpenAI SDK 호환 경로를 쓰면 기존 에이전트/도구 코드에서 provider만 바꿔 테스트할 수 있다.',
+        commands: [
+          'curl https://api.x.ai/v1/responses -H "Content-Type: application/json" -H "Authorization: Bearer $XAI_API_KEY" -d \'{"model":"grok-4.3","input":[{"role":"user","content":"Summarize current AI API release risks in 5 bullets."}]}\'',
+        ],
+      },
+      {
+        title: '검색 도구 사용 여부 분리',
+        body: 'Web Search/X Search를 켠 답변과 끈 답변은 같은 품질 점수로 섞지 않는다. 최신성 평가에서는 출처 URL, 호출 시간, 모델명을 로그에 남긴다.',
+      },
+      {
+        title: '구조화 출력과 비용 추적',
+        body: '리서치 결과를 JSON schema로 받아야 하면 structured output을 별도 테스트하고, Cost Tracking 문서 기준으로 호출량과 배치 사용 여부를 기록한다.',
+      },
+    ],
+    promptTemplate:
+      '목표: {최신 이슈 리서치/시장 모니터링/소셜 신호 분석}\n모델: grok-4.3\n도구: Web Search/X Search 사용 여부 {on/off}\n출력: JSON schema 또는 요약 bullet\n검증: 출처 URL, 확인 시각, 검색 없는 응답과 비교, 비용 로그',
+    verification: [
+      'base URL이 https://api.x.ai/v1인지 확인한다.',
+      '검색 도구 사용 응답에는 출처와 확인 시각을 별도 필드로 남긴다.',
+      '동일 질문을 검색 off/on으로 비교해 최신성 차이를 기록한다.',
+    ],
+    troubleshooting: [
+      '401/403 오류는 API 키, 크레딧, 콘솔 프로젝트 권한을 먼저 확인한다.',
+      'OpenAI SDK에서 실패하면 responses/create와 chat/completions 엔드포인트 차이를 확인한다.',
+      '검색 결과가 불안정하면 검색 도구 호출 여부와 query rewriting 로그를 분리한다.',
+    ],
+    securityChecklist: [
+      'X/웹 검색에 사내 미공개 정보를 그대로 넣지 않는다.',
+      '리서치 로그에 개인정보와 내부 URL이 저장되지 않게 마스킹한다.',
+      '이미지/음성/파일 API는 별도 권한과 보관 정책으로 다룬다.',
+    ],
+    sourceIds: ['xai-quickstart', 'xai-grok43', 'xai-models', 'xai-pricing'],
+    tags: ['Grok', 'xAI', 'Responses API', 'Web Search', 'X Search', '최신 리서치'],
+  },
+  {
+    id: 'llm-cli-kimi-agentic-coding',
+    title: 'Kimi K2.7 Code 에이전트 코딩 루프',
+    level: '실무',
+    providerIds: ['kimi'],
+    commandIds: ['cmd-kimi-openai-compatible', 'cmd-aider-openai-compatible-matrix'],
+    summary:
+      'Kimi K2.7 Code/HighSpeed를 OpenAI SDK 호환 API로 연결하고 장문 코딩, 멀티모달 tool result, Aider/Continue류 에이전트 루프를 검증하는 매뉴얼.',
+    overview:
+      'Kimi K2.7 Code는 긴 컨텍스트 코딩과 에이전트형 tool use에 초점을 둔다. OpenAI SDK 형식을 사용할 수 있지만 non-thinking mode, tool_choice, 영상/이미지 토큰 산정 같은 제약을 분리해 테스트해야 한다.',
+    prerequisites: [
+      'MOONSHOT_API_KEY와 https://api.moonshot.ai/v1 base URL을 준비한다.',
+      '일반 모델과 HighSpeed 모델을 같은 작업 샘플로 비교할 계획을 만든다.',
+      '영상/이미지 입력은 token estimation과 파일 크기 제한을 먼저 확인한다.',
+    ],
+    steps: [
+      {
+        title: 'OpenAI SDK 호환 설치',
+        body: '공식 quickstart는 OpenAI SDK v1 계열 설치와 버전 확인을 먼저 안내한다.',
+        commands: [
+          "pip install --upgrade 'openai>=1.0'",
+          'python -c \'import openai; print("version =", openai.__version__)\'',
+        ],
+      },
+      {
+        title: '코딩 모델 호출',
+        body: 'base URL을 Moonshot API로 바꾸고 model을 kimi-k2.7-code 또는 highspeed 변형으로 고정한다.',
+        commands: [
+          'OPENAI_BASE_URL=https://api.moonshot.ai/v1 OPENAI_API_KEY=$MOONSHOT_API_KEY aider --model openai/kimi-k2.7-code',
+        ],
+      },
+      {
+        title: '멀티모달 tool result 검증',
+        body: '이미지/영상 tool result는 일반 텍스트 tool call보다 실패 지점이 많다. 파일 포맷, base64 크기, keyframe token 비용을 별도 체크한다.',
+      },
+      {
+        title: '장문 코딩 회귀 테스트',
+        body: '큰 repo를 한 번에 넣기보다 변경 대상 파일, 실패 로그, 테스트 명령을 묶고 context overflow 여부를 기록한다.',
+      },
+    ],
+    promptTemplate:
+      '목표: {코딩 작업}\n모델: kimi-k2.7-code 또는 kimi-k2.7-code-highspeed\n컨텍스트: {관련 파일/로그/영상 또는 이미지}\n도구: {Aider/Continue/자체 tool loop}\n검증: 테스트 명령, diff 크기, tool call 성공률, 토큰 비용',
+    verification: [
+      'OpenAI SDK 버전과 base URL이 공식 quickstart와 맞는지 확인한다.',
+      'tool call이 실제 함수 결과를 다시 모델에 전달하는지 로그로 확인한다.',
+      'HighSpeed 변형은 속도와 품질을 같은 표에 기록한다.',
+    ],
+    troubleshooting: [
+      'tool_choice 오류가 나면 Kimi K2.7 Code의 지원 파라미터 차이를 확인한다.',
+      '영상 입력 비용이 커지면 해상도, keyframe 수, 구간 추출을 줄인다.',
+      '긴 repo 작업에서 산만해지면 파일 목록을 줄이고 test-first 프롬프트로 나눈다.',
+    ],
+    securityChecklist: [
+      '사내 영상/이미지와 소스 코드를 외부 API에 넣을 수 있는지 정책을 확인한다.',
+      '멀티모달 파일은 업로드 전 개인정보와 고객 식별자를 제거한다.',
+      '에이전트 tool은 파일 쓰기와 shell 실행 권한을 단계적으로 연다.',
+    ],
+    sourceIds: ['kimi-k27-code', 'kimi-models', 'kimi-pricing', 'aider-docs', 'continue-docs'],
+    tags: ['Kimi', 'K2.7 Code', 'OpenAI SDK', '에이전트 코딩', '멀티모달 도구'],
+  },
+  {
+    id: 'llm-cli-deepseek-cost-cache',
+    title: 'DeepSeek V4 저비용 장문 처리',
+    level: '실무',
+    providerIds: ['deepseek'],
+    commandIds: ['cmd-deepseek-openai-compatible', 'cmd-aider-openai-compatible-matrix'],
+    summary:
+      'DeepSeek V4 Flash/Pro를 OpenAI/Anthropic 호환 API로 호출하고 1M 컨텍스트, thinking mode, cache hit/miss 단가, 레거시 모델명 중단 일정을 관리하는 매뉴얼.',
+    overview:
+      'DeepSeek은 대량 장문 처리와 비용 최적화 후보로 유용하지만, thinking mode, prefix/FIM, cache hit/miss 가격, 레거시 모델명 deprecation을 함께 봐야 한다. 자동화에서는 가격표와 실제 사용량 로그를 같은 표에 둔다.',
+    prerequisites: [
+      'DEEPSEEK_API_KEY와 OpenAI/Anthropic 중 사용할 호환 형식을 정한다.',
+      'V4 Flash와 V4 Pro 중 품질/비용 기준을 고른다.',
+      '반복 입력이 많은 워크로드는 cache hit 가능성을 별도 측정한다.',
+    ],
+    steps: [
+      {
+        title: '첫 API 호출과 thinking 설정',
+        body: '공식 첫 호출 문서는 OpenAI SDK base URL, deepseek-v4-pro 모델, thinking/reasoning_effort 예시를 제공한다.',
+        commands: [
+          'curl https://api.deepseek.com/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer ${DEEPSEEK_API_KEY}" -d \'{"model":"deepseek-v4-pro","messages":[{"role":"user","content":"Summarize this policy draft."}],"thinking":{"type":"enabled"},"reasoning_effort":"high","stream":false}\'',
+        ],
+      },
+      {
+        title: 'Flash/Pro 비용 비교',
+        body: 'V4 Flash는 대량 처리, V4 Pro는 더 높은 품질 후보로 분리한다. cache hit/miss 입력 단가와 출력 단가를 별도 칼럼으로 기록한다.',
+      },
+      {
+        title: '레거시 모델명 전환',
+        body: 'deepseek-chat/deepseek-reasoner는 문서상 중단 일정이 있으므로 신규 자동화는 deepseek-v4-flash/pro를 직접 사용한다.',
+      },
+      {
+        title: 'Aider/agent backend 연결',
+        body: 'OpenAI 호환 CLI에 붙일 때는 thinking mode 파라미터가 CLI에서 전달되는지 확인하고, 전달되지 않으면 직접 SDK 래퍼를 둔다.',
+        commands: [
+          'OPENAI_BASE_URL=https://api.deepseek.com OPENAI_API_KEY=$DEEPSEEK_API_KEY aider --model openai/deepseek-v4-flash',
+        ],
+      },
+    ],
+    promptTemplate:
+      '목표: {대량 요약/분류/장문 Q&A/코딩 보조}\n모델: deepseek-v4-flash 또는 deepseek-v4-pro\n비용 기록: input cache hit, input cache miss, output, retries\n검증: 품질 샘플, context 길이, thinking mode, deprecation 위험',
+    verification: [
+      'base URL과 모델명이 공식 첫 호출/가격 문서와 맞는지 확인한다.',
+      'cache hit/miss 비율과 출력 토큰을 분리해 계산한다.',
+      '레거시 모델명을 쓰는 스크립트를 검색해 전환 계획을 세운다.',
+    ],
+    troubleshooting: [
+      'thinking 파라미터가 무시되면 SDK/CLI가 extra body를 전달하는지 확인한다.',
+      '긴 입력에서 실패하면 context를 chunking하고 cache hit 비율을 다시 측정한다.',
+      'FIM은 non-thinking mode 제약을 따로 확인한다.',
+    ],
+    securityChecklist: [
+      '장문 문서 자동화는 원문 반출 가능 여부와 보관 정책을 먼저 검토한다.',
+      'API 로그에는 고객명, 계약번호, 내부 URL을 마스킹한다.',
+      '저비용이라는 이유로 승인 없는 대량 재시도를 켜지 않는다.',
+    ],
+    sourceIds: ['deepseek-first-api-call', 'deepseek-pricing', 'deepseek-updates', 'aider-docs'],
+    tags: ['DeepSeek', 'V4 Flash', '1M 컨텍스트', '캐시', '저비용', 'OpenAI 호환'],
+  },
+  {
+    id: 'llm-cli-mistral-tools-docs',
+    title: 'Mistral 도구 호출·문서/OCR 워크플로',
+    level: '실무',
+    providerIds: ['mistral'],
+    commandIds: ['cmd-mistral-api', 'cmd-aider-openai-compatible-matrix'],
+    summary:
+      'Mistral Chat Completions, function calling, tool_choice, 문서/OCR 모델 카드 정보를 묶어 사내 문서 Q&A와 코딩 에이전트를 설계하는 매뉴얼.',
+    overview:
+      'Mistral은 오픈웨이트 전략과 API 도구 호출, 문서/OCR 워크로드를 같이 검토할 때 강점이 있다. Chat Completion API, tool schema, parallel tool call, 모델 카드의 라이선스/가격을 분리해 기록해야 한다.',
+    prerequisites: [
+      'MISTRAL_API_KEY와 공식 SDK 또는 curl 호출 경로를 준비한다.',
+      '문서/OCR, function calling, 코딩 에이전트 중 우선 워크로드를 하나로 좁힌다.',
+      'Medium 3.5, Ministral 3, Small 계열의 라이선스와 비용을 별도 표로 둔다.',
+    ],
+    steps: [
+      {
+        title: 'Chat Completion 스모크 테스트',
+        body: '공식 API 예시처럼 SDK 또는 curl로 /v1/chat/completions 호출을 먼저 통과시킨다.',
+        commands: [
+          'curl https://api.mistral.ai/v1/chat/completions -X POST -H "Authorization: Bearer $MISTRAL_API_KEY" -H "Content-Type: application/json" -d \'{"model":"mistral-large-latest","messages":[{"role":"user","content":"Summarize this contract risk."}]}\'',
+        ],
+      },
+      {
+        title: 'tool_choice와 함수 스키마 설계',
+        body: 'Function calling은 모델이 도구를 직접 실행하는 것이 아니라 함수 인자를 생성하고 개발자가 결과를 다시 넣는 루프다. auto/any/none/required와 parallel_tool_calls를 분리해 테스트한다.',
+      },
+      {
+        title: '문서/OCR 모델 카드 연결',
+        body: '문서 Q&A는 OCR, structured output, citations 요구를 분리한다. 자체 배포 후보는 Medium 3.5/Ministral의 라이선스와 서버 비용을 함께 본다.',
+      },
+      {
+        title: 'Aider/Continue 연결',
+        body: '코딩 보조에서는 Mistral API와 오픈웨이트 자체 서빙 결과를 같은 모델명으로 섞지 말고 endpoint별로 기록한다.',
+        commands: ['aider --model mistral/mistral-medium-latest'],
+      },
+    ],
+    promptTemplate:
+      '목표: {문서 Q&A/OCR/도구 호출/코딩 보조}\n모델 후보: {mistral-medium-latest/ministral-14b-latest 등}\n도구: {function schema, required fields, parallel 여부}\n검증: tool call 성공, OCR 품질, citation, 비용, 라이선스',
+    verification: [
+      'SDK/curl 호출이 같은 모델명과 같은 메시지로 성공하는지 확인한다.',
+      'tool call은 인자 생성, 실제 함수 실행, tool result 재주입을 모두 로그에 남긴다.',
+      '오픈웨이트 모델은 API 단가와 자체 GPU 비용을 분리한다.',
+    ],
+    troubleshooting: [
+      'tool_choice가 기대와 다르면 auto/required/none을 나눠 재현한다.',
+      'OCR/문서 결과가 흔들리면 문서 전처리와 citation 요구를 별도 프롬프트로 분리한다.',
+      'Aider에서 모델명이 실패하면 provider 플러그인 또는 OpenAI compatible 경로를 확인한다.',
+    ],
+    securityChecklist: [
+      '계약서/재무 문서는 OCR 전 원본 저장 위치와 삭제 정책을 정한다.',
+      '도구 호출 함수는 읽기 전용부터 시작하고 결제/삭제 함수는 승인 기반으로 둔다.',
+      'Modified MIT 등 모델별 라이선스 조건을 배포 전에 검토한다.',
+    ],
+    sourceIds: [
+      'mistral-api',
+      'mistral-function-calling',
+      'mistral-medium-35',
+      'mistral-models',
+      'aider-docs',
+    ],
+    tags: ['Mistral', 'Function Calling', 'OCR', '문서 Q&A', '도구 호출', '오픈웨이트'],
+  },
+  {
+    id: 'llm-cli-manus-task-api',
+    title: 'Manus 태스크 API 운영 루프',
+    level: '실무',
+    providerIds: ['manus'],
+    commandIds: ['cmd-manus-task'],
+    summary:
+      'Manus를 단일 LLM 모델이 아니라 태스크 실행형 에이전트 플랫폼으로 보고 Tasks, Projects, Files, Webhooks, Skills, Agents를 단계적으로 붙이는 매뉴얼.',
+    overview:
+      'Manus는 모델명보다 실행 객체와 권한이 중요하다. 브라우저 조작, 파일 기반 작업, 슬라이드/웹사이트 생성 같은 태스크는 LLM API 호출과 다르게 실패 상태, 재시도, 산출물 검수, webhook 운영을 함께 설계해야 한다.',
+    prerequisites: [
+      'Manus 계정과 API 키, 프로젝트 단위 지시사항을 준비한다.',
+      '자동 실행할 작업과 사람이 검수할 작업을 나눈다.',
+      '파일 업로드, webhook, 외부 브라우저 조작 권한의 허용 범위를 정한다.',
+    ],
+    steps: [
+      {
+        title: '태스크 생성과 후속 메시지 분리',
+        body: '처음에는 작은 작업을 task로 생성하고, 결과 조회와 후속 메시지 흐름을 별도 함수로 분리한다.',
+        commands: [
+          'curl https://api.manus.ai/v2/tasks -H "Authorization: Bearer $MANUS_API_KEY" -H "Content-Type: application/json" -d \'{"prompt":"Create a short market brief from these source links."}\'',
+        ],
+      },
+      {
+        title: '프로젝트 지시와 파일 관리',
+        body: '반복 업무는 매번 프롬프트에 붙이지 말고 project instruction, files, reusable skills로 올린다.',
+      },
+      {
+        title: '웹훅과 검수 상태 설계',
+        body: '비동기 태스크는 webhook으로 완료/실패를 받고, 게시·배포·메일 발송은 사람 승인 후 실행한다.',
+      },
+      {
+        title: 'LLM 비교표와 분리 기록',
+        body: 'Manus 결과는 기저 모델 성능이 아니라 태스크 완료율, 산출물 품질, 권한 안전성, 비용 로그로 평가한다.',
+      },
+    ],
+    promptTemplate:
+      '태스크: {자동화 목표}\n프로젝트 지시: {반복 규칙}\n입력 파일/링크: {자료}\n권한: 브라우저/파일/webhook/게시 승인 범위\n검증: 산출물 체크리스트, 실패 상태, 재시도 정책, 사람이 승인할 단계',
+    verification: [
+      'task 생성, 상태 조회, 결과 파일 접근이 각각 성공하는지 확인한다.',
+      'webhook payload와 재시도 정책을 테스트한다.',
+      '산출물은 자동 게시하지 않고 체크리스트 기반 검수 단계를 둔다.',
+    ],
+    troubleshooting: [
+      '결과가 의도와 다르면 project instruction과 task prompt를 분리해 수정한다.',
+      '파일 누락은 업로드 완료 상태와 파일 ID 전달 여부를 먼저 본다.',
+      '비용이 튀면 긴 브라우저 세션과 반복 실패 태스크를 분리해 로그를 본다.',
+    ],
+    securityChecklist: [
+      '브라우저 조작 계정은 최소 권한 테스트 계정으로 시작한다.',
+      '고객 파일과 내부 URL은 프로젝트별 접근 범위를 분리한다.',
+      'webhook endpoint에는 서명 검증과 재전송 방어를 둔다.',
+    ],
+    sourceIds: ['manus-home', 'manus-api'],
+    tags: ['Manus', 'Tasks', 'Webhooks', 'Files', 'Skills', 'Agents', '업무 자동화'],
+  },
+  {
     id: 'llm-cli-security-permissions',
     title: '권한·보안·MCP 안전 운용',
     level: '고급',
@@ -8220,6 +9422,568 @@ export const llmCliManuals: LlmCliManual[] = [
       'gemini-cli-github',
     ],
     tags: ['팀 도입', '비용', '품질 로그', '온보딩', 'Cursor', 'Copilot'],
+  },
+  {
+    id: 'llm-cli-gemma4-qat-local',
+    title: 'Gemma 4 QAT 로컬·엣지 설치 루트',
+    level: '실무',
+    providerIds: ['google'],
+    commandIds: ['cmd-continue-local-open-model', 'cmd-qwen-local-vllm'],
+    summary:
+      'Gemma 4의 E2B/E4B/12B/26B A4B/31B 크기와 QAT suffix를 목적별로 골라 LM Studio, Ollama, llama.cpp, vLLM/SGLang, mobile 경로로 배포하는 매뉴얼.',
+    overview:
+      'Gemma 4는 하나의 모델명이 아니라 모바일·엣지·노트북·서버를 아우르는 오픈웨이트 모델군이다. 빠른 로컬 데모는 GGUF/QAT와 LM Studio/llama.cpp, 고동시성 서버는 compressed tensor와 vLLM/SGLang, 모바일은 LiteRT-LM/mobile 체크포인트를 먼저 본다.',
+    prerequisites: [
+      '목표 하드웨어를 모바일, 노트북, 단일 GPU, 서버 중 하나로 정한다.',
+      'E2B/E4B/12B/26B A4B/31B 중 필요한 품질과 메모리 한도를 고른다.',
+      'Gemma 4 license와 prohibited use, 상업적 사용 조건을 배포 전에 검토한다.',
+      'QAT, GGUF, mobile, server suffix를 런타임별로 기록할 표를 만든다.',
+    ],
+    steps: [
+      {
+        title: '모델 크기와 메모리 계획',
+        body: 'Google AI 문서의 메모리 표를 기준으로 Q4_0만 보지 말고 BF16/SFP8/Q4/mobile을 나눠 적는다. E2B/E4B는 모바일·엣지, 12B/26B/31B는 로컬 PC·서버 후보로 본다.',
+        commands: ['open https://ai.google.dev/gemma/docs/core'],
+      },
+      {
+        title: '로컬 GUI와 GGUF 후보',
+        body: 'LM Studio나 llama.cpp 계열은 공식 QAT routing table의 -qat-q4_0-gguf suffix를 우선 후보로 둔다. 모델 repo명은 공식 Hugging Face collection에서 고정한다.',
+        commands: [
+          '# LM Studio 또는 llama.cpp: {model-name}-qat-q4_0-gguf 변형 선택',
+          'llama-server -hf <google-gemma-4-qat-q4_0-gguf-repo>',
+        ],
+      },
+      {
+        title: '서버 런타임 선택',
+        body: 'vLLM/SGLang은 w4a16 compressed tensor 계열을 먼저 검토한다. OpenAI compatible endpoint가 열리면 Open WebUI, Continue, Aider에 같은 base URL로 붙인다.',
+        commands: [
+          'pip install vllm',
+          'vllm serve <google-gemma-4-qat-w4a16-ct-repo>',
+          'pip install sglang',
+          'python3 -m sglang.launch_server --model-path <google-gemma-4-qat-w4a16-ct-repo> --host 0.0.0.0 --port 30000',
+        ],
+      },
+      {
+        title: '모바일·엣지 배포 분리',
+        body: 'mobile-transformers/mobile-ct suffix는 데스크톱 GGUF와 다른 최적화 경로다. 앱 내 배포는 LiteRT-LM, Google AI Edge, 모델 파일 업데이트 정책을 함께 본다.',
+      },
+    ],
+    promptTemplate:
+      '목표: Gemma 4 설치형 PoC\n하드웨어: {모바일/노트북/GPU 서버}\n모델 크기: {E2B/E4B/12B/26B A4B/31B}\n런타임: {LM Studio/llama.cpp/Ollama/vLLM/SGLang/LiteRT-LM}\n측정: 메모리, tok/s, context 길이, 멀티모달 성공, 라이선스 검토\n요청: 가장 현실적인 설치 순서와 fallback 모델을 추천해줘.',
+    verification: [
+      '선택한 모델 repo, suffix, quantization 방식이 공식 Gemma 4 문서와 맞는지 확인한다.',
+      '첫 응답, 긴 컨텍스트, 이미지 입력, function calling을 별도 smoke test로 나눈다.',
+      'Open WebUI/LM Studio/Continue 등 프런트엔드별로 같은 endpoint를 호출하는지 확인한다.',
+    ],
+    troubleshooting: [
+      '모델 로딩이 실패하면 suffix와 런타임 조합이 맞는지 먼저 확인한다.',
+      '메모리 부족이면 E2B/E4B 또는 Q4/mobile checkpoint로 낮춰 재시도한다.',
+      '멀티모달 입력이 실패하면 해당 Gemma 4 크기의 입력 모달리티와 프런트엔드 지원을 분리해 본다.',
+    ],
+    securityChecklist: [
+      '모바일/엣지 배포 파일은 앱 업데이트와 삭제 정책을 함께 설계한다.',
+      '로컬 웹 UI를 외부 인터넷에 공개하지 않는다.',
+      'Gemma license와 prohibited use를 제품 정책에 반영한다.',
+    ],
+    sourceIds: [
+      'google-gemma4-overview',
+      'google-gemma-models',
+      'llama-cpp-github',
+      'lmstudio-docs',
+      'ollama-github',
+      'vllm-install',
+      'sglang-github',
+    ],
+    tags: [
+      'Gemma 4',
+      'QAT',
+      'GGUF',
+      'Gemma 4 QAT GGUF',
+      'LM Studio',
+      'Ollama',
+      'vLLM',
+      'SGLang',
+      'mobile',
+    ],
+  },
+  {
+    id: 'llm-cli-llama4-serving',
+    title: 'Llama 4 Maverick/Scout 서빙 시작',
+    level: '고급',
+    providerIds: ['meta'],
+    commandIds: ['cmd-continue-local-open-model', 'cmd-aider-openai-compatible-matrix'],
+    summary:
+      'Llama 4 Maverick과 Scout를 Hugging Face access, vLLM, SGLang, Docker Model Runner, quantization 후보로 나눠 설치하고 평가하는 매뉴얼.',
+    overview:
+      'Llama 4는 native multimodal MoE 모델군이라 단순 텍스트 LLM처럼만 보면 안 된다. Maverick은 1M context와 400B total, Scout는 10M context와 109B total 축으로 나눠 보고, 한국어 품질은 공식 언어 목록과 분리해 자체 평가해야 한다.',
+    prerequisites: [
+      'Hugging Face 계정, 모델 접근 승인, HF_TOKEN이 필요한지 확인한다.',
+      'Llama 4 Community License를 사내 사용·재배포·상업 사용 기준과 대조한다.',
+      'vLLM, SGLang, Docker Model Runner 중 1차 런타임을 고른다.',
+      '이미지 입력과 긴 컨텍스트를 평가할 샘플 태스크를 준비한다.',
+    ],
+    steps: [
+      {
+        title: '모델 카드와 access 확인',
+        body: 'Maverick/Scout 모델 카드에서 파라미터, 컨텍스트, 지원 언어, license, Transformers/vLLM/SGLang/Docker 예시를 먼저 확인한다.',
+        commands: [
+          'open https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct',
+          'open https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct',
+        ],
+      },
+      {
+        title: 'vLLM OpenAI compatible endpoint',
+        body: 'Hugging Face 모델 카드의 vLLM 예시처럼 서버를 띄우고 /v1/chat/completions를 호출한다. 이미지 입력 smoke test는 텍스트-only smoke test와 분리한다.',
+        commands: [
+          'pip install vllm',
+          'vllm serve "meta-llama/Llama-4-Maverick-17B-128E-Instruct"',
+          'curl -X POST "http://localhost:8000/v1/chat/completions" -H "Content-Type: application/json" --data \'{"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct","messages":[{"role":"user","content":"Describe this deployment risk in one paragraph."}]}\'',
+        ],
+      },
+      {
+        title: 'SGLang 또는 Docker 경로 비교',
+        body: 'SGLang은 별도 포트로 OpenAI compatible endpoint를 열 수 있고, Docker Model Runner는 Docker 중심 팀의 설치 UX를 비교하기 좋다.',
+        commands: [
+          'pip install sglang',
+          'python3 -m sglang.launch_server --model-path "meta-llama/Llama-4-Maverick-17B-128E-Instruct" --host 0.0.0.0 --port 30000',
+          'docker model run hf.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct',
+        ],
+      },
+      {
+        title: '프런트엔드와 평가 하네스 연결',
+        body: '서버가 안정화되면 Open WebUI, Continue, Aider, Inspect AI/lm-eval에 붙여 실제 업무 샘플을 평가한다. Scout와 Maverick 결과는 context와 자원 비용을 분리해 기록한다.',
+      },
+    ],
+    promptTemplate:
+      '목표: Llama 4 Maverick/Scout 자체 서빙 PoC\n런타임: {vLLM/SGLang/Docker Model Runner/Transformers}\n프런트엔드: {Open WebUI/Continue/Aider/자체 앱}\n평가: 이미지 reasoning, 한국어 질의, 긴 컨텍스트, latency, GPU 메모리, license risk\n요청: Maverick과 Scout 중 시작 후보와 fallback 전략을 추천해줘.',
+    verification: [
+      'HF access, model revision, HF_TOKEN 사용 여부를 로그에 남긴다.',
+      '텍스트-only, 이미지 입력, 긴 컨텍스트, 한국어 샘플을 따로 측정한다.',
+      'Maverick과 Scout 결과를 하나의 평균 점수로 뭉치지 않고 컨텍스트/자원 축을 분리한다.',
+    ],
+    troubleshooting: [
+      '403/404 오류는 모델 접근 승인과 HF_TOKEN 환경 변수를 먼저 확인한다.',
+      '멀티모달 payload가 실패하면 런타임의 이미지 입력 형식과 chat template 지원을 확인한다.',
+      '메모리 부족이면 quantization 후보, tensor parallel, Scout/Maverick 선택을 다시 잡는다.',
+    ],
+    securityChecklist: [
+      'Llama 4 Community License 조건을 제품 배포 전 법무/보안 체크리스트에 넣는다.',
+      'Hugging Face token을 프런트엔드나 로그에 노출하지 않는다.',
+      '모델 서버는 인증 프록시와 네트워크 allowlist 뒤에 둔다.',
+    ],
+    sourceIds: [
+      'meta-llama4-maverick-hf',
+      'meta-llama4-scout-hf',
+      'vllm-install',
+      'sglang-github',
+      'docker-model-runner',
+      'open-webui-quickstart',
+    ],
+    tags: [
+      'Llama 4',
+      'Meta',
+      'Maverick',
+      'Scout',
+      'vLLM',
+      'SGLang',
+      'Llama 4 SGLang',
+      'Docker',
+      '멀티모달',
+    ],
+  },
+  {
+    id: 'llm-cli-glm-local-serving',
+    title: 'GLM-5.1 로컬/서버 서빙 시작',
+    level: '고급',
+    providerIds: ['zhipu', 'qwen', 'mistral'],
+    commandIds: ['cmd-glm-local-serving', 'cmd-qwen-local-vllm', 'cmd-continue-local-open-model'],
+    summary:
+      'GLM-5.1 같은 대형 오픈웨이트 모델을 vLLM, SGLang, Docker Model Runner, OpenAI 호환 endpoint로 띄워 비교하는 설치 절차.',
+    overview:
+      '설치형 오픈소스 모델은 “다운로드해서 실행”만으로 끝나지 않는다. 모델 카드, 라이선스, 런타임 지원 버전, GPU 메모리, 양자화 후보, OpenAI 호환 endpoint, 평가 하네스 연결까지 하나의 운영 흐름으로 봐야 한다.',
+    prerequisites: [
+      'Hugging Face 모델 카드에서 라이선스, 모델 크기, 권장 런타임, 벤치마크 출처를 확인한다.',
+      'GPU 서버 또는 원격 inference endpoint를 준비하고, VRAM/디스크/네트워크 egress 비용을 추정한다.',
+      'vLLM, SGLang, Docker Model Runner 중 하나를 1차 런타임으로 고른다.',
+      'Aider, Continue, Open WebUI, 자체 앱 중 어떤 프런트엔드에서 호출할지 정한다.',
+    ],
+    steps: [
+      {
+        title: '모델 카드와 실행 경로 확인',
+        body: 'GLM-5.1 모델 카드에서 MIT 라이선스, 754B 모델 크기, Transformers/vLLM/SGLang/Docker Model Runner 예시를 확인한다. 공식 카드 점수는 외부 평가와 분리해 기록한다.',
+        commands: ['open https://huggingface.co/zai-org/GLM-5.1'],
+      },
+      {
+        title: 'vLLM 또는 SGLang endpoint 실행',
+        body: '팀 표준이 OpenAI compatible API라면 vLLM 또는 SGLang으로 endpoint를 먼저 띄운다. 서버가 뜨면 curl로 /v1/chat/completions 호출을 확인한다.',
+        commands: [
+          'pip install vllm',
+          'vllm serve "zai-org/GLM-5.1"',
+          'pip install sglang',
+          'python3 -m sglang.launch_server --model-path "zai-org/GLM-5.1" --host 0.0.0.0 --port 30000',
+        ],
+      },
+      {
+        title: 'Docker Model Runner 경로 비교',
+        body: 'Docker 중심 팀이면 Docker Model Runner로 같은 모델을 실행해 운영 UX를 비교한다. 이 경로는 Open WebUI와 붙일 때도 익숙하다.',
+        commands: ['docker model run hf.co/zai-org/GLM-5.1'],
+      },
+      {
+        title: '프런트엔드와 평가 하네스 연결',
+        body: 'endpoint가 안정화되면 Open WebUI, Continue, Aider, Inspect AI, lm-eval 중 하나를 붙여 실제 사용성과 benchmark를 같이 기록한다.',
+        commands: [
+          'OPENAI_BASE_URL=http://localhost:8000/v1 OPENAI_API_KEY=local aider --model openai/glm-5.1',
+          'inspect eval simpleqa.py --model openai/glm-5.1',
+        ],
+      },
+    ],
+    promptTemplate:
+      '목표: GLM-5.1 자체 서빙 PoC\n런타임 후보: vLLM/SGLang/Docker Model Runner\n프런트엔드: {Open WebUI/Continue/Aider/자체 앱}\n측정: 첫 토큰 지연, tok/s, GPU 메모리, 실패율, 비용, 품질 메모\n요청: 설치 경로별 리스크와 다음 실험 순서를 표로 정리해줘.',
+    verification: [
+      '서버 health check와 /v1/chat/completions smoke test가 통과한다.',
+      '런타임 버전, 모델 revision, GPU 사양, 양자화 여부를 결과와 함께 기록한다.',
+      '공식 모델 카드 벤치마크와 자체 benchmark 결과를 같은 점수처럼 섞지 않는다.',
+    ],
+    troubleshooting: [
+      '메모리 부족이면 작은 quantized 변형, tensor parallel, batch/context 축소를 먼저 시도한다.',
+      'OpenAI 호환 호출이 실패하면 served-model-name, base URL, tokenizer/chat template 차이를 확인한다.',
+      '응답 품질이 낮으면 system prompt와 tool calling 지원 여부를 런타임별로 분리해 본다.',
+    ],
+    securityChecklist: [
+      '외부 사용자가 endpoint에 접근하지 못하도록 방화벽과 인증 프록시를 둔다.',
+      '모델 로그에 사내 코드/문서 전문이 남는지 확인하고 보관 기간을 제한한다.',
+      '오픈웨이트 라이선스와 모델 카드의 사용 제한을 배포 전에 검토한다.',
+    ],
+    sourceIds: [
+      'zai-glm51-hf',
+      'zai-glm51-docs',
+      'vllm-install',
+      'sglang-github',
+      'docker-model-runner',
+    ],
+    tags: ['GLM', 'Z.ai', '오픈웨이트', 'vLLM', 'SGLang', 'Docker Model Runner', '자체 서빙'],
+  },
+  {
+    id: 'llm-cli-local-model-ui-stack',
+    title: '설치형 오픈소스 모델 UI 선택',
+    level: '실무',
+    providerIds: ['zhipu', 'qwen', 'mistral', 'google', 'meta'],
+    commandIds: ['cmd-glm-local-serving', 'cmd-qwen-local-vllm', 'cmd-continue-local-open-model'],
+    summary:
+      'Ollama, Open WebUI, LM Studio, AnythingLLM, Docker Model Runner를 목적별로 골라 로컬/사내 LLM 프런트엔드를 구성하는 방법.',
+    overview:
+      '로컬 모델 UI는 사용자층에 따라 선택이 달라진다. 개발자는 Ollama/llama.cpp/vLLM endpoint를 선호하고, 비개발자는 LM Studio/Open WebUI/AnythingLLM 같은 GUI가 필요하다. 팀 공유는 로그인, 저장소, 모델 라우팅, 로그 정책까지 함께 봐야 한다.',
+    prerequisites: [
+      '개인 노트북 실험인지, 팀 내부망 웹 UI인지, production API endpoint인지 먼저 구분한다.',
+      '모델 파일 저장 위치, 디스크 용량, GPU/CPU 실행 방식, 업데이트 정책을 정한다.',
+      'OpenAI compatible API가 필요한 도구(Aider, Continue, 자체 앱)를 목록화한다.',
+    ],
+    steps: [
+      {
+        title: '개인 개발자용 빠른 시작',
+        body: 'CLI 중심이면 Ollama, GUI 중심이면 LM Studio로 시작한다. 작은 모델로 smoke test 후 GLM/Qwen/Mistral 같은 큰 모델은 별도 서버 후보로 분리한다.',
+        commands: [
+          'curl -fsSL https://ollama.com/install.sh | sh',
+          'ollama run gemma4',
+          'LM Studio 앱 설치 후 모델 검색/다운로드',
+        ],
+      },
+      {
+        title: '팀 공유 웹 UI 구성',
+        body: 'Open WebUI는 Ollama/OpenAI compatible backend를 웹 UI로 감싼다. 팀 사용자는 localhost가 아니라 내부망 endpoint, 인증, persistent volume을 먼저 정한다.',
+        commands: [
+          'docker run -d -p 3000:8080 -v open-webui:/app/backend/data --name open-webui ghcr.io/open-webui/open-webui:main',
+        ],
+      },
+      {
+        title: '문서/RAG 워크스페이스 구성',
+        body: 'AnythingLLM은 로컬/클라우드 LLM, vector DB, agent skills, embedded chat widget을 한 화면에서 관리한다. 문서 기반 사내 챗봇이면 Open WebUI와 비교한다.',
+        commands: ['docker pull mintplexlabs/anythingllm:latest'],
+      },
+      {
+        title: '운영형 endpoint 분리',
+        body: '여러 사용자가 붙는다면 UI와 모델 서버를 분리한다. Docker Model Runner, vLLM, SGLang은 모델 endpoint 역할, Open WebUI/AnythingLLM은 프런트엔드 역할로 둔다.',
+        commands: ['docker model run hf.co/zai-org/GLM-5.1'],
+      },
+    ],
+    promptTemplate:
+      '사용자 유형: {개인 개발자/비개발자/팀 내부망/운영 API}\n하드웨어: {CPU/GPU/VRAM/OS}\n모델 후보: {GLM/Qwen/Mistral/Gemma 등}\n필요 기능: 채팅, 파일, RAG, OpenAI compatible API, 사용자 관리\n요청: Ollama/Open WebUI/LM Studio/AnythingLLM/Docker Model Runner 중 추천 순위와 설치 절차를 제안해줘.',
+    verification: [
+      'UI에서 모델 목록과 첫 응답이 정상 표시된다.',
+      'backend endpoint, persistent volume, 인증 설정이 재시작 후에도 유지된다.',
+      '같은 프롬프트를 CLI, 웹 UI, IDE extension에서 호출해 응답 경로가 일관적인지 확인한다.',
+    ],
+    troubleshooting: [
+      'Open WebUI가 Ollama에 연결하지 못하면 컨테이너에서 host.docker.internal 또는 OLLAMA_BASE_URL을 확인한다.',
+      'LM Studio local server가 IDE에서 보이지 않으면 포트, CORS, OpenAI compatible path를 확인한다.',
+      'AnythingLLM 데이터가 사라지면 persistent storage volume 마운트 여부를 먼저 본다.',
+    ],
+    securityChecklist: [
+      '로컬 UI를 외부 인터넷에 공개하지 않는다.',
+      '공유 웹 UI는 사용자 계정, 로그, 업로드 파일 보관 정책을 둔다.',
+      '민감 문서 RAG는 vector DB와 원문 저장소 삭제 절차를 명시한다.',
+    ],
+    sourceIds: [
+      'ollama-github',
+      'open-webui-quickstart',
+      'lmstudio-docs',
+      'anythingllm-docker',
+      'docker-model-runner',
+      'llama-cpp-github',
+    ],
+    tags: ['Ollama', 'Open WebUI', 'LM Studio', 'AnythingLLM', '로컬 모델 UI', 'RAG'],
+  },
+  {
+    id: 'llm-cli-model-router-observability',
+    title: '멀티 모델 라우터와 관측성 스택',
+    level: '고급',
+    providerIds: [
+      'openai',
+      'anthropic',
+      'google',
+      'xai',
+      'kimi',
+      'deepseek',
+      'qwen',
+      'zhipu',
+      'mistral',
+      'meta',
+    ],
+    commandIds: [
+      'cmd-openai-codex',
+      'cmd-claude-code',
+      'cmd-gemini-cli',
+      'cmd-glm-local-serving',
+      'cmd-qwen-local-vllm',
+      'cmd-mistral-api',
+      'cmd-aider-openai-compatible-matrix',
+    ],
+    summary:
+      'LiteLLM Proxy, OpenRouter, Langfuse를 묶어 여러 LLM과 로컬 endpoint를 OpenAI 호환 API로 라우팅하고 비용·품질·평가 로그를 남기는 운영 절차.',
+    overview:
+      '모델이 많아질수록 앱마다 API 형식을 따로 붙이는 방식은 유지보수가 어렵다. 운영 환경에서는 LiteLLM 같은 self-hosted gateway나 OpenRouter 같은 모델 라우터로 호출 표면을 통일하고, Langfuse로 trace, prompt, score, evaluation dataset을 남겨 모델 교체의 품질·비용 리스크를 줄인다.',
+    prerequisites: [
+      '외부 API 모델과 로컬 vLLM/SGLang/Ollama endpoint를 OpenAI 호환 호출로 묶을지 정한다.',
+      '모델별 API 키, 예산 한도, fallback 순서, 금지 모델/리전 정책을 팀 단위로 합의한다.',
+      '관측성 저장소에 원문 프롬프트와 응답을 남겨도 되는지 보안/개인정보 정책을 먼저 확인한다.',
+    ],
+    steps: [
+      {
+        title: 'LiteLLM Proxy로 첫 라우터 실행',
+        body: 'LiteLLM Proxy는 100개 이상 모델/제공사를 OpenAI Chat Completions 형식으로 노출한다. 로컬 테스트는 단일 model flag로 시작하고, 운영은 config.yaml과 virtual key/budget으로 확장한다.',
+        commands: [
+          "uv tool install 'litellm[proxy]'",
+          'litellm --model openai/gpt-4o --detailed_debug',
+          'litellm --test',
+        ],
+      },
+      {
+        title: '로컬 endpoint와 상용 API를 같은 base URL로 묶기',
+        body: 'vLLM/SGLang/TGI/Ollama/OpenAI-compatible endpoint는 api_base 또는 config.yaml에 매핑한다. 앱과 CLI는 모델 공급자별 SDK가 아니라 하나의 base URL을 보게 만든다.',
+        commands: [
+          'litellm --model ollama/<model-name>',
+          'litellm --model openai/<served-model-name> --api_base http://localhost:8000/v1',
+          'OPENAI_BASE_URL=http://localhost:4000 OPENAI_API_KEY=<virtual-key> aider --model openai/gpt-4o',
+        ],
+      },
+      {
+        title: 'OpenRouter로 빠른 모델 카탈로그 실험',
+        body: 'OpenRouter는 단일 endpoint로 수백 개 모델에 접근하고 fallback/비용 효율 옵션과 OpenAI SDK baseURL 호환을 제공한다. 운영 전에는 데이터 처리·비용·fallback 정책을 별도 검토한다.',
+        commands: [
+          'npm install @openrouter/sdk',
+          'npm install @openrouter/agent',
+          'OPENAI_BASE_URL=https://openrouter.ai/api/v1 OPENAI_API_KEY=$OPENROUTER_API_KEY',
+        ],
+      },
+      {
+        title: 'Langfuse로 trace와 evaluation 연결',
+        body: 'Langfuse는 trace, prompt management, LLM-as-judge, dataset/experiment 평가를 제공한다. LiteLLM callback 또는 SDK 연동으로 요청/응답/score를 한 곳에 모은다.',
+        commands: [
+          'litellm.success_callback = ["langfuse"]',
+          'docker compose up # Langfuse self-hosted low-scale deployment 검토',
+        ],
+      },
+    ],
+    promptTemplate:
+      '모델 후보: {GPT/Claude/Gemini/GLM/Qwen/Mistral/Llama/OpenRouter 등}\n라우팅: {LiteLLM Proxy/OpenRouter/직접 OpenAI-compatible endpoint}\n관측성: {Langfuse/로그 없음/사내 로그}\n제약: {예산, 리전, 민감 데이터, fallback 정책}\n요청: config.yaml 구조, fallback 순서, 비용/품질 측정표, 보안 체크리스트를 만들어줘.',
+    verification: [
+      'OpenAI SDK 또는 Aider/Continue 같은 클라이언트에서 같은 base URL로 최소 두 모델을 호출한다.',
+      'fallback이 실제로 발생했을 때 model, cost, latency, error reason이 기록되는지 확인한다.',
+      'Langfuse trace와 evaluation score가 prompt/model revision과 함께 남는지 확인한다.',
+    ],
+    troubleshooting: [
+      '모델명이 매칭되지 않으면 LiteLLM model_list의 model_name과 litellm_params.model을 분리해 확인한다.',
+      'OpenRouter 호출이 실패하면 baseURL, Authorization header, HTTP-Referer/X-OpenRouter-Title, model slug를 확인한다.',
+      'Langfuse trace가 비면 callback 환경변수, public/secret key, host URL, SDK 버전을 확인한다.',
+    ],
+    securityChecklist: [
+      'Gateway master key, virtual key, provider API key를 repo에 저장하지 않는다.',
+      '관측성 도구에 원문 고객 데이터와 시크릿이 남지 않도록 sampling/masking 정책을 둔다.',
+      '라우터를 외부에 공개할 때 rate limit, budget, auth, audit log를 필수로 켠다.',
+    ],
+    sourceIds: [
+      'litellm-docs',
+      'litellm-proxy-quickstart',
+      'openrouter-quickstart',
+      'langfuse-docs',
+      'langfuse-self-hosting',
+    ],
+    tags: [
+      'LiteLLM Proxy',
+      'OpenRouter',
+      'Langfuse',
+      'model router',
+      'observability',
+      'OpenAI compatible gateway',
+      '멀티 모델 라우터',
+    ],
+  },
+  {
+    id: 'llm-cli-eval-harness-playbook',
+    title: '하네스 기반 모델 평가 루프',
+    level: '고급',
+    providerIds: ['openai', 'anthropic', 'google', 'zhipu', 'qwen', 'mistral', 'meta'],
+    commandIds: [
+      'cmd-glm-local-serving',
+      'cmd-qwen-local-vllm',
+      'cmd-openai-codex',
+      'cmd-claude-code',
+      'cmd-gemini-cli',
+    ],
+    summary:
+      'Inspect AI, lm-eval, mini-SWE-agent, Terminal-Bench, OpenCompass, HELM을 목적별로 나눠 모델/에이전트 평가를 반복하는 운영 절차.',
+    overview:
+      '벤치마크는 하나의 점수로 모델을 고르는 도구가 아니다. 정적 LLM 지식 평가, 코딩 에이전트 평가, 터미널/브라우저 작업, 정책/보안 검증, 사내 프롬프트 회귀 테스트를 나눠야 한다. 하네스 순위는 목적 적합성과 재현성을 함께 본다.',
+    prerequisites: [
+      '평가 목표를 품질, 비용, 속도, 안정성, 보안, 한국어 품질 중 무엇으로 볼지 정한다.',
+      'API 모델과 로컬 endpoint를 같은 호출 형식으로 감싸는 라우팅을 준비한다.',
+      '샘플 태스크와 pass/fail 기준, 사람이 검수할 항목을 미리 정의한다.',
+    ],
+    steps: [
+      {
+        title: '정적 LLM 평가와 회귀 테스트',
+        body: 'lm-eval은 표준 task, Inspect AI는 사내 eval과 tool/sandbox 기반 회귀 테스트에 적합하다.',
+        commands: [
+          'pip install "lm_eval[hf,vllm,api]"',
+          'lm-eval ls tasks',
+          'pip install inspect-ai',
+          'inspect eval simpleqa.py --model openai/gpt-5',
+        ],
+      },
+      {
+        title: '코딩 에이전트 평가',
+        body: 'mini-SWE-agent는 SWE-bench류 소프트웨어 수정 루프를 빠르게 실험하는 하네스다. 큰 SWE-agent보다 먼저 mini로 환경을 검증한다.',
+        commands: ['uv tool install mini-swe-agent', 'mini'],
+      },
+      {
+        title: '터미널/운영 태스크 평가',
+        body: 'Terminal-Bench는 git과 Docker가 필요하며 terminal-bench 또는 tb CLI로 run/tasks/datasets를 관리한다.',
+        commands: ['uv tool install terminal-bench', 'tb --help'],
+      },
+      {
+        title: '다국어·오픈모델 평가',
+        body: 'OpenCompass와 HELM은 공식 leaderboard/학술 비교 관점에서 유용하다. Qwen/GLM/Mistral 같은 오픈모델은 API와 자체 서빙 결과를 분리한다.',
+        commands: ['pip install -U opencompass', 'pip install crfm-helm'],
+      },
+    ],
+    promptTemplate:
+      '평가 목표: {코딩/문서/보안/한국어/비용/속도}\n모델 후보: {GPT/Claude/Gemini/GLM/Qwen/Mistral 등}\n하네스 후보: Inspect AI, lm-eval, mini-SWE-agent, Terminal-Bench, OpenCompass, HELM\n성공 기준: {metric, pass/fail, human review}\n요청: 하네스별 설치 난이도, 실행 명령, 결과 기록표를 만들어줘.',
+    verification: [
+      '각 하네스의 task version, dataset version, model revision, prompt template을 결과와 함께 기록한다.',
+      '공식 모델 카드 점수, 외부 leaderboard 점수, 자체 eval 점수를 다른 칼럼으로 둔다.',
+      '비용/latency는 benchmark score와 별도로 기록한다.',
+    ],
+    troubleshooting: [
+      'dataset 다운로드가 실패하면 mirror/cache와 라이선스 요구사항을 확인한다.',
+      '로컬 endpoint가 하네스에서 실패하면 OpenAI compatible path와 model name mapping을 확인한다.',
+      'agent benchmark가 불안정하면 seed, timeout, sandbox image, 재시도 정책을 고정한다.',
+    ],
+    securityChecklist: [
+      '사내 eval dataset에는 개인정보와 고객 원문을 넣지 않는다.',
+      'agent benchmark sandbox는 네트워크와 파일 시스템 권한을 최소화한다.',
+      '결과 리포트에는 API 키, 내부 URL, 원문 데이터가 남지 않게 마스킹한다.',
+    ],
+    sourceIds: [
+      'inspect-ai-docs',
+      'lm-eval-harness-github',
+      'mini-swe-agent-quickstart',
+      'terminal-bench-install',
+      'opencompass-install',
+      'helm-install',
+    ],
+    tags: ['하네스', '벤치마크', 'Inspect AI', 'lm-eval', 'SWE-bench', 'Terminal-Bench'],
+  },
+  {
+    id: 'llm-cli-plugin-skill-installation',
+    title: '플러그인·스킬·훅 설치 순위 루트',
+    level: '실무',
+    providerIds: ['openai', 'anthropic', 'google'],
+    commandIds: ['cmd-openai-codex', 'cmd-claude-code', 'cmd-gemini-cli'],
+    summary:
+      'Codex 플러그인, Codex Skills/Hooks, Claude Code 플러그인 마켓플레이스, Gemini CLI MCP/Skills, Apps SDK 위젯을 어떤 순서로 설치할지 정하는 실무 루트.',
+    overview:
+      '플러그인과 스킬은 많이 설치하는 것이 목표가 아니다. 팀 표준 절차, 검증 훅, MCP 도구, UI 위젯을 목적별로 묶고, 공식 마켓플레이스와 신뢰한 repo부터 시작해야 한다. 순위는 설치 난이도, 공식성, 팀 재사용성, 보안 영향으로 매긴다.',
+    prerequisites: [
+      '팀에서 쓰는 1차 CLI/Coding Agent를 Codex, Claude Code, Gemini CLI 중 하나로 정한다.',
+      '반복 절차는 skill, 자동 검증은 hook, 외부 도구 연결은 MCP, 배포 묶음은 plugin으로 분류한다.',
+      '커뮤니티 플러그인은 repo 신뢰도, 권한, 실행 스크립트, 업데이트 주기를 확인한다.',
+    ],
+    steps: [
+      {
+        title: '1순위: 공식 플러그인/마켓플레이스',
+        body: 'Claude Code는 공식 마켓플레이스 설치가 가장 빠르고, Codex는 .codex-plugin/plugin.json으로 팀 표준 capability를 묶는다.',
+        commands: [
+          '/plugin install github@claude-plugins-official',
+          '.codex-plugin/plugin.json 작성 후 skills/hooks/mcpServers/apps 등록',
+        ],
+      },
+      {
+        title: '2순위: 스킬로 반복 절차 캡슐화',
+        body: '배포, 리뷰, 디자인, 데이터 업데이트 절차는 SKILL.md로 만들고 description을 명확히 써 자동 선택 품질을 높인다.',
+        commands: ['skills/<name>/SKILL.md 작성', '.claude/skills/<name>/SKILL.md 작성'],
+      },
+      {
+        title: '3순위: 훅과 MCP로 검증 자동화',
+        body: 'format/test/secret scan은 hook, GitHub/browser/DB/docs는 MCP로 분리한다. 권한을 한 번에 열지 않고 단계적으로 허용한다.',
+        commands: [
+          'requirements.toml의 [hooks]와 [[hooks.PreToolUse]]/[[hooks.PostToolUse]] 구성',
+          'Gemini CLI settings.json의 mcpServers 구성',
+        ],
+      },
+      {
+        title: '4순위: 위젯/앱 표면',
+        body: 'ChatGPT 안에서 실제 UI를 보여줘야 하면 Apps SDK widget을 검토한다. 일반 웹앱 내부 위젯은 CopilotKit/assistant-ui/AI Elements와 비교한다.',
+      },
+    ],
+    promptTemplate:
+      '목표: {팀 반복 업무 또는 도구 연결}\n분류: skill/hook/MCP/plugin/widget 중 선택\n플랫폼: Codex/Claude Code/Gemini CLI/ChatGPT Apps\n권한: {읽기/쓰기/명령/API/브라우저}\n요청: 설치 순위, manifest/config 예시, 보안 검토 체크리스트를 만들어줘.',
+    verification: [
+      '설치 후 실제 CLI에서 skill/plugin/MCP가 노출되는지 확인한다.',
+      'hook은 성공/실패/timeout을 모두 테스트한다.',
+      '플러그인 설치 전후로 어떤 파일과 명령 권한이 추가되었는지 기록한다.',
+    ],
+    troubleshooting: [
+      '스킬이 자동 선택되지 않으면 description을 더 작업 중심으로 고친다.',
+      'MCP 도구가 보이지 않으면 transport, env, auth header, client reload를 확인한다.',
+      '커뮤니티 플러그인이 실패하면 공식 marketplace 또는 로컬 최소 plugin으로 줄여 재현한다.',
+    ],
+    securityChecklist: [
+      '플러그인 manifest와 hook command에 임의 원격 실행이 없는지 검토한다.',
+      'MCP 서버 토큰은 env/secret store로 주입하고 repo에 저장하지 않는다.',
+      '팀 공용 플러그인은 버전 pinning과 rollback 절차를 둔다.',
+    ],
+    sourceIds: [
+      'openai-codex-plugins',
+      'openai-codex-plugin-build',
+      'openai-codex-skills',
+      'openai-codex-hooks',
+      'claude-code-plugin-marketplace',
+      'claude-code-plugin-create',
+      'gemini-cli-mcp',
+      'gemini-cli-skills',
+      'openai-apps-sdk-chatgpt-ui',
+    ],
+    tags: ['플러그인', '스킬', '훅', 'MCP', 'Apps SDK', 'Claude Code', 'Codex', 'Gemini CLI'],
   },
 ]
 
@@ -8719,7 +10483,9 @@ export const comparisonRows: ComparisonRow[] = [
       kimi: '장문 코딩과 멀티모달 에이전트 작업에 강한 OpenAI 호환 API',
       deepseek: '1M 컨텍스트와 매우 낮은 공식 단가의 장문/대량 처리 후보',
       qwen: '오픈웨이트, 로컬 실행, 다국어 생태계가 강한 모델군',
+      zhipu: 'MIT 오픈웨이트 GLM 계열, 코딩·에이전트·자체 서빙 실험 후보',
       mistral: '유럽 기반 오픈웨이트·자체 배포·문서/OCR 워크로드 후보',
+      meta: 'Llama 4 멀티모달 MoE와 대형 오픈 모델 생태계 기준선',
       cursor: '모델 API가 아니라 IDE/Agent/Cloud/Bugbot 기반 코딩 실행 표면',
     },
   },
@@ -8735,7 +10501,9 @@ export const comparisonRows: ComparisonRow[] = [
       kimi: '텍스트, 이미지, 비디오',
       deepseek: '텍스트 중심 Chat/API',
       qwen: '텍스트, 비전/오디오 등 모델군별 멀티모달',
+      zhipu: '텍스트 중심, 런타임/양자화 변형별 멀티모달 지원은 별도 확인',
       mistral: '텍스트, 이미지, 문서/OCR 중심 멀티모달',
+      meta: '텍스트, 이미지',
       cursor: '로컬 repo, diff, 터미널, 브라우저, IDE 상태, 팀 컨텍스트',
     },
   },
@@ -8751,7 +10519,9 @@ export const comparisonRows: ComparisonRow[] = [
       kimi: 'OpenAI 호환 tool calls, 멀티모달 tool result',
       deepseek: 'JSON output, Tool Calls, Prefix Completion, FIM',
       qwen: 'Qwen-Agent, Function Calling, LangChain/LlamaIndex',
+      zhipu: 'vLLM/SGLang/Docker Model Runner, OpenAI 호환 endpoint, HF Transformers',
       mistral: 'Function Calling, Agents, Built-In Tools, OCR, FIM',
+      meta: 'Transformers, vLLM, SGLang, Docker Model Runner, quantization 후보',
       cursor: 'Agents, Tab, Rules, MCP, Skills, Hooks, Cloud agents, Bugbot',
     },
   },
@@ -8767,7 +10537,9 @@ export const comparisonRows: ComparisonRow[] = [
       kimi: '코딩 에이전트와 영상/이미지 기반 코드 분석',
       deepseek: '대량 한국어 요약, 로그/문서 장문 처리, 비용 절감',
       qwen: '한국어 포함 다국어 로컬 모델 실험과 자체 호스팅',
+      zhipu: '설치형 오픈소스 GLM 비교, 코딩/에이전트 self-hosted PoC',
       mistral: '보안 민감 문서 QnA, 유럽/온프레미스 전략, OCR',
+      meta: '오픈웨이트 멀티모달 서빙, 이미지 reasoning, Llama 생태계 PoC',
       cursor: '실제 repo 수정, 프론트엔드 화면 보정, PR 리뷰, 학생/팀 바이브 코딩',
     },
   },
@@ -8783,7 +10555,9 @@ export const comparisonRows: ComparisonRow[] = [
       kimi: 'K2.7 Code 파라미터 제약과 가격표 수동 확인 필요',
       deepseek: '레거시 모델명 지원 중단과 캐시 hit/miss 가격 구분',
       qwen: '모델 크기·양자화·서빙 환경별 품질 편차',
+      zhipu: '754B급 자원 요구, 런타임 버전, 공식 카드 벤치마크와 외부 평가 분리',
       mistral: '오픈웨이트 라이선스와 자체 배포 운영 비용 검토',
+      meta: 'Custom license, HF access, 한국어 자체 평가와 런타임별 컨텍스트 한계 확인',
       cursor: '기저 모델 비용·품질과 IDE/Agent 권한·보안 정책을 분리 평가',
     },
   },
@@ -9070,9 +10844,15 @@ export const personaGuides: PersonaGuide[] = [
     title: '오픈웨이트와 API 혼합 운영 플레이북',
     summary:
       '폐쇄형 API, 오픈웨이트, 자체 배포 모델을 비용·보안·운영 책임 기준으로 나누어 평가한다.',
-    providerIds: ['qwen', 'mistral', 'deepseek', 'kimi', 'google'],
+    providerIds: ['qwen', 'mistral', 'deepseek', 'kimi', 'google', 'zhipu', 'meta'],
     recommendedModelIds: ['qwen3-2507', 'mistral-medium-35', 'deepseek-v4-flash'],
-    alternateModelIds: ['ministral-3-14b', 'kimi-k27-code'],
+    alternateModelIds: [
+      'glm-51',
+      'gemma-4',
+      'llama-4-maverick',
+      'ministral-3-14b',
+      'kimi-k27-code',
+    ],
     workflow: [
       '업무별로 API 사용 가능 데이터와 자체 배포가 필요한 데이터를 분리한다.',
       'Qwen/Mistral/Ministral은 로컬·온프레미스 후보, DeepSeek/Kimi는 OpenAI 호환 API 후보로 평가한다.',
@@ -9090,6 +10870,9 @@ export const personaGuides: PersonaGuide[] = [
     ],
     sourceIds: [
       'qwen-docs',
+      'google-gemma4-overview',
+      'meta-llama4-maverick-hf',
+      'zai-glm51-hf',
       'mistral-models',
       'mistral-ministral-3-14b',
       'deepseek-pricing',
@@ -9370,8 +11153,8 @@ export const taskRecommendations: TaskRecommendation[] = [
     category: 'security',
     title: '보안 민감 코드·문서와 자체 배포',
     userIntent: '민감 데이터가 있어 외부 API와 자체 호스팅 후보를 나눠 평가하고 싶다.',
-    primaryModelIds: ['qwen3-2507', 'mistral-medium-35', 'ministral-3-14b'],
-    alternateModelIds: ['deepseek-v4-flash', 'cursor-ai-ide'],
+    primaryModelIds: ['qwen3-2507', 'gemma-4', 'mistral-medium-35', 'ministral-3-14b'],
+    alternateModelIds: ['glm-51', 'llama-4-maverick', 'deepseek-v4-flash', 'cursor-ai-ide'],
     commandIds: ['cmd-qwen-local-vllm', 'cmd-mistral-api', 'cmd-cursor-agent'],
     benchmarkDomains: ['agent', 'coding', 'cost'],
     resourceIds: [
@@ -9394,6 +11177,8 @@ export const taskRecommendations: TaskRecommendation[] = [
       '이 업무를 외부 API 가능, 자체 배포 필요, IDE 사용 가능으로 나누고 보안/비용/운영 책임을 표로 비교해줘.',
     sourceIds: [
       'qwen-docs',
+      'google-gemma4-overview',
+      'meta-llama4-maverick-hf',
       'mistral-models',
       'mistral-ministral-3-14b',
       'cursor-pricing',
@@ -9447,6 +11232,20 @@ export const learningResources: LearningResource[] = [
     tags: ['Gemini', 'Multimodal', 'Grounding'],
   },
   {
+    id: 'res-gemma4-docs',
+    type: '공식 문서',
+    title: 'Gemma 4 공식 문서와 설치 경로',
+    author: 'Google AI for Developers / Google DeepMind',
+    language: '영어',
+    level: '실무',
+    summary:
+      'Gemma 4 모델 개요, QAT 체크포인트, GGUF/LM Studio/Ollama/vLLM/SGLang/mobile 라우팅과 DeepMind 통합 목록을 확인하는 공식 자료.',
+    url: 'https://ai.google.dev/gemma/docs/core',
+    sourceIds: ['google-gemma4-overview', 'google-gemma-models'],
+    providerIds: ['google'],
+    tags: ['Gemma', 'Gemma 4', 'QAT', '오픈웨이트', '로컬 모델'],
+  },
+  {
     id: 'res-manus-api',
     type: '공식 문서',
     title: 'Manus API v2 Docs',
@@ -9458,6 +11257,20 @@ export const learningResources: LearningResource[] = [
     sourceIds: ['manus-api'],
     providerIds: ['manus'],
     tags: ['Manus', 'Agents', 'Automation'],
+  },
+  {
+    id: 'res-llama4-model-cards',
+    type: '공식 문서',
+    title: 'Llama 4 Maverick / Scout 모델 카드',
+    author: 'Meta Llama on Hugging Face',
+    language: '영어',
+    level: '고급',
+    summary:
+      'Llama 4 Maverick과 Scout의 native multimodal MoE 스펙, 컨텍스트, 라이선스, vLLM/SGLang/Docker 실행 경로를 확인하는 모델 카드 묶음.',
+    url: 'https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct',
+    sourceIds: ['meta-llama4-maverick-hf', 'meta-llama4-scout-hf'],
+    providerIds: ['meta'],
+    tags: ['Llama', 'Meta', 'Maverick', 'Scout', 'vLLM', 'SGLang'],
   },
   {
     id: 'res-xai-docs',
@@ -13227,6 +15040,7 @@ function collectReferencedSourceIds() {
   }
 
   for (const model of modelProfiles) addMany(model.sourceIds)
+  for (const profile of localModelComparisonProfiles) addMany(profile.sourceIds)
   for (const update of updates) addMany(update.sourceIds)
   for (const eventSchedule of eventScheduleItems) addMany(eventSchedule.sourceIds)
   for (const benchmark of benchmarkEntries) addMany(benchmark.sourceIds)
@@ -13282,6 +15096,7 @@ export function runContentAudit(): ContentAuditResult {
   const missingSources = getMissingSourceReferences()
   const duplicateSourceIds = duplicateIds(sources)
   const duplicateModelIds = duplicateIds(modelProfiles)
+  const duplicateLocalModelComparisonIds = duplicateIds(localModelComparisonProfiles)
   const duplicateUpdateIds = duplicateIds(updates)
   const duplicateEventScheduleIds = duplicateIds(eventScheduleItems)
   const duplicateCommandIds = duplicateIds(vibeCodingCommands)
@@ -13315,6 +15130,7 @@ export function runContentAudit(): ContentAuditResult {
       status:
         duplicateSourceIds.length +
           duplicateModelIds.length +
+          duplicateLocalModelComparisonIds.length +
           duplicateUpdateIds.length +
           duplicateEventScheduleIds.length +
           duplicateCommandIds.length +
@@ -13329,6 +15145,7 @@ export function runContentAudit(): ContentAuditResult {
       detail:
         duplicateSourceIds.length +
           duplicateModelIds.length +
+          duplicateLocalModelComparisonIds.length +
           duplicateUpdateIds.length +
           duplicateEventScheduleIds.length +
           duplicateCommandIds.length +
@@ -13342,6 +15159,7 @@ export function runContentAudit(): ContentAuditResult {
           : `중복 ID가 있습니다: ${[
               ...duplicateSourceIds,
               ...duplicateModelIds,
+              ...duplicateLocalModelComparisonIds,
               ...duplicateUpdateIds,
               ...duplicateEventScheduleIds,
               ...duplicateCommandIds,
@@ -13357,7 +15175,7 @@ export function runContentAudit(): ContentAuditResult {
       label: '주요 제공사 커버리지',
       status: hasAllProviders ? 'pass' : 'fail',
       detail: hasAllProviders
-        ? 'GPT, Claude, Gemini, Grok, Manus, Kimi, DeepSeek, Qwen, Mistral이 모두 모델 비교 표면에 포함되어 있습니다.'
+        ? 'GPT, Claude, Gemini/Gemma, Grok, Manus, Kimi, DeepSeek, Qwen, GLM, Mistral, Llama, Cursor가 모두 모델 비교 표면에 포함되어 있습니다.'
         : '필수 제공사 중 누락된 모델 프로필이 있습니다.',
     },
     {
@@ -13759,13 +15577,18 @@ const queryAliasEntries = [
   ['제미니', ['gemini']],
   ['제미나이', ['gemini']],
   ['재미나이', ['gemini']],
+  ['젬마', ['gemma', 'google']],
   ['그록', ['grok', 'xai']],
   ['마누스', ['manus']],
   ['키미', ['kimi']],
   ['딥시크', ['deepseek']],
   ['큐웬', ['qwen']],
   ['큐원', ['qwen']],
+  ['지푸', ['zhipu', 'z.ai', 'glm']],
+  ['쯔푸', ['zhipu', 'z.ai', 'glm']],
+  ['glm', ['zhipu', 'z.ai', 'glm']],
   ['미스트랄', ['mistral']],
+  ['라마', ['llama', 'meta']],
   ['코파일럿', ['copilot']],
   ['윈드서프', ['windsurf']],
   ['러버블', ['lovable']],
@@ -13869,6 +15692,34 @@ export function searchCatalog(
             ...model.bestFor,
             ...model.aliases,
             getSourceMetadataSearchText(model.sourceIds),
+          ])
+      )
+    : []
+
+  const localModelComparisons = matchesAnyCategory(selectedCategory, [
+    'comparison',
+    'tools',
+    'vibe',
+  ])
+    ? localModelComparisonProfiles.filter(
+        (profile) =>
+          matchesProvider(profile.providerId, selectedProvider) &&
+          matchesQuery(query, [
+            profile.modelName,
+            profile.modelId,
+            profile.sizeLabel,
+            profile.license,
+            profile.installDifficulty,
+            profile.installHint,
+            profile.rankReason,
+            profile.adoptionSignal,
+            profile.thumbnailDomain,
+            ...profile.recommendedRuntimes,
+            ...profile.frontends,
+            ...profile.bestFor,
+            ...profile.caveats,
+            ...profile.tags,
+            getSourceMetadataSearchText(profile.sourceIds),
           ])
       )
     : []
@@ -14195,6 +16046,7 @@ export function searchCatalog(
   const matchedSourceIds = new Set<string>()
   for (const item of [
     ...models,
+    ...localModelComparisons,
     ...filteredUpdates,
     ...filteredEventSchedules,
     ...filteredTaskRecommendations,
@@ -14207,6 +16059,7 @@ export function searchCatalog(
     ...resources,
     ...filteredPipelineItems,
     ...deals,
+    ...extensions,
   ]) {
     for (const sourceId of item.sourceIds) matchedSourceIds.add(sourceId)
   }
@@ -14227,6 +16080,7 @@ export function searchCatalog(
 
   return {
     models,
+    localModelComparisons,
     updates: filteredUpdates,
     eventSchedules: filteredEventSchedules,
     taskRecommendations: filteredTaskRecommendations,
@@ -14250,6 +16104,7 @@ export function getCatalogStats() {
   const audit = runContentAudit()
   return {
     providers: new Set(modelProfiles.map((profile) => profile.providerId)).size,
+    localModelComparisons: localModelComparisonProfiles.length,
     updates: updates.length,
     eventSchedules: eventScheduleItems.length,
     benchmarkRows: benchmarkEntries.length,

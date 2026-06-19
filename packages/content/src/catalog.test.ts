@@ -63,6 +63,12 @@ describe('catalog search', () => {
     const qwenResults = searchCatalog('Qwen', 'qwen')
     expect(qwenResults.models.some((model) => model.id === 'qwen3-2507')).toBe(true)
 
+    const gemmaResults = searchCatalog('Gemma 4 QAT', 'google', 'comparison')
+    expect(gemmaResults.models.some((model) => model.id === 'gemma-4')).toBe(true)
+
+    const llamaResults = searchCatalog('라마 Maverick', 'meta', 'comparison')
+    expect(llamaResults.models.some((model) => model.id === 'llama-4-maverick')).toBe(true)
+
     const cursorResults = searchCatalog('Cursor', 'cursor')
     expect(cursorResults.models.some((model) => model.id === 'cursor-ai-ide')).toBe(true)
     expect(
@@ -432,6 +438,108 @@ describe('catalog search', () => {
     expect(
       securityResults.llmCliManuals.some((manual) => manual.id === 'llm-cli-security-permissions')
     ).toBe(true)
+
+    const grokResults = searchCatalog('Responses API', 'xai', 'manuals')
+    expect(
+      grokResults.llmCliManuals.some((manual) => manual.id === 'llm-cli-grok-realtime-research')
+    ).toBe(true)
+
+    const kimiResults = searchCatalog('멀티모달 tool result', 'kimi', 'manuals')
+    expect(
+      kimiResults.llmCliManuals.some((manual) => manual.id === 'llm-cli-kimi-agentic-coding')
+    ).toBe(true)
+
+    const deepSeekResults = searchCatalog('cache hit', 'deepseek', 'manuals')
+    expect(
+      deepSeekResults.llmCliManuals.some((manual) => manual.id === 'llm-cli-deepseek-cost-cache')
+    ).toBe(true)
+
+    const mistralResults = searchCatalog('Function Calling', 'mistral', 'manuals')
+    expect(
+      mistralResults.llmCliManuals.some((manual) => manual.id === 'llm-cli-mistral-tools-docs')
+    ).toBe(true)
+
+    const manusResults = searchCatalog('태스크 API', 'manus', 'manuals')
+    expect(
+      manusResults.llmCliManuals.some((manual) => manual.id === 'llm-cli-manus-task-api')
+    ).toBe(true)
+
+    const gemmaResults = searchCatalog('Gemma 4 QAT GGUF', 'google', 'manuals')
+    expect(
+      gemmaResults.llmCliManuals.some((manual) => manual.id === 'llm-cli-gemma4-qat-local')
+    ).toBe(true)
+
+    const llamaResults = searchCatalog('Llama 4 SGLang', 'meta', 'manuals')
+    expect(
+      llamaResults.llmCliManuals.some((manual) => manual.id === 'llm-cli-llama4-serving')
+    ).toBe(true)
+
+    const routerResults = searchCatalog('LiteLLM Proxy', 'all', 'manuals')
+    expect(
+      routerResults.llmCliManuals.some(
+        (manual) => manual.id === 'llm-cli-model-router-observability'
+      )
+    ).toBe(true)
+  })
+
+  it('finds local open model comparison profiles', () => {
+    const glmResults = searchCatalog('GLM-5.1 vLLM', 'zhipu', 'comparison')
+    expect(
+      glmResults.localModelComparisons.some((profile) => profile.id === 'local-glm-51-serving')
+    ).toBe(true)
+
+    const gemmaResults = searchCatalog('Gemma 4 QAT', 'google', 'comparison')
+    expect(
+      gemmaResults.localModelComparisons.some((profile) => profile.id === 'local-gemma4-edge')
+    ).toBe(true)
+
+    const llamaResults = searchCatalog('Llama Maverick vLLM', 'meta', 'comparison')
+    expect(
+      llamaResults.localModelComparisons.some((profile) => profile.id === 'local-llama4-maverick')
+    ).toBe(true)
+
+    const frontendResults = searchCatalog('Open WebUI', 'all', 'tools')
+    expect(
+      frontendResults.localModelComparisons.some(
+        (profile) => profile.id === 'local-runtime-ui-baseline'
+      )
+    ).toBe(true)
+  })
+
+  it('finds ranked evaluation harness extensions', () => {
+    const promptfooResults = searchCatalog('promptfoo red teaming', 'all', 'tools')
+    expect(
+      promptfooResults.extensions.some((extension) => extension.id === 'ext-promptfoo-eval-redteam')
+    ).toBe(true)
+
+    const ragasResults = searchCatalog('Ragas tool call accuracy', 'all', 'tools')
+    expect(
+      ragasResults.extensions.some((extension) => extension.id === 'ext-ragas-rag-agent-evals')
+    ).toBe(true)
+
+    const langSmithResults = searchCatalog('LangSmith online evaluation', 'all', 'tools')
+    expect(
+      langSmithResults.extensions.some((extension) => extension.id === 'ext-langsmith-evaluations')
+    ).toBe(true)
+
+    const litellmResults = searchCatalog('LiteLLM Proxy', 'all', 'tools')
+    expect(
+      litellmResults.extensions.some((extension) => extension.id === 'ext-litellm-proxy-gateway')
+    ).toBe(true)
+
+    const openRouterResults = searchCatalog('OpenRouter model router', 'all', 'tools')
+    expect(
+      openRouterResults.extensions.some(
+        (extension) => extension.id === 'ext-openrouter-model-router'
+      )
+    ).toBe(true)
+
+    const langfuseResults = searchCatalog('Langfuse observability', 'all', 'tools')
+    expect(
+      langfuseResults.extensions.some(
+        (extension) => extension.id === 'ext-langfuse-observability-evals'
+      )
+    ).toBe(true)
   })
 
   it('finds expanded benchmark and Korean course sources', () => {
@@ -601,11 +709,12 @@ describe('catalog search', () => {
 
   it('exposes summary stats', () => {
     expect(getCatalogStats()).toMatchObject({
-      providers: 10,
+      providers: 12,
+      localModelComparisons: 7,
       updates: 46,
       benchmarkRows: 97,
-      vibeCommands: 16,
-      cliManuals: 5,
+      vibeCommands: 17,
+      cliManuals: 17,
       aiCodingTools: 14,
       personaGuides: 5,
       taskRecommendations: 8,

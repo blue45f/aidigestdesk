@@ -57,6 +57,7 @@ import { getInitialMemberSession, logOut, type MemberSession } from '@/component
 import {
   BenchmarkBoard,
   ComparisonMatrix,
+  LocalModelComparison,
   ModelCards,
   ModelDetail,
 } from '@/components/app/ModelBenchmarkSections'
@@ -327,6 +328,7 @@ export default function App() {
               onSelectModel={setSelectedModelId}
             />
             {selectedModel ? <ModelDetail profile={selectedModel} /> : null}
+            <LocalModelComparison />
             <BenchmarkBoard />
             <ComparisonMatrix />
             <ModelCostCalculator />
