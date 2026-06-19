@@ -64,7 +64,7 @@ function Article({
   )
 }
 
-function TermsDocument() {
+function TermsDocument({ onNavigate }: { onNavigate: (route: AppRoute) => void }) {
   return (
     <article className="rounded-lg border border-border bg-surface p-6">
       <header className="space-y-2 border-b border-border pb-5">
@@ -170,8 +170,16 @@ function TermsDocument() {
 
         <Article number={10} title="문의">
           <p>
-            약관에 대한 문의는 포털 내 관리자 콘솔 또는 운영자가 공지한 연락 수단을 통해 접수합니다.
-            본 데모 환경에서는 외부 연락처가 제공되지 않을 수 있습니다.
+            약관을 비롯한 모든 문의는 포털 내{' '}
+            <button
+              type="button"
+              onClick={() => onNavigate('support')}
+              className="font-semibold text-accent underline-offset-2 hover:underline"
+            >
+              문의 페이지
+            </button>
+            를 통해 접수합니다. 전화·이메일 대신 내부 문의 게시판으로 창구를 통합했으며, 접수된
+            문의는 공개 게시판에 표시되고 운영자가 확인 후 상태를 업데이트합니다.
           </p>
         </Article>
       </div>
@@ -271,8 +279,14 @@ function PrivacyDocument() {
 }
 
 /** 정적 폴백 문서. 원격 클라이언트가 없거나 조회에 실패하면 이 본문을 그대로 보여준다. */
-function StaticDocument({ document }: { document: DocumentId }) {
-  return document === 'terms' ? <TermsDocument /> : <PrivacyDocument />
+function StaticDocument({
+  document,
+  onNavigate,
+}: {
+  document: DocumentId
+  onNavigate: (route: AppRoute) => void
+}) {
+  return document === 'terms' ? <TermsDocument onNavigate={onNavigate} /> : <PrivacyDocument />
 }
 
 /**
@@ -282,7 +296,13 @@ function StaticDocument({ document }: { document: DocumentId }) {
  * - 조회 실패 시에도 정적 폴백으로 폴백하여 회귀가 없도록 한다.
  * - 본문(body)은 플레인 텍스트로 취급해 whitespace-pre-wrap으로 렌더한다(XSS 방지).
  */
-function RemoteTermsDocument({ document }: { document: DocumentId }) {
+function RemoteTermsDocument({
+  document,
+  onNavigate,
+}: {
+  document: DocumentId
+  onNavigate: (route: AppRoute) => void
+}) {
   const [policy, setPolicy] = useState<PublicPolicy | null>(null)
   const [loading, setLoading] = useState(true)
   const [failed, setFailed] = useState(false)
@@ -323,7 +343,7 @@ function RemoteTermsDocument({ document }: { document: DocumentId }) {
 
   // 미설정 또는 조회 실패 → 기존 정적 본문(회귀 없음).
   if (failed || !policy) {
-    return <StaticDocument document={document} />
+    return <StaticDocument document={document} onNavigate={onNavigate} />
   }
 
   return (
@@ -391,9 +411,13 @@ export function TermsRoute({ onNavigate }: { onNavigate: (route: AppRoute) => vo
         </section>
 
         {remoteEnabled ? (
-          <RemoteTermsDocument key={activeDocument} document={activeDocument} />
+          <RemoteTermsDocument
+            key={activeDocument}
+            document={activeDocument}
+            onNavigate={onNavigate}
+          />
         ) : (
-          <StaticDocument document={activeDocument} />
+          <StaticDocument document={activeDocument} onNavigate={onNavigate} />
         )}
 
         <p className="flex flex-wrap items-center gap-1.5 border-t border-border pt-5 text-xs text-text-subtle">

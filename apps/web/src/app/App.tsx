@@ -68,6 +68,7 @@ import {
 import { ResourceLibrary } from '@/components/app/ResourceLibrary'
 import { SitemapRoute } from '@/components/app/SitemapRoute'
 import { SourcesSection } from '@/components/app/SourcesSection'
+import { SupportRoute } from '@/components/app/SupportRoute'
 import { TermsRoute } from '@/components/app/TermsRoute'
 import { TranslatedNewsSection } from '@/components/app/TranslatedNewsSection'
 import { RouteAnnouncer } from '@/components/layout/RouteAnnouncer'
@@ -429,6 +430,8 @@ export default function App() {
           onNavigate={navigateToRoute}
           memberName={memberSession?.displayName ?? null}
         />
+      ) : route === 'support' ? (
+        <SupportRoute onNavigate={navigateToRoute} />
       ) : route === 'terms' ? (
         <TermsRoute onNavigate={navigateToRoute} />
       ) : route === 'about' ? (
@@ -460,6 +463,13 @@ export default function App() {
                     className="font-semibold text-text-muted transition hover:text-text"
                   >
                     커뮤니티
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigateToRoute('support')}
+                    className="font-semibold text-text-muted transition hover:text-text"
+                  >
+                    문의
                   </button>
                   <button
                     type="button"

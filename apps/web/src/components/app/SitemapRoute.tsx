@@ -91,6 +91,13 @@ const sitemapSections: SitemapSection[] = [
     links: [{ label: "로그인 / 회원가입", note: "데모 인증 · localStorage" }],
   },
   {
+    id: "support",
+    route: "support",
+    title: "문의",
+    description: "제휴·버그·의견·이용 문의를 남기고 공개 게시판에서 확인하는 내부 문의 창구입니다.",
+    links: [{ label: "문의 남기기", note: "제휴 · 버그 · 의견 · 이용" }],
+  },
+  {
     id: "terms",
     route: "terms",
     title: "약관·정책",

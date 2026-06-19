@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   Filter,
   Home,
+  MessageSquarePlus,
   MessagesSquare,
   Search,
   ShieldCheck,
@@ -80,6 +81,12 @@ const features: Array<{ route: AppRoute; icon: NavIcon; title: string; body: str
     icon: UserRound,
     title: '회원·계정',
     body: '회원가입·로그인으로 커뮤니티에 닉네임으로 참여하세요. 계정은 서버 없이 브라우저에만 저장됩니다.',
+  },
+  {
+    route: 'support',
+    icon: MessageSquarePlus,
+    title: '문의',
+    body: '제휴·버그·의견·이용 문의를 남기고 공개 게시판에서 처리 상태를 확인하세요. 전화·이메일 대신 이 창구로 통합했습니다.',
   },
 ]
 

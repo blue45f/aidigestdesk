@@ -8,6 +8,7 @@ export type AppRoute =
   | "about"
   | "admin"
   | "account"
+  | "support"
   | "terms"
   | "design"
   | "sitemap";
@@ -22,6 +23,7 @@ export const routePath: Record<AppRoute, string> = {
   about: "/about",
   admin: "/admin",
   account: "/account",
+  support: "/support",
   terms: "/terms",
   design: "/design",
   sitemap: "/sitemap",
@@ -37,6 +39,7 @@ export const routeTitles: Record<AppRoute, string> = {
   about: "소개·사용 가이드",
   admin: "관리자 콘솔",
   account: "내 계정",
+  support: "문의",
   terms: "약관·정책",
   design: "디자인 시스템",
   sitemap: "사이트맵",
@@ -53,6 +56,7 @@ export function getCurrentRoute(): AppRoute {
   if (pathname.startsWith("/about")) return "about";
   if (pathname.startsWith("/admin")) return "admin";
   if (pathname.startsWith("/account")) return "account";
+  if (pathname.startsWith("/support")) return "support";
   if (pathname.startsWith("/terms")) return "terms";
   if (pathname.startsWith("/design")) return "design";
   if (pathname.startsWith("/sitemap")) return "sitemap";

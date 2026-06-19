@@ -15,6 +15,8 @@ interface ImportMetaEnv {
   readonly VITE_TERMSDESK_PK?: string
   /** TermsDesk 공개 렌더 라우트용 조직 slug. */
   readonly VITE_TERMSDESK_ORG?: string
+  /** desk-platform 문의 게시판 API 베이스 URL(미설정 시 prod 기본값). */
+  readonly VITE_DESK_PLATFORM_URL?: string
 }
 
 interface ImportMeta {
