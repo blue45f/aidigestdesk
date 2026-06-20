@@ -129,7 +129,7 @@ export function Header({
               AI Digest Desk
               <span className="inline-flex items-center gap-1 rounded-full border border-accent-3/40 bg-accent-3/10 px-1.5 py-px text-[0.625rem] font-bold tracking-wide text-accent-3 uppercase">
                 <span className="live-dot !size-1.5 !bg-accent-3" aria-hidden />
-                beta
+                BETA
               </span>
             </span>
             <span className="block truncate text-xs text-text-subtle">{SNAPSHOT_DATE} 기준</span>
