@@ -12,14 +12,14 @@
   "scripts": {
     "build:libs": "pnpm --filter @aidigestdesk/content run build",
     "dev": "pnpm run build:libs && pnpm -r --parallel --stream run dev",
-    "build": "pnpm -r run build",
-    "lint": "eslint .",
+    "build": "pnpm exec turbo run build",
+    "lint": "eslint . && pnpm exec turbo run lint",
     "lint:strict": "eslint . --max-warnings=0",
     "lint:ci": "pnpm run lint:strict",
     "audit:security": "pnpm audit --audit-level high --ignore GHSA-2p57-rm9w-gvfp",
     "lint:security": "pnpm run lint:strict && pnpm run audit:security",
-    "typecheck": "pnpm run build:libs && pnpm -r run typecheck",
-    "test": "pnpm -r run test",
+    "typecheck": "pnpm exec turbo run typecheck",
+    "test": "pnpm exec turbo run test --concurrency=1",
     "check:bundle": "pnpm --filter @aidigestdesk/web run check:bundle",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -38,6 +38,7 @@
     "lint-staged": "^17.0.7",
     "playwright": "^1.58.0",
     "prettier": "^3.8.3",
+    "turbo": "^2.9.18",
     "typescript": "^6.0.3"
   },
   "lint-staged": {
