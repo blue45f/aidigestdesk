@@ -263,7 +263,7 @@ function CommandCard({ command }: { command: VibeCodingCommand }) {
           href={sourceUrl}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+          className="inline-flex min-h-9 items-center gap-1.5 rounded-md px-2 text-xs font-semibold text-text-muted transition hover:text-text"
         >
           출처
           <ExternalLink className="size-3" aria-hidden />
@@ -352,7 +352,7 @@ function ManualSourceLinks({ manual }: { manual: LlmCliManual }) {
             href={source.url}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
           >
             {source.publisher}
             <ExternalLink className="size-3" aria-hidden />

@@ -17,7 +17,7 @@ const signalStats: Array<{ label: string; value: number; suffix?: string }> = [
 /**
  * 포털 홈 대시보드 헤더. 마케팅 히어로가 아니라 "오늘 무엇이 바뀌었나"를
  * 한눈에 보여주는 작업 대시보드 머리글이다. 정체성(차분한 cool-250, teal 강조,
- * 그라데이션 텍스트·중첩 카드 금지)을 지키되, 절제된 광채·라이브 신호·카운트업으로
+ * 그라데이션 텍스트·중첩 카드 금지)을 지키되, 상태 스트립·라이브 신호·카운트업으로
  * 첫 화면에 자신감과 생동감을 준다.
  */
 export function PortalHero({ onNavigate }: { onNavigate: (route: AppRoute) => void }) {
@@ -26,25 +26,12 @@ export function PortalHero({ onNavigate }: { onNavigate: (route: AppRoute) => vo
       aria-labelledby="portal-hero-title"
       className="reveal is-revealed relative overflow-hidden rounded-lg border border-border bg-surface"
     >
-      {/* 절제된 teal 광채 — 깊이를 주는 분위기 레이어. 텍스트 그라데이션 아님. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-24 -top-28 size-80 rounded-full opacity-70 blur-3xl"
-        style={{
-          background:
-            'radial-gradient(circle, color-mix(in oklch, var(--color-accent), transparent 72%), transparent 70%)',
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-24 left-1/3 size-72 rounded-full opacity-50 blur-3xl"
-        style={{
-          background:
-            'radial-gradient(circle, color-mix(in oklch, var(--color-accent-2), transparent 80%), transparent 70%)',
-        }}
+        className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,var(--color-accent),var(--color-accent-2),var(--color-accent-3))]"
       />
 
-      <div className="relative grid gap-6 p-5 sm:p-7 xl:grid-cols-[1.5fr_1fr] xl:items-center">
+      <div className="relative grid gap-5 p-4 sm:gap-6 sm:p-7 xl:grid-cols-[1.5fr_1fr] xl:items-center">
         <div>
           <p className="flex items-center gap-2 text-xs font-semibold text-text-muted">
             <span className="live-dot" aria-hidden />
@@ -52,7 +39,7 @@ export function PortalHero({ onNavigate }: { onNavigate: (route: AppRoute) => vo
           </p>
           <h1
             id="portal-hero-title"
-            className="mt-3 text-3xl font-bold leading-tight tracking-tight text-text text-balance sm:text-[2.5rem]"
+            className="mt-3 text-2xl font-bold leading-tight tracking-tight text-text text-balance sm:text-[2.5rem]"
           >
             오늘의 AI 다이제스트
           </h1>
@@ -60,11 +47,11 @@ export function PortalHero({ onNavigate }: { onNavigate: (route: AppRoute) => vo
             GPT, Claude, Gemini, Grok, Manus의 최신 업데이트·벤치마크·비용을 한국어로 정리했습니다.
             모든 항목은 날짜와 출처로 추적됩니다.
           </p>
-          <div className="mt-5 flex flex-wrap items-center gap-2.5">
+          <div className="mt-5 grid gap-2.5 sm:flex sm:flex-wrap sm:items-center">
             <button
               type="button"
               onClick={() => onNavigate('models')}
-              className="group/cta relative inline-flex h-11 items-center gap-2 overflow-hidden rounded-md border border-ink bg-ink px-5 text-sm font-semibold text-ink-fg transition-[transform,box-shadow] duration-200 ease-[var(--ease-out-quart)] hover:-translate-y-0.5 hover:shadow-[0_10px_30px_-12px_color-mix(in_oklch,var(--color-accent),transparent_45%)] active:translate-y-0"
+              className="group/cta relative inline-flex h-11 items-center justify-center gap-2 overflow-hidden rounded-md border border-ink bg-ink px-5 text-sm font-semibold text-ink-fg transition-[transform,box-shadow] duration-200 ease-[var(--ease-out-quart)] hover:-translate-y-0.5 hover:shadow-[0_10px_30px_-12px_color-mix(in_oklch,var(--color-accent),transparent_45%)] active:translate-y-0 sm:justify-start"
             >
               <Table2 className="size-4" aria-hidden />
               모델·벤치마크 비교
@@ -76,7 +63,7 @@ export function PortalHero({ onNavigate }: { onNavigate: (route: AppRoute) => vo
             <button
               type="button"
               onClick={() => onNavigate('about')}
-              className="inline-flex h-11 items-center gap-2 rounded-md border border-border bg-bg px-4 text-sm font-semibold text-text-muted transition-colors duration-200 hover:border-border-strong hover:text-text"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-border bg-bg px-4 text-sm font-semibold text-text-muted transition-colors duration-200 hover:border-border-strong hover:text-text sm:justify-start"
             >
               <Sparkles className="size-4 text-accent" aria-hidden />
               처음이신가요? 소개·가이드
@@ -91,17 +78,10 @@ export function PortalHero({ onNavigate }: { onNavigate: (route: AppRoute) => vo
         {/* 신호 스트립 — 카탈로그 규모를 한눈에. 장식이 아니라 범위 신호. */}
         <dl className="grid grid-cols-2 gap-2.5">
           {signalStats.map((stat, index) => (
-            <div
-              key={stat.label}
-              className="rounded-md border border-border bg-bg/80 p-3.5 backdrop-blur-sm"
-            >
+            <div key={stat.label} className="rounded-md border border-border bg-bg/80 p-3">
               <dt className="text-xs font-semibold text-text-subtle">{stat.label}</dt>
               <dd className="mt-1 text-2xl font-bold tabular-nums text-text">
-                <CountUp
-                  value={stat.value}
-                  suffix={stat.suffix}
-                  durationMs={900 + index * 120}
-                />
+                <CountUp value={stat.value} suffix={stat.suffix} durationMs={900 + index * 120} />
               </dd>
             </div>
           ))}

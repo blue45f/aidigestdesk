@@ -19,7 +19,9 @@ import {
   Sun,
   Table2,
   UserRound,
+  X,
 } from 'lucide-react'
+import { useState } from 'react'
 
 import type { AdminSession } from '@/components/app/adminSession'
 import type { AppRoute } from '@/components/app/appRoutes'
@@ -33,13 +35,13 @@ import { SEARCH_INPUT_ID } from '@/hooks/useSearchHotkey'
 type NavIcon = ComponentType<{ className?: string; 'aria-hidden'?: boolean }>
 
 // 전역 내비게이션(GNB) — 라우트 전환. 디자인 시스템은 사이트맵에서만 노출한다.
-const primaryNav: Array<{ id: AppRoute; label: string; icon: NavIcon }> = [
-  { id: 'portal', label: '홈', icon: Home },
-  { id: 'models', label: '모델·벤치마크', icon: Table2 },
-  { id: 'tools', label: '도구·확장', icon: Boxes },
-  { id: 'deals', label: '할인·혜택', icon: BadgePercent },
-  { id: 'resources', label: '강좌·자료', icon: BookOpen },
-  { id: 'community', label: '커뮤니티', icon: MessagesSquare },
+const primaryNav: Array<{ id: AppRoute; label: string; mobileLabel: string; icon: NavIcon }> = [
+  { id: 'portal', label: '홈', mobileLabel: '홈', icon: Home },
+  { id: 'models', label: '모델·벤치마크', mobileLabel: '모델', icon: Table2 },
+  { id: 'tools', label: '도구·확장', mobileLabel: '도구', icon: Boxes },
+  { id: 'deals', label: '할인·혜택', mobileLabel: '혜택', icon: BadgePercent },
+  { id: 'resources', label: '강좌·자료', mobileLabel: '자료', icon: BookOpen },
+  { id: 'community', label: '커뮤니티', mobileLabel: '커뮤', icon: MessagesSquare },
 ]
 
 // 라우트별 섹션 목차 — 사이드바(데스크톱)에서 현재 페이지 내 이동을 돕는다.
@@ -100,14 +102,16 @@ export function Header({
 }) {
   const navButtonClass = (targetRoute: AppRoute) =>
     route === targetRoute
-      ? 'inline-flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-ink bg-ink px-3 text-xs font-semibold text-ink-fg transition-[transform,box-shadow] duration-200 ease-[var(--ease-out-quart)]'
-      : 'inline-flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-transparent px-3 text-xs font-semibold text-text-muted transition-[color,background-color,transform] duration-200 ease-[var(--ease-out-quart)] hover:-translate-y-px hover:bg-surface-2 hover:text-text'
+      ? 'inline-flex h-9 shrink-0 snap-start items-center gap-1.5 rounded-md border border-ink bg-ink px-3 text-xs font-semibold text-ink-fg transition-[transform,box-shadow] duration-200 ease-[var(--ease-out-quart)]'
+      : 'inline-flex h-9 shrink-0 snap-start items-center gap-1.5 rounded-md border border-transparent px-3 text-xs font-semibold text-text-muted transition-[color,background-color,transform] duration-200 ease-[var(--ease-out-quart)] hover:-translate-y-px hover:bg-surface-2 hover:text-text'
 
   const showSearch = route !== 'admin'
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
+  const showMobileSearch = showSearch && (mobileSearchOpen || query.trim().length > 0)
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-bg/90 backdrop-blur">
-      <div className="flex h-16 items-center gap-3 px-4 lg:px-5">
+      <div className="flex h-14 items-center gap-2.5 px-3 sm:h-16 sm:gap-3 sm:px-4 lg:px-5">
         <a
           href={route === 'portal' ? '#main-content' : '/'}
           onClick={(event) => {
@@ -116,26 +120,30 @@ export function Header({
               onNavigate('portal')
             }
           }}
-          className="group flex min-w-0 items-center gap-3"
+          className="group flex min-w-0 items-center gap-2.5 sm:gap-3"
         >
-          <span className="grid size-9 shrink-0 place-items-center rounded-md bg-ink text-ink-fg transition-shadow duration-200 ease-[var(--ease-out-quart)] group-hover:shadow-[0_0_0_3px_color-mix(in_oklch,var(--color-accent),transparent_80%)]">
+          <span className="grid size-8 shrink-0 place-items-center rounded-md bg-ink text-ink-fg transition-shadow duration-200 ease-[var(--ease-out-quart)] group-hover:shadow-[0_0_0_3px_color-mix(in_oklch,var(--color-accent),transparent_80%)] sm:size-9">
             <Sparkles
               className="size-4 transition-transform duration-300 ease-[var(--ease-out-quart)] group-hover:rotate-12 group-hover:scale-110"
               aria-hidden
             />
           </span>
-          <span className="min-w-0">
-            <span className="flex items-center gap-1.5 text-sm font-semibold text-text">
-              AI Digest Desk
-              <span className="inline-flex items-center gap-1 rounded-full border border-accent-3/40 bg-accent-3/10 px-1.5 py-px text-[0.625rem] font-bold tracking-wide text-accent-3 uppercase">
+          <span className="min-w-0 max-w-[5.5rem] sm:max-w-none">
+            <span className="flex min-w-0 items-center gap-1.5 text-sm font-semibold text-text">
+              <span className="truncate whitespace-nowrap sm:hidden">AI Desk</span>
+              <span className="hidden truncate whitespace-nowrap sm:inline">AI Digest Desk</span>
+              <span className="hidden items-center gap-1 rounded-full border border-accent-3/40 bg-accent-3/10 px-1.5 py-px text-[0.625rem] font-bold tracking-wide text-accent-3 uppercase sm:inline-flex">
                 <span className="live-dot !size-1.5 !bg-accent-3" aria-hidden />
                 BETA
               </span>
             </span>
-            <span className="block truncate text-xs text-text-subtle">{SNAPSHOT_DATE} 기준</span>
+            <span className="block truncate text-[0.6875rem] text-text-subtle sm:text-xs">
+              <span className="sm:hidden">{SNAPSHOT_DATE}</span>
+              <span className="hidden sm:inline">{SNAPSHOT_DATE} 기준</span>
+            </span>
           </span>
         </a>
-        <div className="relative ml-auto hidden w-full max-w-md md:block">
+        <div className="relative ml-auto hidden w-full max-w-md lg:block">
           {showSearch ? (
             <>
               <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
@@ -164,6 +172,23 @@ export function Header({
           )}
         </div>
         <div className="ml-auto flex items-center gap-1.5 md:ml-0">
+          {showSearch ? (
+            <button
+              type="button"
+              title={mobileSearchOpen ? '검색 닫기' : '검색 열기'}
+              aria-label={mobileSearchOpen ? '검색 닫기' : '검색 열기'}
+              aria-expanded={showMobileSearch}
+              aria-controls="mobile-global-search"
+              onClick={() => setMobileSearchOpen((open) => !open)}
+              className="grid size-9 place-items-center rounded-md border border-border bg-surface text-text-muted transition hover:border-border-strong hover:text-text lg:hidden"
+            >
+              {showMobileSearch ? (
+                <X className="size-4" aria-hidden />
+              ) : (
+                <Search className="size-4" aria-hidden />
+              )}
+            </button>
+          ) : null}
           <MemberAuthControl />
           <IconButton label={dark ? '라이트 모드' : '다크 모드'} onClick={onToggleDark}>
             {dark ? (
@@ -177,7 +202,7 @@ export function Header({
               type="button"
               onClick={() => onNavigate('account')}
               title="내 계정"
-              className={`hidden h-9 items-center gap-1.5 rounded-md border px-2.5 text-xs font-semibold transition sm:inline-flex ${
+              className={`hidden h-9 items-center gap-1.5 rounded-md border px-2.5 text-xs font-semibold transition lg:inline-flex ${
                 route === 'account'
                   ? 'border-ink bg-ink text-ink-fg'
                   : 'border-border bg-surface text-text-muted hover:border-border-strong hover:text-text'
@@ -190,13 +215,13 @@ export function Header({
             <button
               type="button"
               onClick={() => onNavigate('account')}
-              className="hidden h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text sm:inline-flex"
+              className="hidden h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text lg:inline-flex"
             >
               <UserRound className="size-3.5" aria-hidden />
               로그인
             </button>
           )}
-          <span className="sm:hidden">
+          <span className="lg:hidden">
             <IconButton label="내 계정" onClick={() => onNavigate('account')}>
               <UserRound className="size-4" aria-hidden />
             </IconButton>
@@ -217,7 +242,7 @@ export function Header({
       {/* GNB — 라우트 전환 */}
       <nav
         aria-label="주요 메뉴"
-        className="flex items-center gap-1 overflow-x-auto border-t border-border px-3 py-2 lg:px-4"
+        className="touch-scroll flex snap-x items-center gap-1 overflow-x-auto border-t border-border px-3 py-1.5 lg:px-4"
       >
         {primaryNav.map((item) => (
           <button
@@ -228,20 +253,22 @@ export function Header({
             className={navButtonClass(item.id)}
           >
             <item.icon className="size-3.5" aria-hidden />
-            {item.label}
+            <span className="sm:hidden">{item.mobileLabel}</span>
+            <span className="hidden sm:inline">{item.label}</span>
           </button>
         ))}
       </nav>
 
       {/* 모바일 검색 */}
-      {showSearch ? (
-        <div className="border-t border-border px-4 py-3 md:hidden">
+      {showMobileSearch ? (
+        <div id="mobile-global-search" className="border-t border-border px-3 py-2.5 lg:hidden">
           <div className="relative">
             <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
             <input
               value={query}
               onChange={(event) => onQueryChange(event.target.value)}
-              placeholder="검색"
+              placeholder="모델, 기능, 강좌, 할인 검색"
+              aria-label="모바일 통합 검색"
               className="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-3 text-sm text-text outline-none focus:border-accent"
             />
           </div>

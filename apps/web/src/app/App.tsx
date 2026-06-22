@@ -312,12 +312,12 @@ function ToolsPaneSwitcher({
           type="button"
           onClick={onShare}
           title={`${activeMeta?.title ?? '현재 도구'} 링크 공유`}
-          className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
+          className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
         >
           <Share2 className="size-3.5" aria-hidden />이 도구 공유
         </button>
       </div>
-      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="touch-scroll -mx-3 flex snap-x gap-2 overflow-x-auto px-3 pb-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 xl:grid-cols-4">
         {toolsPaneMeta.map((pane) => {
           const Icon = pane.icon
           const active = pane.id === activePane
@@ -330,8 +330,8 @@ function ToolsPaneSwitcher({
               aria-pressed={active}
               className={
                 active
-                  ? 'flex min-h-24 items-start gap-3 rounded-lg border border-ink bg-ink p-3 text-left text-ink-fg'
-                  : 'flex min-h-24 items-start gap-3 rounded-lg border border-border bg-surface p-3 text-left text-text-muted transition hover:border-border-strong hover:text-text'
+                  ? 'flex min-h-24 w-[16.5rem] shrink-0 snap-start items-start gap-3 rounded-lg border border-ink bg-ink p-3 text-left text-ink-fg sm:w-auto'
+                  : 'flex min-h-24 w-[16.5rem] shrink-0 snap-start items-start gap-3 rounded-lg border border-border bg-surface p-3 text-left text-text-muted transition hover:border-border-strong hover:text-text sm:w-auto'
               }
             >
               <span
@@ -545,21 +545,21 @@ export default function App() {
   }
 
   const renderFilterBar = () => (
-    <div className="sticky top-[7.25rem] z-30 -mx-4 border-b border-border bg-bg/85 px-4 py-3 backdrop-blur lg:-mx-6 lg:px-6">
-      <div className="mx-auto flex max-w-[96rem] flex-wrap items-center gap-x-4 gap-y-2">
+    <div className="z-30 -mx-3 border-b border-border bg-bg/85 px-3 py-3 backdrop-blur md:sticky md:top-[7.25rem] md:-mx-4 md:px-4 lg:-mx-6 lg:px-6">
+      <div className="mx-auto flex max-w-[96rem] flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-x-4 md:gap-y-2">
         <MultiSegmentBar
           label="제공사"
           items={providerFilters}
           value={providers}
           onChange={setProviders}
         />
-        <div className="ml-auto flex flex-wrap items-center gap-x-3 gap-y-2">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 md:ml-auto">
           {hasActiveFilter ? <ActiveFilterChips chips={activeChips} /> : null}
           <button
             type="button"
             onClick={clearFilters}
             disabled={!hasActiveFilter}
-            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
           >
             <RotateCcw className="size-3.5" aria-hidden />
             필터 초기화
@@ -695,8 +695,12 @@ export default function App() {
       ) : (
         <div className="grid lg:grid-cols-[15rem_1fr]">
           <Sidebar route={route} onNavigate={navigateToRoute} />
-          <main id="main-content" tabIndex={-1} className="min-w-0 px-4 py-5 outline-none lg:px-6">
-            <div className="mx-auto max-w-[96rem] space-y-6">
+          <main
+            id="main-content"
+            tabIndex={-1}
+            className="min-w-0 px-3 py-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] outline-none sm:px-4 sm:py-5 lg:px-6"
+          >
+            <div className="mx-auto max-w-[96rem] space-y-5 sm:space-y-6">
               {renderSections(isContentRoute ? (route as ContentRoute) : 'portal')}
 
               <footer className="flex flex-col gap-3 border-t border-border py-6 text-xs text-text-subtle sm:flex-row sm:items-center sm:justify-between">
@@ -705,41 +709,41 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => navigateToRoute('about')}
-                    className="font-semibold text-text-muted transition hover:text-text"
+                    className="inline-flex min-h-9 min-w-9 items-center justify-center font-semibold text-text-muted transition hover:text-text"
                   >
                     소개·가이드
                   </button>
                   <button
                     type="button"
                     onClick={() => navigateToRoute('community')}
-                    className="font-semibold text-text-muted transition hover:text-text"
+                    className="inline-flex min-h-9 min-w-9 items-center justify-center font-semibold text-text-muted transition hover:text-text"
                   >
                     커뮤니티
                   </button>
                   <button
                     type="button"
                     onClick={() => navigateToRoute('support')}
-                    className="font-semibold text-text-muted transition hover:text-text"
+                    className="inline-flex min-h-9 min-w-9 items-center justify-center font-semibold text-text-muted transition hover:text-text"
                   >
                     문의
                   </button>
                   <button
                     type="button"
                     onClick={() => navigateToRoute('terms')}
-                    className="font-semibold text-text-muted transition hover:text-text"
+                    className="inline-flex min-h-9 min-w-9 items-center justify-center font-semibold text-text-muted transition hover:text-text"
                   >
                     약관·정책
                   </button>
                   <button
                     type="button"
                     onClick={() => navigateToRoute('sitemap')}
-                    className="font-semibold text-text-muted transition hover:text-text"
+                    className="inline-flex min-h-9 min-w-9 items-center justify-center font-semibold text-text-muted transition hover:text-text"
                   >
                     사이트맵
                   </button>
                   <a
                     href="#main-content"
-                    className="group inline-flex items-center gap-1 font-semibold text-text-muted transition-colors duration-200 hover:text-text"
+                    className="group inline-flex min-h-9 items-center gap-1 font-semibold text-text-muted transition-colors duration-200 hover:text-text"
                   >
                     맨 위로{' '}
                     <ChevronRight

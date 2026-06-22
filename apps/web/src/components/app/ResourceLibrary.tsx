@@ -562,7 +562,7 @@ export function ResourceLibrary({ resources }: { resources: LearningResource[] }
         title="강좌와 도서"
         description="공식 문서, 한국어 유튜브, 교육기관, 원격 강좌, 기술 블로그, 도서 검색 허브를 언어·형식·난이도·제공사·태그로 좁혀 봅니다."
       />
-      <div className="grid gap-4 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1.35fr_1fr_1fr]">
+      <div className="grid min-w-0 gap-4 rounded-lg border border-border bg-surface p-4 [&>*]:min-w-0 xl:grid-cols-[1fr_1.35fr_1fr_1fr]">
         <label className="block xl:col-span-2">
           <span className="text-xs font-semibold text-text-subtle">자료실 검색</span>
           <span className="relative mt-2 block">
@@ -648,7 +648,7 @@ export function ResourceLibrary({ resources }: { resources: LearningResource[] }
                 setTags([])
                 setResourceQuery('')
               }}
-              className="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+              className="min-h-9 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
             >
               초기화
             </button>
@@ -665,7 +665,7 @@ export function ResourceLibrary({ resources }: { resources: LearningResource[] }
           </div>
         </div>
       </div>
-      <div className="grid gap-3 xl:grid-cols-5">
+      <div className="grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-5">
         <ResourceColumn title="공식 문서" resources={grouped.official} />
         <ResourceColumn title="유튜브/영상" resources={grouped.videos} />
         <ResourceColumn title="블로그/글" resources={grouped.blogs} />
@@ -678,7 +678,7 @@ export function ResourceLibrary({ resources }: { resources: LearningResource[] }
 
 function ResourceColumn({ title, resources }: { title: string; resources: LearningResource[] }) {
   return (
-    <div className="rounded-lg border border-border bg-surface p-4">
+    <div className="min-w-0 rounded-lg border border-border bg-surface p-4">
       <h3 className="text-sm font-semibold text-text">{title}</h3>
       <div className="mt-3 space-y-3">
         {resources.length ? (
@@ -705,7 +705,7 @@ function ResourceColumn({ title, resources }: { title: string; resources: Learni
                 href={resource.url}
                 target="_blank"
                 rel="noreferrer"
-                className="block rounded-md border border-border bg-bg p-3 transition hover:border-border-strong"
+                className="block min-w-0 rounded-md border border-border bg-bg p-3 transition hover:border-border-strong"
               >
                 <Thumbnail
                   src={resolvedImage?.src ?? undefined}
@@ -716,8 +716,10 @@ function ResourceColumn({ title, resources }: { title: string; resources: Learni
                 />
                 <span className="mt-3 flex items-start justify-between gap-3">
                   <span className="min-w-0">
-                    <span className="flex flex-wrap items-center gap-1.5">
-                      <span className="text-sm font-semibold text-text">{resource.title}</span>
+                    <span className="flex min-w-0 flex-wrap items-center gap-1.5">
+                      <span className="min-w-0 break-words text-sm font-semibold text-text">
+                        {resource.title}
+                      </span>
                       {isNew ? <NewBadge /> : null}
                     </span>
                     <span className="mt-1 flex items-center gap-1.5 text-xs text-text-subtle">
@@ -733,7 +735,7 @@ function ResourceColumn({ title, resources }: { title: string; resources: Learni
                   </span>
                   <ExternalLink className="size-3.5 shrink-0 text-text-subtle" aria-hidden />
                 </span>
-                <span className="mt-2 block text-xs leading-5 text-text-muted">
+                <span className="mt-2 block break-words text-xs leading-5 text-text-muted">
                   {resource.summary}
                 </span>
                 <MetadataChips

@@ -125,7 +125,7 @@ function InquiryBoard() {
           type="button"
           onClick={reload}
           disabled={loading}
-          className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
         >
           <RotateCcw className="size-3.5" aria-hidden />
           새로고침
@@ -148,7 +148,7 @@ function InquiryBoard() {
             <button
               type="button"
               onClick={reload}
-              className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-accent-4/40 bg-accent-4/10 px-3 py-1.5 text-xs font-semibold text-accent-4 transition hover:bg-accent-4/20"
+              className="mt-3 inline-flex min-h-9 items-center gap-1.5 rounded-md border border-accent-4/40 bg-accent-4/10 px-3 py-1.5 text-xs font-semibold text-accent-4 transition hover:bg-accent-4/20"
             >
               <RotateCcw className="size-3.5" aria-hidden />
               다시 시도
@@ -302,7 +302,7 @@ export function SupportRoute({ onNavigate }: { onNavigate: (route: AppRoute) => 
                 <button
                   type="button"
                   onClick={() => setSubmitted(false)}
-                  className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
+                  className="mt-3 inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
                 >
                   <MessageSquarePlus className="size-3.5" aria-hidden />
                   문의 더 남기기
@@ -329,8 +329,8 @@ export function SupportRoute({ onNavigate }: { onNavigate: (route: AppRoute) => 
                         onClick={() => setCategory(value)}
                         className={
                           selected
-                            ? 'rounded-md border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg'
-                            : 'rounded-md border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
+                            ? 'min-h-9 rounded-md border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg'
+                            : 'min-h-9 rounded-md border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
                         }
                       >
                         {INQUIRY_CATEGORY_LABELS[value]}
@@ -424,6 +424,7 @@ export function SupportRoute({ onNavigate }: { onNavigate: (route: AppRoute) => 
                   autoComplete="off"
                   value={website}
                   onChange={(event) => setWebsite(event.target.value)}
+                  className="h-0 w-0 border-0 p-0"
                 />
               </div>
 

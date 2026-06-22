@@ -172,7 +172,7 @@ export function AuthDialog({
             type="button"
             onClick={close}
             aria-label="닫기"
-            className="grid size-7 shrink-0 place-items-center rounded-md border border-border bg-bg text-text-muted transition hover:border-border-strong hover:text-text"
+            className="grid size-9 shrink-0 place-items-center rounded-md border border-border bg-bg text-text-muted transition hover:border-border-strong hover:text-text"
           >
             <X className="size-4" aria-hidden />
           </button>
@@ -247,7 +247,7 @@ export function AuthDialog({
           type="button"
           onClick={switchMode}
           disabled={anyBusy}
-          className="mt-2 w-full text-center text-[0.8125rem] font-semibold text-accent transition hover:underline disabled:pointer-events-none disabled:opacity-50"
+          className="mt-2 inline-flex min-h-9 w-full items-center justify-center rounded-md text-center text-[0.8125rem] font-semibold text-accent transition hover:underline disabled:pointer-events-none disabled:opacity-50"
         >
           {copy.toggle}
         </button>

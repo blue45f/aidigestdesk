@@ -305,7 +305,7 @@ export function TaskRecommendationSection({
                           href={resource.url}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+                          className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
                         >
                           {resource.title}
                           <ExternalLink className="size-3" aria-hidden />
@@ -591,7 +591,7 @@ export function CodingToolDirectorySection({ tools }: { tools: AiCodingToolProfi
                       href={source.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+                      className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
                     >
                       {source.publisher}
                       <ExternalLink className="size-3" aria-hidden />
@@ -810,7 +810,7 @@ export function VibeCodingSection({ commands }: { commands: VibeCodingCommand[] 
                         href={source.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+                        className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
                       >
                         {source.title}
                         <ExternalLink className="size-3" aria-hidden />

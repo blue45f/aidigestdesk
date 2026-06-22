@@ -43,9 +43,9 @@ export function SegmentBar<T extends string>({
   onChange: (value: T) => void
 }) {
   return (
-    <div className="space-y-2">
+    <div className="min-w-0 space-y-2">
       <p className="text-xs font-semibold text-text-subtle">{label}</p>
-      <div className="flex flex-wrap gap-1.5">
+      <div className="touch-scroll -mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 md:mx-0 md:flex-wrap md:overflow-visible md:px-0 md:pb-0">
         {items.map((item) => (
           <button
             key={item.id}
@@ -53,8 +53,8 @@ export function SegmentBar<T extends string>({
             onClick={() => onChange(item.id)}
             className={
               item.id === value
-                ? 'rounded-md border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg'
-                : 'rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
+                ? 'min-h-9 shrink-0 rounded-md border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg'
+                : 'min-h-9 shrink-0 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
             }
           >
             {item.label}
@@ -85,9 +85,9 @@ export function MultiSegmentBar<T extends string>({
   }
 
   return (
-    <div className="space-y-2">
+    <div className="min-w-0 space-y-2">
       <p className="text-xs font-semibold text-text-subtle">{label}</p>
-      <div className="flex flex-wrap gap-1.5">
+      <div className="touch-scroll -mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 md:mx-0 md:flex-wrap md:overflow-visible md:px-0 md:pb-0">
         {items.map((item) => {
           const selected = item.id === 'all' ? value.length === 0 : value.includes(item.id)
 
@@ -105,8 +105,8 @@ export function MultiSegmentBar<T extends string>({
               }}
               className={
                 selected
-                  ? 'rounded-md border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg'
-                  : 'rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
+                  ? 'min-h-9 shrink-0 rounded-md border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg'
+                  : 'min-h-9 shrink-0 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
               }
             >
               {item.label}
@@ -223,7 +223,7 @@ export function ResultSummary({
           type="button"
           onClick={onReset}
           disabled={resetDisabled}
-          className="shrink-0 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
+          className="min-h-9 shrink-0 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
         >
           초기화
         </button>
@@ -240,14 +240,14 @@ export function ActiveFilterChips({
 }) {
   if (!chips.length) return null
   return (
-    <div className="flex flex-wrap items-center gap-1.5">
-      <span className="text-xs font-semibold text-text-subtle">활성 필터</span>
+    <div className="touch-scroll -mx-1 flex max-w-full items-center gap-1.5 overflow-x-auto px-1 pb-1 md:mx-0 md:flex-wrap md:overflow-visible md:px-0 md:pb-0">
+      <span className="shrink-0 text-xs font-semibold text-text-subtle">활성 필터</span>
       {chips.map((chip) => (
         <button
           key={chip.key}
           type="button"
           onClick={chip.onRemove}
-          className="inline-flex items-center gap-1 rounded-full border border-accent/30 bg-accent/10 py-1 pr-1.5 pl-2.5 text-xs font-semibold text-accent transition hover:bg-accent/20"
+          className="inline-flex min-h-9 shrink-0 items-center gap-1 rounded-full border border-accent/30 bg-accent/10 py-1 pr-1.5 pl-2.5 text-xs font-semibold text-accent transition hover:bg-accent/20"
         >
           {chip.label}
           <X className="size-3" aria-hidden />

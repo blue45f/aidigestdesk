@@ -160,7 +160,7 @@ export function SitemapRoute({ onNavigate }: { onNavigate: (route: AppRoute) => 
               <button
                 type="button"
                 onClick={() => jumpTo(section.route)}
-                className="text-left text-sm font-semibold text-text transition hover:text-accent"
+                className="flex min-h-9 w-full items-center rounded-md text-left text-sm font-semibold text-text transition hover:text-accent"
               >
                 {section.title}
               </button>

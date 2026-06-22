@@ -338,7 +338,7 @@ export function ModelCards({
         title="현재 주요 모델"
         description="상용 LLM과 에이전트 서비스를 같은 표면에서 보되, Manus는 모델보다 태스크 플랫폼으로 분리했습니다."
       />
-      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1fr_1fr_1fr_1.4fr_1fr]">
+      <div className="grid min-w-0 gap-3 rounded-lg border border-border bg-surface p-4 [&>*]:min-w-0 xl:grid-cols-[1fr_1fr_1fr_1.4fr_1fr]">
         <label className="block xl:col-span-2">
           <span className="text-xs font-semibold text-text-subtle">모델 검색</span>
           <input
@@ -403,7 +403,7 @@ export function ModelCards({
               setCardSortDirection('asc')
               setModelLimit(0)
             }}
-            className="mt-3 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-3 min-h-9 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text disabled:cursor-not-allowed disabled:opacity-60"
           >
             초기화
           </button>
@@ -654,7 +654,7 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
               setSpecLimit(0)
               setSourceLimit(0)
             }}
-            className="mt-3 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-3 min-h-9 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text disabled:cursor-not-allowed disabled:opacity-60"
           >
             초기화
           </button>
@@ -800,7 +800,7 @@ function LocalModelCard({ profile }: { profile: LocalModelComparisonProfile }) {
             href={source.url}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1 rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle transition hover:text-text"
+            className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-subtle transition hover:text-text"
           >
             {source.publisher}
             <ExternalLink className="size-3" aria-hidden />
@@ -1282,7 +1282,7 @@ export function BenchmarkBoard() {
                 setQuery('')
                 setBenchmarkLimit(0)
               }}
-              className="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+              className="min-h-9 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
             >
               초기화
             </button>
@@ -1290,7 +1290,7 @@ export function BenchmarkBoard() {
         </div>
       </div>
       <div className="rounded-lg border border-border bg-surface">
-        <div className="grid grid-cols-[4.5rem_1fr_5rem] gap-3 border-b border-border px-4 py-3 text-xs font-semibold text-text-subtle md:grid-cols-[5rem_1.4fr_1fr_1fr_1fr_5rem]">
+        <div className="grid grid-cols-[3.5rem_minmax(0,1fr)_3.5rem] gap-2 border-b border-border px-3 py-3 text-xs font-semibold text-text-subtle sm:grid-cols-[4.5rem_minmax(0,1fr)_4rem] sm:gap-3 sm:px-4 md:grid-cols-[5rem_1.4fr_1fr_1fr_1fr_5rem]">
           <span>순위</span>
           <span>모델</span>
           <span className="hidden md:block">가격</span>
@@ -1316,7 +1316,7 @@ export function BenchmarkBoard() {
           return (
             <div
               key={entry.id}
-              className="grid grid-cols-[4.5rem_1fr_5rem] gap-3 border-b border-border px-4 py-3 last:border-b-0 md:grid-cols-[5rem_1.4fr_1fr_1fr_1fr_5rem]"
+              className="grid grid-cols-[3.5rem_minmax(0,1fr)_3.5rem] gap-2 border-b border-border px-3 py-3 last:border-b-0 sm:grid-cols-[4.5rem_minmax(0,1fr)_4rem] sm:gap-3 sm:px-4 md:grid-cols-[5rem_1.4fr_1fr_1fr_1fr_5rem]"
             >
               <span className="text-xs font-semibold text-text-subtle">{entry.rankLabel}</span>
               <div>
@@ -1333,7 +1333,7 @@ export function BenchmarkBoard() {
                       href={source.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1 rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle transition hover:text-text"
+                      className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-subtle transition hover:text-text"
                     >
                       {source.publisher}
                       <ExternalLink className="size-3" aria-hidden />

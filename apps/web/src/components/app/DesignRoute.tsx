@@ -352,8 +352,8 @@ function StateShowcase() {
             onClick={() => setSelected(false)}
             className={
               selected
-                ? 'rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
-                : 'rounded-md border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg'
+                ? 'min-h-9 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
+                : 'min-h-9 rounded-md border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg'
             }
           >
             기본
@@ -363,8 +363,8 @@ function StateShowcase() {
             onClick={() => setSelected(true)}
             className={
               selected
-                ? 'rounded-md border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg'
-                : 'rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
+                ? 'min-h-9 rounded-md border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg'
+                : 'min-h-9 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
             }
           >
             선택됨
@@ -372,7 +372,7 @@ function StateShowcase() {
           <button
             type="button"
             disabled
-            className="cursor-not-allowed rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted opacity-50"
+            className="min-h-9 cursor-not-allowed rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted opacity-50"
           >
             비활성
           </button>

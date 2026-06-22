@@ -174,7 +174,7 @@ function TermsDocument({ onNavigate }: { onNavigate: (route: AppRoute) => void }
             <button
               type="button"
               onClick={() => onNavigate('support')}
-              className="font-semibold text-accent underline-offset-2 hover:underline"
+              className="inline-flex min-h-9 items-center rounded-md px-1 font-semibold text-accent underline-offset-2 hover:underline"
             >
               문의 페이지
             </button>

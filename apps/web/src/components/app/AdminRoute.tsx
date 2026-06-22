@@ -285,7 +285,7 @@ function MemberManagementSection() {
                           removeMember(member.id);
                           setRefreshToken((token) => token + 1);
                         }}
-                        className="inline-flex items-center gap-1 rounded-md border border-accent-4/40 bg-accent-4/10 px-2 py-1 text-xs font-semibold text-accent-4 transition hover:bg-accent-4/20"
+                        className="inline-flex min-h-9 items-center gap-1 rounded-md border border-accent-4/40 bg-accent-4/10 px-2.5 py-1.5 text-xs font-semibold text-accent-4 transition hover:bg-accent-4/20"
                       >
                         <Trash2 className="size-3.5" aria-hidden />
                         삭제
@@ -487,7 +487,7 @@ function AdminConsole({
               <a
                 key={href}
                 href={href}
-                className="rounded-md border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+                className="inline-flex min-h-9 items-center rounded-md border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
               >
                 {label}
               </a>

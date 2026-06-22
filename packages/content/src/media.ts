@@ -25,6 +25,13 @@ export const providerDomains: Record<ProviderId, string> = {
   cursor: 'cursor.com',
 }
 
+const faviconFallbackDomains = new Set([
+  'bizinfo.go.kr',
+  'k-startup.go.kr',
+  'teddylee777.github.io',
+  'd2.naver.com',
+])
+
 /** URL에서 호스트(도메인)만 안전하게 추출. */
 export function getDomainFromUrl(url: string | undefined | null): string | null {
   if (!url) return null
@@ -49,6 +56,7 @@ export function getBrandIconUrl(
     ? getDomainFromUrl(domainOrUrl)
     : domainOrUrl.replace(/^www\./, '')
   if (!domain) return null
+  if (faviconFallbackDomains.has(domain)) return null
   return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=${size}`
 }
 

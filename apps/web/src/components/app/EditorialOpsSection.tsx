@@ -820,7 +820,7 @@ export function EditorialOpsSection({
                                 ),
                               })
                             }
-                            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+                            className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
                           >
                             <ChevronLeft className="size-3.5" aria-hidden />
                             이전
@@ -832,7 +832,7 @@ export function EditorialOpsSection({
                                 stage: movePipelineStage(currentStage, "next"),
                               })
                             }
-                            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+                            className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
                           >
                             다음
                             <ChevronRight className="size-3.5" aria-hidden />
@@ -840,7 +840,7 @@ export function EditorialOpsSection({
                           <button
                             type="button"
                             onClick={() => resetDraft(item)}
-                            className="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-subtle transition hover:text-text"
+                            className="min-h-9 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-subtle transition hover:text-text"
                           >
                             초기화
                           </button>

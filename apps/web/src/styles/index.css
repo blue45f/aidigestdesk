@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -22,10 +22,9 @@
   --color-accent-4: oklch(0.62 0.18 18);
 
   --font-sans:
-    "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
-    system-ui, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-  --font-mono:
-    ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI',
+    'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
 
   /* 모션 — 제품 UI 기조에 맞춘 결단력 있는 감속 곡선. bounce/elastic 금지. */
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
@@ -80,7 +79,7 @@
       var(--color-bg);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    font-feature-settings: "tnum" 1;
+    font-feature-settings: 'tnum' 1;
   }
 
   h1,
@@ -98,19 +97,31 @@
     text-decoration: none;
   }
 
-  :where(section[id], [id="main-content"]) {
-    scroll-margin-top: 9.5rem;
+  :where(section[id], [id='main-content']) {
+    scroll-margin-top: 8rem;
   }
 
   @media (min-width: 768px) {
-    :where(section[id], [id="main-content"]) {
-      scroll-margin-top: 5.5rem;
+    :where(section[id], [id='main-content']) {
+      scroll-margin-top: 8rem;
     }
   }
 
   button,
-  input {
+  input,
+  select,
+  textarea {
     font: inherit;
+  }
+
+  input,
+  select,
+  textarea {
+    min-width: 0;
+  }
+
+  :where(.grid) > * {
+    min-width: 0;
   }
 
   ::selection {
@@ -132,6 +143,44 @@
   background: var(--color-border-strong);
   border: 3px solid var(--color-bg);
   border-radius: 8px;
+}
+
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.touch-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.compact-calendar-list {
+  display: none;
+}
+
+.compact-calendar-list button[aria-pressed='true'] {
+  border-color: var(--color-ink);
+  background-color: var(--color-ink);
+  color: var(--color-ink-fg);
+}
+
+.compact-calendar-list button[aria-pressed='true'] .compact-calendar-quick-meta {
+  color: color-mix(in oklch, var(--color-ink-fg), transparent 20%);
+}
+
+.compact-calendar-list button[aria-pressed='true'] .compact-calendar-quick-count {
+  background-color: color-mix(in oklch, var(--color-ink-fg), transparent 85%);
+  color: var(--color-ink-fg);
+}
+
+@media (max-width: 359px) {
+  .compact-calendar-list {
+    display: block;
+  }
+
+  .narrow-calendar-grid {
+    display: none;
+  }
 }
 
 :focus-visible {
@@ -246,7 +295,7 @@
     animation: pulse-dot 2.4s var(--ease-out-quart) infinite;
   }
   .live-dot::after {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
     border-radius: inherit;

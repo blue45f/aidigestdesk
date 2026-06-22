@@ -104,7 +104,7 @@ function DeleteButton({ label, onClick }: { label: string; onClick: () => void }
       onClick={onClick}
       aria-label={label}
       title={label}
-      className="grid size-7 shrink-0 place-items-center rounded-md border border-border bg-surface text-text-subtle transition hover:border-border-strong hover:text-text"
+      className="grid size-9 shrink-0 place-items-center rounded-md border border-border bg-surface text-text-subtle transition hover:border-border-strong hover:text-text"
     >
       <Trash2 className="size-3.5" aria-hidden />
     </button>
@@ -247,7 +247,7 @@ function ChatTab({ nickname }: { nickname: string }) {
                   <button
                     type="submit"
                     disabled={!draft.trim()}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-ink bg-ink px-3.5 py-2 text-xs font-semibold text-ink-fg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-ink bg-ink px-3.5 py-2 text-xs font-semibold text-ink-fg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Send className="size-3.5" aria-hidden />
                     전송
@@ -370,7 +370,7 @@ function BoardComposer({
         <button
           type="submit"
           disabled={!canSubmit}
-          className="inline-flex items-center gap-1.5 rounded-md border border-ink bg-ink px-3.5 py-2 text-xs font-semibold text-ink-fg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-ink bg-ink px-3.5 py-2 text-xs font-semibold text-ink-fg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Plus className="size-3.5" aria-hidden />
           작성
@@ -520,8 +520,8 @@ function CafeCard({ cafe, nickname }: { cafe: Cafe; nickname: string }) {
           aria-pressed={joined}
           className={
             joined
-              ? 'inline-flex shrink-0 items-center gap-1.5 rounded-md border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
-              : 'inline-flex shrink-0 items-center gap-1.5 rounded-md border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg transition hover:opacity-90'
+              ? 'inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
+              : 'inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg transition hover:opacity-90'
           }
         >
           <LogIn className="size-3.5" aria-hidden />
@@ -637,7 +637,7 @@ function RemoteErrorRow({ message, onRetry }: { message: string; onRetry?: () =>
         <button
           type="button"
           onClick={onRetry}
-          className="shrink-0 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
+          className="min-h-9 shrink-0 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
         >
           다시 시도
         </button>
@@ -891,10 +891,8 @@ function RemoteCafeTab({ client, nickname }: { client: CommunityClient; nickname
                       </p>
                     ) : null}
                     <p className="mt-1.5 inline-flex items-center gap-1 text-xs text-text-subtle">
-                      <Users className="size-3.5" aria-hidden />글 {board.postCount.toLocaleString(
-                        'ko-KR'
-                      )}
-                      개
+                      <Users className="size-3.5" aria-hidden />글{' '}
+                      {board.postCount.toLocaleString('ko-KR')}개
                     </p>
                   </div>
                 </div>
@@ -966,7 +964,9 @@ export function CommunityRoute({
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-xs font-semibold text-accent">커뮤니티 · /community</p>
-              <h1 className="mt-1 text-2xl font-semibold text-text">커뮤니티 · 채팅방·게시판·카페</h1>
+              <h1 className="mt-1 text-2xl font-semibold text-text">
+                커뮤니티 · 채팅방·게시판·카페
+              </h1>
               {remote ? (
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
                   채팅방에서 실시간 대화를, 게시판에서 카테고리별 글을, 카페에서 관심 주제 모임을
@@ -989,7 +989,7 @@ export function CommunityRoute({
             <button
               type="button"
               onClick={() => onNavigate('portal')}
-              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-3 py-2 text-xs font-semibold text-text-muted transition hover:text-text"
+              className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-bg px-3 py-2 text-xs font-semibold text-text-muted transition hover:text-text"
             >
               <Home className="size-3.5" aria-hidden />
               포털로

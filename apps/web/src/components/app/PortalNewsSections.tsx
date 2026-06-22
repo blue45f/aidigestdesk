@@ -211,8 +211,8 @@ function FilterButton<T extends string>({
       onClick={() => onSelect(value)}
       className={
         selected === value
-          ? 'rounded-md border border-ink bg-ink px-2.5 py-1.5 text-xs font-semibold text-ink-fg'
-          : 'rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text'
+          ? 'min-h-9 min-w-9 rounded-md border border-ink bg-ink px-2.5 py-1.5 text-xs font-semibold text-ink-fg'
+          : 'min-h-9 min-w-9 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text'
       }
     >
       {label}
@@ -416,7 +416,7 @@ export function Briefing({
             href={sourceUrl('aa-leaderboard')}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-md border border-border bg-bg px-3 py-2 text-xs font-semibold text-text-muted transition hover:text-text"
+            className="inline-flex min-h-9 items-center gap-2 rounded-md border border-border bg-bg px-3 py-2 text-xs font-semibold text-text-muted transition hover:text-text"
           >
             벤치마크 원문 <ExternalLink className="size-3.5" aria-hidden />
           </a>
@@ -453,10 +453,9 @@ export function Briefing({
           <SortSelect
             value={`${briefingSortMode}-${briefingSortDirection}`}
             onChange={(next) => {
-              const { mode, direction } = splitSortValue<
-                BriefingSortMode,
-                BriefingSortDirection
-              >(next)
+              const { mode, direction } = splitSortValue<BriefingSortMode, BriefingSortDirection>(
+                next
+              )
               setBriefingSortMode(mode)
               setBriefingSortDirection(direction)
             }}
@@ -489,7 +488,7 @@ export function Briefing({
               setBriefingSortDirection('desc')
               setBriefingLimit(3)
             }}
-            className="rounded-md border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-text-muted transition hover:text-text"
+            className="min-h-9 rounded-md border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-text-muted transition hover:text-text"
           >
             초기화
           </button>
@@ -696,7 +695,7 @@ function SourceWatch({ sources: visibleSources }: { sources: SourceRef[] }) {
                   setSourceWatchSortDirection('desc')
                   setSourceWatchLimit(3)
                 }}
-                className="mt-2 rounded-md border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-text-muted transition hover:text-text"
+                className="mt-2 min-h-9 rounded-md border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-text-muted transition hover:text-text"
               >
                 초기화
               </button>
@@ -974,7 +973,7 @@ export function WebzineSection({
             setNewsSortDirection('desc')
             setNewsLimit(5)
           }}
-          className="rounded-md border border-border bg-bg px-2.5 py-2 text-xs font-semibold text-text-muted transition hover:text-text"
+          className="min-h-9 rounded-md border border-border bg-bg px-2.5 py-2 text-xs font-semibold text-text-muted transition hover:text-text"
         >
           초기화
         </button>
@@ -1052,7 +1051,7 @@ export function WebzineSection({
                 setCommunitySortDirection('asc')
                 setCommunityLimit(6)
               }}
-              className="mt-2 rounded-md border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-text-muted transition hover:text-text"
+              className="mt-2 min-h-9 rounded-md border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-text-muted transition hover:text-text"
             >
               초기화
             </button>
@@ -1327,6 +1326,7 @@ function EventCalendarBoard() {
       isToday: dateKey === SNAPSHOT_DATE,
     }
   })
+  const compactCalendarCells = calendarCells.filter((cell) => cell.inMonth && cell.events.length)
 
   return (
     <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
@@ -1488,7 +1488,7 @@ function EventCalendarBoard() {
           <button
             type="button"
             onClick={resetFilters}
-            className="rounded-md border border-border bg-bg px-2 py-1 font-semibold text-text-subtle transition hover:text-text"
+            className="min-h-9 rounded-md border border-border bg-bg px-2.5 py-1 font-semibold text-text-subtle transition hover:text-text"
           >
             필터 초기화
           </button>
@@ -1509,12 +1509,59 @@ function EventCalendarBoard() {
           />
         </div>
 
-        <div className="mt-4 grid grid-cols-7 gap-1.5 text-center text-[0.6875rem] font-semibold text-text-subtle">
+        <div className="compact-calendar-list mt-4">
+          <p className="text-xs font-semibold text-text-subtle">날짜 빠른 선택</p>
+          <div className="mt-2 space-y-2">
+            {compactCalendarCells.length ? (
+              compactCalendarCells.map((cell) => (
+                <button
+                  key={cell.dateKey}
+                  type="button"
+                  onClick={() => setSelectedDate(cell.dateKey)}
+                  aria-pressed={cell.isSelected}
+                  className={`flex min-h-12 w-full items-center justify-between gap-3 rounded-md border px-3 py-2 text-left transition ${
+                    cell.isSelected
+                      ? 'border-ink bg-ink text-ink-fg'
+                      : cell.isToday
+                        ? 'border-accent bg-surface-2 text-text'
+                        : 'border-border bg-bg text-text hover:border-border-strong'
+                  }`}
+                >
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold">
+                      {cell.date.getDate()}일
+                    </span>
+                    <span
+                      className={`compact-calendar-quick-meta block truncate text-xs ${
+                        cell.isSelected ? 'text-ink-fg/80' : 'text-text-subtle'
+                      }`}
+                    >
+                      {cell.events[0]?.type} · {cell.events[0]?.organizer}
+                    </span>
+                  </span>
+                  <span
+                    className={`compact-calendar-quick-count inline-flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
+                      cell.isSelected ? 'bg-white/15 text-ink-fg' : 'bg-accent text-ink-fg'
+                    }`}
+                  >
+                    {cell.events.length}
+                  </span>
+                </button>
+              ))
+            ) : (
+              <p className="rounded-md border border-border bg-bg px-3 py-4 text-xs leading-5 text-text-muted">
+                현재 필터 조건에 맞는 월간 일정이 없습니다.
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="narrow-calendar-grid mt-4 grid grid-cols-7 gap-1.5 text-center text-[0.6875rem] font-semibold text-text-subtle">
           {weekdayLabels.map((day) => (
             <span key={day}>{day}</span>
           ))}
         </div>
-        <div className="mt-2 grid grid-cols-7 gap-1.5">
+        <div className="narrow-calendar-grid mt-2 grid grid-cols-7 gap-1.5">
           {calendarCells.map((cell) => (
             <button
               key={cell.dateKey}
@@ -1581,7 +1628,7 @@ function EventCalendarBoard() {
             <button
               type="button"
               onClick={() => setSelectedDate(null)}
-              className="rounded-md border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+              className="min-h-9 rounded-md border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
             >
               월간 전체
             </button>
@@ -1589,7 +1636,7 @@ function EventCalendarBoard() {
               type="button"
               onClick={() => downloadEventsAsIcs(exportEvents)}
               disabled={exportEvents.length === 0}
-              className="rounded-md border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
+              className="min-h-9 rounded-md border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
             >
               iCal 내보내기
             </button>
@@ -1664,7 +1711,7 @@ function EventCalendarBoard() {
                       href={item.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-muted transition hover:text-text"
+                      className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
                     >
                       일정 보기
                       <ExternalLink className="size-3" aria-hidden />
@@ -1675,7 +1722,7 @@ function EventCalendarBoard() {
                         href={source.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-muted transition hover:text-text"
+                        className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
                       >
                         {source.publisher}
                         <ExternalLink className="size-3" aria-hidden />
@@ -1854,7 +1901,7 @@ export function EventPromotionsSection() {
                       href={source.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-muted transition hover:text-text"
+                      className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
                     >
                       {source.publisher}
                       <ExternalLink className="size-3" aria-hidden />

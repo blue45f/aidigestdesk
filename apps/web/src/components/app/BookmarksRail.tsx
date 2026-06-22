@@ -84,7 +84,7 @@ export function BookmarksRail({ onNavigate }: { onNavigate: (route: AppRoute) =>
                 type="button"
                 onClick={() => removeBookmark(bookmark.id)}
                 aria-label={`${bookmark.title} 북마크 제거`}
-                className="absolute top-2.5 right-2.5 grid size-7 place-items-center rounded-md text-text-subtle transition hover:bg-surface-2 hover:text-text"
+                className="absolute top-2.5 right-2.5 grid size-9 place-items-center rounded-md text-text-subtle transition hover:bg-surface-2 hover:text-text"
               >
                 <X className="size-3.5" aria-hidden />
               </button>

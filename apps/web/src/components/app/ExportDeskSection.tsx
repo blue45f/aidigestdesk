@@ -252,7 +252,7 @@ export function ExportDeskSection() {
                 <button
                   type="button"
                   onClick={() => downloadTextFile(bundle)}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+                  className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
                 >
                   <Download className="size-3.5" aria-hidden />
                   다운로드
@@ -260,7 +260,7 @@ export function ExportDeskSection() {
                 <button
                   type="button"
                   onClick={() => void handleCopy(bundle)}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+                  className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
                 >
                   {copied ? (
                     <CheckCircle2 className="size-3.5" aria-hidden />

@@ -187,7 +187,7 @@ export function TranslatedNewsSection() {
                     href={article.sourceUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-accent transition hover:underline"
+                    className="inline-flex min-h-9 items-center gap-1 rounded-md px-2 text-xs font-semibold text-accent transition hover:underline"
                   >
                     원문 보기
                     <ExternalLink className="size-3.5" aria-hidden />

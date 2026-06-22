@@ -20,7 +20,7 @@ export function MemberAuthControl() {
 
   if (loading) {
     // 초기 onAuthStateChanged 해석 전 — 레이아웃 점프 방지용 플레이스홀더.
-    return <div className="h-9 w-9 animate-pulse rounded-md bg-surface-2 sm:w-28" aria-hidden />
+    return <div className="h-9 w-9 animate-pulse rounded-md bg-surface-2 lg:w-28" aria-hidden />
   }
 
   if (!user) {
@@ -29,12 +29,12 @@ export function MemberAuthControl() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="hidden h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text sm:inline-flex"
+          className="hidden h-9 items-center gap-1.5 whitespace-nowrap rounded-md border border-border bg-surface px-2.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text lg:inline-flex"
         >
           <LogIn className="size-3.5" aria-hidden />
           회원 로그인
         </button>
-        <span className="sm:hidden">
+        <span className="lg:hidden">
           <IconButton label="회원 로그인" onClick={() => setOpen(true)}>
             <LogIn className="size-4" aria-hidden />
           </IconButton>
@@ -49,7 +49,7 @@ export function MemberAuthControl() {
   return (
     <div className="flex items-center gap-1.5">
       <span
-        className="hidden max-w-[10rem] items-center gap-1.5 truncate rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted sm:inline-flex"
+        className="hidden max-w-[10rem] items-center gap-1.5 truncate rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted lg:inline-flex"
         title={label}
       >
         <UserRound className="size-3.5 shrink-0 text-text-subtle" aria-hidden />

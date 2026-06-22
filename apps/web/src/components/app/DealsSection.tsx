@@ -178,7 +178,7 @@ function DealCard({ deal }: { deal: LlmDeal }) {
           href={deal.url}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
+          className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
         >
           혜택 확인
           <ExternalLink className="size-3.5" aria-hidden />
@@ -257,13 +257,13 @@ export function DealsSection({ deals = llmDeals }: { deals?: LlmDeal[] }) {
 
       <div className="grid gap-3 rounded-lg border border-border bg-surface p-4">
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[1.4fr_1fr]">
-          <SegmentBar label="유형" items={typeFilterItems} value={dealType} onChange={setDealType} />
           <SegmentBar
-            label="지역"
-            items={regionFilterItems}
-            value={region}
-            onChange={setRegion}
+            label="유형"
+            items={typeFilterItems}
+            value={dealType}
+            onChange={setDealType}
           />
+          <SegmentBar label="지역" items={regionFilterItems} value={region} onChange={setRegion} />
         </div>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[1fr_1fr]">
           <SegmentBar
@@ -280,8 +280,8 @@ export function DealsSection({ deals = llmDeals }: { deals?: LlmDeal[] }) {
               onClick={() => setRegion(domesticOnly ? '전체' : '국내')}
               className={
                 domesticOnly
-                  ? 'inline-flex w-fit items-center gap-1.5 rounded-md border border-accent bg-accent/15 px-3 py-1.5 text-xs font-semibold text-accent'
-                  : 'inline-flex w-fit items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
+                  ? 'inline-flex min-h-9 w-fit items-center gap-1.5 rounded-md border border-accent bg-accent/15 px-3 py-1.5 text-xs font-semibold text-accent'
+                  : 'inline-flex min-h-9 w-fit items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
               }
             >
               <MapPin className="size-3.5" aria-hidden />
