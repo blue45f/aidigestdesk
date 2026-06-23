@@ -22,6 +22,8 @@ import {
 import {
   BarChart3,
   Boxes,
+  ChevronDown,
+  ChevronUp,
   Cpu,
   ExternalLink,
   Medal,
@@ -226,6 +228,7 @@ export function ModelCards({
   const [cardSortMode, setCardSortMode] = useState<ModelCardSortMode>('model')
   const [cardSortDirection, setCardSortDirection] = useState<ModelCardSortDirection>('asc')
   const [modelLimit, setModelLimit] = useState<ListLimit>(0)
+  const [showDetailedFilters, setShowDetailedFilters] = useState(false)
   const modelQueryTerms = useMemo(() => getSearchTerms(modelQuery), [modelQuery])
 
   const cardSortValue = `${cardSortMode}-${cardSortDirection}` as const
@@ -338,30 +341,13 @@ export function ModelCards({
         title="현재 주요 모델"
         description="상용 LLM과 에이전트 서비스를 같은 표면에서 보되, Manus는 모델보다 태스크 플랫폼으로 분리했습니다."
       />
-      <div className="grid min-w-0 gap-3 rounded-lg border border-border bg-surface p-4 [&>*]:min-w-0 xl:grid-cols-[1fr_1fr_1fr_1.4fr_1fr]">
-        <label className="block xl:col-span-2">
-          <span className="text-xs font-semibold text-text-subtle">모델 검색</span>
-          <input
+      <div className="grid min-w-0 gap-3 rounded-lg border border-border bg-surface p-4 [&>*]:min-w-0 xl:grid-cols-4">
+        <div className="xl:col-span-2">
+          <SearchField
+            label="모델 검색"
             value={modelQuery}
-            onChange={(event) => setModelQuery(event.target.value)}
+            onChange={setModelQuery}
             placeholder="모델명, 강점, 추천 업무"
-            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
-          />
-        </label>
-        <div className="xl:col-span-2">
-          <MultiSegmentBar
-            label="제공사"
-            items={providerOptions}
-            value={providerFilters}
-            onChange={setProviderFilters}
-          />
-        </div>
-        <div className="xl:col-span-2">
-          <MultiSegmentBar
-            label="상태"
-            items={statusOptions}
-            value={statusFilters}
-            onChange={setStatusFilters}
           />
         </div>
         <SortSelect
@@ -374,40 +360,71 @@ export function ModelCards({
           }}
           options={cardSortOptions}
         />
-        <label className="block">
-          <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
-          <select
-            value={modelLimit}
-            onChange={(event) => setModelLimit(Number(event.target.value))}
-            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
-          >
-            <option value={0}>전체</option>
-            <option value={12}>12개</option>
-            <option value={24}>24개</option>
-            <option value={36}>36개</option>
-          </select>
-        </label>
-        <div className="rounded-md border border-border bg-bg p-3">
-          <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
-          <p className="mt-1 text-lg font-semibold text-text">
-            표시 {visibleCards.length}개 / 전체 {filteredCards.length}개
-          </p>
+        <div className="flex items-end">
           <button
             type="button"
-            disabled={isModelCardsResetDisabled}
-            onClick={() => {
-              setProviderFilters([])
-              setStatusFilters([])
-              setModelQuery('')
-              setCardSortMode('model')
-              setCardSortDirection('asc')
-              setModelLimit(0)
-            }}
-            className="mt-3 min-h-9 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text disabled:cursor-not-allowed disabled:opacity-60"
+            onClick={() => setShowDetailedFilters(!showDetailedFilters)}
+            className="h-10 w-full rounded-md border border-border bg-bg text-xs font-semibold text-text-muted hover:border-border-strong hover:bg-surface hover:text-text transition flex items-center justify-center gap-1.5"
           >
-            초기화
+            <span>상세 필터 {showDetailedFilters ? '접기' : '열기'}</span>
+            <ChevronDown className={`size-3.5 transition-transform duration-200 ${showDetailedFilters ? 'rotate-180' : ''}`} />
           </button>
         </div>
+        
+        {showDetailedFilters && (
+          <div className="xl:col-span-4 grid gap-3 grid-cols-1 xl:grid-cols-2 border-t border-border pt-3 mt-1">
+            <MultiSegmentBar
+              label="제공사"
+              items={providerOptions}
+              value={providerFilters}
+              onChange={setProviderFilters}
+            />
+            <MultiSegmentBar
+              label="상태"
+              items={statusOptions}
+              value={statusFilters}
+              onChange={setStatusFilters}
+            />
+            <div className="xl:col-span-2 grid gap-3 sm:grid-cols-2">
+              <label className="block">
+                <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
+                <select
+                  value={modelLimit}
+                  onChange={(event) => setModelLimit(Number(event.target.value))}
+                  className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+                >
+                  <option value={0}>전체</option>
+                  <option value={12}>12개</option>
+                  <option value={24}>24개</option>
+                  <option value={36}>36개</option>
+                </select>
+              </label>
+              <div className="rounded-md border border-border bg-bg p-3 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
+                  <p className="mt-0.5 text-sm font-semibold text-text">
+                    표시 {visibleCards.length}개 / 전체 {filteredCards.length}개
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  disabled={isModelCardsResetDisabled}
+                  onClick={() => {
+                    setProviderFilters([])
+                    setStatusFilters([])
+                    setModelQuery('')
+                    setCardSortMode('model')
+                    setCardSortDirection('asc')
+                    setModelLimit(0)
+                  }}
+                  className="min-h-9 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  초기화
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       {filteredCards.length ? (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
@@ -823,6 +840,7 @@ export function LocalModelComparison() {
   const [runtimes, setRuntimes] = useState<string[]>([])
   const [frontends, setFrontends] = useState<string[]>([])
   const [sortMode, setSortMode] = useState<LocalModelSortMode>('rank')
+  const [showDetailedFilters, setShowDetailedFilters] = useState(false)
   const deferredQuery = useDeferredValue(query)
   const searchTerms = useMemo(() => getSearchTerms(deferredQuery), [deferredQuery])
   const providerItems = useMemo<Array<{ id: ProviderId | 'all'; label: string }>>(
@@ -928,7 +946,7 @@ export function LocalModelComparison() {
         title="설치형 오픈소스 모델 비교"
         description="모델 자체 성능표와 별도로, 로컬/온프레미스에서 실제 설치·서빙·프론트엔드 연결을 시작하기 좋은 후보를 등급화했습니다."
       />
-      <div className="grid gap-4 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1.4fr_1fr_1fr_1fr]">
+      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-4">
         <div className="xl:col-span-2">
           <SearchField
             label="로컬 모델 검색"
@@ -943,60 +961,77 @@ export function LocalModelComparison() {
           onChange={setSortMode}
           options={localModelSortOptions}
         />
-        <ResultSummary
-          shown={filteredProfiles.length}
-          total={localModelComparisonProfiles.length}
-          unit="개"
-          onReset={() => {
-            setQuery('')
-            setProviders([])
-            setDifficulties([])
-            setRuntimes([])
-            setFrontends([])
-            setSortMode('rank')
-          }}
-          resetDisabled={resetDisabled}
-        />
-        <MultiSegmentBar
-          label="제공사"
-          items={providerItems}
-          value={providers}
-          onChange={setProviders}
-        />
-        <MultiSegmentBar
-          label="설치 난이도"
-          items={difficultyItems}
-          value={difficulties}
-          onChange={setDifficulties}
-        />
-        <MultiSegmentBar
-          label="런타임"
-          items={runtimeItems}
-          value={runtimes}
-          onChange={setRuntimes}
-        />
-        <MultiSegmentBar
-          label="프론트엔드"
-          items={frontendItems}
-          value={frontends}
-          onChange={setFrontends}
-        />
-        <div className="grid gap-2 rounded-md border border-border bg-bg p-3 sm:grid-cols-4 xl:col-span-4">
-          {[
-            { label: '비교 후보', value: localModelComparisonProfiles.length },
-            { label: '런타임', value: totalRuntimeCount },
-            { label: '프론트엔드', value: totalFrontendCount },
-            {
-              label: 'S등급',
-              value: localModelComparisonProfiles.filter((profile) => profile.grade === 'S').length,
-            },
-          ].map((item) => (
-            <div key={item.label} className="rounded-md border border-border bg-surface px-3 py-2">
-              <p className="text-[0.6875rem] font-semibold text-text-subtle">{item.label}</p>
-              <p className="mt-1 text-lg font-semibold text-text">{item.value}</p>
-            </div>
-          ))}
+        <div className="flex items-end">
+          <button
+            type="button"
+            onClick={() => setShowDetailedFilters(!showDetailedFilters)}
+            className="h-10 w-full rounded-md border border-border bg-bg text-xs font-semibold text-text-muted hover:border-border-strong hover:bg-surface hover:text-text transition flex items-center justify-center gap-1.5"
+          >
+            <span>상세 필터 {showDetailedFilters ? '접기' : '열기'}</span>
+            <ChevronDown className={`size-3.5 transition-transform duration-200 ${showDetailedFilters ? 'rotate-180' : ''}`} />
+          </button>
         </div>
+
+        {showDetailedFilters && (
+          <div className="xl:col-span-4 grid gap-3 grid-cols-1 xl:grid-cols-2 border-t border-border pt-3 mt-1">
+            <MultiSegmentBar
+              label="제공사"
+              items={providerItems}
+              value={providers}
+              onChange={setProviders}
+            />
+            <MultiSegmentBar
+              label="설치 난이도"
+              items={difficultyItems}
+              value={difficulties}
+              onChange={setDifficulties}
+            />
+            <MultiSegmentBar
+              label="런타임"
+              items={runtimeItems}
+              value={runtimes}
+              onChange={setRuntimes}
+            />
+            <MultiSegmentBar
+              label="프론트엔드"
+              items={frontendItems}
+              value={frontends}
+              onChange={setFrontends}
+            />
+            <div className="xl:col-span-2 grid gap-3 sm:grid-cols-2">
+              <ResultSummary
+                shown={filteredProfiles.length}
+                total={localModelComparisonProfiles.length}
+                unit="개"
+                onReset={() => {
+                  setQuery('')
+                  setProviders([])
+                  setDifficulties([])
+                  setRuntimes([])
+                  setFrontends([])
+                  setSortMode('rank')
+                }}
+                resetDisabled={resetDisabled}
+              />
+              <div className="grid gap-2 rounded-md border border-border bg-bg p-3 sm:grid-cols-4">
+                {[
+                  { label: '비교 후보', value: localModelComparisonProfiles.length },
+                  { label: '런타임', value: totalRuntimeCount },
+                  { label: '프론트엔드', value: totalFrontendCount },
+                  {
+                    label: 'S등급',
+                    value: localModelComparisonProfiles.filter((profile) => profile.grade === 'S').length,
+                  },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-md border border-border bg-surface px-2.5 py-1.5">
+                    <p className="text-[0.6875rem] font-semibold text-text-subtle">{item.label}</p>
+                    <p className="mt-0.5 text-base font-semibold text-text">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       {filteredProfiles.length ? (
         <div className="grid gap-3 xl:grid-cols-2">
@@ -1022,8 +1057,22 @@ export function BenchmarkBoard() {
   const [sortMode, setSortMode] = useState<BenchmarkSortMode>('score')
   const [sortDirection, setSortDirection] = useState<BenchmarkSortDirection>('desc')
   const [benchmarkLimit, setBenchmarkLimit] = useState<ListLimit>(0)
+  const [showDetailedFilters, setShowDetailedFilters] = useState(false)
   const deferredQuery = useDeferredValue(query)
   const searchTerms = useMemo(() => getSearchTerms(deferredQuery), [deferredQuery])
+
+  const handleSort = (mode: BenchmarkSortMode) => {
+    if (sortMode === mode) {
+      setSortDirection((current) => (current === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setSortMode(mode)
+      if (mode === 'score' || mode === 'speed' || mode === 'lastChecked') {
+        setSortDirection('desc')
+      } else {
+        setSortDirection('asc')
+      }
+    }
+  }
   const benchmarkDomainFilters: Array<{
     id: BenchmarkDomainFilter
     label: string
@@ -1202,8 +1251,8 @@ export function BenchmarkBoard() {
         title="벤치마크와 비용"
         description="종합 리더보드, SWE-Bench Pro, SWE-Lancer, PaperBench, MLE-bench, BrowseComp, RE-Bench, EVMbench, Cybench, GDPval, SpreadsheetBench를 분야별 점수·규모·비용·latency와 함께 봅니다."
       />
-      <div className="grid gap-4 rounded-lg border border-border bg-surface p-4 xl:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
-        <label className="block xl:col-span-4">
+      <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-4">
+        <label className="block xl:col-span-2">
           <span className="text-xs font-semibold text-text-subtle">벤치마크 검색</span>
           <span className="relative mt-2 block">
             <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
@@ -1215,18 +1264,6 @@ export function BenchmarkBoard() {
             />
           </span>
         </label>
-        <MultiSegmentBar
-          label="분야"
-          items={benchmarkDomainFilters}
-          value={domains}
-          onChange={setDomains}
-        />
-        <MultiSegmentBar
-          label="출처 성격"
-          items={sourceKindFilters}
-          value={sourceKinds}
-          onChange={setSourceKinds}
-        />
         <SortSelect
           label="정렬"
           value={sortValue}
@@ -1237,66 +1274,173 @@ export function BenchmarkBoard() {
           }}
           options={sortOptions}
         />
-        <MultiSegmentBar
-          label="제공사"
-          items={benchmarkProviderFilters}
-          value={providers}
-          onChange={setProviders}
-        />
-        <label className="block">
-          <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
-          <select
-            value={benchmarkLimit}
-            onChange={(event) => setBenchmarkLimit(Number(event.target.value))}
-            className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+        <div className="flex items-end">
+          <button
+            type="button"
+            onClick={() => setShowDetailedFilters(!showDetailedFilters)}
+            className="h-10 w-full rounded-md border border-border bg-bg text-xs font-semibold text-text-muted hover:border-border-strong hover:bg-surface hover:text-text transition flex items-center justify-center gap-1.5"
           >
-            <option value={0}>전체</option>
-            <option value={10}>10개</option>
-            <option value={20}>20개</option>
-            <option value={30}>30개</option>
-          </select>
-        </label>
-        <div className="rounded-md border border-border bg-bg p-3 xl:col-span-5">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap gap-1.5">
-              {coverageItems.map((item) => (
-                <span
-                  key={item.label}
-                  className="rounded-md border border-border bg-surface px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
-                >
-                  {item.label} {item.value}
-                </span>
-              ))}
-            </div>
-            <p className="text-xs font-semibold text-text-subtle">
-              표시 {pagedEntries.length}개 / 전체 {visibleEntries.length}개
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                setDomains([])
-                setProviders([])
-                setSourceKinds([])
-                setSortMode('score')
-                setSortDirection('desc')
-                setQuery('')
-                setBenchmarkLimit(0)
-              }}
-              className="min-h-9 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
-            >
-              초기화
-            </button>
-          </div>
+            <span>상세 필터 {showDetailedFilters ? '접기' : '열기'}</span>
+            <ChevronDown className={`size-3.5 transition-transform duration-200 ${showDetailedFilters ? 'rotate-180' : ''}`} />
+          </button>
         </div>
+
+        {showDetailedFilters && (
+          <div className="xl:col-span-4 grid gap-3 grid-cols-1 xl:grid-cols-2 border-t border-border pt-3 mt-1">
+            <MultiSegmentBar
+              label="분야"
+              items={benchmarkDomainFilters}
+              value={domains}
+              onChange={setDomains}
+            />
+            <MultiSegmentBar
+              label="출처 성격"
+              items={sourceKindFilters}
+              value={sourceKinds}
+              onChange={setSourceKinds}
+            />
+            <MultiSegmentBar
+              label="제공사"
+              items={benchmarkProviderFilters}
+              value={providers}
+              onChange={setProviders}
+            />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="block">
+                <span className="text-xs font-semibold text-text-subtle">표시 개수</span>
+                <select
+                  value={benchmarkLimit}
+                  onChange={(event) => setBenchmarkLimit(Number(event.target.value))}
+                  className="mt-2 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm text-text outline-none transition focus:border-accent"
+                >
+                  <option value={0}>전체</option>
+                  <option value={10}>10개</option>
+                  <option value={20}>20개</option>
+                  <option value={30}>30개</option>
+                </select>
+              </label>
+              <div className="rounded-md border border-border bg-bg p-3 flex items-center justify-between">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
+                  <p className="mt-0.5 text-sm font-semibold text-text">
+                    표시 {pagedEntries.length}개 / 전체 {visibleEntries.length}개
+                  </p>
+                  <div className="mt-1.5 flex flex-wrap gap-1">
+                    {coverageItems.map((item) => (
+                      <span
+                        key={item.label}
+                        className="rounded border border-border bg-surface px-1.5 py-0.5 text-[0.625rem] font-semibold text-text-subtle"
+                      >
+                        {item.label} {item.value}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDomains([])
+                    setProviders([])
+                    setSourceKinds([])
+                    setSortMode('score')
+                    setSortDirection('desc')
+                    setQuery('')
+                    setBenchmarkLimit(0)
+                  }}
+                  className="min-h-9 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:text-text"
+                >
+                  초기화
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <div className="rounded-lg border border-border bg-surface">
-        <div className="grid grid-cols-[3.5rem_minmax(0,1fr)_3.5rem] gap-2 border-b border-border px-3 py-3 text-xs font-semibold text-text-subtle sm:grid-cols-[4.5rem_minmax(0,1fr)_4rem] sm:gap-3 sm:px-4 md:grid-cols-[5rem_1.4fr_1fr_1fr_1fr_5rem]">
-          <span>순위</span>
-          <span>모델</span>
-          <span className="hidden md:block">가격</span>
-          <span className="hidden md:block">속도</span>
-          <span className="hidden md:block">Latency</span>
-          <span className="text-right">점수/규모</span>
+        <div className="grid grid-cols-[3.5rem_minmax(0,1fr)_3.5rem] gap-2 border-b border-border px-3 py-3 text-xs font-semibold text-text-subtle sm:grid-cols-[4.5rem_minmax(0,1fr)_4rem] sm:gap-3 sm:px-4 md:grid-cols-[5rem_1.4fr_1fr_1fr_1fr_5rem] items-center">
+          <button
+            type="button"
+            onClick={() => handleSort('rank')}
+            className={`flex items-center gap-1 hover:text-text transition text-left font-semibold ${
+              sortMode === 'rank' ? 'text-accent' : 'text-text-subtle'
+            }`}
+          >
+            <span>순위</span>
+            <span className="flex flex-col -space-y-1">
+              <ChevronUp className={`size-2.5 ${sortMode === 'rank' && sortDirection === 'asc' ? 'text-accent font-bold' : 'text-text-subtle/30'}`} />
+              <ChevronDown className={`size-2.5 ${sortMode === 'rank' && sortDirection === 'desc' ? 'text-accent font-bold' : 'text-text-subtle/30'}`} />
+            </span>
+          </button>
+          
+          <button
+            type="button"
+            onClick={() => handleSort('model')}
+            className={`flex items-center gap-1 hover:text-text transition text-left font-semibold ${
+              sortMode === 'model' ? 'text-accent' : 'text-text-subtle'
+            }`}
+          >
+            <span>모델</span>
+            <span className="flex flex-col -space-y-1">
+              <ChevronUp className={`size-2.5 ${sortMode === 'model' && sortDirection === 'asc' ? 'text-accent font-bold' : 'text-text-subtle/30'}`} />
+              <ChevronDown className={`size-2.5 ${sortMode === 'model' && sortDirection === 'desc' ? 'text-accent font-bold' : 'text-text-subtle/30'}`} />
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSort('price')}
+            className={`hidden md:flex items-center gap-1 hover:text-text transition text-left font-semibold ${
+              sortMode === 'price' ? 'text-accent' : 'text-text-subtle'
+            }`}
+          >
+            <span>가격</span>
+            <span className="flex flex-col -space-y-1">
+              <ChevronUp className={`size-2.5 ${sortMode === 'price' && sortDirection === 'asc' ? 'text-accent font-bold' : 'text-text-subtle/30'}`} />
+              <ChevronDown className={`size-2.5 ${sortMode === 'price' && sortDirection === 'desc' ? 'text-accent font-bold' : 'text-text-subtle/30'}`} />
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSort('speed')}
+            className={`hidden md:flex items-center gap-1 hover:text-text transition text-left font-semibold ${
+              sortMode === 'speed' ? 'text-accent' : 'text-text-subtle'
+            }`}
+          >
+            <span>속도</span>
+            <span className="flex flex-col -space-y-1">
+              <ChevronUp className={`size-2.5 ${sortMode === 'speed' && sortDirection === 'asc' ? 'text-accent font-bold' : 'text-text-subtle/30'}`} />
+              <ChevronDown className={`size-2.5 ${sortMode === 'speed' && sortDirection === 'desc' ? 'text-accent font-bold' : 'text-text-subtle/30'}`} />
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSort('latency')}
+            className={`hidden md:flex items-center gap-1 hover:text-text transition text-left font-semibold ${
+              sortMode === 'latency' ? 'text-accent' : 'text-text-subtle'
+            }`}
+          >
+            <span>Latency</span>
+            <span className="flex flex-col -space-y-1">
+              <ChevronUp className={`size-2.5 ${sortMode === 'latency' && sortDirection === 'asc' ? 'text-accent font-bold' : 'text-text-subtle/30'}`} />
+              <ChevronDown className={`size-2.5 ${sortMode === 'latency' && sortDirection === 'desc' ? 'text-accent font-bold' : 'text-text-subtle/30'}`} />
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSort('score')}
+            className={`flex items-center gap-1 hover:text-text transition justify-end text-right font-semibold ml-auto ${
+              sortMode === 'score' ? 'text-accent' : 'text-text-subtle'
+            }`}
+          >
+            <span>점수/규모</span>
+            <span className="flex flex-col -space-y-1">
+              <ChevronUp className={`size-2.5 ${sortMode === 'score' && sortDirection === 'asc' ? 'text-accent font-bold' : 'text-text-subtle/30'}`} />
+              <ChevronDown className={`size-2.5 ${sortMode === 'score' && sortDirection === 'desc' ? 'text-accent font-bold' : 'text-text-subtle/30'}`} />
+            </span>
+          </button>
         </div>
         {pagedEntries.map((entry) => {
           const numericScore = parseNumericMetric(entry.score) ?? 0

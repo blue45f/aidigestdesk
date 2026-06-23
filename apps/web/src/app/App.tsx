@@ -16,10 +16,12 @@ import {
 } from '@aidigestdesk/content'
 import {
   BadgePercent,
+  BarChart3,
   BookOpen,
   Boxes,
   ChevronRight,
   Code2,
+  Cpu,
   FileText,
   MessagesSquare,
   RotateCcw,
@@ -77,12 +79,14 @@ import {
   EventPromotionsSection,
   WebzineSection,
 } from '@/components/app/PortalNewsSections'
+import { PortalRankingSection } from '@/components/app/PortalRankingSection'
 import { ResourceLibrary } from '@/components/app/ResourceLibrary'
 import { SitemapRoute } from '@/components/app/SitemapRoute'
 import { SourcesSection } from '@/components/app/SourcesSection'
 import { SupportRoute } from '@/components/app/SupportRoute'
 import { TermsRoute } from '@/components/app/TermsRoute'
 import { TranslatedNewsSection } from '@/components/app/TranslatedNewsSection'
+import { IntroSplashScreen } from '@/components/layout/IntroSplashScreen'
 import { RouteAnnouncer } from '@/components/layout/RouteAnnouncer'
 import { SkipLink } from '@/components/layout/SkipLink'
 import { useColorScheme } from '@/hooks/useColorScheme'
@@ -217,6 +221,101 @@ function ExploreGrid({ onNavigate }: { onNavigate: (route: AppRoute) => void }) 
   )
 }
 
+export type ModelsTabId = 'compare' | 'local' | 'benchmarks' | 'matrix' | 'cost'
+
+const modelsTabMeta: Array<{
+  id: ModelsTabId
+  title: string
+  description: string
+  icon: typeof Boxes
+}> = [
+  {
+    id: 'compare',
+    title: '주요 모델 비교',
+    description: '상용 모델 스펙 및 요약',
+    icon: Boxes,
+  },
+  {
+    id: 'local',
+    title: '설치형 로컬 모델',
+    description: '오픈소스 서빙 및 프론트엔드',
+    icon: Cpu,
+  },
+  {
+    id: 'benchmarks',
+    title: '벤치마크 보드',
+    description: 'Leaderboard 및 분야별 지표',
+    icon: BarChart3,
+  },
+  {
+    id: 'matrix',
+    title: '기능 비교표',
+    description: '상용 모델 기능 축 비교',
+    icon: Table2,
+  },
+  {
+    id: 'cost',
+    title: '비용 계산기',
+    description: '토큰 비용 계산 및 할인 일정',
+    icon: BadgePercent,
+  },
+]
+
+function ModelsTabSwitcher({
+  activeTab,
+  onSelect,
+}: {
+  activeTab: ModelsTabId
+  onSelect: (tabId: ModelsTabId) => void
+}) {
+  return (
+    <section className="scroll-mt-32 space-y-3">
+      <div className="touch-scroll -mx-3 flex snap-x gap-2 overflow-x-auto px-3 pb-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 xl:grid-cols-5">
+        {modelsTabMeta.map((tab) => {
+          const Icon = tab.icon
+          const active = tab.id === activeTab
+
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => onSelect(tab.id)}
+              aria-pressed={active}
+              className={
+                active
+                  ? 'flex min-h-20 w-[14.5rem] shrink-0 snap-start items-start gap-3 rounded-lg border border-ink bg-ink p-3 text-left text-ink-fg sm:w-auto'
+                  : 'flex min-h-20 w-[14.5rem] shrink-0 snap-start items-start gap-3 rounded-lg border border-border bg-surface p-3 text-left text-text-muted transition hover:border-border-strong hover:text-text sm:w-auto'
+              }
+            >
+              <span
+                className={
+                  active
+                    ? 'grid size-9 shrink-0 place-items-center rounded-md border border-white/20 bg-white/10'
+                    : 'grid size-9 shrink-0 place-items-center rounded-md border border-border bg-bg text-accent'
+                }
+              >
+                <Icon className="size-4" aria-hidden />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold">{tab.title}</span>
+                <span
+                  className={
+                    active
+                      ? 'mt-1 block text-xs text-white/70'
+                      : 'mt-1 block text-xs text-text-subtle'
+                  }
+                >
+                  {tab.description}
+                </span>
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    </section>
+  )
+}
+
 const toolsPaneIds = [
   'task-recommendations',
   'ai-tools',
@@ -285,6 +384,17 @@ function getToolsPaneFromHash(): ToolsPaneId {
   if (typeof window === 'undefined') return defaultToolsPane
   const hashId = window.location.hash.replace(/^#/, '')
   return toolsPaneIds.includes(hashId as ToolsPaneId) ? (hashId as ToolsPaneId) : defaultToolsPane
+}
+
+function getModelsTabFromHash(): ModelsTabId {
+  if (typeof window === 'undefined') return 'compare'
+  const hash = window.location.hash.replace(/^#/, '')
+  if (hash === 'local-models') return 'local'
+  if (hash === 'benchmarks') return 'benchmarks'
+  if (hash === 'matrix') return 'matrix'
+  if (hash === 'cost-calculator' || hash === 'calculator') return 'cost'
+  if (hash === 'comparison') return 'compare'
+  return 'compare'
 }
 
 function ToolsPaneSwitcher({
@@ -379,6 +489,7 @@ export default function App() {
   const [memberSession, setMemberSession] = useState<MemberSession | null>(getInitialMemberSession)
   const { dark, toggle: toggleDark } = useColorScheme()
   const [toolsPane, setToolsPane] = useState<ToolsPaneId>(getToolsPaneFromHash)
+  const [modelsTab, setModelsTab] = useState<ModelsTabId>(getModelsTabFromHash)
   const toast = useToast()
 
   useDocumentTitle(routeTitles[route])
@@ -391,27 +502,44 @@ export default function App() {
       const nextRoute = getCurrentRoute()
       setRoute(nextRoute)
       if (nextRoute === 'tools') setToolsPane(getToolsPaneFromHash())
+      if (nextRoute === 'models') setModelsTab(getModelsTabFromHash())
     }
     window.addEventListener('popstate', syncRoute)
     return () => window.removeEventListener('popstate', syncRoute)
   }, [])
 
   useEffect(() => {
-    const syncToolsPane = () => {
-      if (getCurrentRoute() === 'tools') setToolsPane(getToolsPaneFromHash())
+    const syncHash = () => {
+      const r = getCurrentRoute()
+      if (r === 'tools') setToolsPane(getToolsPaneFromHash())
+      if (r === 'models') setModelsTab(getModelsTabFromHash())
     }
-    window.addEventListener('hashchange', syncToolsPane)
-    return () => window.removeEventListener('hashchange', syncToolsPane)
+    window.addEventListener('hashchange', syncHash)
+    return () => window.removeEventListener('hashchange', syncHash)
   }, [])
 
   useEffect(() => {
-    if (route !== 'tools') return
-    if (window.location.hash !== `#${toolsPane}`) return
+    if (route === 'tools') {
+      if (window.location.hash !== `#${toolsPane}`) return
+      window.requestAnimationFrame(() => {
+        document.getElementById(toolsPane)?.scrollIntoView({ block: 'start' })
+      })
+    } else if (route === 'models') {
+      let hash = ''
+      if (modelsTab === 'compare') hash = 'comparison'
+      else if (modelsTab === 'local') hash = 'local-models'
+      else if (modelsTab === 'benchmarks') hash = 'benchmarks'
+      else if (modelsTab === 'matrix') hash = 'matrix'
+      else if (modelsTab === 'cost') hash = 'cost-calculator'
 
-    window.requestAnimationFrame(() => {
-      document.getElementById(toolsPane)?.scrollIntoView({ block: 'start' })
-    })
-  }, [route, toolsPane])
+      if (window.location.hash !== `#${hash}`) return
+      window.requestAnimationFrame(() => {
+        document
+          .getElementById(modelsTab === 'cost' ? 'cost-calculator' : hash)
+          ?.scrollIntoView({ block: 'start' })
+      })
+    }
+  }, [route, toolsPane, modelsTab])
 
   const navigateToRoute = (nextRoute: AppRoute) => {
     const nextPath = routePath[nextRoute]
@@ -419,6 +547,7 @@ export default function App() {
       window.history.pushState(null, '', nextPath)
     }
     if (nextRoute === 'tools') setToolsPane(getToolsPaneFromHash())
+    if (nextRoute === 'models') setModelsTab(getModelsTabFromHash())
     setRoute(nextRoute)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -491,6 +620,27 @@ export default function App() {
     }
     window.requestAnimationFrame(() => {
       document.getElementById('tools-workbench')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    })
+  }
+
+  const selectModelsTab = (tabId: ModelsTabId) => {
+    setModelsTab(tabId)
+    let hash = ''
+    if (tabId === 'compare') hash = 'comparison'
+    else if (tabId === 'local') hash = 'local-models'
+    else if (tabId === 'benchmarks') hash = 'benchmarks'
+    else if (tabId === 'matrix') hash = 'matrix'
+    else if (tabId === 'cost') hash = 'cost-calculator'
+
+    const nextUrl = `${routePath.models}#${hash}`
+    if (window.location.pathname !== routePath.models || window.location.hash !== `#${hash}`) {
+      window.history.pushState(null, '', nextUrl)
+    }
+    window.requestAnimationFrame(() => {
+      document.getElementById('models-workbench')?.scrollIntoView({
         behavior: 'smooth',
         block: 'start',
       })
@@ -576,17 +726,28 @@ export default function App() {
           <>
             {renderFilterBar()}
             <PageHeader route="models" />
-            <ModelCards
-              models={visibleModels}
-              selectedModelId={selectedModel?.id ?? ''}
-              onSelectModel={setSelectedModelId}
-            />
-            {selectedModel ? <ModelDetail profile={selectedModel} /> : null}
-            <LocalModelComparison />
-            <BenchmarkBoard />
-            <ComparisonMatrix />
-            <ModelCostCalculator />
-            <EventCostComparisonSection />
+            <div id="models-workbench" className="scroll-mt-32 space-y-5">
+              <ModelsTabSwitcher activeTab={modelsTab} onSelect={selectModelsTab} />
+              {modelsTab === 'compare' && (
+                <>
+                  <ModelCards
+                    models={visibleModels}
+                    selectedModelId={selectedModel?.id ?? ''}
+                    onSelectModel={setSelectedModelId}
+                  />
+                  {selectedModel ? <ModelDetail profile={selectedModel} /> : null}
+                </>
+              )}
+              {modelsTab === 'local' && <LocalModelComparison />}
+              {modelsTab === 'benchmarks' && <BenchmarkBoard />}
+              {modelsTab === 'matrix' && <ComparisonMatrix />}
+              {modelsTab === 'cost' && (
+                <>
+                  <ModelCostCalculator />
+                  <EventCostComparisonSection />
+                </>
+              )}
+            </div>
           </>
         )
       case 'tools':
@@ -630,6 +791,9 @@ export default function App() {
         return (
           <>
             <PortalHero onNavigate={navigateToRoute} />
+            <Reveal>
+              <PortalRankingSection onNavigate={navigateToRoute} />
+            </Reveal>
             <Reveal variant="soft">
               <Briefing results={results} useFallback={!hasActiveFilter} />
             </Reveal>
@@ -650,6 +814,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-bg text-text">
+      <IntroSplashScreen />
       <SkipLink />
       <RouteAnnouncer routeKey={route} />
       <Header
@@ -704,7 +869,10 @@ export default function App() {
               {renderSections(isContentRoute ? (route as ContentRoute) : 'portal')}
 
               <footer className="flex flex-col gap-3 border-t border-border py-6 text-xs text-text-subtle sm:flex-row sm:items-center sm:justify-between">
-                <span>AIDigestDesk · {SNAPSHOT_DATE} 스냅샷</span>
+                <span>
+                  © {new Date().getFullYear()} AIDigestDesk (Beta). All rights reserved. ·{' '}
+                  {SNAPSHOT_DATE} 스냅샷
+                </span>
                 <nav className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
                   <button
                     type="button"

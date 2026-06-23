@@ -4,7 +4,7 @@ import {
   type ProviderId,
   type SourceKind,
 } from '@aidigestdesk/content'
-import { CheckCircle2, Sparkles, X } from 'lucide-react'
+import { CheckCircle2, Play, Sparkles, X } from 'lucide-react'
 import { useState } from 'react'
 
 import type { ComponentType, ReactNode } from 'react'
@@ -379,36 +379,77 @@ export function Thumbnail({
   fit?: 'cover' | 'contain'
 }) {
   const [failed, setFailed] = useState(false)
+  const [loaded, setLoaded] = useState(false)
   const showImage = src && !failed
   const imageFitClass = fit === 'contain' ? 'object-contain p-5' : 'object-cover'
 
   return (
     <div
-      className={`relative ${thumbnailRatios[ratio]} w-full overflow-hidden rounded-md border border-border bg-surface-2`}
+      className={`relative ${thumbnailRatios[ratio]} w-full overflow-hidden rounded-md border border-border bg-surface-2 shadow-sm transition-all duration-300 ease-out`}
     >
+      {/* Background radial dot pattern for visual depth */}
+      <div className="absolute inset-0 bg-[radial-gradient(rgba(100,100,100,0.08)_1px,transparent_1px)] [background-size:12px_12px] opacity-60 pointer-events-none" />
+
+      {/* Hover Sheen line effect */}
+      <span className="sheen" aria-hidden />
+
       {showImage ? (
         <>
+          {/* Pulsing skeleton loaded state */}
+          {!loaded && (
+            <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-surface-2 via-surface-3 to-surface-2" />
+          )}
+
           <img
             src={src}
             alt={alt}
             loading="lazy"
+            onLoad={() => setLoaded(true)}
             onError={() => setFailed(true)}
-            className={`size-full ${imageFitClass}`}
+            className={`size-full ${imageFitClass} transition-all duration-500 ease-out ${
+              loaded ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.97]'
+            }`}
           />
+
+          {/* Premium Glass Hover Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+          {/* Central Play button indicator overlay for video ratio */}
+          {ratio === 'video' && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <span className="grid size-10 place-items-center rounded-full bg-black/40 border border-white/20 text-white backdrop-blur-sm opacity-80 shadow-md transform scale-90 group-hover:scale-100 group-hover:bg-accent group-hover:border-accent/30 group-hover:opacity-100 transition-all duration-300 ease-out">
+                <Play className="size-4 fill-current ml-0.5" aria-hidden />
+              </span>
+            </div>
+          )}
+
+          {/* Clean Glassmorphic icon tag for transparent icons (e.g. MCP logo) */}
           {fit === 'contain' && Icon ? (
             <span
-              className="absolute right-1.5 bottom-1.5 grid size-5 place-items-center rounded border border-border bg-surface/90 text-text-subtle shadow-sm"
+              className="absolute right-2 bottom-2 grid size-6 place-items-center rounded-md border border-white/10 bg-black/40 text-white backdrop-blur-md shadow-md ring-1 ring-white/5"
               aria-hidden
             >
-              <Icon className="size-3" aria-hidden />
+              <Icon className="size-3.5" aria-hidden />
             </span>
           ) : null}
         </>
       ) : (
-        <div className="grid size-full place-items-center bg-gradient-to-br from-surface-2 to-surface text-text-subtle">
-          <div className="flex flex-col items-center gap-1.5 px-3 text-center">
-            {Icon ? <Icon className="size-6" aria-hidden /> : null}
-            {caption ? <span className="text-[0.6875rem] font-semibold">{caption}</span> : null}
+        /* Elevated placeholder using modern tech design guidelines */
+        <div className="relative size-full flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-surface-2 to-surface-3 text-text-subtle transition-colors duration-300 group-hover:bg-gradient-to-br group-hover:from-surface-2 group-hover:to-surface">
+          {/* Ambient Glow spotlight behind the icon */}
+          <div className="absolute size-24 rounded-full bg-accent/5 filter blur-xl pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
+          
+          <div className="relative z-10 flex flex-col items-center gap-2 px-3 text-center">
+            {Icon ? (
+              <span className="grid size-11 place-items-center rounded-full border border-border bg-surface text-text-muted shadow-sm ring-4 ring-surface-2 group-hover:border-accent/30 group-hover:bg-accent/5 group-hover:text-accent group-hover:shadow-[0_0_15px_rgba(var(--color-accent-rgb),0.12)] transition-all duration-300">
+                <Icon className="size-5 transition-transform duration-300 group-hover:scale-110" aria-hidden />
+              </span>
+            ) : null}
+            {caption ? (
+              <span className="text-[0.6875rem] font-semibold tracking-wide uppercase text-text-subtle group-hover:text-text transition-colors duration-200">
+                {caption}
+              </span>
+            ) : null}
           </div>
         </div>
       )}

@@ -378,6 +378,7 @@ export function ExtensionsSection() {
   const [category, setCategory] = useState<CategoryFilter>('all')
   const [difficulty, setDifficulty] = useState<DifficultyFilter>('all')
   const [sort, setSort] = useState<SortMode>('rank')
+  const [showDetailedFilters, setShowDetailedFilters] = useState(false)
   const filterKey = `${query}\u0000${focus}\u0000${kind}\u0000${platform}\u0000${category}\u0000${difficulty}\u0000${sort}`
   const [visibleLimitState, setVisibleLimitState] = useState({
     key: filterKey,
@@ -583,48 +584,64 @@ export function ExtensionsSection() {
       </div>
 
       <div className="space-y-4 rounded-lg border border-border bg-surface p-4">
-        <div className="grid gap-4 lg:grid-cols-2">
-          <SearchField
-            label="검색"
-            value={query}
-            onChange={setQuery}
-            placeholder="이름, 요약, 태그, 설치/사용 명령으로 검색"
-          />
+        <div className="grid gap-3 xl:grid-cols-4">
+          <div className="xl:col-span-2">
+            <SearchField
+              label="검색"
+              value={query}
+              onChange={setQuery}
+              placeholder="이름, 요약, 태그, 설치/사용 명령으로 검색"
+            />
+          </div>
           <SortSelect label="정렬" value={sort} onChange={setSort} options={sortOptions} />
+          <div className="flex items-end">
+            <button
+              type="button"
+              onClick={() => setShowDetailedFilters(!showDetailedFilters)}
+              className="h-10 w-full rounded-md border border-border bg-bg text-xs font-semibold text-text-muted hover:border-border-strong hover:bg-surface hover:text-text transition flex items-center justify-center gap-1.5"
+            >
+              <span>상세 필터 {showDetailedFilters ? '접기' : '열기'}</span>
+              <ChevronDown className={`size-3.5 transition-transform duration-200 ${showDetailedFilters ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
         </div>
 
-        <SegmentBar label="종류" items={kindFilterItems} value={kind} onChange={setKind} />
-        <SegmentBar
-          label="플랫폼"
-          items={platformFilterItems}
-          value={platform}
-          onChange={setPlatform}
-        />
-        <SegmentBar
-          label="카테고리"
-          items={categoryFilterItems}
-          value={category}
-          onChange={setCategory}
-        />
-        <SegmentBar
-          label="설치 난이도"
-          items={difficultyFilterItems}
-          value={difficulty}
-          onChange={setDifficulty}
-        />
+        {showDetailedFilters && (
+          <div className="space-y-4 border-t border-border pt-3 mt-1">
+            <SegmentBar label="종류" items={kindFilterItems} value={kind} onChange={setKind} />
+            <SegmentBar
+              label="플랫폼"
+              items={platformFilterItems}
+              value={platform}
+              onChange={setPlatform}
+            />
+            <SegmentBar
+              label="카테고리"
+              items={categoryFilterItems}
+              value={category}
+              onChange={setCategory}
+            />
+            <SegmentBar
+              label="설치 난이도"
+              items={difficultyFilterItems}
+              value={difficulty}
+              onChange={setDifficulty}
+            />
 
-        <ResultSummary
-          shown={visibleExtensions.length}
-          total={stats.total}
-          onReset={resetAll}
-          resetDisabled={!hasActiveFilter}
-        />
-        {filtered.length > visibleExtensions.length ? (
-          <p className="text-xs leading-5 text-text-subtle">
-            현재 조건 {filtered.length}개 중 {visibleExtensions.length}개만 먼저 표시합니다. 필요한
-            항목은 검색·필터로 좁히거나 더 보기를 사용하세요.
-          </p>
-        ) : null}
+            <ResultSummary
+              shown={visibleExtensions.length}
+              total={stats.total}
+              onReset={resetAll}
+              resetDisabled={!hasActiveFilter}
+            />
+            {filtered.length > visibleExtensions.length ? (
+              <p className="text-xs leading-5 text-text-subtle">
+                현재 조건 {filtered.length}개 중 {visibleExtensions.length}개만 먼저 표시합니다. 필요한
+                항목은 검색·필터로 좁히거나 더 보기를 사용하세요.
+              </p>
+            ) : null}
+          </div>
+        )}
       </div>
 
       {chips.length > 0 ? <ActiveFilterChips chips={chips} /> : null}
