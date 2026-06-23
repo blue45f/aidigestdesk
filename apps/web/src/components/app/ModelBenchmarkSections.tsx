@@ -74,7 +74,7 @@ type ModelCardStatusFilter = 'all' | ModelProfile['status']
 type ModelCardProviderFilter = 'all' | ProviderId
 type ModelSpecSortMode = 'label' | 'value'
 type ModelSourceSortMode = 'publisher' | 'kind' | 'checked'
-type ComparisonMatrixSortMode = 'axis' | 'filled' | 'coverage'
+type ComparisonMatrixSortMode = 'axis' | 'filled' | 'coverage' | ProviderId
 type ComparisonMatrixSortDirection = 'asc' | 'desc'
 type LocalModelSortMode =
   | 'rank'
@@ -1537,17 +1537,43 @@ export function ComparisonMatrix() {
     useState<ComparisonMatrixSortDirection>('asc')
   const [matrixLimit, setMatrixLimit] = useState<ListLimit>(0)
   const matrixSortValue = `${matrixSortMode}-${matrixSortDirection}` as const
-  const matrixSortOptions: Array<{
-    value: `${ComparisonMatrixSortMode}-${ComparisonMatrixSortDirection}`
-    label: string
-  }> = [
-    { value: 'axis-asc', label: '축명 오름차순' },
-    { value: 'axis-desc', label: '축명 내림차순' },
-    { value: 'filled-asc', label: '채워진 항목 오름차순' },
-    { value: 'filled-desc', label: '채워진 항목 내림차순' },
-    { value: 'coverage-asc', label: '내용 길이 오름차순' },
-    { value: 'coverage-desc', label: '내용 길이 내림차순' },
-  ]
+
+  const matrixSortOptions = useMemo(() => {
+    const base: Array<{
+      value: `${ComparisonMatrixSortMode}-${ComparisonMatrixSortDirection}`
+      label: string
+    }> = [
+      { value: 'axis-asc', label: '축명 오름차순' },
+      { value: 'axis-desc', label: '축명 내림차순' },
+      { value: 'filled-asc', label: '채워진 항목 오름차순' },
+      { value: 'filled-desc', label: '채워진 항목 내림차순' },
+      { value: 'coverage-asc', label: '내용 길이 오름차순' },
+      { value: 'coverage-desc', label: '내용 길이 내림차순' },
+    ]
+    comparisonProviderOrder.forEach((providerId) => {
+      const provider = providerCatalog.find((item) => item.id === providerId)
+      const label = provider?.shortLabel ?? getProviderLabel(providerId)
+      base.push(
+        { value: `${providerId}-asc`, label: `${label} 오름차순` },
+        { value: `${providerId}-desc`, label: `${label} 내림차순` }
+      )
+    })
+    return base
+  }, [])
+
+  const handleMatrixSort = (mode: ComparisonMatrixSortMode) => {
+    if (matrixSortMode === mode) {
+      setMatrixSortDirection((current) => (current === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setMatrixSortMode(mode)
+      if (mode === 'axis') {
+        setMatrixSortDirection('asc')
+      } else {
+        setMatrixSortDirection('desc')
+      }
+    }
+  }
+
   const visibleComparisonRows = useMemo(() => {
     const normalizedQuery = rowQuery.trim().toLocaleLowerCase('ko-KR')
     const sortedRows = comparisonRows
@@ -1568,11 +1594,27 @@ export function ComparisonMatrix() {
           const byFilled = left.filledCount - right.filledCount
           if (byFilled !== 0) return byFilled * direction
         }
-        const byLength = left.valueLength - right.valueLength
-        return byLength * direction
+        if (matrixSortMode === 'coverage') {
+          const byLength = left.valueLength - right.valueLength
+          if (byLength !== 0) return byLength * direction
+        }
+
+        // 특정 providerId를 기준으로 셀 내용을 정렬
+        const valA = left.cells[matrixSortMode as ProviderId] || ''
+        const valB = right.cells[matrixSortMode as ProviderId] || ''
+
+        const isNoneA = valA === '-' || !valA.trim()
+        const isNoneB = valB === '-' || !valB.trim()
+
+        if (isNoneA && isNoneB) return 0
+        if (isNoneA) return 1
+        if (isNoneB) return -1
+
+        return valA.localeCompare(valB, 'ko') * direction
       })
     return sortedRows
   }, [matrixSortDirection, matrixSortMode, rowQuery])
+
   const pagedComparisonRows =
     matrixLimit === 0 ? visibleComparisonRows : visibleComparisonRows.slice(0, matrixLimit)
 
@@ -1627,12 +1669,39 @@ export function ComparisonMatrix() {
         <table className="min-w-[112rem] w-full border-collapse text-left">
           <thead>
             <tr className="border-b border-border text-xs text-text-subtle">
-              <th className="w-36 px-4 py-3 font-semibold">축</th>
+              <th className="w-36 px-4 py-3 font-semibold">
+                <button
+                  type="button"
+                  onClick={() => handleMatrixSort('axis')}
+                  className={`flex items-center gap-1 hover:text-text transition text-left font-semibold ${
+                    matrixSortMode === 'axis' ? 'text-accent' : 'text-text-subtle'
+                  }`}
+                >
+                  <span>축</span>
+                  <span className="flex flex-col -space-y-1">
+                    <ChevronUp className={`size-2.5 ${matrixSortMode === 'axis' && matrixSortDirection === 'asc' ? 'text-accent font-bold' : 'text-text-subtle/30'}`} />
+                    <ChevronDown className={`size-2.5 ${matrixSortMode === 'axis' && matrixSortDirection === 'desc' ? 'text-accent font-bold' : 'text-text-subtle/30'}`} />
+                  </span>
+                </button>
+              </th>
               {comparisonProviderOrder.map((providerId) => {
                 const provider = providerCatalog.find((item) => item.id === providerId)
+                const isSortedActive = matrixSortMode === providerId
                 return (
                   <th key={providerId} className="px-4 py-3 font-semibold">
-                    {provider?.shortLabel ?? getProviderLabel(providerId)}
+                    <button
+                      type="button"
+                      onClick={() => handleMatrixSort(providerId)}
+                      className={`flex items-center gap-1 hover:text-text transition text-left font-semibold ${
+                        isSortedActive ? 'text-accent' : 'text-text-subtle'
+                      }`}
+                    >
+                      <span>{provider?.shortLabel ?? getProviderLabel(providerId)}</span>
+                      <span className="flex flex-col -space-y-1">
+                        <ChevronUp className={`size-2.5 ${isSortedActive && matrixSortDirection === 'asc' ? 'text-accent' : 'text-text-subtle/30'}`} />
+                        <ChevronDown className={`size-2.5 ${isSortedActive && matrixSortDirection === 'desc' ? 'text-accent' : 'text-text-subtle/30'}`} />
+                      </span>
+                    </button>
                   </th>
                 )
               })}
