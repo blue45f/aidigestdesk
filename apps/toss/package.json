@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "granite dev",
-    "build:preview": "PREVIEW_NO_TDS=1 vite build",
+    "predata": "pnpm --filter @aidigestdesk/content run generate:toss-data",
+    "build:preview": "pnpm run predata && PREVIEW_NO_TDS=1 vite build",
     "deploy": "ait deploy",
     "typecheck": "tsc -b",
     "preview": "vite preview",
-    "build:ait": "ait build"
+    "build:ait": "pnpm run predata && ait build"
   },
   "dependencies": {
     "@aidigestdesk/content": "workspace:*",
