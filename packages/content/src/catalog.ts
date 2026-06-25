@@ -533,6 +533,15 @@ export const comparisonProviderOrder = providerCatalog.map((provider) => provide
 
 export const sources: SourceRef[] = [
   {
+    id: 'community-ext-research',
+    title: '커뮤니티 AI 코딩 확장 리서치',
+    publisher: 'GitHub·마켓플레이스 커뮤니티',
+    kind: 'community',
+    url: 'https://github.com/topics/claude-code',
+    lastChecked: '2026-06-25',
+    note: '오픈소스 저장소·마켓플레이스에서 채택 신호(스타/설치 수)를 교차 확인한 코딩 에이전트 확장 모음. 개별 항목 url에 원본 출처를 명시한다.',
+  },
+  {
     id: 'gpqa-diamond',
     title: 'GPQA Diamond Leaderboard',
     publisher: 'GPQA · 커뮤니티 집계',
