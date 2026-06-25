@@ -1,3 +1,4 @@
+import { CommunityPage } from './pages/CommunityPage.tsx';
 import { DealsPage } from './pages/DealsPage.tsx';
 import { ManualDetailPage } from './pages/ManualDetailPage.tsx';
 import { ManualListPage } from './pages/ManualListPage.tsx';
@@ -23,8 +24,9 @@ export function App() {
   const manualDetail = path.match(/^\/manual\/(.+)$/);
   const isSupport = path === '/support';
   const isSaved = path === '/saved';
+  const isCommunity = path === '/community';
 
-  if (updateDetail || modelDetail || extDetail || manualDetail || isSupport || isSaved) {
+  if (updateDetail || modelDetail || extDetail || manualDetail || isSupport || isSaved || isCommunity) {
     const detail = updateDetail ? (
       <UpdateDetailPage id={decodeURIComponent(updateDetail[1])} />
     ) : modelDetail ? (
@@ -35,6 +37,8 @@ export function App() {
       <ManualDetailPage slug={decodeURIComponent(manualDetail[1])} />
     ) : isSaved ? (
       <SavedPage />
+    ) : isCommunity ? (
+      <CommunityPage />
     ) : (
       <SupportPage />
     );
