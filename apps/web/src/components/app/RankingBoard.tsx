@@ -122,19 +122,22 @@ const gradeTones: Record<string, ChipTone> = {
   미분류: 'neutral',
 }
 
-/* 메달: 1·2·3위 시각 신호. 색만으로 전달하지 않도록 숫자를 항상 병기한다. */
-function RankBadge({ position }: { position: number }) {
-  const medal =
-    position === 1
-      ? 'border-amber-400/50 bg-amber-400/15 text-amber-600 dark:text-amber-300'
-      : position === 2
-        ? 'border-slate-400/50 bg-slate-400/15 text-slate-600 dark:text-slate-300'
-        : position === 3
-          ? 'border-orange-400/50 bg-orange-400/15 text-orange-600 dark:text-orange-300'
-          : 'border-border bg-bg text-text-subtle'
+/* 메달: 1·2·3위 시각 신호. 색만으로 전달하지 않도록 숫자를 항상 병기한다.
+   medal=false(가격·속도·이름 등 비순위 정렬)일 땐 중립색 — 표시 순서를 순위로 오인하지 않도록. */
+function RankBadge({ position, medal = true }: { position: number; medal?: boolean }) {
+  const tone =
+    !medal
+      ? 'border-border bg-bg text-text-subtle'
+      : position === 1
+        ? 'border-amber-400/50 bg-amber-400/15 text-amber-600 dark:text-amber-300'
+        : position === 2
+          ? 'border-slate-400/50 bg-slate-400/15 text-slate-600 dark:text-slate-300'
+          : position === 3
+            ? 'border-orange-400/50 bg-orange-400/15 text-orange-600 dark:text-orange-300'
+            : 'border-border bg-bg text-text-subtle'
   return (
     <span
-      className={`grid size-8 shrink-0 place-items-center rounded-full border text-sm font-bold tabular-nums ${medal}`}
+      className={`grid size-8 shrink-0 place-items-center rounded-full border text-sm font-bold tabular-nums ${tone}`}
       aria-hidden
     >
       {position}
@@ -146,10 +149,12 @@ function ModelRow({
   entry,
   position,
   onOpen,
+  medal = true,
 }: {
   entry: BenchmarkEntry
   position: number
   onOpen?: () => void
+  medal?: boolean
 }) {
   const provider =
     entry.providerId === 'other'
@@ -173,7 +178,7 @@ function ModelRow({
 
   const inner = (
     <>
-      <RankBadge position={position} />
+      <RankBadge position={position} medal={medal} />
       {entry.providerId !== 'other' ? (
         <BrandMark providerId={entry.providerId as ProviderId} label={entry.modelName} size="sm" />
       ) : null}
@@ -228,15 +233,17 @@ function ExtensionRow({
   entry,
   position,
   onOpen,
+  medal = true,
 }: {
   entry: AgentExtension
   position: number
   onOpen?: () => void
+  medal?: boolean
 }) {
   const grade = getExtensionRankGrade(entry)
   const inner = (
     <>
-      <RankBadge position={position} />
+      <RankBadge position={position} medal={medal} />
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
           <p className="truncate text-sm font-semibold text-text">{entry.name}</p>
@@ -518,6 +525,7 @@ export function RankingBoard({
                   key={entry.id}
                   entry={entry}
                   position={index + 1}
+                  medal={modelSort === 'rank'}
                   onOpen={profileId ? () => onSelectModel?.(profileId) : undefined}
                 />
               )
@@ -527,12 +535,13 @@ export function RankingBoard({
                 key={entry.id}
                 entry={entry}
                 position={index + 1}
+                medal={extSort === 'rank'}
                 onOpen={onSelectExtension ? () => onSelectExtension(entry.id) : undefined}
               />
             ))}
       </ol>
 
-      {(onSeeAll && totalCount > shownCount) || (limit && totalCount > shownCount) ? (
+      {onSeeAll && totalCount > shownCount ? (
         <button
           type="button"
           onClick={() => onSeeAll?.(scope)}

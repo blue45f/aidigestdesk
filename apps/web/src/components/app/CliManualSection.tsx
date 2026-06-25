@@ -1,5 +1,5 @@
 import { type ProviderId } from '@aidigestdesk/content'
-import { cliToolManuals, type CliToolManual } from '@aidigestdesk/content/cliManuals'
+import { cliToolManuals, getCliManualBySlug, type CliToolManual } from '@aidigestdesk/content/cliManuals'
 import {
   BookOpen,
   Download,
@@ -250,7 +250,7 @@ function ManualDetail({ manual }: { manual: CliToolManual }) {
  */
 export function CliManualSection({ id }: { id?: string }) {
   const [slug, setSlug] = useState(cliToolManuals[0]?.slug ?? '')
-  const manual = cliToolManuals.find((m) => m.slug === slug) ?? cliToolManuals[0]
+  const manual = getCliManualBySlug(slug) ?? cliToolManuals[0]
   if (!manual) return null
 
   return (

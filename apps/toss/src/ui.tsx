@@ -32,16 +32,19 @@ export function Cover({ gradient, src, alt, height=150, radius=12 }: { gradient?
   </div>;
 }
 
-/** 1·2·3위 메달 뱃지. 색만으로 전달하지 않도록 숫자를 항상 병기. */
-export function RankBadge({ position }: { position: number }) {
-  const palette =
-    position === 1
+/** 1·2·3위 메달 뱃지. 색만으로 전달하지 않도록 숫자를 항상 병기.
+ *  medal=false(가격·속도·이름 등 비순위 정렬)면 중립색 — 표시 순서를 순위로 오인 방지. */
+export function RankBadge({ position, medal = true }: { position: number; medal?: boolean }) {
+  const neutral = { bg: 'rgba(255,255,255,0.05)', bd: theme.border, fg: theme.textMuted };
+  const palette = !medal
+    ? neutral
+    : position === 1
       ? { bg: 'rgba(245,200,66,0.16)', bd: 'rgba(245,200,66,0.5)', fg: '#f5c842' }
       : position === 2
         ? { bg: 'rgba(180,196,224,0.16)', bd: 'rgba(180,196,224,0.5)', fg: '#b4c4e0' }
         : position === 3
           ? { bg: 'rgba(232,150,90,0.16)', bd: 'rgba(232,150,90,0.5)', fg: '#e8965a' }
-          : { bg: 'rgba(255,255,255,0.05)', bd: theme.border, fg: theme.textMuted };
+          : neutral;
   return (
     <span aria-hidden style={{ display:'grid', placeItems:'center', width:30, height:30, flexShrink:0,
       borderRadius:999, border:`1px solid ${palette.bd}`, background:palette.bg, color:palette.fg,

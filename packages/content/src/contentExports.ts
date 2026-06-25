@@ -3,6 +3,7 @@ import {
   curationMonitors,
   getProviderLabel,
   getSources,
+  isLeaderboardBenchmark,
   learningResources,
   SNAPSHOT_DATE,
   updatePipeline,
@@ -57,6 +58,8 @@ export function createNewsletterMarkdown({
     });
 
   const benchmarkLines = benchmarkItems
+    // reference(벤치마크 카탈로그/추정) 행은 뉴스레터 "벤치마크 변화"에서 제외 — 다른 소비처와 동일 가드
+    .filter(isLeaderboardBenchmark)
     .slice(0, maxBenchmarks)
     .flatMap((entry) => {
       rememberSources(entry.sourceIds);

@@ -1,5 +1,5 @@
 import { getExtensionById, snapshotDate } from '../lib/rankings';
-import { navigate } from '../router';
+import { goBack } from '../router';
 import { theme, pageShell } from '../theme';
 import { Badge, BackBar, MetaChip } from '../ui';
 
@@ -29,7 +29,7 @@ function CodeLine({ children }: { children: React.ReactNode }) {
 
 export function RankExtensionDetailPage({ id }: { id: string }) {
   const entry = getExtensionById(id);
-  const back = () => navigate('/rankings');
+  const back = () => goBack('/rankings');
 
   if (!entry) {
     return (

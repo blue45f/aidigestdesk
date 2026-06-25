@@ -25,3 +25,15 @@ export function navigate(to: string): void {
   // pushState는 popstate를 발생시키지 않으므로 직접 디스패치해 구독자를 갱신한다.
   window.dispatchEvent(new PopStateEvent('popstate'));
 }
+
+/**
+ * 뒤로가기 — 히스토리가 있으면 history.back(목록의 정렬/필터 상태 보존), 없으면(직접 진입)
+ * fallback 경로로 이동. 상세 페이지의 BackBar가 pushState로 항목을 또 쌓지 않게 한다.
+ */
+export function goBack(fallback = '/'): void {
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    navigate(fallback);
+  }
+}

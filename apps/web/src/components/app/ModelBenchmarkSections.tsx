@@ -491,7 +491,8 @@ export function ModelCards({
 }
 
 export function ModelDetail({ profile }: { profile: ModelProfile }) {
-  const profileSources = getSources(profile.sourceIds)
+  // 매 렌더 새 배열 생성을 막아 sortedSources useMemo가 실제로 캐시되게 한다.
+  const profileSources = useMemo(() => getSources(profile.sourceIds), [profile.sourceIds])
   const [modelSpecSortMode, setModelSpecSortMode] = useState<ModelSpecSortMode>('label')
   const [modelSpecSortDirection, setModelSpecSortDirection] =
     useState<ModelCardSortDirection>('asc')
@@ -1257,7 +1258,7 @@ export function BenchmarkBoard() {
         <label className="block xl:col-span-2">
           <span className="text-xs font-semibold text-text-subtle">벤치마크 검색</span>
           <span className="relative mt-2 block">
-            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
+            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" aria-hidden />
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}

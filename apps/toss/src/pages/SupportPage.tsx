@@ -9,7 +9,7 @@ import {
   type Inquiry,
   type InquiryCategory,
 } from '../lib/inquiry';
-import { navigate } from '../router';
+import { goBack } from '../router';
 import { theme, pageShell } from '../theme';
 import { BackBar, Chips, MetaChip } from '../ui';
 
@@ -66,7 +66,7 @@ export function SupportPage() {
 
   return (
     <div style={{ minHeight: '100dvh', background: theme.bg }}>
-      <BackBar onBack={() => navigate('/')} label="소식" />
+      <BackBar onBack={() => goBack('/')} label="소식" />
       <div style={pageShell}>
         <h1 style={{ fontSize: 23, fontWeight: 800, lineHeight: 1.3 }}>문의 · 의견</h1>
         <p style={{ fontSize: 14, color: theme.textMuted, marginTop: 8, lineHeight: 1.6 }}>

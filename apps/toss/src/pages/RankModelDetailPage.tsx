@@ -6,7 +6,7 @@ import {
   getProfileForName,
   snapshotDate,
 } from '../lib/rankings';
-import { navigate } from '../router';
+import { goBack } from '../router';
 import { theme, pageShell } from '../theme';
 import { BackBar, MetaChip, RankBadge } from '../ui';
 
@@ -40,7 +40,7 @@ export function RankModelDetailPage({ id }: { id: string }) {
   const standings = useMemo(() => (name ? getModelStandingsByName(name) : []), [name]);
   const profile = useMemo(() => (name ? getProfileForName(name) : undefined), [name]);
 
-  const back = () => navigate('/rankings');
+  const back = () => goBack('/rankings');
 
   if (!found) {
     return (

@@ -82,11 +82,11 @@ function MoreButton({ expanded, total, visible, onToggle }: { expanded: boolean;
   );
 }
 
-function ModelRow({ entry, position, onOpen }: { entry: ModelRankEntry; position: number; onOpen: () => void }) {
+function ModelRow({ entry, position, onOpen, medal }: { entry: ModelRankEntry; position: number; onOpen: () => void; medal: boolean }) {
   return (
     <button type="button" onClick={onOpen} className="pressable" style={rowStyle}
       aria-label={`${entry.name} 상세 보기`}>
-      <RankBadge position={position} />
+      <RankBadge position={position} medal={medal} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
           <span style={{ fontSize: 15.5, fontWeight: 700, lineHeight: 1.35, wordBreak: 'keep-all' }}>{entry.name}</span>
@@ -109,12 +109,12 @@ function ModelRow({ entry, position, onOpen }: { entry: ModelRankEntry; position
   );
 }
 
-function ExtensionRow({ entry, position, onOpen }: { entry: ExtensionRankEntry; position: number; onOpen: () => void }) {
+function ExtensionRow({ entry, position, onOpen, medal }: { entry: ExtensionRankEntry; position: number; onOpen: () => void; medal: boolean }) {
   const grade = GRADE_PALETTE[entry.grade] ?? GRADE_PALETTE.C;
   return (
     <button type="button" onClick={onOpen} className="pressable" style={rowStyle}
       aria-label={`${entry.name} 상세 보기`}>
-      <RankBadge position={position} />
+      <RankBadge position={position} medal={medal} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
           <span style={{ fontSize: 15.5, fontWeight: 700, lineHeight: 1.35, wordBreak: 'keep-all' }}>{entry.name}</span>
@@ -201,10 +201,12 @@ export function RankingListPage() {
           <>
             <div className="rise" style={{ animationDelay: '50ms', marginBottom: 12 }}>
               <Chips items={domainLabels} active={activeDomain?.label ?? ''}
-                onPick={(label) => { const d = modelDomains.find((x) => x.label === label); if (d) { setDomainId(d.id); setShowAllModels(false); } }} />
+                onPick={(label) => { const d = modelDomains.find((x) => x.label === label); if (d) { setDomainId(d.id); setShowAllModels(false); setModelSort('rank'); setModelDir('asc'); } }} />
             </div>
             <div className="rise" style={{ animationDelay: '90ms', marginBottom: 16, display: 'flex', gap: 8, overflowX: 'auto' }}>
-              {MODEL_SORTS.map((s) => (
+              {MODEL_SORTS.filter(
+                (s) => s.id === 'rank' || s.id === 'score' || (activeDomain?.entries ?? []).some((e) => s.pick(e) != null)
+              ).map((s) => (
                 <SortChip key={s.id} label={s.label} active={modelSort === s.id}
                   dir={modelSort === s.id ? modelDir : 'desc'}
                   onToggle={() => toggle(s.id, modelSort, setModelSort, modelDir, setModelDir, s.id === 'rank' ? 'asc' : 'desc')} />
@@ -213,7 +215,7 @@ export function RankingListPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {(showAllModels ? sortedModels : sortedModels.slice(0, VISIBLE)).map((e, i) => (
                 <div key={e.id} className="rise" style={{ animationDelay: `${110 + i * 18}ms` }}>
-                  <ModelRow entry={e} position={i + 1} onOpen={() => navigate(`/rank/m/${encodeURIComponent(e.id)}`)} />
+                  <ModelRow entry={e} position={i + 1} medal={modelSort === 'rank'} onOpen={() => navigate(`/rank/m/${encodeURIComponent(e.id)}`)} />
                 </div>
               ))}
               {sortedModels.length === 0 && (
@@ -243,7 +245,7 @@ export function RankingListPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {(showAllExt ? sortedExtensions : sortedExtensions.slice(0, VISIBLE)).map((e, i) => (
                 <div key={e.id} className="rise" style={{ animationDelay: `${110 + i * 14}ms` }}>
-                  <ExtensionRow entry={e} position={i + 1} onOpen={() => navigate(`/rank/x/${encodeURIComponent(e.id)}`)} />
+                  <ExtensionRow entry={e} position={i + 1} medal={extSort === 'rank'} onOpen={() => navigate(`/rank/x/${encodeURIComponent(e.id)}`)} />
                 </div>
               ))}
               {sortedExtensions.length === 0 && (

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 
 import { getManualBySlug, manualCategories, manualSnapshotDate } from '../lib/manuals';
-import { navigate } from '../router';
+import { goBack } from '../router';
 import { theme, pageShell } from '../theme';
 import { Badge, BackBar, Chips, MetaChip, SearchBar, SortChip } from '../ui';
 
@@ -33,7 +33,7 @@ export function ManualDetailPage({ slug }: { slug: string }) {
   const [sort, setSort] = useState<CmdSort>('default');
   const [dir, setDir] = useState<Dir>('asc');
 
-  const back = () => navigate('/manuals');
+  const back = () => goBack('/manuals');
 
   const categories = useMemo(() => (manual ? manualCategories(manual) : []), [manual]);
   const commands = useMemo(() => {
