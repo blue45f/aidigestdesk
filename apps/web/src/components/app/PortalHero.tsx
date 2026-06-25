@@ -3,6 +3,7 @@ import { ArrowRight, BadgePercent, Sparkles, Table2 } from 'lucide-react'
 
 import type { AppRoute } from '@/components/app/appRoutes'
 
+import { AnimatedTitle } from '@/components/app/AnimatedTitle'
 import { CountUp } from '@/components/app/Motion'
 
 const stats = getCatalogStats()
@@ -40,7 +41,7 @@ export function PortalHero({ onNavigate }: { onNavigate: (route: AppRoute) => vo
             id="portal-hero-title"
             className="text-[1.75rem] font-bold leading-tight tracking-tight text-text text-balance sm:text-[2.5rem]"
           >
-            오늘의 AI, 한눈에
+            <AnimatedTitle>오늘의 AI, 한눈에</AnimatedTitle>
           </h1>
           <p className="max-w-2xl text-sm leading-6 text-text-muted text-pretty sm:text-base">
             GPT·Claude·Gemini·Grok·Manus의 최신 소식과 분야별 순위를 한국어로 쉽게 정리했어요. 모든

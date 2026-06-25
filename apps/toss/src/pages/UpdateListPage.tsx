@@ -1,6 +1,7 @@
 import { Top } from '@toss/tds-mobile';
 import { useMemo, useState } from 'react';
 
+import { AnimatedTitle } from '../components/AnimatedTitle';
 import { BannerAd } from '../components/BannerAd';
 import { getUpdates, type Update } from '../lib/api';
 import { AD_GROUPS } from '../lib/ads';
@@ -34,7 +35,7 @@ export function UpdateListPage() {
 
   return (
     <div style={{ minHeight: '100dvh', background: theme.bg }}>
-      <Top title={<Top.TitleParagraph size={22}>📰 AI다이제스트</Top.TitleParagraph>}
+      <Top title={<Top.TitleParagraph size={22}>📰 <AnimatedTitle size={22}>AI다이제스트</AnimatedTitle></Top.TitleParagraph>}
         subtitleBottom={<Top.SubtitleParagraph size={15}>주요 AI 모델 업데이트를 한국어로 빠르게</Top.SubtitleParagraph>} />
       <div style={pageShell}>
         <div className="rise" style={{ marginBottom: 12 }}><SearchBar value={q} onChange={setQ} placeholder="모델·키워드 검색" /></div>

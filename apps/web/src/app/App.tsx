@@ -14,6 +14,7 @@ import {
   vibeCodingCommands,
   type ProviderId,
 } from '@aidigestdesk/content'
+import { playTick } from '@aidigestdesk/content/shared'
 import {
   BadgePercent,
   BarChart3,
@@ -74,6 +75,7 @@ import {
   ModelDetail,
 } from '@/components/app/ModelBenchmarkSections'
 import { Reveal } from '@/components/app/Motion'
+import { MusicToggle } from '@/components/app/MusicToggle'
 import { PortalHero } from '@/components/app/PortalHero'
 import {
   Briefing,
@@ -529,6 +531,24 @@ export default function App() {
     }
     window.addEventListener('hashchange', syncHash)
     return () => window.removeEventListener('hashchange', syncHash)
+  }, [])
+
+  // 전역 클릭 효과음 — 모든 인터랙티브 요소에 은은한 틱(리스너 1개로 위임).
+  // 타이틀(.aid-shimmer-title)은 자체 스파클 사운드를 내므로 제외. 토스와 동일한 shared 엔진.
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null
+      if (!target || target.closest('.aid-shimmer-title')) return
+      if (
+        target.closest(
+          'button, a, [role="button"], [role="tab"], label, select, input:not([type="text"]):not([type="email"]):not([type="search"]):not([type="number"])',
+        )
+      ) {
+        playTick()
+      }
+    }
+    document.addEventListener('click', onClick, true)
+    return () => document.removeEventListener('click', onClick, true)
   }, [])
 
   useEffect(() => {
@@ -1007,6 +1027,7 @@ export default function App() {
         </div>
       )}
       <BottomTabBar route={route} onNavigate={navigateToRoute} />
+      <MusicToggle />
     </div>
   )
 }

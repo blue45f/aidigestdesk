@@ -10,12 +10,30 @@ import { SavedPage } from './pages/SavedPage.tsx';
 import { SupportPage } from './pages/SupportPage.tsx';
 import { UpdateDetailPage } from './pages/UpdateDetailPage.tsx';
 import { UpdateListPage } from './pages/UpdateListPage.tsx';
+import { playTick } from '@aidigestdesk/content/shared';
+import { useEffect } from 'react';
+
 import { navigate, usePathname } from './router';
+import { MusicToggle } from './components/MusicToggle.tsx';
 import IntroSplashScreen from './components/IntroSplashScreen.tsx';
 import { TabBar, type TabId } from './ui';
 
 export function App() {
   const path = usePathname();
+
+  // 전역 클릭 효과음 — 모든 인터랙티브 요소에 은은한 틱(리스너 1개로 위임).
+  // 타이틀(.aid-shimmer-title)은 자체 스파클 사운드를 내므로 제외.
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target || target.closest('.aid-shimmer-title')) return;
+      if (target.closest('button, a, [role="button"], [role="tab"], label, select, input:not([type="text"]):not([type="email"]):not([type="search"])')) {
+        playTick();
+      }
+    };
+    document.addEventListener('click', onClick, true);
+    return () => document.removeEventListener('click', onClick, true);
+  }, []);
 
   // 상세 페이지(탭바 없음)
   const updateDetail = path.match(/^\/update\/(.+)$/);
@@ -46,6 +64,7 @@ export function App() {
       <>
         <IntroSplashScreen />
         {detail}
+        <MusicToggle />
       </>
     );
   }
@@ -75,6 +94,7 @@ export function App() {
       {/* 하단 고정 탭바에 가려지지 않도록 여백 확보 */}
       <div aria-hidden style={{ height: 'calc(56px + env(safe-area-inset-bottom))' }} />
       <TabBar active={tab} onPick={(t) => navigate(tabToPath[t])} />
+      <MusicToggle />
     </>
   );
 }

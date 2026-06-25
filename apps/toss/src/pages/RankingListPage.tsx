@@ -13,6 +13,7 @@ import {
   type ExtensionRankEntry,
   type ModelRankEntry,
 } from '../lib/rankings';
+import { AnimatedTitle } from '../components/AnimatedTitle';
 import { BannerAd } from '../components/BannerAd';
 import { AD_GROUPS } from '../lib/ads';
 import { navigate } from '../router';
@@ -180,7 +181,7 @@ export function RankingListPage() {
 
   return (
     <div style={{ minHeight: '100dvh', background: theme.bg }}>
-      <Top title={<Top.TitleParagraph size={22}>🏆 분야별 랭킹</Top.TitleParagraph>}
+      <Top title={<Top.TitleParagraph size={22}>🏆 <AnimatedTitle size={22}>분야별 랭킹</AnimatedTitle></Top.TitleParagraph>}
         subtitleBottom={<Top.SubtitleParagraph size={15}>AI 모델·확장 도구를 분야별로 한눈에</Top.SubtitleParagraph>} />
       <div style={pageShell}>
         <div className="rise" style={{ marginBottom: 16 }}>

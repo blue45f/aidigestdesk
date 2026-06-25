@@ -349,3 +349,25 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* 화려한 타이틀 — 연속 그라데이션 시머 + 글로우(웹·토스 공용 .aid-shimmer-title). 탭=파티클+사운드(AnimatedTitle). */
+@keyframes aidShimmer { 0% { background-position: 0% 50%; } 100% { background-position: 220% 50%; } }
+@keyframes aidGlow {
+  0%, 100% { filter: drop-shadow(0 0 1px rgba(110, 168, 254, 0.2)); }
+  50% { filter: drop-shadow(0 0 9px rgba(110, 168, 254, 0.5)); }
+}
+.aid-shimmer-title {
+  display: inline-block;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background-image: linear-gradient(100deg, #eaf1ff 0%, #6ea8fe 22%, #74d6a3 42%, #f5c842 60%, #eaf1ff 80%, #6ea8fe 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: aidShimmer 3.6s linear infinite, aidGlow 2.4s ease-in-out infinite;
+  transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.aid-shimmer-title:active { transform: scale(0.97); }
