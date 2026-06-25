@@ -22,6 +22,7 @@
     "dev": "tsup --watch",
     "verify:events": "node scripts/verify-events.mjs",
     "snapshot:sources": "pnpm run build && node scripts/snapshot-sources.mjs",
+    "generate:toss-rankings": "pnpm run build && node scripts/generate-toss-rankings.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "clean": "rm -rf dist"

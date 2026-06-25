@@ -1,0 +1,510 @@
+import {
+  agentExtensions,
+  benchmarkEntries,
+  getBenchmarkDomainLabel,
+  getExtensionRankGrade,
+  getProviderLabel,
+  modelProfiles,
+  type AgentExtension,
+  type BenchmarkDomain,
+  type BenchmarkEntry,
+  type ExtensionKind,
+  type ProviderId,
+} from '@aidigestdesk/content'
+import {
+  ArrowRight,
+  ChevronRight,
+  Bot,
+  Code2,
+  Coins,
+  FileText,
+  FlaskConical,
+  Image,
+  Layers,
+  Puzzle,
+  Server,
+  Sparkles,
+  TerminalSquare,
+  Trophy,
+  Workflow,
+  Zap,
+  type LucideIcon,
+} from 'lucide-react'
+import { useMemo, useState } from 'react'
+
+import { BrandMark, Chip, SortChip, type ChipTone, type SortDirection } from '@/components/app/CommonUi'
+
+/* ── 숫자/순위 파서 ─────────────────────────────────────────────── */
+function parseNum(raw: string | undefined): number | null {
+  if (!raw) return null
+  const match = raw.replace(/,/g, '').match(/-?\d+(?:\.\d+)?/)
+  return match ? Number(match[0]) : null
+}
+function parseRank(label: string): number | null {
+  const hash = label.match(/#\s*(\d+(?:\.\d+)?)/)
+  if (hash) return Number(hash[1])
+  const top = label.match(/Top\s*(\d+(?:\.\d+)?)/i)
+  if (top) return Number(top[1])
+  const plain = label.match(/\d+(?:\.\d+)?/)
+  return plain ? Number(plain[0]) : null
+}
+
+/* 벤치마크 모델명 → 상세 프로필 id 매칭(모델명/별칭, 공백·대소문자 무시). */
+const normalizeName = (value: string) => value.toLowerCase().replace(/\s+/g, ' ').trim()
+const profileIdByName = new Map<string, string>()
+for (const profile of modelProfiles) {
+  profileIdByName.set(normalizeName(profile.modelName), profile.id)
+  for (const alias of profile.aliases ?? []) profileIdByName.set(normalizeName(alias), profile.id)
+}
+function resolveProfileId(modelName: string): string | undefined {
+  const direct = profileIdByName.get(normalizeName(modelName))
+  if (direct) return direct
+  // 괄호 변형(예: "GPT-5.5 (xhigh)") → 괄호 제거 후 재시도
+  const stripped = normalizeName(modelName.replace(/\s*\([^)]*\)\s*/g, ' '))
+  return profileIdByName.get(stripped)
+}
+
+/* ── 분야(도메인) 카테고리 ──────────────────────────────────────── */
+const modelDomains: Array<{ id: BenchmarkDomain; label: string; icon: LucideIcon }> = [
+  { id: 'overall', label: '종합', icon: Trophy },
+  { id: 'coding', label: '코딩', icon: Code2 },
+  { id: 'ppt', label: 'PPT·문서', icon: FileText },
+  { id: 'research', label: '리서치', icon: FlaskConical },
+  { id: 'multimodal', label: '멀티모달', icon: Image },
+  { id: 'agent', label: '에이전트', icon: Bot },
+  { id: 'cost', label: '가성비', icon: Coins },
+]
+
+/* ── 확장 종류 카테고리 ─────────────────────────────────────────── */
+const extensionKinds: Array<{ id: ExtensionKind | 'all'; label: string; icon: LucideIcon }> = [
+  { id: 'all', label: '전체', icon: Layers },
+  { id: '스킬', label: '스킬', icon: Sparkles },
+  { id: '훅', label: '훅', icon: Zap },
+  { id: '플러그인', label: '플러그인', icon: Puzzle },
+  { id: 'MCP 서버', label: 'MCP', icon: Server },
+  { id: '슬래시 명령', label: '슬래시', icon: TerminalSquare },
+  { id: '서브에이전트', label: '서브에이전트', icon: Bot },
+  { id: '워크플로우', label: '워크플로우', icon: Workflow },
+]
+
+type Scope = 'models' | 'extensions'
+type ModelSort = 'rank' | 'score' | 'price' | 'speed'
+type ExtensionSort = 'rank' | 'name'
+
+const modelSortChips: Array<{ id: ModelSort; label: string }> = [
+  { id: 'rank', label: '순위' },
+  { id: 'score', label: '점수' },
+  { id: 'price', label: '가격' },
+  { id: 'speed', label: '속도' },
+]
+const extensionSortChips: Array<{ id: ExtensionSort; label: string }> = [
+  { id: 'rank', label: '추천순위' },
+  { id: 'name', label: '이름' },
+]
+
+const gradeTones: Record<string, ChipTone> = {
+  S: 'accent',
+  A: 'blue',
+  B: 'amber',
+  C: 'neutral',
+  미분류: 'neutral',
+}
+
+/* 메달: 1·2·3위 시각 신호. 색만으로 전달하지 않도록 숫자를 항상 병기한다. */
+function RankBadge({ position }: { position: number }) {
+  const medal =
+    position === 1
+      ? 'border-amber-400/50 bg-amber-400/15 text-amber-600 dark:text-amber-300'
+      : position === 2
+        ? 'border-slate-400/50 bg-slate-400/15 text-slate-600 dark:text-slate-300'
+        : position === 3
+          ? 'border-orange-400/50 bg-orange-400/15 text-orange-600 dark:text-orange-300'
+          : 'border-border bg-bg text-text-subtle'
+  return (
+    <span
+      className={`grid size-8 shrink-0 place-items-center rounded-full border text-sm font-bold tabular-nums ${medal}`}
+      aria-hidden
+    >
+      {position}
+    </span>
+  )
+}
+
+function ModelRow({
+  entry,
+  position,
+  onOpen,
+}: {
+  entry: BenchmarkEntry
+  position: number
+  onOpen?: () => void
+}) {
+  const provider =
+    entry.providerId === 'other'
+      ? '기타'
+      : (getProviderLabel(entry.providerId) ?? entry.providerId)
+  const score = parseNum(entry.score)
+  // ≈(추정) 접두는 보존, 숫자엔 천단위 구분
+  const isEstimate = entry.score.trim().startsWith('≈')
+  const scoreDisplay = score != null ? (isEstimate ? '≈' : '') + score.toLocaleString('ko-KR') : entry.score
+  // 단위가 맞는 값만 칩으로 — 일부 데이터의 price/speed 필드엔 설명 문구가 들어있어 거른다.
+  const showPrice = Boolean(entry.price) && /[$₩]|원|무료|free|\/\s*1m/i.test(entry.price)
+  const showSpeed = Boolean(entry.speed) && /tok|\/s|초당|ms/i.test(entry.speed)
+  // 컨텍스트 윈도우 형식(1M, 922k, 128K, 토큰)만 — 일부 데이터엔 설명 문구가 들어있다.
+  const showContext =
+    Boolean(entry.context) && /^[\d.,]+\s*[kKmM]?\s*(토큰|tokens?)?$/.test(entry.context.trim())
+  const metaChips = [
+    showPrice ? { label: '가격', value: entry.price } : null,
+    showSpeed ? { label: '속도', value: entry.speed } : null,
+    showContext ? { label: '컨텍스트', value: entry.context } : null,
+  ].filter((value): value is { label: string; value: string } => value !== null)
+
+  const inner = (
+    <>
+      <RankBadge position={position} />
+      {entry.providerId !== 'other' ? (
+        <BrandMark providerId={entry.providerId as ProviderId} label={entry.modelName} size="sm" />
+      ) : null}
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-semibold text-text">{entry.modelName}</p>
+        <p className="mt-0.5 truncate text-xs text-text-subtle">
+          {provider} · {entry.metric}
+        </p>
+        {metaChips.length ? (
+          <div className="mt-1.5 flex flex-wrap gap-1">
+            {metaChips.map((chip) => (
+              <span
+                key={chip.label}
+                className="rounded-md border border-border bg-bg px-1.5 py-0.5 text-[0.6875rem] text-text-muted"
+              >
+                <span className="text-text-subtle">{chip.label}</span>{' '}
+                <span className="font-semibold">{chip.value}</span>
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </div>
+      <div className="shrink-0 text-right">
+        <p className="text-base font-bold tabular-nums text-text">{scoreDisplay}</p>
+        <p className="text-[0.6875rem] text-text-subtle">점수</p>
+      </div>
+      {onOpen ? <ChevronRight className="size-4 shrink-0 text-text-subtle" aria-hidden /> : null}
+    </>
+  )
+
+  return (
+    <li>
+      {onOpen ? (
+        <button
+          type="button"
+          onClick={onOpen}
+          aria-label={`${entry.modelName} 상세 보기`}
+          className="flex w-full items-center gap-3 rounded-xl border border-border bg-surface px-3 py-3 text-left transition-colors hover:border-border-strong"
+        >
+          {inner}
+        </button>
+      ) : (
+        <div className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-3 transition-colors hover:border-border-strong">
+          {inner}
+        </div>
+      )}
+    </li>
+  )
+}
+
+function ExtensionRow({
+  entry,
+  position,
+  onOpen,
+}: {
+  entry: AgentExtension
+  position: number
+  onOpen?: () => void
+}) {
+  const grade = getExtensionRankGrade(entry)
+  const inner = (
+    <>
+      <RankBadge position={position} />
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+          <p className="truncate text-sm font-semibold text-text">{entry.name}</p>
+          <span className="rounded border border-border bg-bg px-1.5 py-px text-[0.625rem] font-medium text-text-subtle">
+            {entry.kind}
+          </span>
+        </div>
+        <p className="mt-0.5 truncate text-xs text-text-subtle">
+          {entry.platform} · {entry.summary}
+        </p>
+      </div>
+      <Chip tone={gradeTones[grade]}>{grade}등급</Chip>
+      {onOpen ? <ChevronRight className="size-4 shrink-0 text-text-subtle" aria-hidden /> : null}
+    </>
+  )
+
+  return (
+    <li>
+      {onOpen ? (
+        <button
+          type="button"
+          onClick={onOpen}
+          aria-label={`${entry.name} 상세 보기`}
+          className="flex w-full items-center gap-3 rounded-xl border border-border bg-surface px-3 py-3 text-left transition-colors hover:border-border-strong"
+        >
+          {inner}
+        </button>
+      ) : (
+        <div className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-3 transition-colors hover:border-border-strong">
+          {inner}
+        </div>
+      )}
+    </li>
+  )
+}
+
+/**
+ * 분야별 AI 랭킹 — "원하는 분야를 고르면 1위부터" 라는 한 문장으로 이해되는 보드.
+ * AI 모델(분야별)과 확장 도구(스킬·훅·플러그인 등) 두 갈래를 토글하고,
+ * 정렬 칩으로 항목별 오름/내림을 바꾼다. 모바일 우선 카드 리스트.
+ */
+export function RankingBoard({
+  id,
+  limit,
+  onSeeAll,
+  onSelectModel,
+  onSelectExtension,
+  defaultScope = 'models',
+}: {
+  id?: string
+  limit?: number
+  onSeeAll?: (scope: Scope) => void
+  /** 모델 행 클릭 → 상세(프로필 매칭 시에만 활성). */
+  onSelectModel?: (profileId: string) => void
+  /** 확장 행 클릭 → 상세/목록. */
+  onSelectExtension?: (extensionId: string) => void
+  defaultScope?: Scope
+}) {
+  const [scope, setScope] = useState<Scope>(defaultScope)
+  const [domain, setDomain] = useState<BenchmarkDomain>('overall')
+  const [kind, setKind] = useState<ExtensionKind | 'all'>('all')
+  const [modelSort, setModelSort] = useState<ModelSort>('rank')
+  const [modelDir, setModelDir] = useState<SortDirection>('asc')
+  const [extSort, setExtSort] = useState<ExtensionSort>('rank')
+  const [extDir, setExtDir] = useState<SortDirection>('asc')
+
+  const rankedModels = useMemo(() => {
+    const dirMul = modelDir === 'asc' ? 1 : -1
+    return benchmarkEntries
+      // reference(벤치마크 카탈로그) 행은 랭킹에서 제외, leaderboard 행만
+      .filter((entry) => entry.domain === domain && entry.tier !== 'reference')
+      .toSorted((a, b) => {
+        switch (modelSort) {
+          case 'score': {
+            const sa = parseNum(a.score) ?? -Infinity
+            const sb = parseNum(b.score) ?? -Infinity
+            return (sa - sb) * dirMul
+          }
+          case 'price': {
+            const pa = parseNum(a.price) ?? Infinity
+            const pb = parseNum(b.price) ?? Infinity
+            return (pa - pb) * dirMul
+          }
+          case 'speed': {
+            const va = parseNum(a.speed) ?? -Infinity
+            const vb = parseNum(b.speed) ?? -Infinity
+            return (va - vb) * dirMul
+          }
+          case 'rank':
+          default: {
+            const ra = parseRank(a.rankLabel) ?? 999
+            const rb = parseRank(b.rankLabel) ?? 999
+            if (ra !== rb) return (ra - rb) * dirMul
+            const sa = parseNum(a.score) ?? -Infinity
+            const sb = parseNum(b.score) ?? -Infinity
+            return (sb - sa) * dirMul
+          }
+        }
+      })
+  }, [domain, modelSort, modelDir])
+
+  const rankedExtensions = useMemo(() => {
+    const dirMul = extDir === 'asc' ? 1 : -1
+    return agentExtensions
+      .filter((entry) => typeof entry.rank === 'number' && (kind === 'all' || entry.kind === kind))
+      .toSorted((a, b) => {
+        if (extSort === 'name') return a.name.localeCompare(b.name) * dirMul
+        return ((a.rank ?? 999) - (b.rank ?? 999)) * dirMul
+      })
+  }, [kind, extSort, extDir])
+
+  const visibleModels = limit ? rankedModels.slice(0, limit) : rankedModels
+  const visibleExtensions = limit ? rankedExtensions.slice(0, limit) : rankedExtensions
+  const totalCount = scope === 'models' ? rankedModels.length : rankedExtensions.length
+  const shownCount = scope === 'models' ? visibleModels.length : visibleExtensions.length
+
+  const toggleModelSort = (next: ModelSort) => {
+    if (modelSort === next) setModelDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    else {
+      setModelSort(next)
+      setModelDir(next === 'rank' || next === 'price' ? 'asc' : 'desc')
+    }
+  }
+  const toggleExtSort = (next: ExtensionSort) => {
+    if (extSort === next) setExtDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    else {
+      setExtSort(next)
+      setExtDir('asc')
+    }
+  }
+
+  const scopeButton = (value: Scope, icon: LucideIcon, label: string) => {
+    const Icon = icon
+    const active = scope === value
+    return (
+      <button
+        type="button"
+        onClick={() => setScope(value)}
+        aria-pressed={active}
+        className={
+          active
+            ? 'flex flex-1 items-center justify-center gap-2 rounded-lg border border-ink bg-ink px-3 py-2.5 text-sm font-semibold text-ink-fg'
+            : 'flex flex-1 items-center justify-center gap-2 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
+        }
+      >
+        <Icon className="size-4" aria-hidden />
+        {label}
+      </button>
+    )
+  }
+
+  return (
+    <section
+      id={id}
+      className="scroll-mt-32 space-y-4 rounded-2xl border border-border bg-surface/60 p-4 sm:p-5"
+    >
+      <header className="space-y-1">
+        <h2 className="flex items-center gap-2 text-lg font-bold text-text">
+          <Trophy className="size-5 text-accent" aria-hidden />
+          분야별 AI 랭킹
+        </h2>
+        <p className="text-sm text-text-muted">
+          원하는 분야를 고르면 1위부터 보여드려요. 정렬 버튼으로 기준을 바꿀 수 있어요.
+        </p>
+      </header>
+
+      {/* 갈래 토글 */}
+      <div className="flex gap-2">
+        {scopeButton('models', Sparkles, 'AI 모델')}
+        {scopeButton('extensions', Puzzle, '확장 도구')}
+      </div>
+
+      {/* 카테고리 칩 */}
+      <div className="touch-scroll -mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1">
+        {scope === 'models'
+          ? modelDomains.map((item) => {
+              const Icon = item.icon
+              const active = domain === item.id
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setDomain(item.id)}
+                  aria-pressed={active}
+                  className={
+                    active
+                      ? 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border border-accent bg-accent/12 px-3 py-1.5 text-xs font-semibold text-accent'
+                      : 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
+                  }
+                >
+                  <Icon className="size-3.5" aria-hidden />
+                  {item.label}
+                </button>
+              )
+            })
+          : extensionKinds.map((item) => {
+              const Icon = item.icon
+              const active = kind === item.id
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setKind(item.id)}
+                  aria-pressed={active}
+                  className={
+                    active
+                      ? 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border border-accent bg-accent/12 px-3 py-1.5 text-xs font-semibold text-accent'
+                      : 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
+                  }
+                >
+                  <Icon className="size-3.5" aria-hidden />
+                  {item.label}
+                </button>
+              )
+            })}
+      </div>
+
+      {/* 정렬 칩 — 항목별 오름/내림 */}
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+        <span className="text-xs font-semibold text-text-subtle">정렬</span>
+        {scope === 'models'
+          ? modelSortChips.map((chip) => (
+              <SortChip
+                key={chip.id}
+                label={chip.label}
+                active={modelSort === chip.id}
+                direction={modelDir}
+                onToggle={() => toggleModelSort(chip.id)}
+              />
+            ))
+          : extensionSortChips.map((chip) => (
+              <SortChip
+                key={chip.id}
+                label={chip.label}
+                active={extSort === chip.id}
+                direction={extDir}
+                onToggle={() => toggleExtSort(chip.id)}
+              />
+            ))}
+      </div>
+
+      {/* 랭킹 리스트 */}
+      <ol className="space-y-2">
+        {scope === 'models'
+          ? visibleModels.map((entry, index) => {
+              const profileId = onSelectModel ? resolveProfileId(entry.modelName) : undefined
+              return (
+                <ModelRow
+                  key={entry.id}
+                  entry={entry}
+                  position={index + 1}
+                  onOpen={profileId ? () => onSelectModel?.(profileId) : undefined}
+                />
+              )
+            })
+          : visibleExtensions.map((entry, index) => (
+              <ExtensionRow
+                key={entry.id}
+                entry={entry}
+                position={index + 1}
+                onOpen={onSelectExtension ? () => onSelectExtension(entry.id) : undefined}
+              />
+            ))}
+      </ol>
+
+      {(onSeeAll && totalCount > shownCount) || (limit && totalCount > shownCount) ? (
+        <button
+          type="button"
+          onClick={() => onSeeAll?.(scope)}
+          className="group inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-surface py-2.5 text-sm font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
+        >
+          {scope === 'models'
+            ? `${getBenchmarkDomainLabel(domain)} 분야 전체 ${totalCount}개 보기`
+            : `전체 ${totalCount}개 보기`}
+          <ArrowRight
+            className="size-4 transition-transform duration-200 ease-[var(--ease-out-quart)] group-hover:translate-x-0.5"
+            aria-hidden
+          />
+        </button>
+      ) : null}
+    </section>
+  )
+}

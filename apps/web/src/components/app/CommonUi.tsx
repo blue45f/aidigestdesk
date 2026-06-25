@@ -4,10 +4,95 @@ import {
   type ProviderId,
   type SourceKind,
 } from '@aidigestdesk/content'
-import { CheckCircle2, Play, Sparkles, X } from 'lucide-react'
+import { ArrowDown, ArrowUp, ArrowUpDown, CheckCircle2, Play, Sparkles, X } from 'lucide-react'
 import { useState } from 'react'
 
 import type { ComponentType, ReactNode } from 'react'
+
+export type SortDirection = 'asc' | 'desc'
+
+/**
+ * 도표/리스트 헤더용 정렬 토글 버튼. 같은 컬럼을 다시 누르면 방향이 뒤집힌다.
+ * 비활성: 양방향 화살표(흐림) · 활성: 현재 방향 화살표(강조).
+ * 모든 정렬 가능한 컬럼에서 동일하게 쓰여 "이 열은 정렬된다"는 어휘를 통일한다.
+ */
+export function SortButton({
+  label,
+  active,
+  direction,
+  onToggle,
+  align = 'left',
+  className,
+}: {
+  label: ReactNode
+  active: boolean
+  direction: SortDirection
+  onToggle: () => void
+  align?: 'left' | 'right' | 'center'
+  className?: string
+}) {
+  const Icon = !active ? ArrowUpDown : direction === 'asc' ? ArrowUp : ArrowDown
+  const justify =
+    align === 'right' ? 'justify-end' : align === 'center' ? 'justify-center' : 'justify-start'
+  const directionLabel = active
+    ? direction === 'asc'
+      ? ', 현재 오름차순 — 누르면 내림차순'
+      : ', 현재 내림차순 — 누르면 오름차순'
+    : ', 누르면 정렬'
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-pressed={active}
+      aria-label={`${typeof label === 'string' ? label : '항목'} 기준 정렬${directionLabel}`}
+      className={`group inline-flex items-center gap-1 ${justify} rounded-md px-1.5 py-1 text-xs font-semibold transition-colors ${
+        active ? 'text-accent' : 'text-text-subtle hover:text-text'
+      } ${className ?? ''}`}
+    >
+      <span className="truncate">{label}</span>
+      <Icon
+        className={`size-3.5 shrink-0 transition-opacity ${active ? 'opacity-100' : 'opacity-40 group-hover:opacity-70'}`}
+        aria-hidden
+      />
+    </button>
+  )
+}
+
+/**
+ * 카드 리스트(모바일 우선) 위에 두는 정렬 칩. 표가 아닌 곳에서 컬럼 정렬 어휘를
+ * 그대로 제공한다. 활성 칩은 채워지고 방향 화살표를 단다.
+ */
+export function SortChip({
+  label,
+  active,
+  direction,
+  onToggle,
+}: {
+  label: ReactNode
+  active: boolean
+  direction: SortDirection
+  onToggle: () => void
+}) {
+  const Icon = !active ? ArrowUpDown : direction === 'asc' ? ArrowUp : ArrowDown
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-pressed={active}
+      aria-label={`${typeof label === 'string' ? label : '항목'} 기준 정렬${
+        active ? (direction === 'asc' ? ', 현재 오름차순' : ', 현재 내림차순') : ''
+      }`}
+      className={
+        active
+          ? 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1 rounded-full border border-accent bg-accent/12 px-3 py-1.5 text-xs font-semibold text-accent'
+          : 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
+      }
+    >
+      {label}
+      <Icon className="size-3.5" aria-hidden />
+    </button>
+  )
+}
 
 export function IconButton({
   label,

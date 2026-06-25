@@ -20,6 +20,7 @@ import {
   type SourceKind,
 } from '@aidigestdesk/content'
 import {
+  ArrowRight,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
@@ -35,6 +36,7 @@ import {
 import { useMemo, useState } from 'react'
 
 import {
+  BrandMark,
   EmptyState,
   MetadataChips,
   MultiSegmentBar,
@@ -324,9 +326,14 @@ function splitSortValue<Mode extends string, Direction extends string>(
 export function Briefing({
   results,
   useFallback,
+  compact = false,
+  onSeeAll,
 }: {
   results: SearchResults
   useFallback: boolean
+  /** 홈에서 쓰는 간결 모드 — 필터/소스워치/통계 없이 최신 소식만 보여준다. */
+  compact?: boolean
+  onSeeAll?: () => void
 }) {
   const [briefingQuery, setBriefingQuery] = useState('')
   const [briefingProviderFilter, setBriefingProviderFilter] =
@@ -401,6 +408,68 @@ export function Briefing({
   ])
   const visibleBriefingUpdates =
     briefingLimit === 0 ? filteredBriefingUpdates : filteredBriefingUpdates.slice(0, briefingLimit)
+
+  if (compact) {
+    const latest = [...briefingSourceData]
+      .toSorted((left, right) => right.date.localeCompare(left.date))
+      .slice(0, 5)
+    return (
+      <section
+        id="updates"
+        className="scroll-mt-32 space-y-3 rounded-2xl border border-border bg-surface/60 p-4 sm:p-5"
+      >
+        <header className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="flex items-center gap-2 text-lg font-bold text-text">
+              <Newspaper className="size-5 text-accent" aria-hidden />
+              오늘의 AI 소식
+            </h2>
+            <p className="mt-0.5 text-sm text-text-muted">
+              주요 제공사의 최신 업데이트를 최신순으로 정리했어요.
+            </p>
+          </div>
+          {onSeeAll ? (
+            <button
+              type="button"
+              onClick={onSeeAll}
+              className="group inline-flex items-center gap-1 text-sm font-semibold text-accent transition hover:text-accent/80"
+            >
+              전체 보기
+              <ArrowRight
+                className="size-4 transition-transform duration-200 ease-[var(--ease-out-quart)] group-hover:translate-x-0.5"
+                aria-hidden
+              />
+            </button>
+          ) : null}
+        </header>
+        <ul className="space-y-2">
+          {latest.map((item) => (
+            <li key={item.id}>
+              <div className="flex items-start gap-3 rounded-xl border border-border bg-surface px-3 py-3 transition-colors hover:border-border-strong">
+                <BrandMark
+                  providerId={item.providerId === 'market' ? undefined : item.providerId}
+                  label={item.title}
+                  size="sm"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="flex items-center gap-1.5 text-xs font-semibold text-text-subtle">
+                    <span className="text-accent">{getProviderLabel(item.providerId)}</span>
+                    <span aria-hidden>·</span>
+                    <span className="tabular-nums">{item.date}</span>
+                  </p>
+                  <p className="mt-1 text-sm font-semibold leading-snug text-text">{item.title}</p>
+                  <p className="mt-1 line-clamp-2 text-xs leading-5 text-text-muted">
+                    {item.summary}
+                  </p>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
   return (
     <section id="updates" className="grid items-start gap-4 xl:grid-cols-[1fr_21rem]">
       <div className="rounded-lg border border-border bg-surface p-5">

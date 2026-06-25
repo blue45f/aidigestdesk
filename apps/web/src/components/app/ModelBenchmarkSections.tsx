@@ -1146,6 +1146,8 @@ export function BenchmarkBoard() {
             .trim()
 
           return (
+            // reference(벤치마크 카탈로그) 행 제외 — 점수 비교 표에는 leaderboard만
+            entry.tier !== 'reference' &&
             (domains.length === 0 || domains.includes(entry.domain)) &&
             (providers.length === 0 || providers.includes(entry.providerId)) &&
             (sourceKinds.length === 0 ||

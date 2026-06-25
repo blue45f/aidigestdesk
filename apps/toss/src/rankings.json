@@ -1,0 +1,2852 @@
+{
+  "snapshotDate": "2026-06-18",
+  "modelDomains": [
+    {
+      "id": "overall",
+      "label": "종합",
+      "entries": [
+        {
+          "id": "bm-overall-1",
+          "name": "Claude Fable 5",
+          "provider": "Anthropic",
+          "metric": "AA 지능 지수",
+          "score": 60,
+          "scoreLabel": "60",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-overall-2",
+          "name": "Claude Opus 4.8 (max)",
+          "provider": "Anthropic",
+          "metric": "AA 지능 지수",
+          "score": 55.7,
+          "scoreLabel": "55.7",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-overall-3",
+          "name": "GPT-5.5 (xhigh)",
+          "provider": "OpenAI",
+          "metric": "AA 지능 지수",
+          "score": 54.8,
+          "scoreLabel": "54.8",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-overall-4",
+          "name": "GLM-5.2 (max)",
+          "provider": "Z.ai / Zhipu AI",
+          "metric": "AA 지능 지수",
+          "score": 51.1,
+          "scoreLabel": "51.1",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-overall-5",
+          "name": "Gemini 3.5 Flash",
+          "provider": "Google",
+          "metric": "AA 지능 지수",
+          "score": 50.2,
+          "scoreLabel": "50.2",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-overall-6",
+          "name": "Gemini 3.1 Pro Preview",
+          "provider": "Google",
+          "metric": "AA 지능 지수",
+          "score": 46.5,
+          "scoreLabel": "46.5",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-overall-7",
+          "name": "DeepSeek V4 Pro (Max)",
+          "provider": "DeepSeek",
+          "metric": "AA 지능 지수",
+          "score": 44.3,
+          "scoreLabel": "44.3",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-overall-8",
+          "name": "Kimi K2.7 Code",
+          "provider": "Moonshot AI",
+          "metric": "AA 지능 지수",
+          "score": 42,
+          "scoreLabel": "42",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-overall-9",
+          "name": "GLM-5.1",
+          "provider": "Z.ai / Zhipu AI",
+          "metric": "AA 지능 지수",
+          "score": 40.2,
+          "scoreLabel": "40.2",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-overall-10",
+          "name": "Grok 4.3",
+          "provider": "xAI",
+          "metric": "AA 지능 지수",
+          "score": 37.6,
+          "scoreLabel": "37.6",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-overall-11",
+          "name": "Mistral Medium 3.5",
+          "provider": "Mistral AI",
+          "metric": "AA 지능 지수",
+          "score": 29.9,
+          "scoreLabel": "29.9",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-overall-12",
+          "name": "Llama 4 Maverick",
+          "provider": "Meta",
+          "metric": "AA 지능 지수",
+          "score": 14.3,
+          "scoreLabel": "14.3",
+          "price": null,
+          "speed": null,
+          "context": null
+        }
+      ]
+    },
+    {
+      "id": "coding",
+      "label": "코딩",
+      "entries": [
+        {
+          "id": "bm-coding-1",
+          "name": "Claude Fable 5",
+          "provider": "Anthropic",
+          "metric": "SWE-bench Verified",
+          "score": 95,
+          "scoreLabel": "95",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-coding-2",
+          "name": "GPT-5.5",
+          "provider": "OpenAI",
+          "metric": "SWE-bench Verified",
+          "score": 88.7,
+          "scoreLabel": "88.7",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-coding-3",
+          "name": "Claude Opus 4.8 (max)",
+          "provider": "Anthropic",
+          "metric": "SWE-bench Verified",
+          "score": 88.6,
+          "scoreLabel": "88.6",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-coding-4",
+          "name": "DeepSeek V4 Pro (Max)",
+          "provider": "DeepSeek",
+          "metric": "SWE-bench Verified",
+          "score": 80.6,
+          "scoreLabel": "80.6",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-coding-5",
+          "name": "Gemini 3.1 Pro Preview",
+          "provider": "Google",
+          "metric": "SWE-bench Verified",
+          "score": 80.6,
+          "scoreLabel": "80.6",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-coding-6",
+          "name": "Kimi K2.7 Code",
+          "provider": "Moonshot AI",
+          "metric": "SWE-bench Verified",
+          "score": 80.2,
+          "scoreLabel": "≈80.2",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-coding-7",
+          "name": "DeepSeek V4 Flash",
+          "provider": "DeepSeek",
+          "metric": "SWE-bench Verified",
+          "score": 79,
+          "scoreLabel": "79",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-coding-8",
+          "name": "Mistral Medium 3.5",
+          "provider": "Mistral AI",
+          "metric": "SWE-bench Verified",
+          "score": 77.6,
+          "scoreLabel": "77.6",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-coding-9",
+          "name": "Grok 4.3",
+          "provider": "xAI",
+          "metric": "SWE-bench Verified",
+          "score": 76,
+          "scoreLabel": "≈76",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-coding-10",
+          "name": "GLM-5.2",
+          "provider": "Z.ai / Zhipu AI",
+          "metric": "SWE-bench Verified",
+          "score": 75,
+          "scoreLabel": "≈75",
+          "price": null,
+          "speed": null,
+          "context": null
+        }
+      ]
+    },
+    {
+      "id": "ppt",
+      "label": "PPT/문서",
+      "entries": [
+        {
+          "id": "bm-ppt-1",
+          "name": "Claude Fable 5",
+          "provider": "Anthropic",
+          "metric": "GDPval-AA v2 (Elo)",
+          "score": 1769,
+          "scoreLabel": "1769",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-ppt-2",
+          "name": "Claude Opus 4.8 (max)",
+          "provider": "Anthropic",
+          "metric": "GDPval-AA v2 (Elo)",
+          "score": 1604,
+          "scoreLabel": "1604",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-ppt-3",
+          "name": "GLM-5.2",
+          "provider": "Z.ai / Zhipu AI",
+          "metric": "GDPval-AA v2 (Elo)",
+          "score": 1518,
+          "scoreLabel": "1518",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-ppt-4",
+          "name": "GPT-5.5",
+          "provider": "OpenAI",
+          "metric": "GDPval-AA v2 (Elo)",
+          "score": 1494,
+          "scoreLabel": "1494",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-ppt-5",
+          "name": "Gemini 3.5 Flash",
+          "provider": "Google",
+          "metric": "GDPval-AA v2 (Elo)",
+          "score": 1350,
+          "scoreLabel": "1350",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-ppt-6",
+          "name": "Qwen3-2507",
+          "provider": "Alibaba Qwen",
+          "metric": "GDPval-AA v2 (Elo)",
+          "score": 1284,
+          "scoreLabel": "≈1284",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-ppt-7",
+          "name": "DeepSeek V4 Flash",
+          "provider": "DeepSeek",
+          "metric": "GDPval-AA v2 (Elo)",
+          "score": 1187,
+          "scoreLabel": "≈1187",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-ppt-8",
+          "name": "Grok 4.3",
+          "provider": "xAI",
+          "metric": "GDPval-AA v2 (Elo)",
+          "score": 1090,
+          "scoreLabel": "1090",
+          "price": null,
+          "speed": null,
+          "context": null
+        }
+      ]
+    },
+    {
+      "id": "research",
+      "label": "리서치",
+      "entries": [
+        {
+          "id": "bm-research-1",
+          "name": "Gemini 3.1 Pro Preview",
+          "provider": "Google",
+          "metric": "GPQA Diamond",
+          "score": 94.3,
+          "scoreLabel": "94.3",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-research-2",
+          "name": "Claude Opus 4.7 (Adaptive)",
+          "provider": "Anthropic",
+          "metric": "GPQA Diamond",
+          "score": 94.2,
+          "scoreLabel": "94.2",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-research-3",
+          "name": "Claude Opus 4.8 (max)",
+          "provider": "Anthropic",
+          "metric": "GPQA Diamond",
+          "score": 93.6,
+          "scoreLabel": "93.6",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-research-4",
+          "name": "GPT-5.5",
+          "provider": "OpenAI",
+          "metric": "GPQA Diamond",
+          "score": 93.6,
+          "scoreLabel": "93.6",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-research-5",
+          "name": "Gemini 3.5 Flash",
+          "provider": "Google",
+          "metric": "GPQA Diamond",
+          "score": 92.7,
+          "scoreLabel": "≈92.7",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-research-6",
+          "name": "Qwen3.7 Max",
+          "provider": "Alibaba Qwen",
+          "metric": "GPQA Diamond",
+          "score": 92.4,
+          "scoreLabel": "92.4",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-research-7",
+          "name": "Kimi K2.6",
+          "provider": "Moonshot AI",
+          "metric": "GPQA Diamond",
+          "score": 90.5,
+          "scoreLabel": "90.5",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-research-8",
+          "name": "DeepSeek V4 Pro (Max)",
+          "provider": "DeepSeek",
+          "metric": "GPQA Diamond",
+          "score": 90.1,
+          "scoreLabel": "90.1",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-research-9",
+          "name": "Grok 4.3",
+          "provider": "xAI",
+          "metric": "GPQA Diamond",
+          "score": 90.1,
+          "scoreLabel": "90.1",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-research-10",
+          "name": "GLM-5.2",
+          "provider": "Z.ai / Zhipu AI",
+          "metric": "GPQA Diamond",
+          "score": 89,
+          "scoreLabel": "≈89",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-research-11",
+          "name": "GLM-5.1",
+          "provider": "Z.ai / Zhipu AI",
+          "metric": "GPQA Diamond",
+          "score": 86.2,
+          "scoreLabel": "86.2",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-research-12",
+          "name": "Gemma 4 12B",
+          "provider": "Google",
+          "metric": "GPQA Diamond",
+          "score": 78.8,
+          "scoreLabel": "78.8",
+          "price": null,
+          "speed": null,
+          "context": null
+        }
+      ]
+    },
+    {
+      "id": "multimodal",
+      "label": "멀티모달",
+      "entries": [
+        {
+          "id": "bm-multimodal-1",
+          "name": "Gemini 3.5 Flash",
+          "provider": "Google",
+          "metric": "MMMU-Pro",
+          "score": 84.3,
+          "scoreLabel": "84.3",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-multimodal-2",
+          "name": "Gemini 3.1 Pro Preview",
+          "provider": "Google",
+          "metric": "MMMU-Pro",
+          "score": 82.4,
+          "scoreLabel": "82.4",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-multimodal-3",
+          "name": "Kimi K2.7 Code",
+          "provider": "Moonshot AI",
+          "metric": "MMMU-Pro",
+          "score": 80.1,
+          "scoreLabel": "≈80.1",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-multimodal-4",
+          "name": "GPT-5.5",
+          "provider": "OpenAI",
+          "metric": "MMMU-Pro",
+          "score": 79.9,
+          "scoreLabel": "79.9",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-multimodal-5",
+          "name": "Grok 4.3",
+          "provider": "xAI",
+          "metric": "MMMU-Pro",
+          "score": 78.1,
+          "scoreLabel": "78.1",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-multimodal-6",
+          "name": "Qwen3-2507",
+          "provider": "Alibaba Qwen",
+          "metric": "MMMU-Pro",
+          "score": 77.3,
+          "scoreLabel": "≈77.3",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-multimodal-7",
+          "name": "Gemma 4",
+          "provider": "Google",
+          "metric": "MMMU-Pro",
+          "score": 73.4,
+          "scoreLabel": "73.4",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-multimodal-8",
+          "name": "GLM-5.2",
+          "provider": "Z.ai / Zhipu AI",
+          "metric": "MMMU-Pro",
+          "score": 72.8,
+          "scoreLabel": "≈72.8",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-multimodal-9",
+          "name": "Mistral Medium 3.5",
+          "provider": "Mistral AI",
+          "metric": "MMMU-Pro",
+          "score": 64.9,
+          "scoreLabel": "64.9",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-multimodal-10",
+          "name": "Llama 4 Maverick",
+          "provider": "Meta",
+          "metric": "MMMU-Pro",
+          "score": 62.1,
+          "scoreLabel": "62.1",
+          "price": null,
+          "speed": null,
+          "context": null
+        }
+      ]
+    },
+    {
+      "id": "agent",
+      "label": "에이전트",
+      "entries": [
+        {
+          "id": "bm-agent-1",
+          "name": "Claude Fable 5",
+          "provider": "Anthropic",
+          "metric": "Terminal-Bench Hard",
+          "score": 62.9,
+          "scoreLabel": "62.9",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-agent-2",
+          "name": "GPT-5.5 (xhigh)",
+          "provider": "OpenAI",
+          "metric": "Terminal-Bench Hard",
+          "score": 60.6,
+          "scoreLabel": "60.6",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-agent-3",
+          "name": "Gemini 3.1 Pro Preview",
+          "provider": "Google",
+          "metric": "Terminal-Bench Hard",
+          "score": 54,
+          "scoreLabel": "54",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-agent-4",
+          "name": "GLM-5.2",
+          "provider": "Z.ai / Zhipu AI",
+          "metric": "Terminal-Bench Hard",
+          "score": 50.8,
+          "scoreLabel": "50.8",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-agent-5",
+          "name": "DeepSeek V4 (Reasoning)",
+          "provider": "DeepSeek",
+          "metric": "Terminal-Bench Hard",
+          "score": 46.2,
+          "scoreLabel": "46.2",
+          "price": null,
+          "speed": null,
+          "context": null
+        },
+        {
+          "id": "bm-agent-6",
+          "name": "Kimi K2.7 Code",
+          "provider": "Moonshot AI",
+          "metric": "Terminal-Bench Hard",
+          "score": 44.7,
+          "scoreLabel": "44.7",
+          "price": null,
+          "speed": null,
+          "context": null
+        }
+      ]
+    },
+    {
+      "id": "cost",
+      "label": "비용",
+      "entries": [
+        {
+          "id": "bm-cost-1",
+          "name": "Grok 4.3 (high)",
+          "provider": "xAI",
+          "metric": "지능/가격 지수",
+          "score": 59.4,
+          "scoreLabel": "59.4",
+          "price": "$0.64 blended / 1M",
+          "speed": "146 tok/s",
+          "context": "1M"
+        },
+        {
+          "id": "bm-cost-2",
+          "name": "GLM-5.2 (max)",
+          "provider": "Z.ai / Zhipu AI",
+          "metric": "지능/가격 지수",
+          "score": 56.7,
+          "scoreLabel": "56.7",
+          "price": "$0.90 blended / 1M",
+          "speed": null,
+          "context": "1M"
+        },
+        {
+          "id": "bm-cost-3",
+          "name": "DeepSeek V3.2 (Non-reasoning)",
+          "provider": "DeepSeek",
+          "metric": "지능/가격 지수",
+          "score": 46.3,
+          "scoreLabel": "≈46.3",
+          "price": "$0.54 blended / 1M",
+          "speed": null,
+          "context": "1M"
+        },
+        {
+          "id": "bm-cost-4",
+          "name": "Gemma 3 27B Instruct",
+          "provider": "Google",
+          "metric": "지능/가격 지수",
+          "score": 45.5,
+          "scoreLabel": "45.5",
+          "price": "$0.11 blended / 1M",
+          "speed": null,
+          "context": "1M"
+        },
+        {
+          "id": "bm-cost-5",
+          "name": "Llama 4 Maverick",
+          "provider": "Meta",
+          "metric": "지능/가격 지수",
+          "score": 41.2,
+          "scoreLabel": "41.2",
+          "price": "$0.34 blended / 1M",
+          "speed": "109 tok/s",
+          "context": "1M"
+        },
+        {
+          "id": "bm-cost-6",
+          "name": "DeepSeek V3.1 Think",
+          "provider": "DeepSeek",
+          "metric": "지능/가격 지수",
+          "score": 31.3,
+          "scoreLabel": "31.3",
+          "price": "$0.67 blended / 1M",
+          "speed": null,
+          "context": "1M"
+        },
+        {
+          "id": "bm-cost-7",
+          "name": "GLM-4.6",
+          "provider": "Z.ai / Zhipu AI",
+          "metric": "지능/가격 지수",
+          "score": 30.3,
+          "scoreLabel": "30.3",
+          "price": "$0.76 blended / 1M",
+          "speed": "43 tok/s",
+          "context": "1M"
+        },
+        {
+          "id": "bm-cost-8",
+          "name": "Gemini 3.1 Pro Preview",
+          "provider": "Google",
+          "metric": "지능/가격 지수",
+          "score": 26.4,
+          "scoreLabel": "26.4",
+          "price": "$1.74 blended / 1M",
+          "speed": null,
+          "context": "1M"
+        },
+        {
+          "id": "bm-cost-9",
+          "name": "Mistral Medium 3",
+          "provider": "Mistral AI",
+          "metric": "지능/가격 지수",
+          "score": 21.4,
+          "scoreLabel": "≈21.4",
+          "price": "$0.56 blended / 1M",
+          "speed": null,
+          "context": "1M"
+        }
+      ]
+    }
+  ],
+  "extensions": [
+    {
+      "id": "ext-codex-plugin-bundle",
+      "name": "Codex 플러그인 번들",
+      "kind": "플러그인",
+      "platform": "Codex CLI",
+      "category": "생산성",
+      "maturity": "공식",
+      "summary": "skills, hooks, MCP 서버, ChatGPT 앱을 `.codex-plugin/plugin.json`으로 묶어 설치 가능한 번들로 배포하는 방식.",
+      "whatItDoes": [
+        "스킬·훅·MCP·앱을 단일 플러그인으로 패키징",
+        "개인 마켓플레이스/팀 배포 흐름 지원",
+        "manifest interface로 설치 화면 메타데이터 구성"
+      ],
+      "install": ".codex-plugin/plugin.json 작성 후 plugin-creator/마켓플레이스 흐름으로 설치",
+      "usage": "플러그인 활성화 후 포함된 skills/hooks/mcpServers/apps 자동 노출",
+      "koreanNote": "팀 표준 스킬과 MCP를 따로 설명하지 말고 플러그인 하나로 배포할 때 가장 효율적입니다.",
+      "bestFor": [
+        "팀 표준 워크플로",
+        "MCP 묶음 배포",
+        "스킬·훅 재사용"
+      ],
+      "url": "https://developers.openai.com/codex/plugins/build",
+      "rank": 1,
+      "grade": "S"
+    },
+    {
+      "id": "ext-claude-official-plugin-marketplace",
+      "name": "Claude Code 공식 플러그인 마켓플레이스",
+      "kind": "플러그인",
+      "platform": "Claude Code",
+      "category": "생산성",
+      "maturity": "공식",
+      "summary": "Anthropic 공식 플러그인 마켓플레이스에서 LSP, 보안 가이드, PR 리뷰, 외부 도구 MCP 묶음을 설치하는 경로.",
+      "whatItDoes": [
+        "공식/커뮤니티 플러그인 마켓플레이스 연결",
+        "LSP·MCP·명령·에이전트 묶음 설치",
+        "설치 후 /reload-plugins로 세션 반영"
+      ],
+      "install": "/plugin install github@claude-plugins-official",
+      "usage": "/plugin 메뉴에서 검색·설치 후 /reload-plugins",
+      "koreanNote": "처음 시작할 때는 공식 마켓플레이스만 쓰고, 커뮤니티는 신뢰한 repo만 추가하세요.",
+      "bestFor": [
+        "Claude Code 온보딩",
+        "공식 LSP/MCP 번들",
+        "보안·리뷰 플러그인"
+      ],
+      "url": "https://code.claude.com/docs/en/discover-plugins",
+      "rank": 2,
+      "grade": "S"
+    },
+    {
+      "id": "ext-openai-apps-sdk-widgets",
+      "name": "OpenAI Apps SDK ChatGPT 위젯",
+      "kind": "위젯",
+      "platform": "범용",
+      "category": "에이전트 UI",
+      "maturity": "공식",
+      "summary": "ChatGPT 안에서 파일 업로드, 다운로드, 모달, 전체화면, MCP 도구 결과 UI를 제공하는 Apps SDK 위젯 표면.",
+      "whatItDoes": [
+        "window.openai 브리지로 파일/모달/표시 모드 제어",
+        "MCP tool 결과를 HTML 위젯으로 렌더링",
+        "CSP와 widgetDomain으로 임베드 보안 설정"
+      ],
+      "install": "Apps SDK 프로젝트에서 widget resource와 MCP tool descriptor 등록",
+      "usage": "tool 결과의 _meta/openai output template로 ChatGPT UI에 표시",
+      "koreanNote": "한국어 업무 앱을 ChatGPT 안에서 바로 쓰게 만들 때 가장 공식적인 위젯 경로입니다.",
+      "bestFor": [
+        "ChatGPT 내 업무 위젯",
+        "파일 기반 도구 UI",
+        "MCP tool 결과 화면"
+      ],
+      "url": "https://developers.openai.com/apps-sdk/build/chatgpt-ui",
+      "rank": 3,
+      "grade": "S"
+    },
+    {
+      "id": "ext-copilotkit-agent-ui",
+      "name": "CopilotKit 에이전트 UI",
+      "kind": "위젯",
+      "platform": "범용",
+      "category": "에이전트 UI",
+      "maturity": "커뮤니티",
+      "summary": "React 앱에 채팅, 사이드바, 팝업, generative UI, shared state, HITL 플로를 얹는 에이전트 UX 프레임워크.",
+      "whatItDoes": [
+        "CopilotChat, CopilotSidebar, CopilotPopup UI 제공",
+        "LangGraph, CrewAI, LlamaIndex 등 AG-UI backend 연결",
+        "앱 상태를 에이전트와 공유"
+      ],
+      "install": "React 앱에 @copilotkit/react-core와 @copilotkit/react-ui 추가",
+      "usage": "CopilotKit provider와 CopilotChat/Sidebar/Popup 컴포넌트 배치",
+      "koreanNote": "기존 SaaS 화면에 에이전트 사이드패널을 붙일 때 구현 시간이 짧습니다.",
+      "bestFor": [
+        "SaaS 내 AI 사이드바",
+        "Human-in-the-loop",
+        "LangGraph UI"
+      ],
+      "url": "https://docs.copilotkit.ai/",
+      "rank": 4,
+      "grade": "S"
+    },
+    {
+      "id": "ext-assistant-ui-chat",
+      "name": "assistant-ui React 챗 위젯",
+      "kind": "위젯",
+      "platform": "범용",
+      "category": "에이전트 UI",
+      "maturity": "커뮤니티",
+      "summary": "React 기반 AI 채팅 인터페이스, runtime integration, generative UI, 도구 호출 표시를 빠르게 구성하는 UI 스택.",
+      "whatItDoes": [
+        "프리빌트 채팅 UI와 상태 관리 제공",
+        "LangGraph/MCP/cloud 템플릿으로 시작",
+        "도구 호출·첨부·스트리밍 UX 구성"
+      ],
+      "install": "npx assistant-ui@latest create",
+      "usage": "템플릿 선택 후 runtime provider와 Thread UI 연결",
+      "koreanNote": "채팅 UI를 처음부터 만들기보다 템플릿에서 시작해 도메인별 메시지 컴포넌트만 바꾸는 편이 빠릅니다.",
+      "bestFor": [
+        "AI 채팅 UI",
+        "MCP 챗 템플릿",
+        "도구 호출 표시"
+      ],
+      "url": "https://www.assistant-ui.com/docs",
+      "rank": 5,
+      "grade": "S"
+    },
+    {
+      "id": "ext-ai-elements-shadcn",
+      "name": "Vercel AI Elements",
+      "kind": "위젯",
+      "platform": "범용",
+      "category": "에이전트 UI",
+      "maturity": "공식",
+      "summary": "shadcn/ui 기반 AI 컴포넌트 레지스트리로 대화, 코드, 음성, workflow UI를 프로젝트에 복사해 쓰는 방식.",
+      "whatItDoes": [
+        "대화/코드/음성/워크플로 컴포넌트 제공",
+        "프로젝트에 소스 형태로 추가해 커스터마이즈",
+        "AI SDK와 shadcn/ui 패턴에 맞춤"
+      ],
+      "install": "npx ai-elements@latest add conversation",
+      "usage": "필요 컴포넌트를 registry에서 add 후 앱 상태와 연결",
+      "koreanNote": "shadcn 기반 프로젝트라면 디자인 시스템과 충돌이 적어 운영 UI에 맞게 손보기 쉽습니다.",
+      "bestFor": [
+        "shadcn 기반 챗봇",
+        "코드 블록 UI",
+        "음성/워크플로 컴포넌트"
+      ],
+      "url": "https://elements.ai-sdk.dev/",
+      "rank": 6,
+      "grade": "S"
+    },
+    {
+      "id": "ext-gemini-cli-mcp-extensions",
+      "name": "Gemini CLI MCP 확장",
+      "kind": "MCP 서버",
+      "platform": "Gemini CLI",
+      "category": "생산성",
+      "maturity": "공식",
+      "summary": "Gemini CLI의 settings.json에 MCP 서버를 등록해 로컬/원격 도구와 리소스를 CLI 대화에 연결하는 확장 방식.",
+      "whatItDoes": [
+        "stdio, SSE, Streamable HTTP MCP 서버 연결",
+        "/mcp 명령으로 연결 상태 확인",
+        "파일·검색·외부 API 도구를 Gemini CLI에 노출"
+      ],
+      "install": "settings.json의 mcpServers에 서버 transport와 command/url 등록",
+      "usage": "Gemini CLI에서 /mcp로 도구 확인 후 자연어로 호출",
+      "koreanNote": "Antigravity CLI 전환 안내가 있는 문서는 날짜와 계정 유형을 함께 확인하세요.",
+      "bestFor": [
+        "Gemini CLI 도구 확장",
+        "MCP 재사용",
+        "로컬 리소스 연결"
+      ],
+      "url": "https://geminicli.com/docs/tools/mcp-server/",
+      "rank": 7,
+      "grade": "S"
+    },
+    {
+      "id": "ext-inspect-ai-harness",
+      "name": "Inspect AI 평가 하네스",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "공식",
+      "summary": "UK AISI/Meridian이 제공하는 frontier AI eval 프레임워크로 데이터셋, 도구, scorer, sandbox, Inspect View를 갖춘 평가 하네스.",
+      "whatItDoes": [
+        "datasets, solvers, tools, scorers 기반 eval 작성",
+        "Inspect View 웹 UI로 결과 탐색",
+        "Claude Code, Codex CLI, Gemini CLI 등 외부 에이전트 평가"
+      ],
+      "install": "pip install inspect-ai",
+      "usage": "inspect eval simpleqa.py --model openai/gpt-5 && inspect view",
+      "koreanNote": "제품 출시 전 회귀 평가와 정책/보안 검증을 CI 게이트로 만들 때 적합합니다.",
+      "bestFor": [
+        "LLM 평가 CI",
+        "에이전트 도구 평가",
+        "보안/정책 검증"
+      ],
+      "url": "https://inspect.aisi.org.uk/",
+      "rank": 8,
+      "grade": "S"
+    },
+    {
+      "id": "ext-mini-swe-agent-harness",
+      "name": "mini-SWE-agent",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "커뮤니티",
+      "summary": "SWE-bench류 소프트웨어 엔지니어링 태스크를 가볍게 실행하는 100줄대 에이전트 하네스와 CLI.",
+      "whatItDoes": [
+        "SWE-bench/로컬 이슈 해결 에이전트 실행",
+        "LiteLLM/OpenRouter/Portkey로 다양한 모델 연결",
+        "Docker/Podman/Singularity 등 격리 환경 지원"
+      ],
+      "install": "uv tool install mini-swe-agent 또는 pip install mini-swe-agent",
+      "usage": "mini 또는 mini-extra로 태스크 실행",
+      "koreanNote": "큰 SWE-agent보다 먼저 mini 버전으로 설치와 모델 연결을 검증하는 흐름이 현실적입니다.",
+      "bestFor": [
+        "SWE-bench 실험",
+        "코딩 에이전트 비교",
+        "로컬 repo 버그 수정 평가"
+      ],
+      "url": "https://mini-swe-agent.com/latest/quickstart/",
+      "rank": 9,
+      "grade": "A"
+    },
+    {
+      "id": "ext-lm-eval-harness",
+      "name": "EleutherAI LM Evaluation Harness",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "커뮤니티",
+      "summary": "수십 개 표준 학술 벤치마크와 HF/vLLM/API 백엔드를 지원하는 대표적인 언어 모델 평가 하네스.",
+      "whatItDoes": [
+        "MMLU, HellaSwag 등 표준 task 평가",
+        "hf, vllm, api optional backend 지원",
+        "GGUF/HF local model과 API 모델 비교"
+      ],
+      "install": "pip install \"lm_eval[hf,vllm,api]\"",
+      "usage": "lm-eval run --model hf --tasks hellaswag 또는 lm-eval ls tasks",
+      "koreanNote": "로컬 오픈소스 모델을 상용 API와 같은 스크립트로 비교할 때 기준선으로 쓰기 좋습니다.",
+      "bestFor": [
+        "학술 벤치마크",
+        "HF/vLLM/API 비교",
+        "GGUF 모델 평가"
+      ],
+      "url": "https://github.com/EleutherAI/lm-evaluation-harness",
+      "rank": 10,
+      "grade": "A"
+    },
+    {
+      "id": "ext-terminal-bench-cli",
+      "name": "Terminal-Bench CLI",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "커뮤니티",
+      "summary": "터미널 환경에서 에이전트가 개발/운영 태스크를 수행하는 능력을 측정하는 benchmark CLI.",
+      "whatItDoes": [
+        "Docker 기반 터미널 태스크 실행",
+        "terminal-bench/tb CLI로 run, tasks, datasets 관리",
+        "자체 에이전트 제출과 private task set 구성"
+      ],
+      "install": "git, Docker 설치 후 uv tool install terminal-bench",
+      "usage": "tb run 또는 terminal-bench --help",
+      "koreanNote": "CLI 코딩 에이전트가 실제 셸에서 얼마나 안전하게 일하는지 비교할 때 유용합니다.",
+      "bestFor": [
+        "터미널 에이전트 평가",
+        "DevOps 태스크",
+        "에이전트 리더보드 제출"
+      ],
+      "url": "https://www.tbench.ai/docs/installation",
+      "rank": 11,
+      "grade": "A"
+    },
+    {
+      "id": "ext-opencompass-harness",
+      "name": "OpenCompass",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "커뮤니티",
+      "summary": "LLM/VLM 벤치마크, dataset preparation, vLLM/LMDeploy backend, API 모델 테스트를 지원하는 범용 평가 플랫폼.",
+      "whatItDoes": [
+        "다국어·코딩·수학·주관식 평가 구성",
+        "vLLM/LMDeploy backend와 API 모델 지원",
+        "데이터셋 다운로드와 결과 지속화 가이드 제공"
+      ],
+      "install": "pip install -U opencompass 또는 pip install \"opencompass[full]\"",
+      "usage": "opencompass config로 모델/데이터셋 지정 후 평가 실행",
+      "koreanNote": "중국어/다국어 모델 비교와 Qwen 계열 평가를 함께 볼 때 유용합니다.",
+      "bestFor": [
+        "다국어 모델 평가",
+        "Qwen/InternLM 계열",
+        "vLLM backend 평가"
+      ],
+      "url": "https://opencompass.readthedocs.io/en/latest/get_started/installation.html",
+      "rank": 12,
+      "grade": "A"
+    },
+    {
+      "id": "ext-browsergym-harness",
+      "name": "BrowserGym",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "브라우저 자동화",
+      "maturity": "커뮤니티",
+      "summary": "웹 태스크 자동화 에이전트를 gym 환경으로 평가하기 위한 브라우저 기반 실험 프레임워크.",
+      "whatItDoes": [
+        "브라우저 조작 task를 Gym 환경으로 구성",
+        "웹 에이전트 policy/LLM wrapper 실험",
+        "WebArena류 브라우징 평가 기반 제공"
+      ],
+      "install": "GitHub README 기준 browsergym 패키지/extra 설치",
+      "usage": "BrowserGym environment를 생성해 에이전트 loop에서 step 실행",
+      "koreanNote": "브라우저 조작형 업무 자동화 모델을 비교할 때 Playwright MCP와 함께 보면 좋습니다.",
+      "bestFor": [
+        "웹 에이전트 연구",
+        "브라우저 자동화 평가",
+        "WebArena류 실험"
+      ],
+      "url": "https://github.com/ServiceNow/BrowserGym",
+      "rank": 13,
+      "grade": "A"
+    },
+    {
+      "id": "ext-helm-harness",
+      "name": "Stanford CRFM HELM",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "커뮤니티",
+      "summary": "Holistic Evaluation of Language Models 계열 평가 프레임워크로 모델, 시나리오, metric, leaderboard 재현을 지원.",
+      "whatItDoes": [
+        "언어 모델 holistic benchmark 실행",
+        "모델/시나리오/토크나이저 확장",
+        "HEIM/VHELM 등 multimodal 확장 문서 제공"
+      ],
+      "install": "Python 3.10 가상환경에서 pip install crfm-helm",
+      "usage": "helm-run, run entries configuration으로 평가 실행",
+      "koreanNote": "학술/정책형 비교표를 만들 때 단일 점수보다 metric별 tradeoff를 보여주기 좋습니다.",
+      "bestFor": [
+        "학술 비교",
+        "다중 metric 평가",
+        "leaderboard 재현"
+      ],
+      "url": "https://crfm-helm.readthedocs.io/en/latest/installation/",
+      "rank": 14,
+      "grade": "A"
+    },
+    {
+      "id": "ext-promptfoo-eval-redteam",
+      "name": "Promptfoo 평가/레드팀 하네스",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "공식",
+      "summary": "LLM 앱의 prompt, model, RAG 품질을 matrix로 평가하고 red-teaming/CI/CD 게이트까지 연결하는 오픈소스 CLI/라이브러리.",
+      "whatItDoes": [
+        "prompt/model/RAG benchmark를 선언형 config로 실행",
+        "LLM 보안 취약점과 jailbreak 리스크 red team report 생성",
+        "CLI, 라이브러리, CI/CD workflow로 회귀 테스트 자동화"
+      ],
+      "install": "npm install -g promptfoo 또는 npx promptfoo@latest",
+      "usage": "promptfoo init 후 config에 provider/test를 정의하고 promptfoo eval 실행",
+      "koreanNote": "출시 전 prompt 회귀 테스트와 보안 점검을 한 번에 묶고 싶을 때 가장 실무적인 첫 선택입니다.",
+      "bestFor": [
+        "prompt 회귀 테스트",
+        "LLM red teaming",
+        "RAG 품질 점검",
+        "CI/CD 평가 게이트"
+      ],
+      "url": "https://www.promptfoo.dev/docs/intro/",
+      "rank": 15,
+      "grade": "A"
+    },
+    {
+      "id": "ext-ragas-rag-agent-evals",
+      "name": "Ragas RAG/Agent 평가",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "커뮤니티",
+      "summary": "RAG와 agent workflow를 context precision/recall, faithfulness, tool call accuracy 같은 metric으로 반복 개선하는 평가 프레임워크.",
+      "whatItDoes": [
+        "RAG retrieval/context/answer 품질 metric 제공",
+        "tool call accuracy, tool call F1, agent goal accuracy 등 agent metric 제공",
+        "dataset, experiment, result tracking과 LangChain/LlamaIndex 통합 지원"
+      ],
+      "install": "pip install ragas",
+      "usage": "Python에서 evaluate()로 dataset과 metric을 지정하거나 CLI RAG evaluation 예제 실행",
+      "koreanNote": "사내 문서 RAG가 그럴듯하게만 보일 때, 검색과 답변 품질을 metric별로 쪼개 확인하기 좋습니다.",
+      "bestFor": [
+        "RAG faithfulness",
+        "retrieval precision/recall",
+        "tool call accuracy",
+        "agent goal accuracy"
+      ],
+      "url": "https://docs.ragas.io/en/stable/",
+      "rank": 16,
+      "grade": "A"
+    },
+    {
+      "id": "ext-langsmith-evaluations",
+      "name": "LangSmith Evaluations",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "공식",
+      "summary": "LangSmith의 dataset, target function, evaluator, trace를 묶어 agent/RAG/chatbot을 offline·online 평가하는 운영형 평가 표면.",
+      "whatItDoes": [
+        "dataset, target function, evaluator로 regression/unit/backtest 평가 실행",
+        "production trace와 feedback을 online evaluation/monitoring으로 연결",
+        "workspace-level evaluator와 OpenEvals 기반 LLM-as-judge 확장"
+      ],
+      "install": "pip install -U langsmith openevals openai",
+      "usage": "client.evaluate(target, data=..., evaluators=[...]) 실행 후 LangSmith UI에서 비교",
+      "koreanNote": "LangChain/LangGraph 기반 서비스라면 tracing과 평가를 같은 화면에서 묶어 운영 품질을 추적할 수 있습니다.",
+      "bestFor": [
+        "production agent QA",
+        "offline evaluation",
+        "online evaluation",
+        "LLM-as-judge"
+      ],
+      "url": "https://docs.langchain.com/langsmith/evaluation-concepts",
+      "rank": 17,
+      "grade": "A"
+    },
+    {
+      "id": "ext-ollama-local-runtime",
+      "name": "Ollama 로컬 모델 런타임",
+      "kind": "모델 런타임",
+      "platform": "범용",
+      "category": "로컬 모델",
+      "maturity": "공식",
+      "summary": "Kimi, GLM, DeepSeek, Qwen, Gemma 등 오픈 모델을 로컬 CLI/API로 실행하고 IDE·에이전트 도구와 연결하는 런타임.",
+      "whatItDoes": [
+        "ollama run으로 모델 다운로드/실행",
+        "localhost:11434 REST API와 Python/JS client 제공",
+        "Open WebUI, LibreChat, Continue, Codex 등과 통합"
+      ],
+      "install": "macOS/Linux: curl -fsSL https://ollama.com/install.sh | sh",
+      "usage": "ollama run <model> 또는 localhost:11434 API 호출",
+      "koreanNote": "처음 로컬 LLM을 켤 때 가장 진입 장벽이 낮고, 이후 Open WebUI를 붙이면 팀 공유가 쉬워집니다.",
+      "bestFor": [
+        "로컬 모델 입문",
+        "오프라인 챗봇",
+        "IDE/에이전트 로컬 모델 연결"
+      ],
+      "url": "https://github.com/ollama/ollama",
+      "rank": 18,
+      "grade": "A"
+    },
+    {
+      "id": "ext-open-webui-local-frontend",
+      "name": "Open WebUI",
+      "kind": "로컬 모델 UI",
+      "platform": "범용",
+      "category": "로컬 모델",
+      "maturity": "커뮤니티",
+      "summary": "Ollama/OpenAI 호환 backend를 웹 UI로 감싸는 self-hosted LLM 프런트엔드와 확장 가능한 채팅 인터페이스.",
+      "whatItDoes": [
+        "Docker로 로컬 웹 UI 실행",
+        "Ollama, OpenAI compatible backend 연결",
+        "모델/사용자/프롬프트/확장 관리"
+      ],
+      "install": "docker run -d -p 3000:8080 -v open-webui:/app/backend/data ghcr.io/open-webui/open-webui:main",
+      "usage": "http://localhost:3000 접속 후 모델 backend 연결",
+      "koreanNote": "가족/팀 내부망용 로컬 챗봇은 Ollama 단독보다 Open WebUI를 붙이는 편이 운영하기 쉽습니다.",
+      "bestFor": [
+        "로컬 챗 UI",
+        "Ollama 프런트엔드",
+        "사내 self-hosted LLM"
+      ],
+      "url": "https://docs.openwebui.com/getting-started/quick-start/",
+      "rank": 19,
+      "grade": "B"
+    },
+    {
+      "id": "ext-vllm-serving",
+      "name": "vLLM 서빙 런타임",
+      "kind": "모델 런타임",
+      "platform": "범용",
+      "category": "모델 서빙",
+      "maturity": "커뮤니티",
+      "summary": "대형 오픈 모델을 OpenAI 호환 endpoint로 고성능 서빙하는 inference/serving 엔진.",
+      "whatItDoes": [
+        "vllm serve로 OpenAI compatible API 제공",
+        "Tensor parallel, paged attention 기반 고처리량 서빙",
+        "GLM/Qwen/Mistral 등 HF 모델 배포"
+      ],
+      "install": "pip install vllm",
+      "usage": "vllm serve zai-org/GLM-5.2",
+      "koreanNote": "로컬 PC보다 GPU 서버에서 여러 사용자가 쓰는 API endpoint를 만들 때 적합합니다.",
+      "bestFor": [
+        "GPU 서버 서빙",
+        "OpenAI 호환 API",
+        "GLM/Qwen 대형 모델"
+      ],
+      "url": "https://docs.vllm.ai/en/latest/getting_started/installation/",
+      "rank": 20,
+      "grade": "B"
+    },
+    {
+      "id": "ext-sglang-serving",
+      "name": "SGLang 서빙 런타임",
+      "kind": "모델 런타임",
+      "platform": "범용",
+      "category": "모델 서빙",
+      "maturity": "커뮤니티",
+      "summary": "Llama, Qwen, DeepSeek, Kimi, GLM, Mistral 등 대형 모델의 structured generation과 고성능 serving을 지원하는 프레임워크.",
+      "whatItDoes": [
+        "OpenAI-compatible server 제공",
+        "structured output, tool/agent workload 최적화",
+        "NVIDIA/AMD/TPU 등 다양한 하드웨어 지원"
+      ],
+      "install": "pip install sglang",
+      "usage": "python3 -m sglang.launch_server --model-path zai-org/GLM-5.2 --host 0.0.0.0 --port 30000",
+      "koreanNote": "GLM/Kimi/DeepSeek 계열 대형 모델을 서빙할 때 vLLM과 함께 비교할 가치가 큽니다.",
+      "bestFor": [
+        "GLM/Kimi/DeepSeek 서빙",
+        "structured generation",
+        "대형 모델 inference"
+      ],
+      "url": "https://github.com/sgl-project/sglang",
+      "rank": 21,
+      "grade": "B"
+    },
+    {
+      "id": "ext-glm51-local-stack",
+      "name": "GLM-5.2/5.1 로컬·서빙 스택",
+      "kind": "모델 런타임",
+      "platform": "범용",
+      "category": "모델 서빙",
+      "maturity": "공식",
+      "summary": "MIT 라이선스 GLM-5.2/5.1을 Transformers, vLLM, SGLang, Docker Model Runner, KTransformers, xLLM, GGUF/Ollama/LM Studio 계열로 실행하는 설치 경로.",
+      "whatItDoes": [
+        "HF model card 기반 GLM-5.2/5.1 실행",
+        "vLLM/SGLang OpenAI 호환 endpoint 구성",
+        "Docker Model Runner, KTransformers, xLLM, GGUF quantization 경로 비교"
+      ],
+      "install": "vllm serve \"zai-org/GLM-5.2\" 또는 python3 -m sglang.launch_server --model-path \"zai-org/GLM-5.2\"",
+      "usage": "OpenAI 호환 /v1/chat/completions endpoint로 GLM 호출",
+      "koreanNote": "753B/754B급 모델은 로컬 노트북용이 아니라 서버/클라우드 GPU, 양자화 변형, 프록시 비용까지 같이 검토하세요.",
+      "bestFor": [
+        "GLM 오픈웨이트 평가",
+        "코딩/에이전트 모델 비교",
+        "자체 호스팅 PoC"
+      ],
+      "url": "https://huggingface.co/zai-org/GLM-5.2",
+      "rank": 22,
+      "grade": "B"
+    },
+    {
+      "id": "ext-llama-cpp-runtime",
+      "name": "llama.cpp / GGUF 런타임",
+      "kind": "모델 런타임",
+      "platform": "범용",
+      "category": "로컬 모델",
+      "maturity": "커뮤니티",
+      "summary": "GGUF quantized 모델을 CPU, Metal, CUDA, Vulkan 등 다양한 backend에서 실행하는 경량 C/C++ 런타임.",
+      "whatItDoes": [
+        "GGUF 모델 로컬 추론",
+        "CLI와 OpenAI-compatible server 제공",
+        "CPU/Apple Silicon/다양한 GPU backend 지원"
+      ],
+      "install": "GitHub README 기준 cmake 빌드 또는 prebuilt binary 사용",
+      "usage": "llama-server -m model.gguf 또는 llama-cli -m model.gguf",
+      "koreanNote": "노트북/맥에서 작은 양자화 모델을 비교할 때 Ollama보다 세밀한 튜닝이 가능합니다.",
+      "bestFor": [
+        "GGUF 모델",
+        "CPU/Apple Silicon 실험",
+        "최소 의존성 로컬 추론"
+      ],
+      "url": "https://github.com/ggml-org/llama.cpp",
+      "rank": 23,
+      "grade": "B"
+    },
+    {
+      "id": "ext-hf-tgi-serving",
+      "name": "Hugging Face TGI",
+      "kind": "모델 런타임",
+      "platform": "범용",
+      "category": "모델 서빙",
+      "maturity": "공식",
+      "summary": "Hugging Face Text Generation Inference로 오픈 모델을 Docker/소스 빌드 기반 production endpoint로 서빙.",
+      "whatItDoes": [
+        "Docker 기반 text-generation server 실행",
+        "HF Hub 모델 배포와 streaming inference",
+        "GPU 서버 production serving에 초점"
+      ],
+      "install": "Docker 권장 또는 TGI repo clone 후 make install",
+      "usage": "text-generation-launcher 또는 Docker image로 endpoint 실행",
+      "koreanNote": "HF Hub 중심 운영이면 TGI, OpenAI 호환 API 중심 운영이면 vLLM/SGLang을 함께 비교하세요.",
+      "bestFor": [
+        "HF Hub 모델 배포",
+        "production endpoint",
+        "streaming inference"
+      ],
+      "url": "https://huggingface.co/docs/text-generation-inference/en/installation",
+      "rank": 24,
+      "grade": "B"
+    },
+    {
+      "id": "ext-docker-model-runner",
+      "name": "Docker Model Runner",
+      "kind": "모델 런타임",
+      "platform": "범용",
+      "category": "로컬 모델",
+      "maturity": "공식",
+      "summary": "Docker 환경에서 모델을 pull/run하고 REST API, Open WebUI, IDE/agent integration으로 연결하는 Docker AI 모델 실행 표면.",
+      "whatItDoes": [
+        "docker model run으로 모델 실행",
+        "Docker Model Runner REST API 제공",
+        "Open WebUI와 agent/IDE integration 안내"
+      ],
+      "install": "Docker Desktop/Engine의 Model Runner 기능 활성화 후 docker model run <model>",
+      "usage": "docker model run hf.co/zai-org/GLM-5.1",
+      "koreanNote": "이미 Docker 기반 개발/배포를 쓰는 팀은 로컬 모델 실행도 같은 운영 감각으로 관리할 수 있습니다.",
+      "bestFor": [
+        "Docker 중심 팀",
+        "로컬 모델 REST API",
+        "Open WebUI 연결"
+      ],
+      "url": "https://docs.docker.com/ai/model-runner/",
+      "rank": 25,
+      "grade": "B"
+    },
+    {
+      "id": "ext-anythingllm-local-workspace",
+      "name": "AnythingLLM Self-hosted",
+      "kind": "로컬 모델 UI",
+      "platform": "범용",
+      "category": "로컬 모델",
+      "maturity": "커뮤니티",
+      "summary": "로컬/클라우드 LLM, vector DB, agent skills, embedded chat widget을 갖춘 self-hosted AI workspace.",
+      "whatItDoes": [
+        "Docker로 localhost:3001 workspace 실행",
+        "Ollama, LM Studio, cloud LLM provider 연결",
+        "문서 RAG, agent skills, embedded widget 제공"
+      ],
+      "install": "docker pull mintplexlabs/anythingllm:latest 후 persistent volume으로 컨테이너 실행",
+      "usage": "http://localhost:3001 접속 후 LLM/vector DB 설정",
+      "koreanNote": "문서 기반 사내 지식 챗봇과 embedded widget을 한 번에 보고 싶을 때 Open WebUI와 비교하세요.",
+      "bestFor": [
+        "RAG workspace",
+        "embedded chat widget",
+        "로컬/클라우드 혼합 LLM"
+      ],
+      "url": "https://docs.anythingllm.com/installation-docker/local-docker",
+      "rank": 26,
+      "grade": "B"
+    },
+    {
+      "id": "ext-lm-studio-local-ui",
+      "name": "LM Studio",
+      "kind": "로컬 모델 UI",
+      "platform": "범용",
+      "category": "로컬 모델",
+      "maturity": "공식",
+      "summary": "데스크톱 앱에서 모델 검색·다운로드·채팅·로컬 서버 실행을 제공하는 설치형 로컬 LLM 프런트엔드.",
+      "whatItDoes": [
+        "데스크톱 GUI로 모델 다운로드/실행",
+        "OpenAI compatible local server 제공",
+        "GPU offload와 로컬 채팅 설정 조정"
+      ],
+      "install": "LM Studio 앱 설치 후 모델 검색/다운로드",
+      "usage": "앱에서 모델 로드 후 Chat 또는 Local Server 실행",
+      "koreanNote": "터미널보다 GUI가 필요한 사용자에게 추천하고, 팀용 웹 UI는 Open WebUI/AnythingLLM과 비교하세요.",
+      "bestFor": [
+        "데스크톱 로컬 챗",
+        "비개발자 오픈모델 체험",
+        "OpenAI compatible local server"
+      ],
+      "url": "https://lmstudio.ai/docs",
+      "rank": 27,
+      "grade": "B"
+    },
+    {
+      "id": "ext-openhands-agent-canvas",
+      "name": "OpenHands Agent Canvas",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "커뮤니티",
+      "summary": "브라우저 기반 agent canvas와 Docker/npm quickstart로 로컬 코딩 에이전트 실험 환경을 구성하는 OpenHands 표면.",
+      "whatItDoes": [
+        "로컬/클라우드 코딩 에이전트 실행",
+        "MCP, hooks, plugin형 확장 문서 제공",
+        "LLM provider를 바꿔 개발 태스크 실험"
+      ],
+      "install": "OpenHands quick start 기준 npm 또는 Docker로 Agent Canvas 실행",
+      "usage": "Agent Canvas에서 provider 설정 후 repo/태스크 실행",
+      "koreanNote": "오픈소스 코딩 에이전트 UI와 하네스가 필요하면 Cline과 mini-SWE-agent 사이에서 비교하세요.",
+      "bestFor": [
+        "오픈소스 코딩 에이전트",
+        "로컬 개발 태스크",
+        "Agent UI 비교"
+      ],
+      "url": "https://docs.openhands.dev/overview/quickstart",
+      "rank": 28,
+      "grade": "B"
+    },
+    {
+      "id": "ext-cc-skill-pdf",
+      "name": "Claude Code Agent Skills",
+      "kind": "스킬",
+      "platform": "Claude Code",
+      "category": "생산성",
+      "maturity": "공식",
+      "summary": "SKILL.md로 반복 절차를 정의하고, 관련 작업에서만 로드하거나 /skill-name으로 직접 호출하는 공식 스킬 체계.",
+      "whatItDoes": [
+        "도메인 절차를 SKILL.md로 캡슐화",
+        "개인/프로젝트/플러그인 스코프에서 발견",
+        "/run, /verify 같은 bundled skill 제공"
+      ],
+      "install": ".claude/skills/<name>/SKILL.md 작성",
+      "usage": "관련 요청 시 자동 로드 또는 /<skill> 호출",
+      "koreanNote": "사내 배포/검증 절차, 디자인 컨벤션을 스킬로 만들면 반복 지시가 줄어듭니다.",
+      "bestFor": [
+        "반복 검증 절차",
+        "팀 컨벤션",
+        "프로젝트별 agent recipe"
+      ],
+      "url": "https://code.claude.com/docs/en/skills",
+      "rank": 29,
+      "grade": "C"
+    },
+    {
+      "id": "ext-codex-skills",
+      "name": "Codex Skills",
+      "kind": "스킬",
+      "platform": "Codex CLI",
+      "category": "컨텍스트 관리",
+      "maturity": "공식",
+      "summary": "SKILL.md와 scripts/references/assets를 묶어 Codex가 관련 작업에서만 전문 절차를 로드하게 하는 경량 확장 단위.",
+      "whatItDoes": [
+        "name/description frontmatter로 자동 트리거",
+        "scripts, references, assets, agents 폴더로 절차 재사용",
+        "config.toml에서 스킬 비활성화 가능"
+      ],
+      "install": "skills/<name>/SKILL.md 작성 또는 $skill-creator 사용",
+      "usage": "관련 요청에서 자동 로드하거나 명시적으로 스킬 이름 호출",
+      "koreanNote": "사내 배포/검증/디자인 규칙을 매번 프롬프트에 붙이지 말고 스킬로 분리하세요.",
+      "bestFor": [
+        "반복 업무 절차",
+        "팀 컨벤션",
+        "전문 도구 사용법"
+      ],
+      "url": "https://developers.openai.com/codex/skills",
+      "rank": 29,
+      "grade": "C"
+    },
+    {
+      "id": "ext-codex-managed-hooks",
+      "name": "Codex Managed Hooks",
+      "kind": "훅",
+      "platform": "Codex CLI",
+      "category": "테스트/품질",
+      "maturity": "공식",
+      "summary": "requirements.toml과 config.toml로 PreToolUse/PostToolUse/Stop 훅을 관리해 명령, 검증, 보안 정책을 강제하는 흐름.",
+      "whatItDoes": [
+        "managed hook requirement를 프로젝트에 선언",
+        "PreToolUse/PostToolUse/Stop 이벤트에서 명령 실행",
+        "allow_managed_hooks_only로 승인된 훅만 허용"
+      ],
+      "install": "requirements.toml의 [hooks]와 ~/.codex/config.toml features.hooks 설정",
+      "usage": "파일 편집/도구 호출/응답 종료 시 훅 자동 실행",
+      "koreanNote": "verify 게이트, 포맷, 시크릿 스캔을 Codex 작업 루프에 붙이는 핵심 지점입니다.",
+      "bestFor": [
+        "자동 포맷/검증",
+        "보안 스캔",
+        "팀 정책 강제"
+      ],
+      "url": "https://developers.openai.com/codex/hooks",
+      "rank": 30,
+      "grade": "C"
+    },
+    {
+      "id": "ext-claude-code-lsp-plugins",
+      "name": "Claude Code LSP 플러그인",
+      "kind": "플러그인",
+      "platform": "Claude Code",
+      "category": "테스트/품질",
+      "maturity": "공식",
+      "summary": "Claude Code 공식 마켓플레이스의 code intelligence/LSP 플러그인으로 symbol, diagnostics, jump-to-definition 맥락을 강화.",
+      "whatItDoes": [
+        "언어 서버 기반 코드 인텔리전스 제공",
+        "diagnostics와 symbol 맥락을 에이전트에 연결",
+        "대형 repo 탐색 정확도 개선"
+      ],
+      "install": "/plugin install <lsp-plugin>@claude-plugins-official",
+      "usage": "설치 후 repo 언어 서버가 노출되는지 /plugin 상태 확인",
+      "koreanNote": "대형 TypeScript/Nest/React repo는 LSP 플러그인으로 탐색 오류를 줄이는 효과가 큽니다.",
+      "bestFor": [
+        "대형 repo 탐색",
+        "타입 오류 진단",
+        "언어별 코드 이해"
+      ],
+      "url": "https://code.claude.com/docs/en/discover-plugins",
+      "rank": 31,
+      "grade": "C"
+    },
+    {
+      "id": "ext-gemini-cli-skills",
+      "name": "Gemini CLI Skills",
+      "kind": "스킬",
+      "platform": "Gemini CLI",
+      "category": "컨텍스트 관리",
+      "maturity": "공식",
+      "summary": "Gemini CLI에서 반복 작업 절차와 도메인 지식을 skill로 캡슐화해 프로젝트/사용자 작업 흐름에 재사용하는 방식.",
+      "whatItDoes": [
+        "절차형 지식을 skill로 분리",
+        "CLI 작업 맥락에 필요한 지침만 로드",
+        "MCP/extension과 조합해 워크플로 구성"
+      ],
+      "install": "Gemini CLI skills 문서 기준 skill scaffold 작성",
+      "usage": "CLI 작업에서 skill을 명시하거나 자동 선택되도록 description 조정",
+      "koreanNote": "Codex/Claude와 같은 이름의 스킬을 맞춰두면 멀티 에이전트 팀 운영이 쉬워집니다.",
+      "bestFor": [
+        "Gemini CLI 반복 절차",
+        "팀 컨벤션",
+        "멀티 에이전트 스킬 정렬"
+      ],
+      "url": "https://geminicli.com/docs/cli/skills/",
+      "rank": 32,
+      "grade": "C"
+    },
+    {
+      "id": "ext-litellm-proxy-gateway",
+      "name": "LiteLLM Proxy Gateway",
+      "kind": "워크플로우",
+      "platform": "범용",
+      "category": "모델 서빙",
+      "maturity": "커뮤니티",
+      "summary": "OpenAI 호환 gateway로 OpenAI, Anthropic, Vertex/Gemini, Bedrock, Ollama, vLLM, TGI 등 여러 모델 호출을 하나의 endpoint로 묶는 라우터.",
+      "whatItDoes": [
+        "100개 이상 LLM을 OpenAI Chat Completions 형식으로 라우팅",
+        "virtual key, spend tracking, budgets, admin UI, guardrail 구성",
+        "retry, fallback, load balancing과 Langfuse/MLflow/Helicone callback 지원"
+      ],
+      "install": "uv tool install 'litellm[proxy]'",
+      "usage": "litellm --model openai/gpt-4o 또는 litellm --model ollama/<model-name>",
+      "koreanNote": "여러 모델을 앱마다 따로 붙이지 말고 사내 표준 base URL 하나로 감싸고 싶을 때 검토하세요.",
+      "bestFor": [
+        "멀티 모델 라우팅",
+        "OpenAI 호환 gateway",
+        "fallback/load balancing",
+        "비용 추적"
+      ],
+      "url": "https://docs.litellm.ai/docs/proxy/quick_start",
+      "rank": 33,
+      "grade": "C"
+    },
+    {
+      "id": "ext-openrouter-model-router",
+      "name": "OpenRouter 모델 라우터",
+      "kind": "워크플로우",
+      "platform": "범용",
+      "category": "모델 서빙",
+      "maturity": "공식",
+      "summary": "수백 개 AI 모델을 단일 endpoint와 OpenAI SDK baseURL 호환으로 호출하고, model catalog와 Agent SDK까지 제공하는 모델 라우팅 서비스.",
+      "whatItDoes": [
+        "단일 /api/v1/chat/completions endpoint로 모델 카탈로그 접근",
+        "@openrouter/sdk와 @openrouter/agent로 typed SDK/agent loop 구성",
+        "OpenAI SDK를 baseURL만 바꿔 drop-in replacement로 사용"
+      ],
+      "install": "npm install @openrouter/sdk 또는 npm install @openrouter/agent",
+      "usage": "baseURL: 'https://openrouter.ai/api/v1' + OPENROUTER_API_KEY",
+      "koreanNote": "새 모델 후보를 빠르게 비교할 때 유용하지만, 운영 투입 전 데이터 처리와 fallback 비용 정책을 분리해 확인하세요.",
+      "bestFor": [
+        "모델 카탈로그 실험",
+        "OpenAI SDK 호환 호출",
+        "Agent SDK",
+        "빠른 PoC"
+      ],
+      "url": "https://openrouter.ai/docs/quickstart",
+      "rank": 34,
+      "grade": "C"
+    },
+    {
+      "id": "ext-langfuse-observability-evals",
+      "name": "Langfuse Observability/Evals",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "커뮤니티",
+      "summary": "LLM trace, prompt management, dataset/experiment, LLM-as-judge, production trace 평가를 묶는 오픈소스 관측성·평가 플랫폼.",
+      "whatItDoes": [
+        "production/development trace와 prompt version을 추적",
+        "LLM-as-judge, code evaluator, user feedback, manual labeling 지원",
+        "Docker self-hosting과 Python/JS SDK, LangChain/LlamaIndex/OpenAI 통합 제공"
+      ],
+      "install": "Langfuse Cloud 사용 또는 Docker Compose/Kubernetes self-hosting 구성",
+      "usage": "SDK tracing 후 dataset/experiment/evaluation score를 Langfuse dashboard에서 비교",
+      "koreanNote": "모델 교체 전후의 비용·품질·사용자 피드백을 한 화면에 남기고 싶은 팀에 맞습니다.",
+      "bestFor": [
+        "LLM observability",
+        "production evals",
+        "prompt management",
+        "dataset experiments"
+      ],
+      "url": "https://langfuse.com/docs",
+      "rank": 35,
+      "grade": "C"
+    },
+    {
+      "id": "ext-deepeval-ci-agent-evals",
+      "name": "DeepEval LLM/Agent 평가 하네스",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "공식",
+      "summary": "Python 테스트처럼 LLM 앱, RAG, agent workflow를 단위 평가하고 CI/CD와 tracing으로 연결하는 평가 프레임워크.",
+      "whatItDoes": [
+        "deepeval test run으로 로컬 평가 실행",
+        "LLM-as-a-Judge, RAG, multi-turn, MCP, safety metric 제공",
+        "에이전트 내부 컴포넌트 tracing과 Confident AI 리포트 연동"
+      ],
+      "install": "pip install -U deepeval",
+      "usage": "pytest 스타일 test 파일 작성 후 deepeval test run",
+      "koreanNote": "프롬프트가 바뀔 때마다 품질이 흔들리는 한국어 RAG/챗봇은 CI에 작은 golden set부터 붙이는 편이 현실적입니다.",
+      "bestFor": [
+        "LLM 앱 회귀 테스트",
+        "RAG metric",
+        "agent tracing",
+        "CI/CD 품질 게이트"
+      ],
+      "url": "https://deepeval.com/docs/getting-started",
+      "rank": 36,
+      "grade": "C"
+    },
+    {
+      "id": "ext-openai-evals-registry",
+      "name": "OpenAI Evals Registry",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "공식",
+      "summary": "OpenAI 모델과 LLM 시스템을 평가하는 오픈소스 eval registry와 custom/private eval 작성 프레임워크.",
+      "whatItDoes": [
+        "기존 eval registry를 로컬에서 실행",
+        "업무별 custom/private eval 작성",
+        "prompt chain, tool-using agent 평가용 completion function protocol 제공"
+      ],
+      "install": "git clone https://github.com/openai/evals && pip install -e .",
+      "usage": "registry data는 git-lfs로 받고 custom eval은 examples/docs 템플릿에서 시작",
+      "koreanNote": "공식 대시보드 Evals와 로컬 registry를 분리해 보고, 민감 데이터는 private eval로만 다루세요.",
+      "bestFor": [
+        "OpenAI 모델 평가",
+        "custom/private eval",
+        "벤치마크 registry 확인",
+        "tool agent eval"
+      ],
+      "url": "https://github.com/openai/evals",
+      "rank": 37,
+      "grade": "C"
+    },
+    {
+      "id": "ext-mcp-agent-workflows",
+      "name": "mcp-agent 워크플로우 런타임",
+      "kind": "워크플로우",
+      "platform": "범용",
+      "category": "컨텍스트 관리",
+      "maturity": "커뮤니티",
+      "summary": "MCP 서버 lifecycle, tool/resource/prompt 연결, evaluator-optimizer·router 등 효과적인 에이전트 패턴을 묶는 Python 프레임워크.",
+      "whatItDoes": [
+        "MCP 서버 연결 lifecycle 자동 관리",
+        "router, orchestrator, evaluator-optimizer, map-reduce 패턴 조합",
+        "Temporal 기반 durable agent와 cloud 배포 흐름 지원"
+      ],
+      "install": "uvx mcp-agent init 또는 uv add \"mcp-agent[openai]\"",
+      "usage": "MCPApp, Agent, AugmentedLLM으로 MCP 서버와 LLM을 연결",
+      "koreanNote": "MCP 서버가 여러 개로 늘어났을 때 직접 연결 코드를 늘리기보다 lifecycle 관리 레이어로 검토하세요.",
+      "bestFor": [
+        "MCP-native agent",
+        "multi-server lifecycle",
+        "effective agent patterns",
+        "durable workflow"
+      ],
+      "url": "https://github.com/lastmile-ai/mcp-agent",
+      "rank": 38,
+      "grade": "C"
+    },
+    {
+      "id": "ext-ag-ui-agent-protocol",
+      "name": "AG-UI Agent-User Interaction Protocol",
+      "kind": "위젯",
+      "platform": "범용",
+      "category": "에이전트 UI",
+      "maturity": "커뮤니티",
+      "summary": "에이전트 backend 이벤트와 프론트엔드 UI를 표준 이벤트 프로토콜로 연결하는 agent-user interaction 스택.",
+      "whatItDoes": [
+        "약 16개 표준 event type으로 에이전트 실행 상태를 UI에 전달",
+        "SSE, WebSocket, webhook 등 transport에 느슨하게 호환",
+        "실시간 채팅, state sync, generative UI, frontend tool, HITL 패턴 제공"
+      ],
+      "install": "npx create-ag-ui-app my-agent-app",
+      "usage": "AG-UI compatible backend와 React frontend connector를 연결",
+      "koreanNote": "MCP는 도구, A2A는 에이전트 간 통신, AG-UI는 사용자 화면 연결로 역할을 나눠 설명하면 도입 설계가 쉬워집니다.",
+      "bestFor": [
+        "agent UI protocol",
+        "generative UI",
+        "HITL",
+        "frontend tool integration"
+      ],
+      "url": "https://github.com/ag-ui-protocol/ag-ui",
+      "rank": 39,
+      "grade": "C"
+    },
+    {
+      "id": "ext-agno-agent-platform",
+      "name": "Agno AgentOS 플랫폼",
+      "kind": "워크플로우",
+      "platform": "범용",
+      "category": "에이전트 UI",
+      "maturity": "공식",
+      "summary": "Agent SDK와 AgentOS runtime으로 에이전트, 팀, step workflow를 API·UI·tracing·RBAC가 있는 플랫폼으로 운영하는 스택.",
+      "whatItDoes": [
+        "Agent SDK로 agent, multi-agent team, step workflow 구성",
+        "AgentOS가 세션 격리, tracing, scheduling, RBAC, audit log 제공",
+        "로컬 API를 AgentOS UI에 연결해 테스트·모니터링"
+      ],
+      "install": "uv pip install -U agno openai; AgentOS는 uv pip install -U \"agno[os]\"",
+      "usage": "Agent를 정의하고 AgentOS(agents=[...], tracing=True).get_app()으로 서비스화",
+      "koreanNote": "에이전트를 내부 업무 API로 띄우고 브라우저 UI까지 확인해야 하는 팀은 LangGraph/Agno/assistant-ui를 같이 비교하세요.",
+      "bestFor": [
+        "agent platform",
+        "AgentOS UI",
+        "session isolation",
+        "tracing/RBAC"
+      ],
+      "url": "https://docs.agno.com/first-agent",
+      "rank": 40,
+      "grade": "C"
+    },
+    {
+      "id": "ext-ktransformers-heterogeneous-inference",
+      "name": "KTransformers heterogeneous inference",
+      "kind": "모델 런타임",
+      "platform": "범용",
+      "category": "모델 서빙",
+      "maturity": "커뮤니티",
+      "summary": "CPU/GPU heterogeneous inference와 MoE 최적화로 GLM-5.2 같은 초대형 오픈 모델을 실험하는 런타임.",
+      "whatItDoes": [
+        "CPU/GPU 혼합 추론과 MoE routing 최적화",
+        "kt-kernel 설치 후 GLM 계열 inference/fine-tune 실험",
+        "SGLang integration과 quantization 경로 검토"
+      ],
+      "install": "cd kt-kernel && pip install .",
+      "usage": "GLM-5.2 Day0 지원 공지를 기준으로 kt-kernel 또는 SGLang 연동 경로 확인",
+      "koreanNote": "vLLM/SGLang 기본 경로가 GPU 비용 때문에 부담될 때, MoE·heterogeneous inference 실험 후보로 따로 비교하세요.",
+      "bestFor": [
+        "GLM-5.2 서빙 실험",
+        "MoE 모델 최적화",
+        "CPU/GPU heterogeneous inference",
+        "고급 자체 호스팅"
+      ],
+      "url": "https://github.com/kvcache-ai/ktransformers",
+      "rank": 41,
+      "grade": "C"
+    },
+    {
+      "id": "ext-xllm-accelerator-serving",
+      "name": "xLLM accelerator serving",
+      "kind": "모델 런타임",
+      "platform": "범용",
+      "category": "모델 서빙",
+      "maturity": "커뮤니티",
+      "summary": "Ascend/NPU 등 중국 AI accelerator 환경에서 GLM, DeepSeek, MiniMax, Qwen을 서빙하는 inference engine.",
+      "whatItDoes": [
+        "NPU/MLU/ILU/MUSA/DCU 등 accelerator backend 지원",
+        "GLM-5/4.7/4.6, DeepSeek, MiniMax, Qwen 계열 serving 후보 제공",
+        "엔터프라이즈 대규모 배포와 hardware-specific optimization 검토"
+      ],
+      "install": "xLLM GitHub Quick Start 기준으로 build 또는 Docker 환경 구성",
+      "usage": "중국 accelerator 환경에서 GLM/DeepSeek/Qwen endpoint를 띄우고 OpenAI 호환 호출 여부 확인",
+      "koreanNote": "국내 일반 GPU 서버보다 특수 accelerator 조달·운영 환경에서 의미가 큽니다. 하드웨어 제약을 먼저 확인하세요.",
+      "bestFor": [
+        "AI accelerator serving",
+        "GLM/DeepSeek/Qwen 온프레미스",
+        "중국 NPU/MLU 환경",
+        "엔터프라이즈 inference"
+      ],
+      "url": "https://github.com/jd-opensource/xllm",
+      "rank": 42,
+      "grade": "C"
+    },
+    {
+      "id": "ext-langgraph-stateful-agents",
+      "name": "LangGraph stateful agents",
+      "kind": "워크플로우",
+      "platform": "범용",
+      "category": "컨텍스트 관리",
+      "maturity": "공식",
+      "summary": "장시간 실행, 상태 저장, human-in-the-loop, streaming을 갖춘 저수준 agent orchestration 런타임.",
+      "whatItDoes": [
+        "state graph로 agent workflow 구성",
+        "durable execution, persistence, interrupts 제공",
+        "LangSmith tracing/eval/deployment와 연결"
+      ],
+      "install": "npm install @langchain/langgraph @langchain/core",
+      "usage": "StateGraph로 node/edge를 정의하고 compile().invoke() 실행",
+      "koreanNote": "복잡한 장기 업무 agent를 직접 설계해야 하면 LangChain agent보다 LangGraph를 먼저 비교하세요.",
+      "bestFor": [
+        "장기 agent orchestration",
+        "human-in-the-loop",
+        "streaming",
+        "LangSmith 운영"
+      ],
+      "url": "https://docs.langchain.com/oss/javascript/langgraph/overview",
+      "rank": 43,
+      "grade": "C"
+    },
+    {
+      "id": "ext-llamaindex-rag-agents",
+      "name": "LlamaIndex RAG/Agent framework",
+      "kind": "워크플로우",
+      "platform": "범용",
+      "category": "컨텍스트 관리",
+      "maturity": "공식",
+      "summary": "RAG, data connector, agent, structured extraction, MCP를 한 프레임워크에서 묶는 Python LLM 앱 스택.",
+      "whatItDoes": [
+        "문서 ingestion, indexing, querying 구성",
+        "agent, multi-agent, structured output 패턴 제공",
+        "MCP tools와 local model integration 문서화"
+      ],
+      "install": "pip install llama-index",
+      "usage": "VectorStoreIndex, agent, query engine을 목적별로 조합",
+      "koreanNote": "RAG가 중심인 내부 문서/데이터 앱은 LangGraph보다 LlamaIndex의 ingestion·indexing 축을 먼저 검토하세요.",
+      "bestFor": [
+        "RAG 앱",
+        "문서 ingestion",
+        "structured extraction",
+        "MCP tool 연결"
+      ],
+      "url": "https://developers.llamaindex.ai/python/framework/",
+      "rank": 44,
+      "grade": "C"
+    },
+    {
+      "id": "ext-pydantic-ai-type-safe-agents",
+      "name": "Pydantic AI type-safe agents",
+      "kind": "워크플로우",
+      "platform": "범용",
+      "category": "테스트/품질",
+      "maturity": "공식",
+      "summary": "Pydantic 모델 검증과 dependency injection을 기반으로 type-safe Python agent를 만드는 프레임워크.",
+      "whatItDoes": [
+        "provider abstraction과 typed output 구성",
+        "function tools, toolsets, deferred/native tools 제공",
+        "Logfire instrumentation과 evals 연결"
+      ],
+      "install": "pip install pydantic-ai",
+      "usage": "Agent를 정의하고 typed deps/output, tools, model provider를 연결",
+      "koreanNote": "Python 백엔드에서 타입 검증, 테스트, 도구 호출 안정성이 중요하면 Pydantic AI를 별도 축으로 보세요.",
+      "bestFor": [
+        "type-safe Python agent",
+        "tool validation",
+        "structured output",
+        "backend integration"
+      ],
+      "url": "https://pydantic.dev/docs/ai/overview/",
+      "rank": 45,
+      "grade": "C"
+    },
+    {
+      "id": "ext-crewai-multi-agent-flows",
+      "name": "CrewAI crews and flows",
+      "kind": "워크플로우",
+      "platform": "범용",
+      "category": "컨텍스트 관리",
+      "maturity": "공식",
+      "summary": "role-based multi-agent crew와 deterministic flow를 결합해 업무 자동화 agent를 설계하는 프레임워크.",
+      "whatItDoes": [
+        "agents, crews, flows로 multi-agent 업무 구성",
+        "guardrails, memory, knowledge, observability 제공",
+        "uv 기반 설치와 CLI local development 지원"
+      ],
+      "install": "uv tool install crewai",
+      "usage": "crewai create crew <project-name> 후 agents/tasks/flows 정의",
+      "koreanNote": "역할별 에이전트와 절차형 flow를 함께 설명해야 하는 업무 자동화 PoC에 맞습니다.",
+      "bestFor": [
+        "multi-agent workflow",
+        "role-based crew",
+        "guardrails",
+        "업무 자동화 PoC"
+      ],
+      "url": "https://docs.crewai.com/",
+      "rank": 46,
+      "grade": "C"
+    },
+    {
+      "id": "ext-autogen-agentchat-studio",
+      "name": "Microsoft AutoGen AgentChat/Studio",
+      "kind": "워크플로우",
+      "platform": "범용",
+      "category": "에이전트 UI",
+      "maturity": "공식",
+      "summary": "AgentChat으로 conversational multi-agent 앱을 만들고 AutoGen Studio로 agent를 UI에서 프로토타이핑하는 프레임워크.",
+      "whatItDoes": [
+        "single/multi-agent conversation 앱 구성",
+        "AutoGen Studio 웹 UI로 agent prototype 실행",
+        "Core 기반 event-driven multi-agent 시스템 확장"
+      ],
+      "install": "pip install -U autogenstudio 또는 pip install -U \"autogen-agentchat\" \"autogen-ext[openai]\"",
+      "usage": "autogenstudio ui --port 8080 --appdir ./myapp",
+      "koreanNote": "코드 없이 agent 대화를 먼저 검증해야 하면 Studio, Python 앱으로 확장하려면 AgentChat부터 시작하세요.",
+      "bestFor": [
+        "multi-agent prototype",
+        "agent UI",
+        "Python conversational agents",
+        "event-driven agent"
+      ],
+      "url": "https://microsoft.github.io/autogen/stable/",
+      "rank": 47,
+      "grade": "C"
+    },
+    {
+      "id": "ext-mastra-typescript-agents",
+      "name": "Mastra TypeScript agents",
+      "kind": "워크플로우",
+      "platform": "범용",
+      "category": "에이전트 UI",
+      "maturity": "공식",
+      "summary": "TypeScript 기반 agent, workflow, memory, MCP, Studio를 빠르게 구성하는 제품형 AI 앱 프레임워크.",
+      "whatItDoes": [
+        "agents, workflows, memory, tools, MCP 구성",
+        "Mastra Studio에서 agent/workflow 테스트",
+        "Next.js, React, Astro, Express, SvelteKit, Hono 통합"
+      ],
+      "install": "npm create mastra@latest 또는 pnpm create mastra",
+      "usage": "npm run dev 후 http://localhost:4111 Mastra Studio에서 확인",
+      "koreanNote": "TypeScript 제품 앱 안에 agent/workflow를 직접 넣고 Studio로 확인하려는 팀에 맞습니다.",
+      "bestFor": [
+        "TypeScript agent app",
+        "workflow",
+        "Studio UI",
+        "MCP"
+      ],
+      "url": "https://mastra.ai/docs",
+      "rank": 48,
+      "grade": "C"
+    },
+    {
+      "id": "ext-braintrust-evals-observability",
+      "name": "Braintrust Evals/Observability",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "공식",
+      "summary": "AI 앱의 trace, dataset, scorer, experiment, prompt, gateway를 묶어 품질 회귀와 모델 교체를 관리하는 평가 플랫폼.",
+      "whatItDoes": [
+        "dataset/task/scorer 기반 eval 실행",
+        "trace, logs, human review, annotation workflow 제공",
+        "playground, prompt, gateway, monitoring과 연결"
+      ],
+      "install": "pnpm add braintrust openai autoevals ts-node 또는 pip install braintrust autoevals openai",
+      "usage": "bt eval movie-matcher.eval.ts 또는 SDK Eval()로 experiment 기록",
+      "koreanNote": "프롬프트 변경 전후를 데이터셋과 scorer로 비교해야 하는 팀은 Langfuse와 Braintrust를 같이 검토하세요.",
+      "bestFor": [
+        "LLM regression test",
+        "prompt experiment",
+        "human review",
+        "model gateway"
+      ],
+      "url": "https://www.braintrust.dev/docs/evaluation-quickstart",
+      "rank": 49,
+      "grade": "C"
+    },
+    {
+      "id": "ext-phoenix-openinference-evals",
+      "name": "Arize Phoenix OpenInference",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "공식",
+      "summary": "OpenTelemetry/OpenInference 기반 trace와 LLM eval, prompt, datasets/experiments를 제공하는 오픈소스 AI observability 플랫폼.",
+      "whatItDoes": [
+        "OpenAI, LangChain, LlamaIndex, DSPy, Mastra 등 auto-instrumentation",
+        "LLM-as-a-judge, code evaluator, human label score 연결",
+        "datasets, experiments, prompt playground로 변경 비교"
+      ],
+      "install": "pip install arize-phoenix 또는 Phoenix Cloud/자체 호스팅 경로 선택",
+      "usage": "Phoenix tracing을 켠 뒤 eval score를 traces/spans와 연결",
+      "koreanNote": "OpenTelemetry 표준 trace를 선호하거나 LangChain/LlamaIndex/Mastra 앱을 비교하려는 팀에 적합합니다.",
+      "bestFor": [
+        "OpenTelemetry tracing",
+        "RAG/agent eval",
+        "prompt experiment",
+        "datasets"
+      ],
+      "url": "https://arize.com/docs/phoenix",
+      "rank": 50,
+      "grade": "C"
+    },
+    {
+      "id": "ext-giskard-agent-redteam-harness",
+      "name": "Giskard Agent Evaluation/Red Teaming",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "공식",
+      "summary": "LLM agent, RAG, chatbot의 보안 취약점과 비즈니스 실패를 테스트하는 Hub/UI와 오픈소스 Python 평가 라이브러리.",
+      "whatItDoes": [
+        "LLM Scan과 RAG Evaluation Toolkit 기반 실패 탐지",
+        "Hub에서 continuous red teaming, annotation, RBAC 제공",
+        "open-source checks와 pytest/CI/CD 연동 지원"
+      ],
+      "install": "pip install giskard 또는 Giskard Hub/SDK 사용",
+      "usage": "Giskard Checks로 scenario/test suite를 만들고 pytest 또는 Hub eval로 실행",
+      "koreanNote": "보안·컴플라이언스·비즈니스 로직 실패를 평가해야 하는 RAG/상담봇에는 일반 품질 하네스와 별도로 둬야 합니다.",
+      "bestFor": [
+        "LLM red teaming",
+        "RAG security",
+        "business failure testing",
+        "continuous monitoring"
+      ],
+      "url": "https://docs.giskard.ai/",
+      "rank": 51,
+      "grade": "C"
+    },
+    {
+      "id": "ext-giskard-agent-skills",
+      "name": "Giskard Agent Skills",
+      "kind": "스킬",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "공식",
+      "summary": "Claude Code, Cursor 등 코딩 에이전트에 Giskard red-team 시나리오와 RAG 평가 suite 생성을 맡기는 drop-in skill 묶음.",
+      "whatItDoes": [
+        "scenario-generator로 adversarial scenario와 checks 생성",
+        "rag-evaluator로 groundedness, relevance, retrieval, hallucination 평가 suite 생성",
+        "skills CLI로 코딩 에이전트에 설치"
+      ],
+      "install": "npx skills add Giskard-AI/giskard-skills --skill scenario-generator",
+      "usage": "npx skills add Giskard-AI/giskard-skills --skill rag-evaluator",
+      "koreanNote": "하네스 코드를 직접 쓰기 전에 에이전트에게 test suite 초안을 만들게 하는 스킬로 쓰기 좋습니다.",
+      "bestFor": [
+        "agent skills",
+        "RAG eval suite generation",
+        "red-team scenarios",
+        "Claude/Cursor workflows"
+      ],
+      "url": "https://docs.giskard.ai/oss/agent-skills",
+      "rank": 52,
+      "grade": "C"
+    },
+    {
+      "id": "ext-mlflow-genai-evaluation",
+      "name": "MLflow GenAI Evaluation",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "공식",
+      "summary": "MLflow의 LLM/agent tracing, evaluation, prompt management, AI Gateway를 묶은 오픈소스 AI engineering 플랫폼.",
+      "whatItDoes": [
+        "OpenTelemetry 호환 tracing으로 prompt/retrieval/tool call 기록",
+        "LLM judge와 custom metric 기반 agent evaluation",
+        "prompt management, AI Gateway, deployment와 연결"
+      ],
+      "install": "uvx mlflow demo 또는 pip install mlflow",
+      "usage": "MLflow tracing/evaluation quickstart로 agent trace와 scorer 결과를 기록",
+      "koreanNote": "기존 MLflow/Databricks 운영 체계가 있는 팀은 별도 하네스보다 MLflow GenAI 축을 먼저 검토하세요.",
+      "bestFor": [
+        "MLflow stack",
+        "OpenTelemetry tracing",
+        "LLM judge eval",
+        "AI Gateway"
+      ],
+      "url": "https://mlflow.org/docs/latest/genai/index.html",
+      "rank": 53,
+      "grade": "C"
+    },
+    {
+      "id": "ext-trulens-rag-triad-evals",
+      "name": "TruLens RAG Triad Evals",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "공식",
+      "summary": "RAG triad, feedback functions, guardrails, LangChain/LangGraph/LlamaIndex/MLflow trace 평가를 제공하는 RAG 중심 평가 도구.",
+      "whatItDoes": [
+        "context relevance, groundedness, answer relevance 등 feedback function 구성",
+        "LangChain, LangGraph, LlamaIndex 앱 instrumentation",
+        "guardrails, runtime evaluation, dashboard 확인"
+      ],
+      "install": "pip install trulens",
+      "usage": "feedback functions를 app run에 연결하고 TruLens dashboard에서 records/leaderboard 확인",
+      "koreanNote": "RAG 품질을 retrieval, grounding, answer 세 축으로 분해해 설명해야 하는 팀에 특히 유용합니다.",
+      "bestFor": [
+        "RAG triad",
+        "groundedness",
+        "guardrails",
+        "LangChain/LlamaIndex eval"
+      ],
+      "url": "https://www.trulens.org/getting_started/quickstarts/quickstart/",
+      "rank": 54,
+      "grade": "C"
+    },
+    {
+      "id": "ext-wandb-weave-llm-evals",
+      "name": "W&B Weave LLM Evals",
+      "kind": "하네스",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "공식",
+      "summary": "Weights & Biases Weave로 LLM app trace, LLM judge/custom scorer 평가, RAG evaluation, prompt/model experiment를 추적.",
+      "whatItDoes": [
+        "Python/TypeScript SDK로 LLM input/output과 agent trace 기록",
+        "LLM judge와 custom scorer로 app response 평가",
+        "RAG application evaluation과 prompt/model experiment 지원"
+      ],
+      "install": "pip install weave 또는 pnpm install weave",
+      "usage": "weave init 후 traced call/evaluation pipeline을 W&B project에 기록",
+      "koreanNote": "이미 W&B를 쓰는 ML/LLMOps 팀이면 모델 실험과 LLM 앱 평가를 같은 조직 계정에서 볼 수 있습니다.",
+      "bestFor": [
+        "W&B users",
+        "LLM app tracing",
+        "custom scorer",
+        "RAG eval"
+      ],
+      "url": "https://docs.wandb.ai/weave",
+      "rank": 55,
+      "grade": "C"
+    },
+    {
+      "id": "ext-skill-run-verify-generator",
+      "name": "Run/Verify 프로젝트 실행 스킬",
+      "kind": "스킬",
+      "platform": "Claude Code",
+      "category": "테스트/품질",
+      "maturity": "공식",
+      "summary": "Claude Code bundled /run, /verify, /run-skill-generator로 앱 실행법과 검증 recipe를 프로젝트 스킬로 고정.",
+      "whatItDoes": [
+        "프로젝트 실행 명령과 환경 변수를 학습",
+        "/run으로 실제 앱을 띄워 변경 확인",
+        "/verify로 빌드·실행 기반 검증 수행"
+      ],
+      "install": "Claude Code v2.1.145+에서 /run-skill-generator 실행",
+      "usage": "/run, /verify, /run-skill-generator",
+      "koreanNote": "테스트만으로 확인하기 어려운 프론트엔드·CLI·TUI 변경을 사이트 운영팀 검증 절차로 표준화하기 좋습니다.",
+      "bestFor": [
+        "frontend QA",
+        "local app verification",
+        "project run recipe"
+      ],
+      "url": "https://code.claude.com/docs/en/skills",
+      "rank": 56,
+      "grade": "C"
+    },
+    {
+      "id": "ext-skill-rag-eval-template",
+      "name": "RAG 평가 스킬 템플릿",
+      "kind": "스킬",
+      "platform": "범용",
+      "category": "평가/하네스",
+      "maturity": "커뮤니티",
+      "summary": "문서형 챗봇의 groundedness, retrieval, hallucination, citation 점검을 하네스 실행 절차로 묶는 SKILL.md 템플릿.",
+      "whatItDoes": [
+        "RAG 평가 항목과 실패 모드 정리",
+        "Giskard/RAGAS/TruLens/Phoenix 실행 초안 생성",
+        "테스트셋, scorer, 보고서 체크리스트 연결"
+      ],
+      "install": ".agents/skills/rag-eval 또는 .claude/skills/rag-eval에 SKILL.md 작성",
+      "usage": "RAG 변경 후 \"RAG evaluation skill template로 평가 suite 만들어줘\"",
+      "koreanNote": "하네스 도구 자체보다 평가 절차를 먼저 통일해야 하는 팀에게 유용한 출발점입니다.",
+      "bestFor": [
+        "RAG quality",
+        "groundedness",
+        "retrieval eval",
+        "hallucination checks"
+      ],
+      "url": "https://docs.giskard.ai/oss/agent-skills",
+      "rank": 57,
+      "grade": "C"
+    },
+    {
+      "id": "ext-skill-release-docs-template",
+      "name": "릴리스/문서화 스킬 템플릿",
+      "kind": "스킬",
+      "platform": "범용",
+      "category": "문서화",
+      "maturity": "커뮤니티",
+      "summary": "diff, 이슈, 버전 정보를 받아 changelog, release note, 사용자 공지, 검증 체크리스트를 같은 톤으로 작성.",
+      "whatItDoes": [
+        "변경분을 사용자 영향 중심으로 요약",
+        "릴리스 노트와 운영 체크리스트 생성",
+        "Codex/Claude/Gemini CLI 스킬로 동일 절차 재사용"
+      ],
+      "install": ".agents/skills/release-docs/SKILL.md 또는 .claude/skills/release-docs/SKILL.md 작성",
+      "usage": "\"release documentation skill로 이번 변경 공지 만들어줘\"",
+      "koreanNote": "모델/플러그인/하네스 정보 업데이트가 잦은 포털은 릴리스 메모도 스킬화하면 운영 누락이 줄어듭니다.",
+      "bestFor": [
+        "release notes",
+        "changelog",
+        "docs workflow",
+        "editorial checklist"
+      ],
+      "url": "https://developers.openai.com/codex/skills",
+      "rank": 58,
+      "grade": "C"
+    },
+    {
+      "id": "ext-skill-ui-qa-template",
+      "name": "UI QA 스킬 템플릿",
+      "kind": "스킬",
+      "platform": "범용",
+      "category": "디자인/UI",
+      "maturity": "커뮤니티",
+      "summary": "반응형 스크린샷, overflow, 버튼 텍스트, 빈 상태, 접근성 점검을 프론트엔드 QA 절차로 고정하는 스킬.",
+      "whatItDoes": [
+        "desktop/mobile screenshot 체크리스트 실행",
+        "텍스트 겹침, 카드 중첩, 버튼 overflow 점검",
+        "출처 패널과 검색/필터 상태 확인"
+      ],
+      "install": ".agents/skills/ui-qa/SKILL.md 또는 .claude/skills/ui-qa/SKILL.md 작성",
+      "usage": "\"UI QA skill template 기준으로 /tools 화면 확인해줘\"",
+      "koreanNote": "AI 포털처럼 카드와 필터가 많은 화면은 QA 기준을 스킬로 고정해야 새 데이터가 들어와도 레이아웃이 무너지지 않습니다.",
+      "bestFor": [
+        "frontend QA",
+        "responsive checks",
+        "visual regression",
+        "accessibility"
+      ],
+      "url": "https://code.claude.com/docs/en/skills",
+      "rank": 59,
+      "grade": "C"
+    },
+    {
+      "id": "ext-claude-skill-design",
+      "name": "디자인 시스템 스킬",
+      "kind": "스킬",
+      "platform": "Claude Code",
+      "category": "디자인/UI",
+      "maturity": "커뮤니티",
+      "summary": "디자인 토큰·컴포넌트 규칙·접근성 기준을 스킬로 묶어 일관된 UI 작업을 유도.",
+      "whatItDoes": [
+        "토큰/컴포넌트 규약 주입",
+        "접근성·대비 기준 강제",
+        "프로덕트 레지스터 가이드"
+      ],
+      "install": ".claude/skills/<design>/SKILL.md 작성",
+      "usage": "UI 작업 시 자동 로드",
+      "koreanNote": "리빙 스타일가이드(/design) 페이지와 함께 쓰면 컨벤션이 코드와 동기화됩니다.",
+      "bestFor": [
+        "design system",
+        "UI QA",
+        "accessibility checklist"
+      ],
+      "url": "https://code.claude.com/docs/en/skills",
+      "rank": 60,
+      "grade": "C"
+    }
+  ],
+  "profiles": [
+    {
+      "id": "gpt-55",
+      "modelName": "GPT-5.5",
+      "productName": "GPT / ChatGPT / API",
+      "provider": "OpenAI",
+      "status": "일반 제공",
+      "lastUpdate": "2026-04-23",
+      "oneLine": "복잡한 전문 업무, 코딩, 장문 컨텍스트를 위한 OpenAI 최신 프런티어 모델.",
+      "summary": "GPT-5.5는 텍스트·이미지 입력과 텍스트 출력을 지원하며 Responses API에서 웹 검색, 파일 검색, 코드 인터프리터, 컴퓨터 사용, MCP 등 폭넓은 도구를 붙일 수 있다.",
+      "strengths": [
+        "전문 업무 추론",
+        "코딩과 리포지토리 작업",
+        "1M급 장문 컨텍스트",
+        "도구 생태계"
+      ],
+      "caveats": [
+        "오디오·비디오 직접 입출력은 전용 모델을 사용",
+        "긴 입력은 별도 고가 과금 규칙 확인 필요"
+      ],
+      "bestFor": [
+        "복잡한 분석 보고서",
+        "코드 리뷰·수정",
+        "에이전트 워크플로",
+        "도구 호출 기반 리서치"
+      ],
+      "aliases": [
+        "GPT",
+        "ChatGPT",
+        "OpenAI",
+        "지피티",
+        "챗지피티"
+      ]
+    },
+    {
+      "id": "claude-fable-5",
+      "modelName": "Claude Fable 5",
+      "productName": "Claude",
+      "provider": "Anthropic",
+      "status": "일반 제공",
+      "lastUpdate": "2026-06-09",
+      "oneLine": "장기 자율 작업과 고난도 추론에 맞춘 Anthropic의 최신 광범위 공개 모델.",
+      "summary": "Claude Fable 5는 Mythos 5와 같은 계열의 고성능 모델이지만, 일반 제공 모델에는 안전 분류기와 refusal/fallback 처리 흐름이 포함된다.",
+      "strengths": [
+        "장기 에이전트 작업",
+        "복잡한 추론",
+        "Claude 생태계",
+        "fallback 설계"
+      ],
+      "caveats": [
+        "거절 응답은 HTTP 200의 stop_reason으로 처리",
+        "Mythos 5는 승인 고객 대상 제한 제공"
+      ],
+      "bestFor": [
+        "고자율 업무 에이전트",
+        "긴 문서 분석",
+        "정책 민감 업무",
+        "워크플로 안정성 설계"
+      ],
+      "aliases": [
+        "Claude",
+        "클로드",
+        "Anthropic",
+        "Fable",
+        "Mythos"
+      ]
+    },
+    {
+      "id": "gemini-31-pro",
+      "modelName": "Gemini 3.1 Pro Preview",
+      "productName": "Gemini",
+      "provider": "Google",
+      "status": "프리뷰",
+      "lastUpdate": "2026-04-28",
+      "oneLine": "멀티모달 입력과 도구 사용, 에이전트형 코딩 워크플로에 초점을 둔 Gemini 3 Pro 계열 프리뷰.",
+      "summary": "Gemini 3.1 Pro Preview는 텍스트, 이미지, 비디오, 오디오, PDF 입력을 받으며 검색 grounding, 코드 실행, URL context, 구조화 출력, 함수 호출을 지원한다.",
+      "strengths": [
+        "멀티모달 입력 범위",
+        "Google Search grounding",
+        "PDF·비디오·오디오 입력",
+        "토큰 효율 개선"
+      ],
+      "caveats": [
+        "프리뷰 모델이라 품질 변동 가능",
+        "Live API와 이미지 생성은 이 모델에서 직접 지원하지 않음"
+      ],
+      "bestFor": [
+        "문서·영상 기반 분석",
+        "검색 grounding 답변",
+        "에이전트 코딩",
+        "멀티모달 리서치"
+      ],
+      "aliases": [
+        "Gemini",
+        "제미나이",
+        "재미나이",
+        "Google AI",
+        "Gemini Pro"
+      ]
+    },
+    {
+      "id": "gemma-4",
+      "modelName": "Gemma 4",
+      "productName": "Gemma",
+      "provider": "Google",
+      "status": "일반 제공",
+      "lastUpdate": "2026-06-08",
+      "oneLine": "모바일·엣지·로컬 PC·서버를 한 계열로 잇는 Google DeepMind의 최신 오픈웨이트 모델군.",
+      "summary": "Gemma 4는 E2B/E4B, 12B, 26B A4B, 31B 크기로 제공되는 오픈웨이트 모델군이다. 텍스트·이미지·비디오·오디오 입력, 128K/256K 컨텍스트, function calling, system role, MTP, 공식 QAT 체크포인트와 llama.cpp/LM Studio/vLLM/SGLang/LiteRT-LM 라우팅을 함께 봐야 한다.",
+      "strengths": [
+        "오픈웨이트와 상업적 사용 허용",
+        "모바일부터 서버까지 크기 선택지",
+        "Gemma 4 QAT와 GGUF/Compressed Tensor 경로",
+        "멀티모달·코딩·에이전트 기능"
+      ],
+      "caveats": [
+        "오디오 native 지원은 E2B/E4B/12B 중심으로 모델별 차이가 있다.",
+        "QAT, GGUF, mobile, server 변형 suffix를 런타임별로 정확히 골라야 한다.",
+        "컨텍스트를 길게 쓰면 base memory 외 KV cache 비용이 빠르게 증가한다."
+      ],
+      "bestFor": [
+        "온디바이스/브라우저/모바일 PoC",
+        "로컬 멀티모달 챗봇",
+        "QAT 기반 저메모리 배포",
+        "오픈웨이트 모델 비교와 교육용 실습"
+      ],
+      "aliases": [
+        "Gemma",
+        "젬마",
+        "Google open model",
+        "Gemma 4",
+        "Gemma QAT",
+        "GGUF"
+      ]
+    },
+    {
+      "id": "grok-43",
+      "modelName": "Grok 4.3",
+      "productName": "Grok",
+      "provider": "xAI",
+      "status": "일반 제공",
+      "lastUpdate": "2026-05-29",
+      "oneLine": "xAI의 최신 플래그십 모델로, 도구 호출·지시 따르기·낮은 환각률을 전면에 둔다.",
+      "summary": "Grok 4.3은 텍스트와 이미지 입력, 텍스트 출력을 제공하며 함수 호출, 구조화 출력, configurable reasoning을 지원한다. 실시간 정보는 검색 도구를 켜야 한다.",
+      "strengths": [
+        "빠른 출력 속도",
+        "저렴한 토큰 가격",
+        "X Search 연계",
+        "구조화 출력"
+      ],
+      "caveats": [
+        "검색 도구 없이는 최신 사건 접근 불가",
+        "일부 레거시 alias가 최신 모델로 이어질 수 있어 고정 버전 확인 필요"
+      ],
+      "bestFor": [
+        "실시간 웹/X 리서치",
+        "저비용 고속 요약",
+        "구조화 데이터 추출",
+        "이미지 포함 질의"
+      ],
+      "aliases": [
+        "Grok",
+        "그록",
+        "xAI",
+        "X Search"
+      ]
+    },
+    {
+      "id": "manus-api-v2",
+      "modelName": "Manus API v2",
+      "productName": "Manus",
+      "provider": "Manus",
+      "status": "서비스/API",
+      "lastUpdate": "2026-06-17",
+      "oneLine": "모델명보다 태스크 중심 API가 핵심인 자율 에이전트 서비스.",
+      "summary": "Manus는 웹 앱, 브라우저 오퍼레이터, 슬라이드·웹사이트·디자인 생성, v2 API를 통해 AI agent task를 만들고 관리하는 서비스로 포지셔닝한다.",
+      "strengths": [
+        "태스크 기반 에이전트",
+        "프로젝트 공유 지시",
+        "파일 첨부",
+        "웹훅·스킬·커스텀 에이전트"
+      ],
+      "caveats": [
+        "기저 LLM 스펙은 모델 API처럼 공개되어 있지 않음",
+        "LLM 비교표에서는 모델보다 에이전트 플랫폼으로 분리해 보는 것이 정확"
+      ],
+      "bestFor": [
+        "반복 업무 자동화",
+        "문서·파일 기반 작업",
+        "웹 조작형 태스크",
+        "비개발자용 에이전트 실행"
+      ],
+      "aliases": [
+        "Manus",
+        "마누스",
+        "Butterfly Effect",
+        "Meta",
+        "AI agent"
+      ]
+    },
+    {
+      "id": "kimi-k27-code",
+      "modelName": "Kimi K2.7 Code",
+      "productName": "Kimi / Moonshot API",
+      "provider": "Moonshot AI",
+      "status": "일반 제공",
+      "lastUpdate": "2026-06-18",
+      "oneLine": "장문 코딩, 에이전트, 멀티모달 도구 사용에 초점을 둔 Kimi 최신 코딩 모델.",
+      "summary": "Kimi K2.7 Code는 Kimi의 강한 코딩 모델로 문서화되어 있으며 K2.7 Code HighSpeed는 같은 모델의 고속 변형이다. OpenAI SDK/API 형식을 그대로 쓰는 base URL 연동이 가능하고, 이미지·비디오 입력과 도구 호출 예제가 제공된다.",
+      "strengths": [
+        "장문 코딩 작업",
+        "멀티스텝 도구 호출",
+        "비디오/이미지 입력",
+        "OpenAI SDK 호환"
+      ],
+      "caveats": [
+        "K2.7 Code는 non-thinking mode 비활성화를 지원하지 않음",
+        "tool_choice는 auto/none 중심으로 제한",
+        "공식 가격표의 상세 숫자는 모델별 페이지에서 별도 확인 필요"
+      ],
+      "bestFor": [
+        "장시간 코딩 에이전트",
+        "비디오/이미지 포함 코드 분석",
+        "Claude Code/Roo Code류 도구 연결",
+        "OpenAI 호환 API 교체 실험"
+      ],
+      "aliases": [
+        "Kimi",
+        "키미",
+        "Moonshot",
+        "문샷",
+        "kimi-k2.7-code",
+        "K2.7"
+      ]
+    },
+    {
+      "id": "deepseek-v4-flash",
+      "modelName": "DeepSeek V4 Flash",
+      "productName": "DeepSeek API",
+      "provider": "DeepSeek",
+      "status": "일반 제공",
+      "lastUpdate": "2026-04-24",
+      "oneLine": "1M 컨텍스트와 384K 출력 한도를 제공하는 저비용 OpenAI/Anthropic 호환 모델.",
+      "summary": "DeepSeek V4 Flash는 OpenAI Chat Completions 형식과 Anthropic 형식의 base URL을 모두 제공하며, thinking/non-thinking 모드, JSON 출력, tool calls, prefix completion, non-thinking FIM을 지원한다.",
+      "strengths": [
+        "1M 컨텍스트",
+        "384K 최대 출력",
+        "매우 낮은 공식 토큰 단가",
+        "OpenAI/Anthropic 형식 호환"
+      ],
+      "caveats": [
+        "deepseek-chat/deepseek-reasoner 레거시 이름은 2026-07-24 15:59 UTC 지원 중단 예정",
+        "FIM은 non-thinking mode에서만 사용",
+        "가격은 DeepSeek 잔액 차감 정책과 캐시 hit/miss를 함께 봐야 함"
+      ],
+      "bestFor": [
+        "대량 요약/분류",
+        "저비용 장문 처리",
+        "OpenAI 호환 API 대체",
+        "캐시 기반 반복 워크로드"
+      ],
+      "aliases": [
+        "DeepSeek",
+        "딥시크",
+        "deepseek-v4-flash",
+        "deepseek-chat",
+        "deepseek-reasoner"
+      ]
+    },
+    {
+      "id": "qwen3-2507",
+      "modelName": "Qwen3-2507",
+      "productName": "Qwen",
+      "provider": "Alibaba Qwen",
+      "status": "서비스/API",
+      "lastUpdate": "2026-06-18",
+      "oneLine": "오픈웨이트·멀티링구얼·로컬 실행 생태계가 강한 Alibaba Qwen 최신 문서 기준 모델군.",
+      "summary": "Qwen3-2507은 Instruct-only와 Thinking-only 모델을 다시 분리해 제공한다고 문서화되어 있으며, 256K 장문 이해와 1M 확장 가능성을 전면에 둔다. Qwen3 문서는 100개 이상 언어/방언, 도구 사용, 에이전트, 로컬 실행/배포 프레임워크를 함께 안내한다.",
+      "strengths": [
+        "오픈웨이트 생태계",
+        "100개 이상 언어/방언",
+        "로컬 실행/배포 문서",
+        "도구 사용·에이전트"
+      ],
+      "caveats": [
+        "서비스별 API 가격과 모델 배포명은 플랫폼마다 다를 수 있음",
+        "모델 크기와 양자화 방식에 따라 품질·속도 편차가 큼"
+      ],
+      "bestFor": [
+        "온프레미스/로컬 LLM 실험",
+        "한국어 포함 다국어 워크로드",
+        "오픈웨이트 비교 평가",
+        "vLLM/SGLang/Ollama 배포 검토"
+      ],
+      "aliases": [
+        "Qwen",
+        "큐원",
+        "쿠엔",
+        "Alibaba",
+        "Qwen3",
+        "Qwen3-2507"
+      ]
+    },
+    {
+      "id": "glm-52",
+      "modelName": "GLM-5.2",
+      "productName": "GLM / Z.ai",
+      "provider": "Z.ai / Zhipu AI",
+      "status": "일반 제공",
+      "lastUpdate": "2026-06-17",
+      "oneLine": "1M 컨텍스트와 flexible reasoning effort를 갖춘 Z.ai 최신 MIT 오픈웨이트 플래그십.",
+      "summary": "GLM-5.2는 GLM-5.1 후속 flagship으로, Hugging Face 카드 기준 753B, MIT, 1M context를 제공한다. 공식 자료는 vLLM, SGLang, Docker Model Runner, Transformers, KTransformers, Ascend/xLLM 실행 경로와 glm-5.2 API quick start를 안내한다.",
+      "strengths": [
+        "1M context",
+        "코딩/장기 에이전트 포지션",
+        "MIT 오픈웨이트",
+        "vLLM/SGLang/KTransformers/xLLM 실행 경로"
+      ],
+      "caveats": [
+        "753B급이라 단일 로컬 PC 설치보다 GPU 서버, 양자화, 원격 endpoint 전략이 현실적",
+        "공식 카드 벤치마크와 독립 하네스 결과를 분리해 기록",
+        "GLM-5.2와 GLM-5.1 모델명을 endpoint, served-model-name, 평가 로그에서 명확히 구분"
+      ],
+      "bestFor": [
+        "장기 코딩/에이전트 PoC",
+        "자체 호스팅 GLM 최신 후보",
+        "Terminal-Bench/SWE-Bench 재평가",
+        "OpenAI 호환 endpoint 실험"
+      ],
+      "aliases": [
+        "GLM",
+        "Z.ai",
+        "Zhipu",
+        "지푸",
+        "쯔푸",
+        "GLM-5.2",
+        "glm-5.2",
+        "zai-org/GLM-5.2"
+      ]
+    },
+    {
+      "id": "glm-51",
+      "modelName": "GLM-5.1",
+      "productName": "GLM / Z.ai",
+      "provider": "Z.ai / Zhipu AI",
+      "status": "일반 제공",
+      "lastUpdate": "2026-06-19",
+      "oneLine": "MIT 라이선스 오픈웨이트 754B급 GLM 플래그십으로 코딩·에이전트·로컬/서빙 실험에 적합한 모델.",
+      "summary": "GLM-5.1은 Z.ai가 Hugging Face에 공개한 차세대 flagship 모델 카드 기준 754B 모델이며, Transformers, vLLM, SGLang, Docker Model Runner, GGUF/Ollama/LM Studio 계열 실행 경로를 안내한다. SWE-Bench Pro, Terminal-Bench 2.0, CyberGym, BrowseComp 등 점수는 공식 모델 카드의 자체 보고 벤치마크로 분리해 해석해야 한다.",
+      "strengths": [
+        "MIT 오픈웨이트",
+        "코딩/에이전트 벤치마크 지향",
+        "vLLM/SGLang 서빙 경로",
+        "GLM 생태계와 양자화 후보"
+      ],
+      "caveats": [
+        "754B급 모델이라 로컬 노트북 단독 실행보다 서버/양자화/프록시 비용 검토가 필요",
+        "벤치마크 점수는 공식 모델 카드 값과 외부 leaderboard 값을 분리해 표시",
+        "GLM-5.1 지원 런타임 버전(vLLM/SGLang/Transformers)을 고정 확인 필요"
+      ],
+      "bestFor": [
+        "오픈웨이트 코딩 모델 비교",
+        "자체 호스팅 GLM PoC",
+        "에이전트/터미널 benchmark 실험",
+        "vLLM/SGLang 서빙 성능 비교"
+      ],
+      "aliases": [
+        "GLM",
+        "Z.ai",
+        "Zhipu",
+        "지푸",
+        "쯔푸",
+        "GLM-5.1",
+        "zai-org/GLM-5.1"
+      ]
+    },
+    {
+      "id": "mistral-medium-35",
+      "modelName": "Mistral Medium 3.5",
+      "productName": "Mistral",
+      "provider": "Mistral AI",
+      "status": "일반 제공",
+      "lastUpdate": "2026-04-28",
+      "oneLine": "에이전트와 코딩에 최적화된 256K 컨텍스트의 오픈웨이트 멀티모달 모델.",
+      "summary": "Mistral Medium 3.5는 Modified MIT 라이선스 오픈웨이트로 공개된 frontier-class 멀티모달 모델이다. Chat Completions, function calling, agents/conversations, built-in tools, structured outputs, OCR, document QnA, FIM 등 폭넓은 기능이 모델 카드에 문서화되어 있다.",
+      "strengths": [
+        "오픈웨이트",
+        "코딩/에이전트 최적화",
+        "문서/OCR 기능",
+        "명확한 공식 단가"
+      ],
+      "caveats": [
+        "라이선스는 Modified MIT 조건을 별도 검토",
+        "클라우드 API와 자체 배포의 비용/운영 책임이 다름"
+      ],
+      "bestFor": [
+        "유럽/오픈웨이트 전략",
+        "문서 QnA",
+        "에이전트 코딩",
+        "자체 호스팅 후보 평가"
+      ],
+      "aliases": [
+        "Mistral",
+        "미스트랄",
+        "Mistral Medium",
+        "Mistral AI"
+      ]
+    },
+    {
+      "id": "ministral-3-14b",
+      "modelName": "Ministral 3 14B",
+      "productName": "Ministral",
+      "provider": "Mistral AI",
+      "status": "일반 제공",
+      "lastUpdate": "2025-12-02",
+      "oneLine": "로컬 배포와 경량 오픈웨이트 전략에 맞춘 Mistral의 Ministral 3 계열 14B 모델.",
+      "summary": "Ministral 3 14B는 Ministral 3 패밀리의 큰 축으로, 로컬 환경을 포함한 다양한 하드웨어에서 고성능 실행을 목표로 한다. 256K 컨텍스트와 입력/출력 동일 공식 단가가 모델 카드에 공개되어 있다.",
+      "strengths": [
+        "로컬 배포 후보",
+        "저렴한 공식 단가",
+        "256K 컨텍스트",
+        "오픈웨이트 계열"
+      ],
+      "caveats": [
+        "소형 모델이라 초대형 프런티어 모델과 직접 품질 비교는 분리 필요",
+        "자체 배포 시 GPU/서빙 비용과 모델 카드 단가를 따로 계산해야 함"
+      ],
+      "bestFor": [
+        "온디바이스/온프레미스 검토",
+        "저비용 사내 챗봇",
+        "경량 문서 QnA",
+        "오픈웨이트 평가 기준선"
+      ],
+      "aliases": [
+        "Ministral",
+        "미니스트랄",
+        "ministrai",
+        "Mistral local",
+        "14B"
+      ]
+    },
+    {
+      "id": "llama-4-maverick",
+      "modelName": "Llama 4 Maverick",
+      "productName": "Llama",
+      "provider": "Meta",
+      "status": "일반 제공",
+      "lastUpdate": "2025-04-05",
+      "oneLine": "텍스트와 이미지를 함께 처리하는 Meta Llama 4 계열의 대형 멀티모달 MoE 오픈 모델 후보.",
+      "summary": "Llama 4 Maverick은 Hugging Face 모델 카드 기준 17B active, 128 experts, 400B total의 native multimodal MoE 모델이다. Llama 4 Scout는 17B active, 16 experts, 109B total과 10M context로 별도 축을 이루며, 두 모델 모두 vLLM/SGLang/Docker Model Runner와 quantization 탐색 경로가 제공된다.",
+      "strengths": [
+        "Native multimodal MoE",
+        "1M context Maverick과 10M context Scout 축",
+        "vLLM/SGLang/Docker 실행 예시",
+        "Llama 생태계와 quantization 후보"
+      ],
+      "caveats": [
+        "Llama 4 Community License는 일반 오픈소스 라이선스가 아니므로 상업/재배포 조건 검토 필요",
+        "Hugging Face 모델 접근 조건과 HF_TOKEN, 런타임 버전 요구사항을 확인해야 한다.",
+        "공식 지원 언어는 12개 언어로, 한국어 품질은 별도 자체 평가가 필요하다."
+      ],
+      "bestFor": [
+        "오픈웨이트 멀티모달 비교",
+        "이미지 reasoning과 문서/차트 이해",
+        "vLLM/SGLang 자체 서빙 PoC",
+        "Llama 생태계 기반 fine-tune/quantization 실험"
+      ],
+      "aliases": [
+        "Llama",
+        "라마",
+        "Meta",
+        "Llama 4",
+        "Maverick",
+        "Scout",
+        "Llama4"
+      ]
+    },
+    {
+      "id": "cursor-ai-ide",
+      "modelName": "Cursor AI IDE / Agents",
+      "productName": "Cursor AI IDE",
+      "provider": "Cursor",
+      "status": "서비스/IDE",
+      "lastUpdate": "2026-06-17",
+      "oneLine": "기저 모델보다 개발 환경, Agent, Tab, Cloud agents, Bugbot, CLI가 핵심인 AI 코딩 IDE.",
+      "summary": "Cursor는 모델 API가 아니라 VS Code 계열 개발 경험 위에 Agent, Tab 완성, MCP/skills/hooks, Cloud agents, Bugbot 리뷰, CLI와 팀 관리 기능을 얹은 AI IDE다. 바이브 코딩 비교에서는 GPT/Claude/Gemini 같은 기저 LLM과 별도 축으로 보되, 실제 개발 생산성 평가에는 함께 넣는 것이 정확하다.",
+      "strengths": [
+        "IDE 안에서 repo 맥락 활용",
+        "Agent와 Tab 자동완성",
+        "Cloud agents와 병렬 작업",
+        "Bugbot/보안 리뷰"
+      ],
+      "caveats": [
+        "기저 모델 품질과 Cursor 실행 표면 품질을 분리 평가해야 함",
+        "팀/엔터프라이즈 사용은 repo, model, MCP 접근 제어와 privacy mode를 함께 검토"
+      ],
+      "bestFor": [
+        "프론트엔드/풀스택 구현",
+        "장시간 바이브 코딩",
+        "PR 리뷰와 버그 탐지",
+        "학생/팀 개발 학습"
+      ],
+      "aliases": [
+        "Cursor",
+        "커서",
+        "Anysphere",
+        "AI IDE",
+        "Composer",
+        "Bugbot"
+      ]
+    }
+  ]
+}

@@ -28,6 +28,7 @@ import {
   Share2,
   Sparkles,
   Table2,
+  Trophy,
   Workflow,
 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -51,6 +52,7 @@ import { getCurrentRoute, routePath, routeTitles, type AppRoute } from '@/compon
 import { Header, Sidebar } from '@/components/app/AppShell'
 import { BookmarksRail } from '@/components/app/BookmarksRail'
 import { CliComparisonSection, LlmCliManualSection } from '@/components/app/CliComparisonSection'
+import { CliManualSection } from '@/components/app/CliManualSection'
 import { ActiveFilterChips, MultiSegmentBar } from '@/components/app/CommonUi'
 import { CommunityRoute } from '@/components/app/CommunityRoute'
 import { EventCostComparisonSection, ModelCostCalculator } from '@/components/app/CostSections'
@@ -79,7 +81,7 @@ import {
   EventPromotionsSection,
   WebzineSection,
 } from '@/components/app/PortalNewsSections'
-import { PortalRankingSection } from '@/components/app/PortalRankingSection'
+import { RankingBoard } from '@/components/app/RankingBoard'
 import { ResourceLibrary } from '@/components/app/ResourceLibrary'
 import { SitemapRoute } from '@/components/app/SitemapRoute'
 import { SourcesSection } from '@/components/app/SourcesSection'
@@ -221,7 +223,7 @@ function ExploreGrid({ onNavigate }: { onNavigate: (route: AppRoute) => void }) 
   )
 }
 
-export type ModelsTabId = 'compare' | 'local' | 'benchmarks' | 'matrix' | 'cost'
+export type ModelsTabId = 'rankings' | 'compare' | 'local' | 'benchmarks' | 'matrix' | 'cost'
 
 const modelsTabMeta: Array<{
   id: ModelsTabId
@@ -229,6 +231,12 @@ const modelsTabMeta: Array<{
   description: string
   icon: typeof Boxes
 }> = [
+  {
+    id: 'rankings',
+    title: '분야별 랭킹',
+    description: '분야별 1위부터 한눈에',
+    icon: Trophy,
+  },
   {
     id: 'compare',
     title: '주요 모델 비교',
@@ -270,7 +278,7 @@ function ModelsTabSwitcher({
 }) {
   return (
     <section className="scroll-mt-32 space-y-3">
-      <div className="touch-scroll -mx-3 flex snap-x gap-2 overflow-x-auto px-3 pb-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 xl:grid-cols-5">
+      <div className="touch-scroll -mx-3 flex snap-x gap-2 overflow-x-auto px-3 pb-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3 xl:grid-cols-6">
         {modelsTabMeta.map((tab) => {
           const Icon = tab.icon
           const active = tab.id === activeTab
@@ -387,14 +395,15 @@ function getToolsPaneFromHash(): ToolsPaneId {
 }
 
 function getModelsTabFromHash(): ModelsTabId {
-  if (typeof window === 'undefined') return 'compare'
+  if (typeof window === 'undefined') return 'rankings'
   const hash = window.location.hash.replace(/^#/, '')
+  if (hash === 'rankings') return 'rankings'
   if (hash === 'local-models') return 'local'
   if (hash === 'benchmarks') return 'benchmarks'
   if (hash === 'matrix') return 'matrix'
   if (hash === 'cost-calculator' || hash === 'calculator') return 'cost'
   if (hash === 'comparison') return 'compare'
-  return 'compare'
+  return 'rankings'
 }
 
 function ToolsPaneSwitcher({
@@ -526,7 +535,8 @@ export default function App() {
       })
     } else if (route === 'models') {
       let hash = ''
-      if (modelsTab === 'compare') hash = 'comparison'
+      if (modelsTab === 'rankings') hash = 'rankings'
+      else if (modelsTab === 'compare') hash = 'comparison'
       else if (modelsTab === 'local') hash = 'local-models'
       else if (modelsTab === 'benchmarks') hash = 'benchmarks'
       else if (modelsTab === 'matrix') hash = 'matrix'
@@ -629,7 +639,8 @@ export default function App() {
   const selectModelsTab = (tabId: ModelsTabId) => {
     setModelsTab(tabId)
     let hash = ''
-    if (tabId === 'compare') hash = 'comparison'
+    if (tabId === 'rankings') hash = 'rankings'
+    else if (tabId === 'compare') hash = 'comparison'
     else if (tabId === 'local') hash = 'local-models'
     else if (tabId === 'benchmarks') hash = 'benchmarks'
     else if (tabId === 'matrix') hash = 'matrix'
@@ -644,6 +655,23 @@ export default function App() {
         behavior: 'smooth',
         block: 'start',
       })
+    })
+  }
+
+  // 랭킹에서 모델 클릭 → 비교 탭의 상세 프로필로 이동·선택
+  const handleSelectRankingModel = (profileId: string) => {
+    setSelectedModelId(profileId)
+    navigateToRoute('models')
+    selectModelsTab('compare')
+  }
+  // 랭킹에서 확장 클릭 → 도구 워크벤치 확장 목록으로 이동
+  const handleSelectRankingExtension = (_extensionId: string) => {
+    navigateToRoute('tools')
+    if (window.location.hash !== '#extensions') {
+      window.history.pushState(null, '', `${routePath.tools}#extensions`)
+    }
+    window.requestAnimationFrame(() => {
+      document.getElementById('extensions')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     })
   }
 
@@ -728,6 +756,13 @@ export default function App() {
             <PageHeader route="models" />
             <div id="models-workbench" className="scroll-mt-32 space-y-5">
               <ModelsTabSwitcher activeTab={modelsTab} onSelect={selectModelsTab} />
+              {modelsTab === 'rankings' && (
+                <RankingBoard
+                  id="rankings"
+                  onSelectModel={handleSelectRankingModel}
+                  onSelectExtension={handleSelectRankingExtension}
+                />
+              )}
               {modelsTab === 'compare' && (
                 <>
                   <ModelCards
@@ -777,7 +812,9 @@ export default function App() {
           <>
             {renderFilterBar()}
             <PageHeader route="resources" />
+            <Briefing results={results} useFallback={!hasActiveFilter} />
             <ResourceLibrary resources={visibleResources} />
+            <CliManualSection id="cli-manuals" />
             <GlossarySection />
             <ManualGuides guides={visibleGuides} />
             <PersonaPlaybooks guides={visiblePersonaGuides} />
@@ -792,10 +829,28 @@ export default function App() {
           <>
             <PortalHero onNavigate={navigateToRoute} />
             <Reveal>
-              <PortalRankingSection onNavigate={navigateToRoute} />
+              <RankingBoard
+                limit={5}
+                onSelectModel={handleSelectRankingModel}
+                onSelectExtension={handleSelectRankingExtension}
+                onSeeAll={(scope) => {
+                  if (scope === 'models') {
+                    navigateToRoute('models')
+                    window.location.hash = '#rankings'
+                  } else {
+                    navigateToRoute('tools')
+                    window.location.hash = '#extensions'
+                  }
+                }}
+              />
             </Reveal>
             <Reveal variant="soft">
-              <Briefing results={results} useFallback={!hasActiveFilter} />
+              <Briefing
+                results={results}
+                useFallback={!hasActiveFilter}
+                compact
+                onSeeAll={() => navigateToRoute('resources')}
+              />
             </Reveal>
             <Reveal>
               <FreshRail />

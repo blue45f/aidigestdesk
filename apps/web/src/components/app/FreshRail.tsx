@@ -14,6 +14,36 @@ import type { ComponentType, CSSProperties } from 'react'
 
 import { Chip, NewBadge, SectionHeader, Thumbnail } from '@/components/app/CommonUi'
 
+/** 종류별 커버 색조 — 이미지가 없는 항목(주로 일정/세미나)도 의도적으로 보이게 한다. */
+const KIND_COVER: Record<FreshItem['kind'], string> = {
+  도서: 'from-accent/15 to-accent/5 text-accent',
+  '강좌/영상': 'from-accent-4/15 to-accent-4/5 text-accent-4',
+  '문서/글': 'from-accent-2/15 to-accent-2/5 text-accent-2',
+  '일정/세미나': 'from-accent-3/15 to-accent-3/5 text-accent-3',
+}
+
+function FreshCover({ item }: { item: FreshItem }) {
+  if (item.imageSrc) {
+    return (
+      <Thumbnail
+        src={item.imageSrc}
+        alt={item.title}
+        ratio={item.ratio === 'cover' ? 'video' : item.ratio}
+        icon={item.icon}
+        caption={item.kind}
+      />
+    )
+  }
+  const Icon = item.icon
+  return (
+    <div
+      className={`flex aspect-video w-full flex-col items-center justify-center gap-1.5 rounded-md border border-border bg-gradient-to-br ${KIND_COVER[item.kind]}`}
+    >
+      <Icon className="size-7" aria-hidden />
+      <span className="text-[0.6875rem] font-semibold tracking-wide">{item.kind}</span>
+    </div>
+  )
+}
 
 type FreshItem = {
   key: string
@@ -107,13 +137,7 @@ export function FreshRail() {
           >
             <div className="relative overflow-hidden">
               <div className="transition-transform duration-500 ease-[var(--ease-out-quart)] group-hover:scale-[1.06]">
-                <Thumbnail
-                  src={item.imageSrc}
-                  alt={item.title}
-                  ratio={item.ratio === 'cover' ? 'video' : item.ratio}
-                  icon={item.icon}
-                  caption={item.kind}
-                />
+                <FreshCover item={item} />
               </div>
               {item.isNew ? (
                 <span className="absolute left-2 top-2">

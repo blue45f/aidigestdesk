@@ -1,4 +1,5 @@
 export * from "./catalog";
+export * from "./cliManuals";
 export * from "./contentExports";
 export * from "./sourceSnapshots";
 export * from "./promotions";

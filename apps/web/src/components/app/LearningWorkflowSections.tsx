@@ -135,7 +135,7 @@ export function DesignWorkflowSection() {
   const sortedPptSignals = useMemo(
     () =>
       benchmarkEntries
-        .filter((entry) => entry.domain === "ppt")
+        .filter((entry) => entry.domain === "ppt" && entry.tier !== "reference")
         .toSorted((a, b) => {
           const direction = pptSortDirection === "asc" ? 1 : -1;
           if (pptSortMode === "provider") {

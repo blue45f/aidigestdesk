@@ -32,6 +32,98 @@ export function Cover({ gradient, src, alt, height=150, radius=12 }: { gradient?
   </div>;
 }
 
+/** 1·2·3위 메달 뱃지. 색만으로 전달하지 않도록 숫자를 항상 병기. */
+export function RankBadge({ position }: { position: number }) {
+  const palette =
+    position === 1
+      ? { bg: 'rgba(245,200,66,0.16)', bd: 'rgba(245,200,66,0.5)', fg: '#f5c842' }
+      : position === 2
+        ? { bg: 'rgba(180,196,224,0.16)', bd: 'rgba(180,196,224,0.5)', fg: '#b4c4e0' }
+        : position === 3
+          ? { bg: 'rgba(232,150,90,0.16)', bd: 'rgba(232,150,90,0.5)', fg: '#e8965a' }
+          : { bg: 'rgba(255,255,255,0.05)', bd: theme.border, fg: theme.textMuted };
+  return (
+    <span aria-hidden style={{ display:'grid', placeItems:'center', width:30, height:30, flexShrink:0,
+      borderRadius:999, border:`1px solid ${palette.bd}`, background:palette.bg, color:palette.fg,
+      fontSize:14, fontWeight:800, fontVariantNumeric:'tabular-nums' }}>{position}</span>
+  );
+}
+
+/** 정렬 토글 칩 — 누를 때마다 오름/내림 전환. 활성 시 방향 화살표. */
+export function SortChip({ label, active, dir, onToggle }: { label:string; active:boolean; dir:'asc'|'desc'; onToggle:()=>void }) {
+  const arrow = !active ? '↕' : dir === 'asc' ? '↑' : '↓';
+  return (
+    <button type="button" onClick={onToggle} aria-pressed={active} className="pressable"
+      style={{ flexShrink:0, height:34, padding:'0 12px', borderRadius:999, fontSize:13.5, fontWeight:700, cursor:'pointer',
+        display:'inline-flex', alignItems:'center', gap:5,
+        border: active ? `1px solid ${theme.accent}` : '1px solid rgba(255,255,255,0.1)',
+        background: active ? theme.accentSoft : 'transparent', color: active ? theme.accent : theme.textMuted }}>
+      {label}<span aria-hidden style={{ fontSize:12 }}>{arrow}</span>
+    </button>
+  );
+}
+
+/** 큰 두 갈래 토글(예: AI 모델 / 확장 도구). */
+export function Segmented({ options, value, onChange }: { options:{id:string;label:string}[]; value:string; onChange:(v:string)=>void }) {
+  return (
+    <div style={{ display:'flex', gap:8 }}>
+      {options.map((o)=>{ const on=o.id===value; return (
+        <button key={o.id} type="button" onClick={()=>onChange(o.id)} aria-pressed={on} className="pressable"
+          style={{ flex:1, height:46, borderRadius:'var(--r-md)', fontSize:15, fontWeight:700, cursor:'pointer',
+            border: on ? 'none' : `1px solid ${theme.border}`,
+            background: on ? theme.accent : theme.surface, color: on ? theme.accentInk : theme.textMuted }}>
+          {o.label}
+        </button>); })}
+    </div>
+  );
+}
+
+/** 하단 탭바 — 소식 / 랭킹 전환. */
+export function TabBar({ active, onPick }: { active:'feed'|'rank'; onPick:(t:'feed'|'rank')=>void }) {
+  const items:{id:'feed'|'rank';label:string;icon:string}[] = [
+    { id:'feed', label:'소식', icon:'📰' },
+    { id:'rank', label:'랭킹', icon:'🏆' },
+  ];
+  return (
+    <nav aria-label="주요 메뉴" style={{ position:'fixed', left:0, right:0, bottom:0, zIndex:30,
+      display:'flex', borderTop:`1px solid ${theme.border}`,
+      background:`color-mix(in oklab, ${theme.bg} 88%, transparent)`, backdropFilter:'blur(12px)',
+      paddingBottom:'env(safe-area-inset-bottom)' }}>
+      {items.map((it)=>{ const on=it.id===active; return (
+        <button key={it.id} type="button" onClick={()=>onPick(it.id)} aria-current={on?'page':undefined} className="pressable"
+          style={{ flex:1, height:56, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:2,
+            background:'none', border:'none', cursor:'pointer', color: on ? theme.accent : theme.textMuted, fontWeight:700 }}>
+          <span aria-hidden style={{ fontSize:18, filter: on ? 'none' : 'grayscale(0.4) opacity(0.8)' }}>{it.icon}</span>
+          <span style={{ fontSize:11.5 }}>{it.label}</span>
+        </button>); })}
+    </nav>
+  );
+}
+
+/** 메타 정보용 작은 회색 칩(지표/가격/속도/컨텍스트 등). */
+export function MetaChip({ children }: { children: ReactNode }) {
+  return (
+    <span style={{ display:'inline-flex', alignItems:'center', height:22, padding:'0 8px', borderRadius:7,
+      fontSize:11.5, fontWeight:600, color:theme.textMuted, background:'rgba(255,255,255,0.05)',
+      fontVariantNumeric:'tabular-nums' }}>{children}</span>
+  );
+}
+
+/** 상세 페이지 상단 뒤로가기 바. */
+export function BackBar({ onBack, label='뒤로' }: { onBack:()=>void; label?:string }) {
+  return (
+    <div style={{ position:'sticky', top:0, zIndex:20, display:'flex', alignItems:'center', height:52,
+      padding:'0 8px', background:`color-mix(in oklab, ${theme.bg} 86%, transparent)`, backdropFilter:'blur(12px)',
+      paddingTop:'env(safe-area-inset-top)' }}>
+      <button type="button" onClick={onBack} aria-label={label} className="pressable"
+        style={{ display:'inline-flex', alignItems:'center', gap:4, height:40, padding:'0 12px 0 8px',
+          background:'none', border:'none', color:theme.text, fontSize:15, fontWeight:600, cursor:'pointer' }}>
+        <span aria-hidden style={{ fontSize:20, lineHeight:1 }}>‹</span>{label}
+      </button>
+    </div>
+  );
+}
+
 export function StatStrip({ stats }: { stats: { label:string; value:string }[] }) {
   if (!stats.length) return null;
   return <div style={{ display:'flex', gap:10, padding:'14px 0', borderTop:`1px solid ${theme.border}`, borderBottom:`1px solid ${theme.border}` }}>
