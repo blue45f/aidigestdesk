@@ -41,7 +41,7 @@ const primaryNav: Array<{ id: AppRoute; label: string; mobileLabel: string; icon
   { id: 'tools', label: '도구·확장', mobileLabel: '도구', icon: Boxes },
   { id: 'deals', label: '할인·혜택', mobileLabel: '혜택', icon: BadgePercent },
   { id: 'resources', label: '강좌·자료', mobileLabel: '자료', icon: BookOpen },
-  { id: 'community', label: '커뮤니티', mobileLabel: '커뮤', icon: MessagesSquare },
+  { id: 'community', label: '커뮤니티', mobileLabel: '커뮤니티', icon: MessagesSquare },
 ]
 
 // 라우트별 섹션 목차 — 사이드바(데스크톱)에서 현재 페이지 내 이동을 돕는다.
@@ -190,7 +190,11 @@ export function Header({
               )}
             </button>
           ) : null}
-          <MemberAuthControl />
+          {/* Firebase 회원 로그인은 '추가 옵션'이라 데스크톱에서만 — 모바일 헤더의 이중 로그인
+              아이콘 군집을 없애고 단일 계정 로그인만 남긴다. */}
+          <span className="hidden lg:contents">
+            <MemberAuthControl />
+          </span>
           <IconButton label={dark ? '라이트 모드' : '다크 모드'} onClick={onToggleDark}>
             {dark ? (
               <Sun className="size-4" aria-hidden />
@@ -306,12 +310,19 @@ export function BottomTabBar({
             type="button"
             onClick={() => onNavigate(item.id)}
             aria-current={active ? 'page' : undefined}
-            className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[0.6875rem] font-semibold transition-colors ${
-              active ? 'text-accent' : 'text-text-muted hover:text-text'
+            className={`relative flex flex-1 flex-col items-center gap-0.5 pt-1.5 pb-1 text-[0.6875rem] font-semibold transition-colors ${
+              active ? 'text-accent' : 'text-text-subtle hover:text-text'
             }`}
           >
-            <item.icon className="size-5" aria-hidden />
-            {item.mobileLabel}
+            {/* 활성 표시 — 아이콘 뒤 accent 알약(Material 스타일) */}
+            <span
+              className={`flex h-7 w-14 items-center justify-center rounded-full transition-colors ${
+                active ? 'bg-accent/12' : ''
+              }`}
+            >
+              <item.icon className="size-[1.3rem]" aria-hidden />
+            </span>
+            <span className="leading-none">{item.mobileLabel}</span>
           </button>
         )
       })}
