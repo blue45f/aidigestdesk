@@ -19,10 +19,11 @@ const SCOPES = [
   { id: 'events', label: '이벤트' },
 ];
 
+// 상태 시맨틱(웹·토스 공통): 진행중=green · 진행예정=blue · 상시=amber · 종료=neutral
 function statusColors(status: string): { bg: string; fg: string } {
   if (status === '진행중' || status === '모집중') return { bg: 'rgba(116,214,163,0.16)', fg: '#74d6a3' };
   if (status === '진행예정') return { bg: 'rgba(110,168,254,0.16)', fg: '#6ea8fe' };
-  if (status === '상시' || status === '상시 확인') return { bg: theme.accentSoft, fg: theme.accent };
+  if (status === '상시' || status === '상시 확인') return { bg: 'rgba(245,200,66,0.16)', fg: '#f5c842' };
   return { bg: 'rgba(255,255,255,0.06)', fg: theme.textMuted }; // 종료 등
 }
 

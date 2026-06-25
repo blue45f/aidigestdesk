@@ -99,10 +99,11 @@ const dealTypeTone: Record<DealType, ChipTone> = {
   '구독 할인': 'coral',
 }
 
+// 상태 시맨틱(웹·토스 공통): 진행중=green(accent) · 진행예정=blue · 상시=amber · 종료=neutral
 const statusTone: Record<string, ChipTone> = {
-  상시: 'accent',
-  진행중: 'blue',
-  진행예정: 'amber',
+  진행중: 'accent',
+  진행예정: 'blue',
+  상시: 'amber',
   종료: 'neutral',
 }
 
