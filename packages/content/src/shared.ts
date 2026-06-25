@@ -23,6 +23,22 @@ export function parseRank(label: string | null | undefined): number | null {
   return plain ? Number(plain[0]) : null;
 }
 
+/* ── 메트릭 종류 판별(웹 정렬칩 게이트·토스 생성기 공유) ─────────────
+ * 같은 마커 규칙을 웹/토스/생성기가 한 소스로 쓰게 해, 마커 없는 '맨 숫자'
+ * 가격/속도가 도입돼도 양쪽 정렬칩 노출이 갈리지 않게 한다. */
+/** 컨텍스트 길이처럼 보이는가(숫자 + k/m/토큰). */
+export function looksContext(value: string | null | undefined): boolean {
+  return /^[\d.,]+\s*[kKmM]?\s*(토큰|tokens?)?$/.test(String(value ?? '').trim());
+}
+/** 가격처럼 보이는가(통화기호/원/무료/free//1M). */
+export function looksPrice(value: string | null | undefined): boolean {
+  return /[$₩]|원|무료|free|\/\s*1m/i.test(String(value ?? ''));
+}
+/** 속도처럼 보이는가(tok//s/초당/ms). */
+export function looksSpeed(value: string | null | undefined): boolean {
+  return /tok|\/s|초당|ms/i.test(String(value ?? ''));
+}
+
 /* ── 문의(Inquiry) 계약 + 클라이언트 ─────────────────────────────── */
 // desk-platform 공개 REST(/api/v1/apps/:appId/inquiries)를 직접 호출한다.
 // baseUrl/appId는 호출하는 앱이 주입한다(env 접근은 앱 소스에 둔다).

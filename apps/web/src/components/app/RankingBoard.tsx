@@ -12,7 +12,7 @@ import {
   type ExtensionPlatform,
   type ProviderId,
 } from '@aidigestdesk/content'
-import { parseNum, parseRank } from '@aidigestdesk/content/shared'
+import { looksPrice, looksSpeed, parseNum, parseRank } from '@aidigestdesk/content/shared'
 import {
   ArrowRight,
   ChevronRight,
@@ -304,8 +304,10 @@ export function RankingBoard({
   )
   // 데이터가 있는 정렬 축만 칩으로 노출(없으면 '먹통 칩'이 되므로 숨김 — 토스와 동일).
   const availableModelSortChips = useMemo(() => {
-    const hasPrice = domainModels.some((entry) => parseNum(entry.price) != null)
-    const hasSpeed = domainModels.some((entry) => parseNum(entry.speed) != null)
+    // looksPrice/looksSpeed 마커로 먼저 게이트(토스 생성기와 동일 규칙) — 마커 없는
+    // '맨 숫자'가 들어와도 웹/토스 정렬칩 노출이 갈리지 않게 한다.
+    const hasPrice = domainModels.some((entry) => looksPrice(entry.price) && parseNum(entry.price) != null)
+    const hasSpeed = domainModels.some((entry) => looksSpeed(entry.speed) && parseNum(entry.speed) != null)
     return modelSortChips.filter(
       (chip) =>
         chip.id === 'rank' ||
@@ -461,7 +463,14 @@ export function RankingBoard({
                 <button
                   key={item.id}
                   type="button"
-                  onClick={() => setDomain(item.id)}
+                  onClick={() => {
+                    // 분야 전환 시 정렬을 초기화한다(토스 RankingListPage 와 동일).
+                    // effectiveModelSort 만 'rank'로 폴백하면 modelDir('desc')가 잔존해
+                    // 순위가 역정렬되고 1위에 금메달이 잘못 칠해지는 회귀가 생긴다.
+                    setDomain(item.id)
+                    setModelSort('rank')
+                    setModelDir('asc')
+                  }}
                   aria-pressed={active}
                   className={
                     active

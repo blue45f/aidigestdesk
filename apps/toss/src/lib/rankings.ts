@@ -130,8 +130,9 @@ export function getProfileForName(name: string): ModelProfile | undefined {
 }
 
 /**
- * 확장 등급(S>A>B>C) 배지 색 — 웹과 동일한 색 위계.
- * S=금, A=파랑, B=앰버(S 금색보다 채도·명도를 낮춰 S와 구분), C=중립.
+ * 확장 등급(S>A>B>C) 배지 색. A=파랑·B=앰버·C=중립은 웹과 동일 시맨틱이고,
+ * S만 웹(그린 accent)과 달리 의도적으로 금색(1위 메달톤)을 쓴다.
+ * B는 S 금색보다 채도·명도를 낮춰 S와 구분한다.
  * RankingListPage·RankExtensionDetailPage 가 공유한다(중복 제거).
  */
 export const GRADE_PALETTE: Record<string, { bg: string; fg: string }> = {

@@ -128,6 +128,7 @@ function MessageRow({ post }: { post: Post }) {
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={2}
+            aria-label="메시지 수정"
             className="w-full resize-y rounded-md border border-border bg-surface px-3 py-2 text-sm leading-6 text-text outline-none focus:border-accent"
           />
           <div className="flex gap-2">
@@ -381,6 +382,7 @@ function CommentSection({ postId, nickname }: { postId: string; nickname: string
                       value={editBody}
                       onChange={(e) => setEditBody(e.target.value)}
                       rows={2}
+                      aria-label="댓글 수정"
                       className="w-full resize-y rounded-md border border-border bg-bg px-2 py-1.5 text-sm leading-6 text-text outline-none focus:border-accent"
                     />
                     <div className="flex gap-2">
@@ -496,12 +498,14 @@ function BoardPostRow({ post, nickname }: { post: BoardPost; nickname: string })
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="제목"
+            aria-label="제목 수정"
             className="h-9 w-full rounded-md border border-border bg-surface px-3 text-sm text-text outline-none focus:border-accent"
           />
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={3}
+            aria-label="내용 수정"
             className="w-full resize-y rounded-md border border-border bg-surface px-3 py-2 text-sm leading-6 text-text outline-none focus:border-accent"
           />
           <div className="flex gap-2">

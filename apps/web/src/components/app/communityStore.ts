@@ -450,12 +450,16 @@ export function editPost(id: string, body: string): Post {
   return updated
 }
 
-/** 채널 글을 삭제한다(작성자 본인만). */
+/** 채널 글을 삭제한다(작성자 본인만). 딸린 댓글도 함께 삭제(deleteBoardPost 와 대칭). */
 export function deletePost(id: string): void {
   const state = loadState()
   const target = state.posts.find((post) => post.id === id)
   if (!target || !isOwner(target.authorId)) return
-  saveState({ ...state, posts: state.posts.filter((post) => post.id !== id) })
+  saveState({
+    ...state,
+    posts: state.posts.filter((post) => post.id !== id),
+    comments: state.comments.filter((comment) => comment.postId !== id),
+  })
 }
 
 /**

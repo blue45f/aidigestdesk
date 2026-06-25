@@ -17,17 +17,13 @@ import {
   modelProfiles,
   SNAPSHOT_DATE,
 } from '../dist/index.js'
-import { parseNum, parseRank } from '../dist/shared.js'
+import { looksContext, looksPrice, looksSpeed, parseNum, parseRank } from '../dist/shared.js'
 
 const scriptDir = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(scriptDir, '../../..')
 const outputPath = resolve(repoRoot, 'apps/toss/src/rankings.json')
 
 const DOMAINS = ['overall', 'coding', 'ppt', 'research', 'multimodal', 'agent', 'cost']
-
-const looksContext = (value) => /^[\d.,]+\s*[kKmM]?\s*(토큰|tokens?)?$/.test(String(value).trim())
-const looksPrice = (value) => /[$₩]|원|무료|free|\/\s*1m/i.test(String(value))
-const looksSpeed = (value) => /tok|\/s|초당|ms/i.test(String(value))
 
 const modelDomains = DOMAINS.map((id) => {
   const entries = benchmarkEntries
