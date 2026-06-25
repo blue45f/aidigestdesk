@@ -239,10 +239,10 @@ export function Header({
         </div>
       </div>
 
-      {/* GNB — 라우트 전환 */}
+      {/* GNB — 라우트 전환(데스크톱 전용; 모바일·태블릿은 하단 탭바가 담당해 내비 중복 제거) */}
       <nav
         aria-label="주요 메뉴"
-        className="touch-scroll flex snap-x items-center gap-1 overflow-x-auto border-t border-border px-3 py-1.5 lg:px-4"
+        className="hidden snap-x items-center gap-1 overflow-x-auto border-t border-border px-3 py-1.5 lg:flex lg:px-4"
       >
         {primaryNav.map((item) => (
           <button
@@ -280,9 +280,10 @@ export function Header({
 
 /**
  * 모바일 하단 고정 탭바 — 토스 인앱의 엄지 접근성 패턴을 웹 모바일에 이식.
- * 데스크톱(lg+)에서는 상단 GNB·사이드바로 충분하므로 숨긴다. 주요 5개 라우트만.
+ * 데스크톱(lg+)에서는 상단 GNB·사이드바로 충분하므로 숨긴다.
+ * 모바일·태블릿의 유일한 내비라 GNB와 동일하게 6개 전부 노출(커뮤니티 포함).
  */
-const bottomNav = primaryNav.slice(0, 5)
+const bottomNav = primaryNav
 
 export function BottomTabBar({
   route,
