@@ -1,7 +1,11 @@
+import { createBookmarkStore } from '@aidigestdesk/content/shared'
+
 import type { AppRoute } from '@/components/app/appRoutes'
 
+// 토스와 공유하는 createBookmarkStore 메커니즘 위에 웹 타입·정렬만 얹는다(중복 제거).
+// localStorage 기반. DB 백엔드 도입 시 createBookmarkStore 를 원격 어댑터로 교체하면 됨.
+
 const STORAGE_KEY = 'aidigestdesk.bookmarks.v1'
-const EVENT_NAME = 'aidigestdesk:bookmarks-changed'
 
 /** 북마크 가능한 콘텐츠 종류. 새 종류를 붙일 때 라벨/배지 매핑만 늘리면 된다. */
 export type BookmarkKind = 'model' | 'benchmark' | 'deal' | 'resource'
@@ -28,47 +32,27 @@ function makeId(kind: BookmarkKind, sourceId: string): string {
   return `${kind}:${sourceId}`
 }
 
-function readAll(): Bookmark[] {
-  if (typeof window === 'undefined') return []
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    if (!raw) return []
-    const parsed: unknown = JSON.parse(raw)
-    if (!Array.isArray(parsed)) return []
-    return parsed.filter(
-      (item): item is Bookmark =>
-        typeof item === 'object' &&
-        item !== null &&
-        typeof (item as Bookmark).id === 'string' &&
-        typeof (item as Bookmark).title === 'string'
-    )
-  } catch {
-    return []
-  }
-}
-
-function writeAll(bookmarks: Bookmark[]): void {
-  if (typeof window === 'undefined') return
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks))
-    window.dispatchEvent(new CustomEvent(EVENT_NAME))
-  } catch {
-    // 저장 실패는 비치명적.
-  }
-}
+const store = createBookmarkStore<Bookmark>(
+  STORAGE_KEY,
+  (bookmark) => bookmark.id,
+  (value): value is Bookmark =>
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as Bookmark).id === 'string' &&
+    typeof (value as Bookmark).title === 'string'
+)
 
 export function listBookmarks(): Bookmark[] {
-  // 저장 시각 내림차순. 같은 ms에 추가돼 savedAt이 동률이면 나중에 추가된 항목(배열 뒤)을 먼저 보여준다.
-  const all = readAll()
-  return all
+  // 저장 시각 내림차순. 동률(같은 ms)이면 나중에 추가된 항목(배열 앞)을 먼저 보여준다.
+  return store
+    .getSnapshot()
     .map((bookmark, index) => ({ bookmark, index }))
-    .toSorted((a, b) => b.bookmark.savedAt.localeCompare(a.bookmark.savedAt) || b.index - a.index)
+    .toSorted((a, b) => b.bookmark.savedAt.localeCompare(a.bookmark.savedAt) || a.index - b.index)
     .map((entry) => entry.bookmark)
 }
 
 export function isBookmarked(kind: BookmarkKind, sourceId: string): boolean {
-  const id = makeId(kind, sourceId)
-  return readAll().some((bookmark) => bookmark.id === id)
+  return store.has(makeId(kind, sourceId))
 }
 
 /** 북마크를 토글한다. 추가되면 true, 제거되면 false를 반환한다. */
@@ -76,38 +60,22 @@ export function toggleBookmark(
   input: Omit<Bookmark, 'id' | 'savedAt'> & { sourceId: string }
 ): boolean {
   const { sourceId, ...rest } = input
-  const id = makeId(input.kind, sourceId)
-  const current = readAll()
-  const existing = current.find((bookmark) => bookmark.id === id)
-
-  if (existing) {
-    writeAll(current.filter((bookmark) => bookmark.id !== id))
-    return false
-  }
-
-  const next: Bookmark = { ...rest, id, savedAt: new Date().toISOString() }
-  writeAll([...current, next])
-  return true
+  return store.toggle({
+    ...rest,
+    id: makeId(input.kind, sourceId),
+    savedAt: new Date().toISOString(),
+  })
 }
 
 export function removeBookmark(id: string): void {
-  writeAll(readAll().filter((bookmark) => bookmark.id !== id))
+  store.remove(id)
 }
 
 export function clearBookmarks(): void {
-  writeAll([])
+  store.clear()
 }
 
 /** 북마크 변경(이 탭의 토글 또는 다른 탭의 storage 이벤트)을 구독한다. */
 export function subscribeBookmarks(listener: () => void): () => void {
-  if (typeof window === 'undefined') return () => {}
-  const handleStorage = (event: StorageEvent) => {
-    if (event.key === STORAGE_KEY) listener()
-  }
-  window.addEventListener(EVENT_NAME, listener)
-  window.addEventListener('storage', handleStorage)
-  return () => {
-    window.removeEventListener(EVENT_NAME, listener)
-    window.removeEventListener('storage', handleStorage)
-  }
+  return store.subscribe(listener)
 }
