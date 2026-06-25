@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { getManualBySlug, manualCategories, manualSnapshotDate } from '../lib/manuals';
 import { goBack } from '../router';
 import { theme, pageShell } from '../theme';
-import { Badge, BackBar, Chips, MetaChip, SearchBar, SortChip } from '../ui';
+import { Badge, BackBar, BookmarkButton, Chips, MetaChip, SearchBar, SortChip } from '../ui';
 
 type CmdSort = 'default' | 'command' | 'category';
 type Dir = 'asc' | 'desc';
@@ -77,6 +77,9 @@ export function ManualDetailPage({ slug }: { slug: string }) {
         {manual.overview && (
           <p style={{ fontSize: 14.5, color: theme.text, lineHeight: 1.7, marginTop: 12 }}>{manual.overview}</p>
         )}
+        <div style={{ marginTop: 14 }}>
+          <BookmarkButton item={{ type: 'manual', id: manual.slug, title: manual.platform, subtitle: 'CLI 매뉴얼', route: `/manual/${encodeURIComponent(manual.slug)}` }} />
+        </div>
 
         {manual.install && (
           <Section title="📥 설치"><CodeBlock>{manual.install}</CodeBlock></Section>

@@ -1,6 +1,23 @@
+import { toggleBookmark, useIsBookmarked, type Bookmark } from './lib/bookmarks';
 import { theme } from './theme';
 
 import type { ReactNode } from 'react';
+
+/** 즐겨찾기 토글 버튼(★). 상세 페이지 헤더 등에서 사용. */
+export function BookmarkButton({ item }: { item: Bookmark }) {
+  const saved = useIsBookmarked(item.type, item.id);
+  return (
+    <button type="button" onClick={() => toggleBookmark(item)} aria-pressed={saved}
+      aria-label={saved ? '즐겨찾기 해제' : '즐겨찾기 추가'} className="pressable"
+      style={{ display: 'inline-flex', alignItems: 'center', gap: 5, height: 38, padding: '0 14px', flexShrink: 0,
+        borderRadius: 999, cursor: 'pointer', fontSize: 13.5, fontWeight: 700,
+        border: saved ? `1px solid ${theme.accent}` : `1px solid ${theme.border}`,
+        background: saved ? theme.accentSoft : 'transparent', color: saved ? theme.accent : theme.textMuted }}>
+      <span aria-hidden style={{ fontSize: 15 }}>{saved ? '★' : '☆'}</span>
+      {saved ? '저장됨' : '저장'}
+    </button>
+  );
+}
 
 export function Badge({ children, accent }: { children: ReactNode; accent?: boolean }) {
   return <span style={{ display:'inline-flex', alignItems:'center', height:22, padding:'0 8px', borderRadius:6,

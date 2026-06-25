@@ -8,7 +8,7 @@ import {
 } from '../lib/rankings';
 import { goBack } from '../router';
 import { theme, pageShell } from '../theme';
-import { BackBar, MetaChip, RankBadge } from '../ui';
+import { BackBar, BookmarkButton, MetaChip, RankBadge } from '../ui';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -73,6 +73,9 @@ export function RankModelDetailPage({ id }: { id: string }) {
               {profile.oneLine}
             </p>
           )}
+          <div style={{ marginTop: 14 }}>
+            <BookmarkButton item={{ type: 'model', id, title: name, subtitle: provider, route: `/rank/m/${encodeURIComponent(id)}` }} />
+          </div>
         </div>
 
         {/* 분야별 성적 */}

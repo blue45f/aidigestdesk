@@ -5,6 +5,7 @@ import { RankExtensionDetailPage } from './pages/RankExtensionDetailPage.tsx';
 import { RankingListPage } from './pages/RankingListPage.tsx';
 import { RankModelDetailPage } from './pages/RankModelDetailPage.tsx';
 import { ResourcesPage } from './pages/ResourcesPage.tsx';
+import { SavedPage } from './pages/SavedPage.tsx';
 import { SupportPage } from './pages/SupportPage.tsx';
 import { UpdateDetailPage } from './pages/UpdateDetailPage.tsx';
 import { UpdateListPage } from './pages/UpdateListPage.tsx';
@@ -21,8 +22,9 @@ export function App() {
   const extDetail = path.match(/^\/rank\/x\/(.+)$/);
   const manualDetail = path.match(/^\/manual\/(.+)$/);
   const isSupport = path === '/support';
+  const isSaved = path === '/saved';
 
-  if (updateDetail || modelDetail || extDetail || manualDetail || isSupport) {
+  if (updateDetail || modelDetail || extDetail || manualDetail || isSupport || isSaved) {
     const detail = updateDetail ? (
       <UpdateDetailPage id={decodeURIComponent(updateDetail[1])} />
     ) : modelDetail ? (
@@ -31,6 +33,8 @@ export function App() {
       <RankExtensionDetailPage id={decodeURIComponent(extDetail[1])} />
     ) : manualDetail ? (
       <ManualDetailPage slug={decodeURIComponent(manualDetail[1])} />
+    ) : isSaved ? (
+      <SavedPage />
     ) : (
       <SupportPage />
     );

@@ -1,7 +1,7 @@
 import { getExtensionById, snapshotDate } from '../lib/rankings';
 import { goBack } from '../router';
 import { theme, pageShell } from '../theme';
-import { Badge, BackBar, MetaChip } from '../ui';
+import { Badge, BackBar, BookmarkButton, MetaChip } from '../ui';
 
 const GRADE_PALETTE: Record<string, { bg: string; fg: string }> = {
   S: { bg: 'rgba(245,200,66,0.16)', fg: '#f5c842' },
@@ -69,6 +69,9 @@ export function RankExtensionDetailPage({ id }: { id: string }) {
               {entry.summary}
             </p>
           )}
+          <div style={{ marginTop: 14 }}>
+            <BookmarkButton item={{ type: 'extension', id: entry.id, title: entry.name, subtitle: entry.platform, route: `/rank/x/${encodeURIComponent(entry.id)}` }} />
+          </div>
         </div>
 
         {entry.whatItDoes?.length ? (
