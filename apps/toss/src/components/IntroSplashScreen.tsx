@@ -11,18 +11,33 @@ interface SynapseNode {
 }
 
 export default function IntroSplashScreen() {
-  const [isVisible, setIsVisible] = useState(true)
+  // 세션당 1회만 재생 — WebView 재로드 시 2.7s 스플래시 반복을 막아 첫 콘텐츠 도달을 빠르게.
+  const [isVisible, setIsVisible] = useState(() => {
+    try {
+      return sessionStorage.getItem('aidigest:intro') !== '1'
+    } catch {
+      return true
+    }
+  })
   const [isFading, setIsFading] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
+    if (!isVisible) return
     const fadeTimer = setTimeout(() => setIsFading(true), 2000)
-    const destroyTimer = setTimeout(() => setIsVisible(false), 2700)
+    const destroyTimer = setTimeout(() => {
+      setIsVisible(false)
+      try {
+        sessionStorage.setItem('aidigest:intro', '1')
+      } catch {
+        /* sessionStorage 불가 환경은 매번 재생(허용) */
+      }
+    }, 2700)
     return () => {
       clearTimeout(fadeTimer)
       clearTimeout(destroyTimer)
     }
-  }, [])
+  }, [isVisible])
 
   useEffect(() => {
     if (!isVisible) return
