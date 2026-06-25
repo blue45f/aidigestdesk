@@ -22,7 +22,8 @@
       "types": "./dist/shared.d.ts",
       "import": "./dist/shared.js",
       "require": "./dist/shared.cjs"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist"
