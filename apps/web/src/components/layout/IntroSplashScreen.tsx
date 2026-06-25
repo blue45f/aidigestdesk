@@ -62,77 +62,102 @@ export const IntroSplashScreen: React.FC = () => {
       'rgba(139, 92, 246, ', // Violet 500
     ]
 
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 78; i++) {
       nodes.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        radius: Math.random() * 2 + 1,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
+        radius: Math.random() * 2.2 + 1,
+        vx: (Math.random() - 0.5) * 0.85,
+        vy: (Math.random() - 0.5) * 0.85,
         color: colors[Math.floor(Math.random() * colors.length)] ?? 'rgba(6, 182, 212, ',
-        alpha: Math.random() * 0.4 + 0.3,
-        pulseSpeed: Math.random() * 0.03 + 0.01,
+        alpha: Math.random() * 0.4 + 0.35,
+        pulseSpeed: Math.random() * 0.045 + 0.015,
         pulseVal: Math.random() * Math.PI,
       })
     }
 
-    const draw = () => {
-      ctx.fillStyle = '#06070a' // Cyber black
-      ctx.fillRect(0, 0, width, height)
+    let frame = 0
 
+    const draw = () => {
+      frame += 1
       const centerX = width / 2
       const centerY = height / 2
 
-      // Draw faint cyber neural coordinate circles
-      ctx.strokeStyle = 'rgba(6, 182, 212, 0.03)'
+      // 잔상(트레일) — 완전히 지우지 않고 살짝 덮어 움직임이 흐르듯 남게
+      ctx.fillStyle = 'rgba(6, 7, 10, 0.28)'
+      ctx.fillRect(0, 0, width, height)
+
+      // 레이더 펄스 — 중심에서 주기적으로 퍼지는 링(동시 3겹)
+      const cycle = 150
+      for (let r = 0; r < 3; r++) {
+        const prog = ((frame + r * (cycle / 3)) % cycle) / cycle
+        const ringR = prog * Math.max(width, height) * 0.62
+        const ringAlpha = (1 - prog) * 0.16
+        ctx.strokeStyle = `rgba(110, 168, 254, ${ringAlpha})`
+        ctx.lineWidth = 1.5
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, ringR, 0, Math.PI * 2)
+        ctx.stroke()
+      }
+
+      // 회전하는 좌표 링
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.05)'
       ctx.lineWidth = 1
-      ctx.beginPath()
-      ctx.arc(centerX, centerY, 100, 0, Math.PI * 2)
-      ctx.stroke()
+      for (const baseR of [100, 220]) {
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, baseR + Math.sin(frame * 0.02 + baseR) * 6, 0, Math.PI * 2)
+        ctx.stroke()
+      }
 
-      ctx.beginPath()
-      ctx.arc(centerX, centerY, 220, 0, Math.PI * 2)
-      ctx.stroke()
-
-      // Draw nodes
+      // 노드 — 글로우(블룸) + 펄스
+      ctx.shadowBlur = 8
       nodes.forEach((n) => {
         n.x += n.vx
         n.y += n.vy
         n.pulseVal += n.pulseSpeed
-
-        // Wrap edges
         if (n.x < 0) n.x = width
         if (n.x > width) n.x = 0
         if (n.y < 0) n.y = height
         if (n.y > height) n.y = 0
 
-        const currentAlpha = n.alpha + Math.sin(n.pulseVal) * 0.15
-
-        ctx.fillStyle = n.color + currentAlpha + ')'
+        const currentAlpha = n.alpha + Math.sin(n.pulseVal) * 0.25
+        const fill = n.color + currentAlpha + ')'
+        ctx.shadowColor = fill
+        ctx.fillStyle = fill
         ctx.beginPath()
-        ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2)
+        ctx.arc(n.x, n.y, n.radius + Math.sin(n.pulseVal) * 0.6, 0, Math.PI * 2)
         ctx.fill()
       })
+      ctx.shadowBlur = 0
 
-      // Draw synapse connections
-      ctx.lineWidth = 0.5
+      // 시냅스 연결 + 연결선 위를 흐르는 빛 패킷(역동적)
+      ctx.lineWidth = 0.6
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const ni = nodes[i]
           const nj = nodes[j]
           if (!ni || !nj) continue
-
           const dx = ni.x - nj.x
           const dy = ni.y - nj.y
           const dist = Math.sqrt(dx * dx + dy * dy)
-
-          if (dist < 130) {
-            const alphaVal = (1 - dist / 130) * 0.18
-            ctx.strokeStyle = `rgba(6, 182, 212, ${alphaVal})`
+          if (dist < 145) {
+            const alphaVal = (1 - dist / 145) * 0.22
+            ctx.strokeStyle = `rgba(110, 168, 254, ${alphaVal})`
             ctx.beginPath()
             ctx.moveTo(ni.x, ni.y)
             ctx.lineTo(nj.x, nj.y)
             ctx.stroke()
+
+            // 가까운 연결 일부에 빛 패킷이 노드 사이를 왕복
+            if (dist < 110 && (i * 7 + j) % 3 === 0) {
+              const t = (Math.sin((frame * 0.04 + i + j) * 0.6) + 1) / 2
+              const px = ni.x + (nj.x - ni.x) * t
+              const py = ni.y + (nj.y - ni.y) * t
+              ctx.fillStyle = `rgba(116, 214, 163, ${(1 - dist / 110) * 0.9})`
+              ctx.beginPath()
+              ctx.arc(px, py, 1.6, 0, Math.PI * 2)
+              ctx.fill()
+            }
           }
         }
       }

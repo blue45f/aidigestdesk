@@ -1,13 +1,22 @@
-import { currentTrackName, isBgmPlaying, startBgm, stopBgm } from '@aidigestdesk/content/shared';
+import {
+  currentTrackName,
+  isBgmPlaying,
+  isSoundMuted,
+  setSoundMuted,
+  startBgm,
+  stopBgm,
+} from '@aidigestdesk/content/shared';
 import { useEffect, useRef, useState } from 'react';
 
 import { theme } from '../theme';
 
 /**
- * 배경음악 토글 — 플로팅 버튼(기본 OFF). 탭하면 절차생성 앰비언트(4트랙 로테이션) 재생/정지.
- * 자동재생 안 함(autoplay 정책). 재생 중엔 현재 트랙명을 잠깐 보여준다.
+ * 오디오 컨트롤(플로팅) — 효과음 on/off + 배경음악 on/off.
+ * 효과음(클릭 틱·타이틀 스파클)은 isSoundMuted, 배경음악은 절차생성 4트랙 로테이션.
+ * 둘 다 기본 ON(효과음)/OFF(음악·자동재생 정책). shared 엔진 공용.
  */
 export function MusicToggle() {
+  const [muted, setMuted] = useState(() => isSoundMuted());
   const [on, setOn] = useState(() => isBgmPlaying());
   const [track, setTrack] = useState('');
   const hideTimer = useRef<number | null>(null);
@@ -20,7 +29,13 @@ export function MusicToggle() {
     return () => clearInterval(id);
   }, [on]);
 
-  const toggle = () => {
+  const toggleSound = () => {
+    const next = !muted;
+    setSoundMuted(next);
+    setMuted(next);
+  };
+
+  const toggleMusic = () => {
     if (on) {
       stopBgm();
       setOn(false);
@@ -33,6 +48,21 @@ export function MusicToggle() {
       hideTimer.current = window.setTimeout(() => setTrack(''), 3200);
     }
   };
+
+  const btn = (active: boolean): React.CSSProperties => ({
+    width: 46,
+    height: 46,
+    borderRadius: '50%',
+    background: active ? theme.accentSoft : theme.surface,
+    border: `1px solid ${active ? theme.accent : theme.border}`,
+    color: active ? theme.accent : theme.textMuted,
+    fontSize: 19,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    boxShadow: '0 6px 18px rgba(0,0,0,0.35)',
+  });
 
   return (
     <div
@@ -65,24 +95,21 @@ export function MusicToggle() {
       )}
       <button
         type="button"
-        onClick={toggle}
+        onClick={toggleSound}
+        aria-label={muted ? '효과음 켜기' : '효과음 끄기'}
+        aria-pressed={!muted}
+        className="pressable"
+        style={btn(!muted)}
+      >
+        {muted ? '🔇' : '🔊'}
+      </button>
+      <button
+        type="button"
+        onClick={toggleMusic}
         aria-label={on ? '배경음악 끄기' : '배경음악 켜기'}
         aria-pressed={on}
         className="pressable"
-        style={{
-          width: 46,
-          height: 46,
-          borderRadius: '50%',
-          background: on ? theme.accentSoft : theme.surface,
-          border: `1px solid ${on ? theme.accent : theme.border}`,
-          color: on ? theme.accent : theme.textMuted,
-          fontSize: 19,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          boxShadow: '0 6px 18px rgba(0,0,0,0.35)',
-        }}
+        style={btn(on)}
       >
         {on ? '🎶' : '🎵'}
       </button>

@@ -1,11 +1,19 @@
-import { currentTrackName, isBgmPlaying, startBgm, stopBgm } from '@aidigestdesk/content/shared'
+import {
+  currentTrackName,
+  isBgmPlaying,
+  isSoundMuted,
+  setSoundMuted,
+  startBgm,
+  stopBgm,
+} from '@aidigestdesk/content/shared'
 import { useEffect, useState } from 'react'
 
 /**
- * 배경음악 토글 — 플로팅 버튼(기본 OFF). 절차생성 앰비언트(4트랙 로테이션) 재생/정지.
- * 이펙트·사운드는 토스와 동일한 @aidigestdesk/content/shared 엔진. 자동재생 안 함(autoplay 정책).
+ * 오디오 컨트롤(플로팅) — 효과음 on/off + 배경음악 on/off.
+ * 토스와 동일한 @aidigestdesk/content/shared 엔진. 자동재생 안 함(autoplay 정책).
  */
 export function MusicToggle() {
+  const [muted, setMuted] = useState(() => isSoundMuted())
   const [on, setOn] = useState(() => isBgmPlaying())
   const [track, setTrack] = useState('')
 
@@ -17,7 +25,13 @@ export function MusicToggle() {
     return () => clearInterval(id)
   }, [on])
 
-  const toggle = () => {
+  const toggleSound = () => {
+    const next = !muted
+    setSoundMuted(next)
+    setMuted(next)
+  }
+
+  const toggleMusic = () => {
     if (on) {
       stopBgm()
       setOn(false)
@@ -28,6 +42,11 @@ export function MusicToggle() {
       setTrack(currentTrackName())
     }
   }
+
+  const cls = (active: boolean) =>
+    `flex size-11 items-center justify-center rounded-full border text-lg shadow-md transition-transform active:scale-95 ${
+      active ? 'border-accent bg-accent/12 text-accent' : 'border-border bg-surface text-text-muted'
+    }`
 
   return (
     <div
@@ -41,12 +60,19 @@ export function MusicToggle() {
       )}
       <button
         type="button"
-        onClick={toggle}
+        onClick={toggleSound}
+        aria-label={muted ? '효과음 켜기' : '효과음 끄기'}
+        aria-pressed={!muted}
+        className={cls(!muted)}
+      >
+        {muted ? '🔇' : '🔊'}
+      </button>
+      <button
+        type="button"
+        onClick={toggleMusic}
         aria-label={on ? '배경음악 끄기' : '배경음악 켜기'}
         aria-pressed={on}
-        className={`flex size-11 items-center justify-center rounded-full border text-lg shadow-md transition-transform active:scale-95 ${
-          on ? 'border-accent bg-accent/12 text-accent' : 'border-border bg-surface text-text-muted'
-        }`}
+        className={cls(on)}
       >
         {on ? '🎶' : '🎵'}
       </button>

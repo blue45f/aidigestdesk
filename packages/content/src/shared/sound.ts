@@ -3,6 +3,33 @@
 // playTick: 모든 클릭 요소용 짧은 틱. playPop: 타이틀 탭용 상승 아르페지오 스파클.
 let audioCtx: AudioContext | null = null;
 
+const MUTE_KEY = 'aid-sound-muted';
+let muted: boolean | null = null; // lazy init from localStorage
+
+/** 효과음 음소거 여부(기본 OFF=소리 켜짐). */
+export function isSoundMuted(): boolean {
+  if (muted === null) {
+    if (typeof window === 'undefined') return false;
+    try {
+      muted = window.localStorage.getItem(MUTE_KEY) === '1';
+    } catch {
+      muted = false;
+    }
+  }
+  return muted;
+}
+
+/** 효과음 음소거 설정(localStorage 영속). */
+export function setSoundMuted(value: boolean): void {
+  muted = value;
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(MUTE_KEY, value ? '1' : '0');
+  } catch {
+    /* 저장 불가 무시 */
+  }
+}
+
 /** 공유 AudioContext(없으면 생성, suspended면 재개). 브라우저 외 환경은 null. */
 export function getAudioContext(): AudioContext | null {
   if (typeof window === 'undefined') return null;
@@ -39,15 +66,17 @@ function blip(
   osc.stop(start + dur + 0.02);
 }
 
-/** 일반 클릭용 — 짧고 부드러운 틱(은은). */
+/** 일반 클릭용 — 짧고 부드러운 틱(은은). 음소거 시 no-op. */
 export function playTick(): void {
+  if (isSoundMuted()) return;
   const ctx = getAudioContext();
   if (!ctx) return;
   blip(ctx, 660, ctx.currentTime, 0.07, 0.05);
 }
 
-/** 타이틀 탭용 — 상승 아르페지오(C·E·G·C) 스파클. */
+/** 타이틀 탭용 — 상승 아르페지오(C·E·G·C) 스파클. 음소거 시 no-op. */
 export function playPop(): void {
+  if (isSoundMuted()) return;
   const ctx = getAudioContext();
   if (!ctx) return;
   const now = ctx.currentTime;
