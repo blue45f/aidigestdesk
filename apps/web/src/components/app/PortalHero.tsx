@@ -71,16 +71,18 @@ export function PortalHero({ onNavigate }: { onNavigate: (route: AppRoute) => vo
           </button>
         </div>
 
-        {/* 규모 신호 — 한 줄로 모아 노이즈를 줄인다. */}
-        <dl className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-4">
-          {inlineStats.map((stat) => (
-            <div key={stat.label} className="flex items-baseline gap-1.5">
-              <dt className="text-xs text-text-subtle">{stat.label}</dt>
-              <dd className="text-base font-bold tabular-nums text-text">
-                <CountUp value={stat.value} />
-              </dd>
-            </div>
-          ))}
+        {/* 규모 신호 — 한 줄로 모아 노이즈를 줄인다. (dl은 dt/dd만 — 버튼은 형제로 분리) */}
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-4">
+          <dl className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            {inlineStats.map((stat) => (
+              <div key={stat.label} className="flex items-baseline gap-1.5">
+                <dt className="text-xs text-text-subtle">{stat.label}</dt>
+                <dd className="text-base font-bold tabular-nums text-text">
+                  <CountUp value={stat.value} />
+                </dd>
+              </div>
+            ))}
+          </dl>
           <button
             type="button"
             onClick={() => onNavigate('deals')}
@@ -93,7 +95,7 @@ export function PortalHero({ onNavigate }: { onNavigate: (route: AppRoute) => vo
               aria-hidden
             />
           </button>
-        </dl>
+        </div>
       </div>
     </section>
   )

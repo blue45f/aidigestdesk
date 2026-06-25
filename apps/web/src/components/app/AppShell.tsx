@@ -151,6 +151,7 @@ export function Header({
                 id={SEARCH_INPUT_ID}
                 value={query}
                 onChange={(event) => onQueryChange(event.target.value)}
+                aria-label="통합 검색"
                 placeholder="모델, 기능, 벤치마크, 강좌, 할인 검색"
                 className="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-10 text-sm text-text outline-none transition placeholder:text-text-subtle focus:border-accent"
               />

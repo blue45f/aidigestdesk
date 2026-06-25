@@ -207,10 +207,10 @@ function ModelRow({
         <button
           type="button"
           onClick={onOpen}
-          aria-label={`${entry.modelName} 상세 보기`}
           className="flex w-full items-center gap-3 rounded-xl border border-border bg-surface px-3 py-3 text-left transition-colors hover:border-border-strong"
         >
           {inner}
+          <span className="sr-only">상세 보기</span>
         </button>
       ) : (
         <div className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-3 transition-colors hover:border-border-strong">
@@ -258,10 +258,10 @@ function ExtensionRow({
         <button
           type="button"
           onClick={onOpen}
-          aria-label={`${entry.name} 상세 보기`}
           className="flex w-full items-center gap-3 rounded-xl border border-border bg-surface px-3 py-3 text-left transition-colors hover:border-border-strong"
         >
           {inner}
+          <span className="sr-only">상세 보기</span>
         </button>
       ) : (
         <div className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-3 transition-colors hover:border-border-strong">
