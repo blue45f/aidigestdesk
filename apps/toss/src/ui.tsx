@@ -78,11 +78,13 @@ export function Segmented({ options, value, onChange }: { options:{id:string;lab
   );
 }
 
-/** 하단 탭바 — 소식 / 랭킹 전환. */
-export function TabBar({ active, onPick }: { active:'feed'|'rank'; onPick:(t:'feed'|'rank')=>void }) {
-  const items:{id:'feed'|'rank';label:string;icon:string}[] = [
+/** 하단 탭바 — 소식 / 랭킹 / 매뉴얼 전환. */
+export type TabId = 'feed' | 'rank' | 'manual';
+export function TabBar({ active, onPick }: { active:TabId; onPick:(t:TabId)=>void }) {
+  const items:{id:TabId;label:string;icon:string}[] = [
     { id:'feed', label:'소식', icon:'📰' },
     { id:'rank', label:'랭킹', icon:'🏆' },
+    { id:'manual', label:'매뉴얼', icon:'📘' },
   ];
   return (
     <nav aria-label="주요 메뉴" style={{ position:'fixed', left:0, right:0, bottom:0, zIndex:30,
