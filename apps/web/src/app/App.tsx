@@ -667,6 +667,12 @@ export default function App() {
     setSelectedModelId(profileId)
     navigateToRoute('models')
     selectModelsTab('compare')
+    // 선택한 모델 상세로 스크롤 — 모바일에서 상세를 전면화(CardStack 의도)
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        document.getElementById('model-detail')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
+    })
   }
   // 랭킹에서 확장 클릭 → 도구 워크벤치 확장 목록으로 이동
   const handleSelectRankingExtension = (_extensionId: string) => {
@@ -774,7 +780,11 @@ export default function App() {
                     selectedModelId={selectedModel?.id ?? ''}
                     onSelectModel={setSelectedModelId}
                   />
-                  {selectedModel ? <ModelDetail profile={selectedModel} /> : null}
+                  {selectedModel ? (
+                    <div id="model-detail" className="scroll-mt-32">
+                      <ModelDetail profile={selectedModel} />
+                    </div>
+                  ) : null}
                 </>
               )}
               {modelsTab === 'local' && <LocalModelComparison />}

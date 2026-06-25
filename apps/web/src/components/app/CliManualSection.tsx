@@ -6,13 +6,12 @@ import {
   ExternalLink,
   KeyRound,
   Lightbulb,
-  Search,
   Sparkles,
   TerminalSquare,
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
-import { BrandMark, SortChip, type SortDirection } from '@/components/app/CommonUi'
+import { BrandMark, SearchField, SortChip, type SortDirection } from '@/components/app/CommonUi'
 
 type CmdSort = 'default' | 'command' | 'category'
 
@@ -100,17 +99,7 @@ function ManualDetail({ manual }: { manual: CliToolManual }) {
           명령어 · 옵션 <span className="text-xs font-normal text-text-subtle">{manual.commands.length}개</span>
         </h4>
 
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-subtle" aria-hidden />
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="명령·설명 검색"
-            aria-label="명령 검색"
-            className="w-full rounded-lg border border-border bg-surface py-2 pl-9 pr-3 text-sm text-text outline-none transition focus:border-border-strong"
-          />
-        </div>
+        <SearchField label="명령 검색" value={query} onChange={setQuery} placeholder="명령·설명 검색" />
 
         <div className="touch-scroll -mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1">
           {categories.map((c) => {
