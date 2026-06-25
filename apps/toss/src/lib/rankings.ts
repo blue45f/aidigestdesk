@@ -1,5 +1,8 @@
 import data from '../rankings.json';
 
+// 공용 파서(웹과 공유) 재노출 — RankingListPage 등에서 그대로 import.
+export { parseNum, parseRank } from '@aidigestdesk/content/shared';
+
 export interface ModelRankEntry {
   id: string;
   name: string;
@@ -74,12 +77,6 @@ export const extensionPlatforms: string[] = [
   '전체 LLM',
   ...PLATFORM_ORDER.filter((p) => extensionEntries.some((entry) => entry.platform === p)),
 ];
-
-export function parseNum(raw: string | null | undefined): number | null {
-  if (!raw) return null;
-  const match = raw.replace(/,/g, '').match(/-?\d+(?:\.\d+)?/);
-  return match ? Number(match[0]) : null;
-}
 
 const norm = (s: string) => s.toLowerCase().replace(/\s+/g, ' ').trim();
 

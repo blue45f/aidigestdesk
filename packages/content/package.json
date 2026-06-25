@@ -17,6 +17,11 @@
       "types": "./dist/cliManuals.d.ts",
       "import": "./dist/cliManuals.js",
       "require": "./dist/cliManuals.cjs"
+    },
+    "./shared": {
+      "types": "./dist/shared.d.ts",
+      "import": "./dist/shared.js",
+      "require": "./dist/shared.cjs"
     }
   },
   "files": [

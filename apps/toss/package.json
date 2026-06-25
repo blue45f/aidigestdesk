@@ -12,6 +12,7 @@
     "build:ait": "ait build"
   },
   "dependencies": {
+    "@aidigestdesk/content": "workspace:*",
     "@apps-in-toss/web-framework": "^2.9.1",
     "@emotion/react": "^11.14.0",
     "@toss/tds-mobile": "^2.5.0",

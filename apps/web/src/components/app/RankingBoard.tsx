@@ -12,6 +12,7 @@ import {
   type ExtensionPlatform,
   type ProviderId,
 } from '@aidigestdesk/content'
+import { parseNum, parseRank } from '@aidigestdesk/content/shared'
 import {
   ArrowRight,
   ChevronRight,
@@ -34,21 +35,6 @@ import {
 import { useMemo, useState } from 'react'
 
 import { BrandMark, Chip, SortChip, type ChipTone, type SortDirection } from '@/components/app/CommonUi'
-
-/* ── 숫자/순위 파서 ─────────────────────────────────────────────── */
-function parseNum(raw: string | undefined): number | null {
-  if (!raw) return null
-  const match = raw.replace(/,/g, '').match(/-?\d+(?:\.\d+)?/)
-  return match ? Number(match[0]) : null
-}
-function parseRank(label: string): number | null {
-  const hash = label.match(/#\s*(\d+(?:\.\d+)?)/)
-  if (hash) return Number(hash[1])
-  const top = label.match(/Top\s*(\d+(?:\.\d+)?)/i)
-  if (top) return Number(top[1])
-  const plain = label.match(/\d+(?:\.\d+)?/)
-  return plain ? Number(plain[0]) : null
-}
 
 /* 벤치마크 모델명 → 상세 프로필 id 매칭(모델명/별칭, 공백·대소문자 무시). */
 const normalizeName = (value: string) => value.toLowerCase().replace(/\s+/g, ' ').trim()
