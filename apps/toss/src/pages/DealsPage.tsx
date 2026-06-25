@@ -1,6 +1,8 @@
 import { Top } from '@toss/tds-mobile';
 import { useMemo, useState } from 'react';
 
+import { AnimatedTitle } from '../components/AnimatedTitle';
+
 import {
   deals,
   dealTypes,
@@ -111,7 +113,7 @@ export function DealsPage() {
 
   return (
     <div style={{ minHeight: '100dvh', background: theme.bg }}>
-      <Top title={<Top.TitleParagraph size={22}>🎁 혜택 · 이벤트</Top.TitleParagraph>}
+      <Top title={<Top.TitleParagraph size={22}>🎁 <AnimatedTitle size={22}>혜택 · 이벤트</AnimatedTitle></Top.TitleParagraph>}
         subtitleBottom={<Top.SubtitleParagraph size={15}>AI 할인·크레딧·해커톤을 한곳에서</Top.SubtitleParagraph>} />
       <div style={pageShell}>
         <div className="rise" style={{ marginBottom: 16 }}>

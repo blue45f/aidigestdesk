@@ -376,3 +376,9 @@
   background-image: linear-gradient(100deg, #eaf1ff 0%, #6ea8fe 22%, #74d6a3 42%, #f5c842 60%, #eaf1ff 80%, #6ea8fe 100%);
 }
 .aid-shimmer-title:active { transform: scale(0.97); }
+
+/* 가로 레일 우측 엣지 페이드 — 더 있다는 단서(드래그 스크롤과 함께). 스크롤 가능한 레일에만 JS가 부여. */
+.x-fade {
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent 100%);
+  mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent 100%);
+}

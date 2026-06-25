@@ -1,6 +1,8 @@
 import { Top } from '@toss/tds-mobile';
 import { useMemo, useState, useSyncExternalStore } from 'react';
 
+import { AnimatedTitle } from '../components/AnimatedTitle';
+
 import {
   addBoardPost,
   addComment,
@@ -364,7 +366,7 @@ export function CommunityPage() {
   return (
     <div style={{ minHeight: '100dvh', background: theme.bg }}>
       <BackBar onBack={() => goBack('/')} label="소식" />
-      <Top title={<Top.TitleParagraph size={22}>💬 커뮤니티</Top.TitleParagraph>}
+      <Top title={<Top.TitleParagraph size={22}>💬 <AnimatedTitle size={22}>커뮤니티</AnimatedTitle></Top.TitleParagraph>}
         subtitleBottom={<Top.SubtitleParagraph size={15}>채팅·게시판·카페 — 데모(이 기기에만 저장)</Top.SubtitleParagraph>} />
       <div style={pageShell}>
         <div style={{ marginBottom: 14 }}>

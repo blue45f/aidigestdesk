@@ -10,10 +10,11 @@ import { SavedPage } from './pages/SavedPage.tsx';
 import { SupportPage } from './pages/SupportPage.tsx';
 import { UpdateDetailPage } from './pages/UpdateDetailPage.tsx';
 import { UpdateListPage } from './pages/UpdateListPage.tsx';
-import { playTick } from '@aidigestdesk/content/shared';
+import { enhanceRails, playTick } from '@aidigestdesk/content/shared';
 import { useEffect } from 'react';
 
 import { navigate, usePathname } from './router';
+import { haptic } from './lib/haptic';
 import { MusicToggle } from './components/MusicToggle.tsx';
 import IntroSplashScreen from './components/IntroSplashScreen.tsx';
 import { TabBar, type TabId } from './ui';
@@ -21,19 +22,26 @@ import { TabBar, type TabId } from './ui';
 export function App() {
   const path = usePathname();
 
-  // 전역 클릭 효과음 — 모든 인터랙티브 요소에 은은한 틱(리스너 1개로 위임).
-  // 타이틀(.aid-shimmer-title)은 자체 스파클 사운드를 내므로 제외.
+  // 전역 클릭 효과음 + 가벼운 햅틱 — 모든 인터랙티브 요소(리스너 1개로 위임).
+  // 타이틀(.aid-shimmer-title)은 자체 스파클·confetti 햅틱을 내므로 제외.
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       if (!target || target.closest('.aid-shimmer-title')) return;
       if (target.closest('button, a, [role="button"], [role="tab"], label, select, input:not([type="text"]):not([type="email"]):not([type="search"])')) {
         playTick();
+        haptic('tickWeak');
       }
     };
     document.addEventListener('click', onClick, true);
     return () => document.removeEventListener('click', onClick, true);
   }, []);
+
+  // 가로 레일 드래그 스크롤 + 관성(.chips 등). 라우트 변경마다 새 레일에 부착.
+  useEffect(() => {
+    const id = window.setTimeout(() => enhanceRails(), 60);
+    return () => window.clearTimeout(id);
+  }, [path]);
 
   // 상세 페이지(탭바 없음)
   const updateDetail = path.match(/^\/update\/(.+)$/);

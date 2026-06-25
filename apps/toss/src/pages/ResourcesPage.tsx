@@ -1,6 +1,8 @@
 import { Top } from '@toss/tds-mobile';
 import { useMemo, useState } from 'react';
 
+import { AnimatedTitle } from '../components/AnimatedTitle';
+
 import {
   extrasSnapshotDate,
   glossary,
@@ -62,7 +64,7 @@ export function ResourcesPage() {
 
   return (
     <div style={{ minHeight: '100dvh', background: theme.bg }}>
-      <Top title={<Top.TitleParagraph size={22}>📚 자료</Top.TitleParagraph>}
+      <Top title={<Top.TitleParagraph size={22}>📚 <AnimatedTitle size={22}>자료</AnimatedTitle></Top.TitleParagraph>}
         subtitleBottom={<Top.SubtitleParagraph size={15}>용어집·강좌·AI 도구를 한국어로</Top.SubtitleParagraph>} />
       <div style={pageShell}>
         <div className="rise" style={{ marginBottom: 14 }}>

@@ -11,6 +11,7 @@ export * from './tokens';
 export * from './sound';
 export * from './bgm';
 export * from './burst';
+export * from './dragScroll';
 export * from './createBookmarkStore';
 export * from './favorites';
 export * from './parse';

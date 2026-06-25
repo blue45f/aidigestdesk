@@ -14,7 +14,7 @@ import {
   vibeCodingCommands,
   type ProviderId,
 } from '@aidigestdesk/content'
-import { playTick } from '@aidigestdesk/content/shared'
+import { attachDragScroll, playTick } from '@aidigestdesk/content/shared'
 import {
   BadgePercent,
   BarChart3,
@@ -550,6 +550,26 @@ export default function App() {
     document.addEventListener('click', onClick, true)
     return () => document.removeEventListener('click', onClick, true)
   }, [])
+
+  // 가로 레일 고도화 — 스크롤 가능한 가로 컨테이너에 마우스 드래그 스크롤+관성+엣지페이드 부착.
+  // 라우트 변경마다 새 레일 탐지(멱등). 데스크톱 스와이프 느낌, 터치는 네이티브 유지.
+  useEffect(() => {
+    let cleanups: Array<() => void> = []
+    const id = window.setTimeout(() => {
+      const rails = [
+        ...document.querySelectorAll<HTMLElement>('main .overflow-x-auto, main .snap-x'),
+      ].filter((el) => el.scrollWidth > el.clientWidth + 6 && el.dataset.xrailBound !== '1')
+      cleanups = rails.map((el) => {
+        el.dataset.xrailBound = '1'
+        el.classList.add('x-fade')
+        return attachDragScroll(el)
+      })
+    }, 90)
+    return () => {
+      window.clearTimeout(id)
+      cleanups.forEach((fn) => fn())
+    }
+  }, [route])
 
   useEffect(() => {
     if (route === 'tools') {
