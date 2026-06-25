@@ -9,6 +9,7 @@ import {
   editBoardPost,
   editComment,
   editPost,
+  formatRelativeTime,
   getCafeMemberCount,
   getCommunitySnapshot,
   getMemberId,
@@ -60,30 +61,6 @@ import {
 import { getCommunityClient } from '@/components/app/deskcloud'
 
 type CommunityTab = 'chat' | 'board' | 'cafe'
-
-/** 작성 시간을 "방금 전 / n분 전 / n시간 전 / n일 전 / 날짜"로 표기한다. */
-function formatRelativeTime(iso: string): string {
-  const created = new Date(iso).getTime()
-  if (Number.isNaN(created)) return ''
-
-  const diffMs = Date.now() - created
-  if (diffMs < 0) return '방금 전'
-
-  const minute = 60_000
-  const hour = 60 * minute
-  const day = 24 * hour
-
-  if (diffMs < minute) return '방금 전'
-  if (diffMs < hour) return `${Math.floor(diffMs / minute)}분 전`
-  if (diffMs < day) return `${Math.floor(diffMs / hour)}시간 전`
-  if (diffMs < 7 * day) return `${Math.floor(diffMs / day)}일 전`
-
-  return new Date(iso).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
-}
 
 function MessageRow({ post }: { post: Post }) {
   const mine = isOwner(post.authorId)

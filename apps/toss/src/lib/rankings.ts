@@ -1,7 +1,7 @@
 import data from '../rankings.json';
 
 // 공용 파서(웹과 공유) 재노출 — RankingListPage 등에서 그대로 import.
-export { parseNum, parseRank } from '@aidigestdesk/content/shared';
+export { compareNullsLast, parseNum, parseRank } from '@aidigestdesk/content/shared';
 
 export interface ModelRankEntry {
   id: string;

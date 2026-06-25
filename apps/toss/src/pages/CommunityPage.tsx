@@ -12,6 +12,7 @@ import {
   editBoardPost,
   editComment,
   editPost,
+  formatRelativeTime,
   getCafeMemberCount,
   getCommunitySnapshot,
   getNickname,
@@ -88,17 +89,6 @@ const linkBtn: React.CSSProperties = {
   padding: 0,
 };
 
-function relTime(iso: string): string {
-  const t = new Date(iso).getTime();
-  if (Number.isNaN(t)) return '';
-  const d = Date.now() - t;
-  if (d < 0 || d < 60_000) return '방금 전';
-  if (d < 3_600_000) return `${Math.floor(d / 60_000)}분 전`;
-  if (d < 86_400_000) return `${Math.floor(d / 3_600_000)}시간 전`;
-  if (d < 7 * 86_400_000) return `${Math.floor(d / 86_400_000)}일 전`;
-  return new Date(iso).toLocaleDateString('ko-KR');
-}
-
 /* ── 댓글 섹션 ──────────────────────────────────────────────────────── */
 function Comments({ postId, nickname }: { postId: string; nickname: string }) {
   const state = useCommunity();
@@ -120,7 +110,7 @@ function Comments({ postId, nickname }: { postId: string; nickname: string }) {
               <li key={c.id} style={{ background: theme.surfaceAlt, borderRadius: 8, padding: '8px 10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
                   <span style={{ fontSize: 11.5, color: theme.textMuted }}>
-                    <b style={{ color: theme.text }}>{c.author}</b> · {relTime(c.createdAt)}
+                    <b style={{ color: theme.text }}>{c.author}</b> · {formatRelativeTime(c.createdAt)}
                     {c.editedAt ? ' · 수정됨' : ''}
                   </span>
                   {mine && !editing && (
@@ -179,7 +169,7 @@ function BoardRow({ post, nickname }: { post: BoardPost; nickname: string }) {
             {!editing && <span style={{ fontSize: 15, fontWeight: 700, color: theme.text }}>{post.title}</span>}
           </div>
           <p style={{ fontSize: 12, color: theme.textMuted, marginTop: 4 }}>
-            <b style={{ color: theme.text }}>{post.author}</b> · {relTime(post.createdAt)}{post.editedAt ? ' · 수정됨' : ''}
+            <b style={{ color: theme.text }}>{post.author}</b> · {formatRelativeTime(post.createdAt)}{post.editedAt ? ' · 수정됨' : ''}
           </p>
         </div>
         {mine && !editing && (
@@ -224,7 +214,7 @@ function MessageRow({ post }: { post: Post }) {
     <li style={card}>
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
         <span style={{ fontSize: 12.5, color: theme.textMuted }}>
-          <b style={{ color: theme.text }}>{post.author}</b> · {relTime(post.createdAt)}{post.editedAt ? ' · 수정됨' : ''}
+          <b style={{ color: theme.text }}>{post.author}</b> · {formatRelativeTime(post.createdAt)}{post.editedAt ? ' · 수정됨' : ''}
         </span>
         {mine && !editing && (
           <span style={{ display: 'flex', gap: 8, flexShrink: 0 }}>

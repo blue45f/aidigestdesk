@@ -12,7 +12,13 @@ import {
   type ExtensionPlatform,
   type ProviderId,
 } from '@aidigestdesk/content'
-import { looksPrice, looksSpeed, parseNum, parseRank } from '@aidigestdesk/content/shared'
+import {
+  compareNullsLast,
+  looksPrice,
+  looksSpeed,
+  parseNum,
+  parseRank,
+} from '@aidigestdesk/content/shared'
 import {
   ArrowRight,
   ChevronRight,
@@ -323,23 +329,16 @@ export function RankingBoard({
 
   const rankedModels = useMemo(() => {
     const dirMul = modelDir === 'asc' ? 1 : -1
-    // 빈 값(null)은 정렬 방향과 무관하게 항상 끝으로 보낸다(토스 RankingListPage 와 동일 규칙).
-    // ?? ±Infinity 를 dirMul 로 곱하면 내림차순에서 빈 값이 위로 튀어 양쪽 결과가 갈리므로 사용하지 않는다.
-    const nullsLast = (a: number | null, b: number | null) => {
-      if (a == null && b == null) return 0
-      if (a == null) return 1
-      if (b == null) return -1
-      return (a - b) * dirMul
-    }
+    // 빈 값은 방향 무관 항상 끝으로 — 토스 RankingListPage 와 같은 shared comparator 사용(중복 제거).
     return domainModels
       .toSorted((a, b) => {
         switch (effectiveModelSort) {
           case 'score':
-            return nullsLast(parseNum(a.score), parseNum(b.score))
+            return compareNullsLast(parseNum(a.score), parseNum(b.score), modelDir)
           case 'price':
-            return nullsLast(parseNum(a.price), parseNum(b.price))
+            return compareNullsLast(parseNum(a.price), parseNum(b.price), modelDir)
           case 'speed':
-            return nullsLast(parseNum(a.speed), parseNum(b.speed))
+            return compareNullsLast(parseNum(a.speed), parseNum(b.speed), modelDir)
           case 'rank':
           default: {
             const ra = parseRank(a.rankLabel) ?? 999

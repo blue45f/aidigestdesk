@@ -2,6 +2,7 @@ import { Top } from '@toss/tds-mobile';
 import { useMemo, useState } from 'react';
 
 import {
+  compareNullsLast,
   extensionEntries,
   extensionKinds,
   extensionPlatforms,
@@ -38,20 +39,13 @@ const EXT_SORTS: { id: string; label: string; pick: (e: ExtensionRankEntry) => n
 ];
 
 function sortBy<T>(items: T[], pick: (x: T) => number | string | null, dir: Dir): T[] {
+  // 빈 값은 방향 무관 항상 뒤로 — 웹 RankingBoard 와 같은 shared comparator(중복 제거).
+  // 동률은 원본 인덱스로 안정 정렬.
   return items
     .map((item, index) => ({ item, index, key: pick(item) }))
     .sort((a, b) => {
-      // null/빈 값은 방향과 무관하게 항상 뒤로.
-      const an = a.key === null || a.key === '';
-      const bn = b.key === null || b.key === '';
-      if (an && bn) return a.index - b.index;
-      if (an) return 1;
-      if (bn) return -1;
-      let cmp: number;
-      if (typeof a.key === 'number' && typeof b.key === 'number') cmp = a.key - b.key;
-      else cmp = String(a.key).localeCompare(String(b.key), 'ko');
-      if (cmp === 0) return a.index - b.index;
-      return dir === 'asc' ? cmp : -cmp;
+      const cmp = compareNullsLast(a.key, b.key, dir);
+      return cmp !== 0 ? cmp : a.index - b.index;
     })
     .map((x) => x.item);
 }
