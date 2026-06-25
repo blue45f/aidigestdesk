@@ -7,7 +7,6 @@ const TYPE_LABEL: Record<BookmarkType, string> = {
   model: '모델',
   extension: '확장',
   manual: '매뉴얼',
-  deal: '혜택',
 };
 
 export function SavedPage() {

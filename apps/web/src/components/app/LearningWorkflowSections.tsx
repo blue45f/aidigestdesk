@@ -8,6 +8,7 @@ import {
   type PersonaGuide,
   updates,
 } from "@aidigestdesk/content";
+import { parseNum } from "@aidigestdesk/content/shared";
 import {
   CheckCircle2,
   CircleHelp,
@@ -42,11 +43,6 @@ function getSearchTerms(query: string) {
 
 function isTermMatch(target: string, terms: string[]) {
   return terms.every((term) => target.includes(term));
-}
-
-function parseNumeric(raw: string) {
-  const match = raw.replace(/,/g, "").trim().match(/-?\d+(?:\.\d+)?/);
-  return match ? Number(match[0]) : null;
 }
 
 function sortDirectionIcon(direction: SortDirection) {
@@ -152,8 +148,8 @@ export function DesignWorkflowSection() {
           if (pptSortMode === "metric") {
             return a.metric.localeCompare(b.metric, "ko") * direction;
           }
-          const scoreA = parseNumeric(a.score) ?? 0;
-          const scoreB = parseNumeric(b.score) ?? 0;
+          const scoreA = parseNum(a.score) ?? 0;
+          const scoreB = parseNum(b.score) ?? 0;
           const diff = scoreA - scoreB;
           if (diff !== 0) return diff * direction;
           return a.rankLabel.localeCompare(b.rankLabel, "ko") * direction;

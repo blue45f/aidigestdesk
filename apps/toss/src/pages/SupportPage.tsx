@@ -15,9 +15,11 @@ import { BackBar, Chips, MetaChip } from '../ui';
 
 const CATEGORY_VALUE_BY_LABEL = new Map(INQUIRY_CATEGORIES.map((c) => [INQUIRY_CATEGORY_LABELS[c], c]));
 
+// 상태→색 시맨틱은 웹(SupportRoute statusTone)과 정렬: new=파랑(accent), in_progress=앰버,
+// resolved=초록, closed=중립. (DealsPage 와 동일한 앰버 토큰 #f5c842 사용.)
 function statusColor(status: string): { bg: string; fg: string } {
   if (status === 'resolved') return { bg: 'rgba(116,214,163,0.16)', fg: '#74d6a3' };
-  if (status === 'in_progress') return { bg: 'rgba(110,168,254,0.16)', fg: '#6ea8fe' };
+  if (status === 'in_progress') return { bg: 'rgba(245,200,66,0.16)', fg: '#f5c842' };
   if (status === 'closed') return { bg: 'rgba(255,255,255,0.06)', fg: theme.textMuted };
   return { bg: theme.accentSoft, fg: theme.accent }; // new
 }
@@ -27,6 +29,7 @@ export function SupportPage() {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [authorName, setAuthorName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,13 +52,26 @@ export function SupportPage() {
 
   const onSubmit = async () => {
     if (!canSubmit) return;
+    // 이메일은 선택이지만, 입력했다면 웹과 동일한 형식 규칙으로 검증한다.
+    const email = contactEmail.trim();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('이메일 형식이 올바르지 않아요.');
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
-      await submitInquiry({ category, title: title.trim(), body: body.trim(), authorName: authorName.trim() || undefined });
+      await submitInquiry({
+        category,
+        title: title.trim(),
+        body: body.trim(),
+        authorName: authorName.trim() || undefined,
+        contactEmail: email || undefined,
+      });
       setDone(true);
       setTitle('');
       setBody('');
+      setContactEmail('');
       load();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : '문의 등록에 실패했어요.');
@@ -101,6 +117,9 @@ export function SupportPage() {
                 fontFamily: 'inherit', lineHeight: 1.6, outline: 'none' }} />
             <input className="field" style={{ paddingLeft: 14 }} value={authorName} maxLength={40}
               placeholder="이름 (선택)" aria-label="이름" onChange={(e) => setAuthorName(e.target.value)} />
+            <input className="field" style={{ paddingLeft: 14 }} value={contactEmail} maxLength={120}
+              type="email" inputMode="email" placeholder="이메일 (선택, 비공개)" aria-label="이메일"
+              onChange={(e) => setContactEmail(e.target.value)} />
             {error && <p style={{ fontSize: 13, color: theme.danger, lineHeight: 1.5 }}>{error}</p>}
             <button type="button" onClick={onSubmit} disabled={!canSubmit} className="pressable"
               style={{ height: 50, borderRadius: theme.radius, cursor: canSubmit ? 'pointer' : 'not-allowed',

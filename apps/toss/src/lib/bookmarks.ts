@@ -1,9 +1,10 @@
 import { useSyncExternalStore } from 'react';
 
 // 즐겨찾기 — localStorage 기반 경량 스토어(웹 BookmarksRail의 토스판).
-// 모델/확장/매뉴얼/혜택을 저장해 /saved 에서 모아본다. 서버 의존 없음.
+// 모델/확장/매뉴얼을 저장해 /saved 에서 모아본다. 서버 의존 없음.
+// (혜택('deal')은 현재 북마크 진입점이 없어 타입에서 제외 — 데드코드 방지.)
 
-export type BookmarkType = 'model' | 'extension' | 'manual' | 'deal';
+export type BookmarkType = 'model' | 'extension' | 'manual';
 export interface Bookmark {
   type: BookmarkType;
   id: string;

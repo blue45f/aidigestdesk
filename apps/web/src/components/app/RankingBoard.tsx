@@ -297,28 +297,47 @@ export function RankingBoard({
   const [extSort, setExtSort] = useState<ExtensionSort>('rank')
   const [extDir, setExtDir] = useState<SortDirection>('asc')
 
+  // 해당 분야의 leaderboard 모델(reference 제외) — 정렬 전 원천.
+  const domainModels = useMemo(
+    () => benchmarkEntries.filter((entry) => entry.domain === domain && entry.tier !== 'reference'),
+    [domain],
+  )
+  // 데이터가 있는 정렬 축만 칩으로 노출(없으면 '먹통 칩'이 되므로 숨김 — 토스와 동일).
+  const availableModelSortChips = useMemo(() => {
+    const hasPrice = domainModels.some((entry) => parseNum(entry.price) != null)
+    const hasSpeed = domainModels.some((entry) => parseNum(entry.speed) != null)
+    return modelSortChips.filter(
+      (chip) =>
+        chip.id === 'rank' ||
+        chip.id === 'score' ||
+        (chip.id === 'price' && hasPrice) ||
+        (chip.id === 'speed' && hasSpeed),
+    )
+  }, [domainModels])
+  // 활성 정렬 축이 현재 분야에 없으면 'rank'로 폴백(setState-in-effect 없이 렌더 시 보정).
+  const effectiveModelSort = availableModelSortChips.some((chip) => chip.id === modelSort)
+    ? modelSort
+    : 'rank'
+
   const rankedModels = useMemo(() => {
     const dirMul = modelDir === 'asc' ? 1 : -1
-    return benchmarkEntries
-      // reference(벤치마크 카탈로그) 행은 랭킹에서 제외, leaderboard 행만
-      .filter((entry) => entry.domain === domain && entry.tier !== 'reference')
+    // 빈 값(null)은 정렬 방향과 무관하게 항상 끝으로 보낸다(토스 RankingListPage 와 동일 규칙).
+    // ?? ±Infinity 를 dirMul 로 곱하면 내림차순에서 빈 값이 위로 튀어 양쪽 결과가 갈리므로 사용하지 않는다.
+    const nullsLast = (a: number | null, b: number | null) => {
+      if (a == null && b == null) return 0
+      if (a == null) return 1
+      if (b == null) return -1
+      return (a - b) * dirMul
+    }
+    return domainModels
       .toSorted((a, b) => {
-        switch (modelSort) {
-          case 'score': {
-            const sa = parseNum(a.score) ?? -Infinity
-            const sb = parseNum(b.score) ?? -Infinity
-            return (sa - sb) * dirMul
-          }
-          case 'price': {
-            const pa = parseNum(a.price) ?? Infinity
-            const pb = parseNum(b.price) ?? Infinity
-            return (pa - pb) * dirMul
-          }
-          case 'speed': {
-            const va = parseNum(a.speed) ?? -Infinity
-            const vb = parseNum(b.speed) ?? -Infinity
-            return (va - vb) * dirMul
-          }
+        switch (effectiveModelSort) {
+          case 'score':
+            return nullsLast(parseNum(a.score), parseNum(b.score))
+          case 'price':
+            return nullsLast(parseNum(a.price), parseNum(b.price))
+          case 'speed':
+            return nullsLast(parseNum(a.speed), parseNum(b.speed))
           case 'rank':
           default: {
             const ra = parseRank(a.rankLabel) ?? 999
@@ -330,7 +349,7 @@ export function RankingBoard({
           }
         }
       })
-  }, [domain, modelSort, modelDir])
+  }, [domainModels, effectiveModelSort, modelDir])
 
   const rankedExtensions = useMemo(() => {
     const dirMul = extDir === 'asc' ? 1 : -1
@@ -481,11 +500,11 @@ export function RankingBoard({
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
         <span className="text-xs font-semibold text-text-subtle">정렬</span>
         {scope === 'models'
-          ? modelSortChips.map((chip) => (
+          ? availableModelSortChips.map((chip) => (
               <SortChip
                 key={chip.id}
                 label={chip.label}
-                active={modelSort === chip.id}
+                active={effectiveModelSort === chip.id}
                 direction={modelDir}
                 onToggle={() => toggleModelSort(chip.id)}
               />
@@ -511,7 +530,7 @@ export function RankingBoard({
                   key={entry.id}
                   entry={entry}
                   position={index + 1}
-                  medal={modelSort === 'rank'}
+                  medal={effectiveModelSort === 'rank'}
                   onOpen={profileId ? () => onSelectModel?.(profileId) : undefined}
                 />
               )

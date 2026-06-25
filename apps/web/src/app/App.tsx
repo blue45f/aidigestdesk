@@ -856,12 +856,15 @@ export default function App() {
                 onSelectModel={handleSelectRankingModel}
                 onSelectExtension={handleSelectRankingExtension}
                 onSeeAll={(scope) => {
+                  // selectModelsTab/selectToolsPane 는 path+hash 를 단일 pushState 로 처리하고
+                  // hashchange 를 유발하지 않는다(history 중복·syncHash 재진입·경합 스크롤 방지).
+                  // 단독으로는 setRoute 를 호출하지 않으므로 navigateToRoute 를 선행한다.
                   if (scope === 'models') {
                     navigateToRoute('models')
-                    window.location.hash = '#rankings'
+                    selectModelsTab('rankings')
                   } else {
                     navigateToRoute('tools')
-                    window.location.hash = '#extensions'
+                    selectToolsPane('extensions')
                   }
                 }}
               />

@@ -5,6 +5,7 @@ import {
   extensionEntries,
   extensionKinds,
   extensionPlatforms,
+  GRADE_PALETTE,
   modelDomains,
   parseNum,
   snapshotDate,
@@ -55,13 +56,6 @@ function sortBy<T>(items: T[], pick: (x: T) => number | string | null, dir: Dir)
     .map((x) => x.item);
 }
 
-const GRADE_PALETTE: Record<string, { bg: string; fg: string }> = {
-  S: { bg: 'rgba(245,200,66,0.16)', fg: '#f5c842' },
-  A: { bg: 'rgba(110,168,254,0.16)', fg: '#6ea8fe' },
-  B: { bg: 'rgba(120,200,160,0.16)', fg: '#74d6a3' },
-  C: { bg: 'rgba(255,255,255,0.06)', fg: '#94a6c4' },
-};
-
 const rowStyle: React.CSSProperties = {
   display: 'flex', gap: 12, alignItems: 'flex-start', width: '100%', textAlign: 'left', cursor: 'pointer',
   background: theme.surface, border: `1px solid ${theme.border}`, borderRadius: theme.radius, padding: '14px 14px',
@@ -85,7 +79,7 @@ function MoreButton({ expanded, total, visible, onToggle }: { expanded: boolean;
 function ModelRow({ entry, position, onOpen, medal }: { entry: ModelRankEntry; position: number; onOpen: () => void; medal: boolean }) {
   return (
     <button type="button" onClick={onOpen} className="pressable" style={rowStyle}
-      aria-label={`${entry.name} 상세 보기`}>
+      aria-label={medal ? `${position}위 ${entry.name} 상세 보기` : `${entry.name} 상세 보기`}>
       <RankBadge position={position} medal={medal} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
@@ -113,7 +107,7 @@ function ExtensionRow({ entry, position, onOpen, medal }: { entry: ExtensionRank
   const grade = GRADE_PALETTE[entry.grade] ?? GRADE_PALETTE.C;
   return (
     <button type="button" onClick={onOpen} className="pressable" style={rowStyle}
-      aria-label={`${entry.name} 상세 보기`}>
+      aria-label={medal ? `${position}위 ${entry.name} 상세 보기` : `${entry.name} 상세 보기`}>
       <RankBadge position={position} medal={medal} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
@@ -208,8 +202,8 @@ export function RankingListPage() {
                 (s) => s.id === 'rank' || s.id === 'score' || (activeDomain?.entries ?? []).some((e) => s.pick(e) != null)
               ).map((s) => (
                 <SortChip key={s.id} label={s.label} active={modelSort === s.id}
-                  dir={modelSort === s.id ? modelDir : 'desc'}
-                  onToggle={() => toggle(s.id, modelSort, setModelSort, modelDir, setModelDir, s.id === 'rank' ? 'asc' : 'desc')} />
+                  dir={modelSort === s.id ? modelDir : s.id === 'rank' || s.id === 'price' ? 'asc' : 'desc'}
+                  onToggle={() => toggle(s.id, modelSort, setModelSort, modelDir, setModelDir, s.id === 'rank' || s.id === 'price' ? 'asc' : 'desc')} />
               ))}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

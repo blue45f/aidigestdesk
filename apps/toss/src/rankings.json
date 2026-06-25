@@ -2682,7 +2682,7 @@
         "공식 디자인 스킬을 적용할 때",
         "프론트엔드 작업을 표준화할 때"
       ],
-      "url": "https://claudemarketplaces.com/",
+      "url": "https://github.com/anthropics/claude-code/tree/main/plugins/frontend-design",
       "rank": 74,
       "grade": "C"
     },
@@ -2893,13 +2893,13 @@
       "platform": "Codex CLI",
       "category": "생산성",
       "maturity": "커뮤니티",
-      "summary": "코어 개발·언어 전문·인프라·보안·데이터/AI·DX 등 10개 카테고리에 걸친 136개 이상의 Codex CLI 서브에이전트 컬렉션.",
+      "summary": "코어 개발·언어 전문·인프라·보안·데이터/AI·DX 등 13개 카테고리에 걸친 171개 이상의 Codex CLI 서브에이전트 컬렉션.",
       "whatItDoes": [
-        "136개 이상 Codex CLI 서브에이전트를 10개 카테고리로 제공",
+        "171개 이상 Codex CLI 서브에이전트를 13개 카테고리로 제공",
         "코어 개발·인프라·보안·데이터 등 역할별 에이전트 정의",
         "Codex 설정에 복사해 즉시 활용"
       ],
-      "install": "GitHub 저장소(RoggeOhta/awesome-codex-cli)에서 원하는 서브에이전트를 Codex 설정에 복사",
+      "install": "GitHub 저장소(VoltAgent/awesome-codex-subagents)에서 원하는 서브에이전트를 Codex 설정에 복사",
       "usage": "복사한 서브에이전트를 Codex CLI에서 해당 작업에 호출",
       "koreanNote": null,
       "bestFor": [
@@ -2907,7 +2907,7 @@
         "서브에이전트 정의 레퍼런스를 찾을 때",
         "도메인 작업을 위임할 때"
       ],
-      "url": "https://github.com/RoggeOhta/awesome-codex-cli",
+      "url": "https://github.com/VoltAgent/awesome-codex-subagents",
       "rank": 83,
       "grade": "C"
     },

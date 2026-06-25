@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // 토스 인앱(apps/toss)용 컴팩트 CLI 매뉴얼 데이터 생성기.
-// 토스는 content 패키지를 의존하지 않으므로(번들 경량화), cliManuals 엔트리에서
+// 토스는 거대한 catalog 전체를 번들하지 않도록(번들 경량화), cliManuals 엔트리에서
 // 필요한 필드만 추려 apps/toss/src/manuals.json 으로 내보낸다.
+// (토스는 @aidigestdesk/content 의 /shared 서브패스만 import 한다.)
 // 사용: node scripts/generate-toss-manuals.mjs  (content 빌드 후 실행)
 
 import { mkdir, writeFile } from 'node:fs/promises'

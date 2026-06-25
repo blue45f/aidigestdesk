@@ -128,3 +128,15 @@ export function getProfileForName(name: string): ModelProfile | undefined {
     (p) => norm(p.modelName) === target || p.aliases.some((a) => norm(a) === target)
   );
 }
+
+/**
+ * 확장 등급(S>A>B>C) 배지 색 — 웹과 동일한 색 위계.
+ * S=금, A=파랑, B=앰버(S 금색보다 채도·명도를 낮춰 S와 구분), C=중립.
+ * RankingListPage·RankExtensionDetailPage 가 공유한다(중복 제거).
+ */
+export const GRADE_PALETTE: Record<string, { bg: string; fg: string }> = {
+  S: { bg: 'rgba(245,200,66,0.16)', fg: '#f5c842' },
+  A: { bg: 'rgba(110,168,254,0.16)', fg: '#6ea8fe' },
+  B: { bg: 'rgba(199,154,58,0.16)', fg: '#c79a3a' },
+  C: { bg: 'rgba(255,255,255,0.06)', fg: '#94a6c4' },
+};

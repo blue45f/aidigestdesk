@@ -1,14 +1,7 @@
-import { getExtensionById, snapshotDate } from '../lib/rankings';
+import { getExtensionById, GRADE_PALETTE, snapshotDate } from '../lib/rankings';
 import { goBack } from '../router';
 import { theme, pageShell } from '../theme';
 import { Badge, BackBar, BookmarkButton, MetaChip } from '../ui';
-
-const GRADE_PALETTE: Record<string, { bg: string; fg: string }> = {
-  S: { bg: 'rgba(245,200,66,0.16)', fg: '#f5c842' },
-  A: { bg: 'rgba(110,168,254,0.16)', fg: '#6ea8fe' },
-  B: { bg: 'rgba(120,200,160,0.16)', fg: '#74d6a3' },
-  C: { bg: 'rgba(255,255,255,0.06)', fg: '#94a6c4' },
-};
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (

@@ -19,6 +19,7 @@ import {
   type LocalModelRankGrade,
   type ModelProfile,
 } from '@aidigestdesk/content'
+import { parseNum, parseRank } from '@aidigestdesk/content/shared'
 import {
   BarChart3,
   Boxes,
@@ -90,12 +91,7 @@ type ActiveBenchmarkProviderFilter = Exclude<BenchmarkProviderFilter, 'all'>
 type ActiveModelCardStatusFilter = Exclude<ModelCardStatusFilter, 'all'>
 type ActiveSourceKindFilter = Exclude<SourceKindFilter, 'all'>
 
-function parseNumericMetric(value: string) {
-  const normalized = value.replace(/,/g, '').trim()
-  const match = normalized.match(/-?\d+(?:\.\d+)?/)
-  return match ? Number(match[0]) : null
-}
-
+// 수치/순위 파싱은 @aidigestdesk/content/shared 의 parseNum·parseRank 를 공유한다(중복 제거).
 function compareNumericWithDirection(
   a: number | null,
   b: number | null,
@@ -105,15 +101,6 @@ function compareNumericWithDirection(
   if (a == null) return 1
   if (b == null) return -1
   return (a - b) * (direction === 'asc' ? 1 : -1)
-}
-
-function parseRankValue(rankLabel: string) {
-  const hashMatch = rankLabel.match(/#\s*(\d+(?:\.\d+)?)/)
-  if (hashMatch) return Number(hashMatch[1])
-  const topMatch = rankLabel.match(/Top\s*(\d+(?:\.\d+)?)/i)
-  if (topMatch) return Number(topMatch[1])
-  const plainMatch = rankLabel.match(/(\d+(?:\.\d+)?)/)
-  return plainMatch ? Number(plainMatch[1]) : null
 }
 
 function getLatestSourceCheckedAt(entry: BenchmarkEntry) {
@@ -509,8 +496,8 @@ export function ModelDetail({ profile }: { profile: ModelProfile }) {
         if (modelSpecSortMode === 'label') {
           return left.label.localeCompare(right.label, 'ko') * direction
         }
-        const leftNumeric = parseNumericMetric(left.value)
-        const rightNumeric = parseNumericMetric(right.value)
+        const leftNumeric = parseNum(left.value)
+        const rightNumeric = parseNum(right.value)
         const numericDiff =
           (leftNumeric ?? Number.MIN_SAFE_INTEGER) - (rightNumeric ?? Number.MIN_SAFE_INTEGER)
         if (Number.isFinite(numericDiff) && numericDiff !== 0) {
@@ -1161,8 +1148,8 @@ export function BenchmarkBoard() {
           const directionOrder = sortDirection === 'asc' ? 1 : -1
           switch (sortMode) {
             case 'rank': {
-              const rankA = parseRankValue(a.rankLabel)
-              const rankB = parseRankValue(b.rankLabel)
+              const rankA = parseRank(a.rankLabel)
+              const rankB = parseRank(b.rankLabel)
               if (rankA == null && rankB == null) {
                 return a.rankLabel.localeCompare(b.rankLabel) * directionOrder
               }
@@ -1185,29 +1172,29 @@ export function BenchmarkBoard() {
               return domainA.localeCompare(domainB) * directionOrder
             }
             case 'score': {
-              const scoreA = parseNumericMetric(a.score)
-              const scoreB = parseNumericMetric(b.score)
+              const scoreA = parseNum(a.score)
+              const scoreB = parseNum(b.score)
               const byNumeric = compareNumericWithDirection(scoreA, scoreB, sortDirection)
               if (byNumeric !== 0) return byNumeric
               return a.modelName.localeCompare(b.modelName) * directionOrder
             }
             case 'price': {
-              const priceA = parseNumericMetric(a.price)
-              const priceB = parseNumericMetric(b.price)
+              const priceA = parseNum(a.price)
+              const priceB = parseNum(b.price)
               const byNumeric = compareNumericWithDirection(priceA, priceB, sortDirection)
               if (byNumeric !== 0) return byNumeric
               return a.modelName.localeCompare(b.modelName) * directionOrder
             }
             case 'speed': {
-              const speedA = parseNumericMetric(a.speed)
-              const speedB = parseNumericMetric(b.speed)
+              const speedA = parseNum(a.speed)
+              const speedB = parseNum(b.speed)
               const byNumeric = compareNumericWithDirection(speedA, speedB, sortDirection)
               if (byNumeric !== 0) return byNumeric
               return a.modelName.localeCompare(b.modelName) * directionOrder
             }
             case 'latency': {
-              const latencyA = parseNumericMetric(a.latency)
-              const latencyB = parseNumericMetric(b.latency)
+              const latencyA = parseNum(a.latency)
+              const latencyB = parseNum(b.latency)
               const byNumeric = compareNumericWithDirection(latencyA, latencyB, sortDirection)
               if (byNumeric !== 0) return byNumeric
               return a.modelName.localeCompare(b.modelName) * directionOrder
@@ -1228,7 +1215,7 @@ export function BenchmarkBoard() {
   )
   const maxScore = Math.max(
     1,
-    ...visibleEntries.map((entry) => parseNumericMetric(entry.score) ?? 0)
+    ...visibleEntries.map((entry) => parseNum(entry.score) ?? 0)
   )
   const pagedEntries =
     benchmarkLimit === 0 ? visibleEntries : visibleEntries.slice(0, benchmarkLimit)
@@ -1446,11 +1433,11 @@ export function BenchmarkBoard() {
           </button>
         </div>
         {pagedEntries.map((entry) => {
-          const numericScore = parseNumericMetric(entry.score) ?? 0
+          const numericScore = parseNum(entry.score) ?? 0
           const width = `${Math.max(4, (numericScore / maxScore) * 100)}%`
           const entrySources = getSources(entry.sourceIds)
           const entrySourceMetadata = entrySources.map(getSourceMetadata)
-          const sourceKinds = [
+          const entrySourceKinds = [
             ...new Set(entrySources.map((source) => sourceKindLabel(source.kind))),
           ]
           const sourceDomains = [
@@ -1486,7 +1473,7 @@ export function BenchmarkBoard() {
                       <ExternalLink className="size-3" aria-hidden />
                     </a>
                   ))}
-                  {sourceKinds.map((kind) => (
+                  {entrySourceKinds.map((kind) => (
                     <span
                       key={kind}
                       className="rounded-md border border-border bg-bg px-2 py-1 text-[0.6875rem] font-semibold text-text-subtle"
