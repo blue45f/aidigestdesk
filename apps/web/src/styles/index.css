@@ -361,7 +361,8 @@
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  background-image: linear-gradient(100deg, #eaf1ff 0%, #6ea8fe 22%, #74d6a3 42%, #f5c842 60%, #eaf1ff 80%, #6ea8fe 100%);
+  /* 라이트 모드 기본 — 흰 배경에서도 또렷하게(진한·채도 높은 브랜드 색). */
+  background-image: linear-gradient(100deg, #1d4ed8 0%, #0891b2 24%, #059669 44%, #7c3aed 64%, #1d4ed8 88%, #0891b2 100%);
   background-size: 220% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -369,5 +370,9 @@
   color: transparent;
   animation: aidShimmer 3.6s linear infinite, aidGlow 2.4s ease-in-out infinite;
   transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* 다크 모드 — 어두운 배경엔 밝은 색이 또렷. */
+.dark .aid-shimmer-title {
+  background-image: linear-gradient(100deg, #eaf1ff 0%, #6ea8fe 22%, #74d6a3 42%, #f5c842 60%, #eaf1ff 80%, #6ea8fe 100%);
 }
 .aid-shimmer-title:active { transform: scale(0.97); }
