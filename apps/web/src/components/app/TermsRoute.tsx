@@ -70,7 +70,7 @@ function TermsDocument({ onNavigate }: { onNavigate: (route: AppRoute) => void }
       <header className="space-y-2 border-b border-border pb-5">
         <h2 className="text-xl font-semibold text-text">이용약관</h2>
         <p className="text-sm leading-7 text-text-muted">
-          본 약관은 AI Digest Desk(이하 &ldquo;서비스&rdquo;)의 이용 조건과 절차, 이용자와 운영자의
+          본 약관은 AIDigestDesk(이하 &ldquo;서비스&rdquo;)의 이용 조건과 절차, 이용자와 운영자의
           권리·의무 및 책임 사항을 규정합니다.
         </p>
       </header>
@@ -93,7 +93,7 @@ function TermsDocument({ onNavigate }: { onNavigate: (route: AppRoute) => void }
           <p>이 약관에서 사용하는 용어의 정의는 다음과 같습니다.</p>
           <ul className="list-disc space-y-1 pl-5">
             <li>
-              &ldquo;서비스&rdquo;란 운영자가 제공하는 AI Digest Desk 포털과 그에 포함된 모든
+              &ldquo;서비스&rdquo;란 운영자가 제공하는 AIDigestDesk 포털과 그에 포함된 모든
               기능·콘텐츠를 말합니다.
             </li>
             <li>
@@ -193,27 +193,39 @@ function PrivacyDocument() {
       <header className="space-y-2 border-b border-border pb-5">
         <h2 className="text-xl font-semibold text-text">개인정보처리방침</h2>
         <p className="text-sm leading-7 text-text-muted">
-          AI Digest Desk는 이용자의 개인정보를 소중히 다루며, 데모 환경에서 처리하는 정보의 항목과
+          AIDigestDesk는 이용자의 개인정보를 소중히 다루며, 데모 환경에서 처리하는 정보의 항목과
           취급 방식을 아래와 같이 안내합니다.
         </p>
       </header>
 
       <DemoNotice>
-        본 포털은 데모/포트폴리오 목적이며, 회원 데모 정보는 이용자의 브라우저 localStorage에만
-        저장됩니다. 어떤 정보도 서버나 외부로 전송되지 않으며 별도의 백엔드 데이터베이스에 수집되지
-        않습니다.
+        회원 데모·환경설정 정보는 이용자의 브라우저 localStorage에만 저장되며 서버로 전송되지 않습니다.
+        다만 <strong>문의하기</strong>로 보내는 정보(제목·내용·이름·이메일·접속 URL)는 문의 처리를 위해
+        운영 서버(desk-platform)로 전송·저장되며, 이메일을 제외한 문의 내용은 공개 문의 게시판에 표시될
+        수 있습니다.
       </DemoNotice>
 
       <div className="mt-6 space-y-7">
         <Article number={1} title="수집하는 개인정보 항목">
           <p>
-            회원 데모 기능 이용 시 다음 항목이 입력될 수 있습니다. 이 정보는 모두 이용자의 브라우저
-            localStorage에만 저장되고 서버로 전송되지 않습니다.
+            <strong>(가) 브라우저에만 저장되는 정보</strong> — 회원 데모 기능 이용 시 입력될 수 있으며,
+            이용자의 브라우저 localStorage에만 저장되고 서버로 전송되지 않습니다.
           </p>
           <ul className="list-disc space-y-1 pl-5">
             <li>이메일 주소 (데모 로그인 식별용)</li>
             <li>닉네임 (화면 표시용)</li>
             <li>다크 모드, 필터 선택값 등 화면 환경설정</li>
+          </ul>
+          <p className="mt-3">
+            <strong>(나) 문의 시 서버로 전송되는 정보</strong> — 문의하기 이용 시 다음 항목이 운영
+            서버(desk-platform)로 전송·저장됩니다. 이메일을 제외한 제목·내용·이름은 공개 문의 게시판에
+            표시될 수 있습니다.
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>문의 제목·내용</li>
+            <li>이름(닉네임)</li>
+            <li>회신용 이메일 주소 (공개되지 않음)</li>
+            <li>접속 URL (어느 화면에서 문의했는지 파악용)</li>
           </ul>
         </Article>
 
@@ -232,10 +244,12 @@ function PrivacyDocument() {
           </p>
         </Article>
 
-        <Article number={4} title="제3자 제공">
+        <Article number={4} title="제3자 제공 및 처리 위탁">
           <p>
-            서비스는 이용자의 개인정보를 제3자에게 제공하지 않습니다. 정보가 브라우저를 벗어나지
-            않으므로 외부 위탁·판매·공유가 발생하지 않습니다.
+            서비스는 이용자의 개인정보를 마케팅·판매 목적으로 제3자에게 제공하지 않습니다. 다만 문의
+            기능의 데이터는 문의 접수·처리를 위해 운영 인프라(desk-platform)에서 저장·처리되며, 이는
+            서비스 제공에 필요한 범위의 처리 위탁에 해당합니다. 브라우저에만 저장되는 회원·환경설정
+            정보는 외부로 제공되지 않습니다.
           </p>
         </Article>
 
@@ -257,9 +271,10 @@ function PrivacyDocument() {
 
         <Article number={7} title="개인정보 보호 책임">
           <p>
-            정보가 서버로 전송되지 않으므로 외부 유출 위험이 구조적으로 차단됩니다. 다만 공용 기기를
-            사용하는 경우 다른 사람이 브라우저 저장소에 접근할 수 있으므로, 이용 후 로그아웃 또는
-            데이터 삭제를 권장합니다.
+            회원·환경설정 정보는 서버로 전송되지 않아 외부 유출 위험이 구조적으로 낮습니다. 문의 시
+            전송되는 정보는 운영 서버에 저장되며, 최소 항목만 수집하고 회신 목적 외에는 사용하지
+            않습니다. 공용 기기를 사용하는 경우 다른 사람이 브라우저 저장소에 접근할 수 있으므로 이용
+            후 로그아웃 또는 데이터 삭제를 권장합니다.
           </p>
         </Article>
 
@@ -386,7 +401,7 @@ export function TermsRoute({ onNavigate }: { onNavigate: (route: AppRoute) => vo
                 이용약관 및 개인정보처리방침
               </h1>
               <p className="mt-2 text-sm leading-7 text-text-muted">
-                AI Digest Desk는 데모/포트폴리오 포털입니다. 아래 문서는 실제 서비스 약관·방침의
+                AIDigestDesk는 데모/포트폴리오 포털입니다. 아래 문서는 실제 서비스 약관·방침의
                 형식과 구성을 보여주기 위한 시연용 내용이며, 법적 효력을 갖지 않습니다.
               </p>
             </div>

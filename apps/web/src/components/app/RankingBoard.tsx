@@ -554,6 +554,12 @@ export function RankingBoard({
             ))}
       </ol>
 
+      {scope === 'models' ? (
+        <p className="mt-1 text-[0.6875rem] leading-relaxed text-text-subtle">
+          ≈ 표시는 공개 벤치마크 출처 기반 추정치예요.
+        </p>
+      ) : null}
+
       {onSeeAll && totalCount > shownCount ? (
         <button
           type="button"

@@ -130,8 +130,8 @@ export function Header({
           </span>
           <span className="min-w-0 max-w-[5.5rem] sm:max-w-none">
             <span className="flex min-w-0 items-center gap-1.5 text-sm font-semibold text-text">
-              <span className="truncate whitespace-nowrap sm:hidden">AI Desk</span>
-              <span className="hidden truncate whitespace-nowrap sm:inline">AI Digest Desk</span>
+              <span className="truncate whitespace-nowrap sm:hidden">AIDigest</span>
+              <span className="hidden truncate whitespace-nowrap sm:inline">AIDigestDesk</span>
               <span className="hidden items-center gap-1 rounded-full border border-accent-3/40 bg-accent-3/10 px-1.5 py-px text-[0.625rem] font-bold tracking-wide text-accent-3 uppercase sm:inline-flex">
                 <span className="live-dot !size-1.5 !bg-accent-3" aria-hidden />
                 BETA

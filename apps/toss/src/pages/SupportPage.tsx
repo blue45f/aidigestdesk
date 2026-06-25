@@ -169,7 +169,8 @@ export function SupportPage() {
           </div>
         )}
         <p style={{ fontSize: 11.5, color: theme.textMuted, textAlign: 'center', marginTop: 22, lineHeight: 1.6 }}>
-          desk-platform 공개 문의 API 연동 · 개인정보(이메일)는 공개되지 않아요
+          문의(제목·내용·이름·이메일)는 운영 서버(desk-platform)로 전송·저장돼요.
+          이메일을 제외한 내용은 공개 문의 목록에 표시될 수 있어요.
         </p>
       </div>
     </div>
