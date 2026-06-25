@@ -38,6 +38,30 @@ export function UpdateListPage() {
         <div className="rise" style={{ marginBottom: 12 }}><SearchBar value={q} onChange={setQ} placeholder="모델·키워드 검색" /></div>
         <div className="rise" style={{ animationDelay: '60ms', marginBottom: 18 }}><Chips items={providers} active={provider} onPick={setProvider} /></div>
 
+        {/* 오늘의 브리핑 — 검색·필터 미적용 시 최신 3건 하이라이트(웹 Briefing 패턴) */}
+        {!q.trim() && provider === ALL && items.length > 0 && (
+          <div className="rise" style={{ marginBottom: 18 }}>
+            <div style={{ fontSize: 14, fontWeight: 800, color: theme.text, marginBottom: 10 }}>⚡ 오늘의 브리핑</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {items.slice(0, 3).map((u) => (
+                <button key={`brief-${u.id}`} type="button" onClick={() => open(u)} className="pressable"
+                  style={{ display: 'flex', gap: 10, alignItems: 'flex-start', width: '100%', textAlign: 'left', cursor: 'pointer',
+                    background: theme.accentSoft, border: `1px solid ${theme.accent}`, borderRadius: theme.radius, padding: '12px 14px', color: theme.text }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: theme.accent }}>{u.provider}</span>
+                      {u.date && <span style={{ fontSize: 11.5, color: theme.textMuted }}>{u.date}</span>}
+                    </div>
+                    <div style={{ fontSize: 14.5, fontWeight: 700, lineHeight: 1.4,
+                      display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{u.title}</div>
+                  </div>
+                  <span aria-hidden style={{ fontSize: 18, color: theme.accent, alignSelf: 'center' }}>›</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {filtered.map((u, i) => (
             <button key={u.id} type="button" onClick={() => open(u)} className="pressable rise"
