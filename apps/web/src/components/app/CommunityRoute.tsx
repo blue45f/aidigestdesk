@@ -12,7 +12,7 @@ import {
   Trash2,
   Users,
 } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 
 import type { AppRoute } from '@/components/app/appRoutes'
 import type { Board, CommunityClient, PostSummary } from '@heejun/deskcloud'
@@ -27,23 +27,34 @@ import {
 } from '@/components/app/CommonUi'
 import {
   addBoardPost,
+  addComment,
   addPost,
   boardCategories,
   deleteBoardPost,
+  deleteComment,
   deletePost,
+  editBoardPost,
+  editComment,
+  editPost,
   getCafeMemberCount,
+  getCommunitySnapshot,
   getMemberId,
   getNickname,
   isCafeMember,
+  isOwner,
   joinCafe,
   leaveCafe,
-  listBoardPosts,
   listCafes,
   listChannels,
-  listPosts,
+  selectBoardPosts,
+  selectChannelPosts,
+  selectCommentCount,
+  selectComments,
+  subscribeCommunity,
   type BoardPost,
   type Cafe,
   type Channel,
+  type Comment,
   type Post,
 } from '@/components/app/communityStore'
 import { getCommunityClient } from '@/components/app/deskcloud'
@@ -74,25 +85,72 @@ function formatRelativeTime(iso: string): string {
   })
 }
 
-function MessageRow({
-  post,
-  canDelete,
-  onDelete,
-}: {
-  post: Post
-  canDelete: boolean
-  onDelete: () => void
-}) {
+function MessageRow({ post }: { post: Post }) {
+  const mine = isOwner(post.authorId)
+  const [editing, setEditing] = useState(false)
+  const [body, setBody] = useState(post.body)
+
+  const saveEdit = () => {
+    if (!body.trim()) return
+    editPost(post.id, body.trim())
+    setEditing(false)
+  }
+
   return (
     <li className="rounded-md border border-border bg-bg p-3">
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-wrap items-baseline gap-2">
           <span className="text-sm font-semibold text-text">{post.author}</span>
-          <span className="text-xs text-text-subtle">{formatRelativeTime(post.createdAt)}</span>
+          <span className="text-xs text-text-subtle">
+            {formatRelativeTime(post.createdAt)}
+            {post.editedAt ? ' · 수정됨' : ''}
+          </span>
         </div>
-        {canDelete ? <DeleteButton label="내 메시지 삭제" onClick={onDelete} /> : null}
+        {mine && !editing ? (
+          <div className="flex shrink-0 items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => {
+                setBody(post.body)
+                setEditing(true)
+              }}
+              className="text-xs font-semibold text-text-subtle transition hover:text-text"
+            >
+              수정
+            </button>
+            <DeleteButton label="내 메시지 삭제" onClick={() => deletePost(post.id)} />
+          </div>
+        ) : null}
       </div>
-      <p className="mt-1.5 text-sm leading-6 whitespace-pre-wrap text-text-muted">{post.body}</p>
+      {editing ? (
+        <div className="mt-1.5 space-y-2">
+          <textarea
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            rows={2}
+            className="w-full resize-y rounded-md border border-border bg-surface px-3 py-2 text-sm leading-6 text-text outline-none focus:border-accent"
+          />
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={saveEdit}
+              disabled={!body.trim()}
+              className="rounded-md border border-ink bg-ink px-2.5 py-1 text-xs font-semibold text-ink-fg disabled:opacity-50"
+            >
+              저장
+            </button>
+            <button
+              type="button"
+              onClick={() => setEditing(false)}
+              className="rounded-md border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-text-muted"
+            >
+              취소
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p className="mt-1.5 text-sm leading-6 whitespace-pre-wrap text-text-muted">{post.body}</p>
+      )}
     </li>
   )
 }
@@ -116,17 +174,17 @@ function DeleteButton({ label, onClick }: { label: string; onClick: () => void }
 function ChatTab({ nickname }: { nickname: string }) {
   const channels = useMemo<Channel[]>(() => listChannels(), [])
   const [activeChannelId, setActiveChannelId] = useState<string>(channels[0]?.id ?? '')
-  const [refreshToken, setRefreshToken] = useState(0)
-  const refresh = () => setRefreshToken((token) => token + 1)
   const [draft, setDraft] = useState('')
 
   const activeChannel =
     channels.find((channel) => channel.id === activeChannelId) ?? channels[0] ?? null
 
-  const posts = useMemo<Post[]>(() => {
-    void refreshToken
-    return activeChannel ? listPosts(activeChannel.id) : []
-  }, [activeChannel, refreshToken])
+  // 외부 store 구독 — addPost/deletePost/editPost(saveState) 시 자동 갱신.
+  const state = useSyncExternalStore(subscribeCommunity, getCommunitySnapshot, getCommunitySnapshot)
+  const posts = useMemo<Post[]>(
+    () => (activeChannel ? selectChannelPosts(state, activeChannel.id) : []),
+    [state, activeChannel]
+  )
 
   const submit = () => {
     if (!activeChannel) return
@@ -135,12 +193,6 @@ function ChatTab({ nickname }: { nickname: string }) {
 
     addPost({ channelId: activeChannel.id, author: nickname, body })
     setDraft('')
-    refresh()
-  }
-
-  const handleDelete = (id: string) => {
-    deletePost(id)
-    refresh()
   }
 
   return (
@@ -200,12 +252,7 @@ function ChatTab({ nickname }: { nickname: string }) {
                 {posts.length > 0 ? (
                   <ul className="space-y-2">
                     {posts.map((post) => (
-                      <MessageRow
-                        key={post.id}
-                        post={post}
-                        canDelete={post.author === nickname}
-                        onDelete={() => handleDelete(post.id)}
-                      />
+                      <MessageRow key={post.id} post={post} />
                     ))}
                   </ul>
                 ) : (
@@ -267,37 +314,230 @@ function ChatTab({ nickname }: { nickname: string }) {
   )
 }
 
+/* ── 댓글 섹션(목록 + 작성 + 본인 수정/삭제) ─────────────────────────── */
+
+function CommentSection({ postId, nickname }: { postId: string; nickname: string }) {
+  const state = useSyncExternalStore(subscribeCommunity, getCommunitySnapshot, getCommunitySnapshot)
+  const comments = useMemo<Comment[]>(() => selectComments(state, postId), [state, postId])
+
+  const [body, setBody] = useState('')
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editBody, setEditBody] = useState('')
+
+  const submit = () => {
+    const trimmed = body.trim()
+    if (!trimmed) return
+    addComment({ postId, author: nickname, body: trimmed })
+    setBody('')
+  }
+  const saveEdit = (id: string) => {
+    const trimmed = editBody.trim()
+    if (!trimmed) return
+    editComment(id, trimmed)
+    setEditingId(null)
+    setEditBody('')
+  }
+
+  return (
+    <div className="mt-3 border-t border-border pt-3">
+      {comments.length > 0 ? (
+        <ul className="space-y-2">
+          {comments.map((comment) => {
+            const mine = isOwner(comment.authorId)
+            const editing = editingId === comment.id
+            return (
+              <li key={comment.id} className="rounded-md bg-surface px-3 py-2">
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-xs text-text-subtle">
+                    <span className="font-semibold text-text-muted">{comment.author}</span> ·{' '}
+                    {formatRelativeTime(comment.createdAt)}
+                    {comment.editedAt ? ' · 수정됨' : ''}
+                  </p>
+                  {mine && !editing ? (
+                    <div className="flex shrink-0 items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingId(comment.id)
+                          setEditBody(comment.body)
+                        }}
+                        className="text-xs font-semibold text-text-subtle transition hover:text-text"
+                      >
+                        수정
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => deleteComment(comment.id)}
+                        className="text-xs font-semibold text-text-subtle transition hover:text-bad"
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
+                {editing ? (
+                  <div className="mt-1.5 space-y-2">
+                    <textarea
+                      value={editBody}
+                      onChange={(e) => setEditBody(e.target.value)}
+                      rows={2}
+                      className="w-full resize-y rounded-md border border-border bg-bg px-2 py-1.5 text-sm leading-6 text-text outline-none focus:border-accent"
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => saveEdit(comment.id)}
+                        disabled={!editBody.trim()}
+                        className="rounded-md border border-ink bg-ink px-2.5 py-1 text-xs font-semibold text-ink-fg disabled:opacity-50"
+                      >
+                        저장
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingId(null)}
+                        className="rounded-md border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-text-muted"
+                      >
+                        취소
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="mt-1 text-sm leading-6 whitespace-pre-wrap text-text-muted">
+                    {comment.body}
+                  </p>
+                )}
+              </li>
+            )
+          })}
+        </ul>
+      ) : (
+        <p className="text-xs text-text-subtle">첫 댓글을 남겨보세요.</p>
+      )}
+      <form
+        className="mt-2 flex items-end gap-2"
+        onSubmit={(event) => {
+          event.preventDefault()
+          submit()
+        }}
+      >
+        <input
+          value={body}
+          onChange={(e) => setBody(e.target.value)}
+          placeholder="댓글 달기…"
+          aria-label="댓글 입력"
+          className="h-9 min-w-0 flex-1 rounded-md border border-border bg-bg px-3 text-sm text-text outline-none focus:border-accent"
+        />
+        <button
+          type="submit"
+          disabled={!body.trim()}
+          className="h-9 shrink-0 rounded-md border border-ink bg-ink px-3 text-xs font-semibold text-ink-fg disabled:opacity-50"
+        >
+          등록
+        </button>
+      </form>
+    </div>
+  )
+}
+
 /* ── 게시판 글 행 ────────────────────────────────────────────────────── */
 
-function BoardPostRow({
-  post,
-  canDelete,
-  onDelete,
-}: {
-  post: BoardPost
-  canDelete: boolean
-  onDelete: () => void
-}) {
+function BoardPostRow({ post, nickname }: { post: BoardPost; nickname: string }) {
   // 카페 게시판(`cafe:${id}`) 글은 카테고리 칩을 숨긴다.
   const showCategory = !post.category.startsWith('cafe:')
+  const mine = isOwner(post.authorId)
+  const [editing, setEditing] = useState(false)
+  const [title, setTitle] = useState(post.title)
+  const [body, setBody] = useState(post.body)
+  const [showComments, setShowComments] = useState(false)
+  const state = useSyncExternalStore(subscribeCommunity, getCommunitySnapshot, getCommunitySnapshot)
+  const commentCount = useMemo(() => selectCommentCount(state, post.id), [state, post.id])
+
+  const saveEdit = () => {
+    if (!title.trim() || !body.trim()) return
+    editBoardPost(post.id, { title: title.trim(), body: body.trim() })
+    setEditing(false)
+  }
+
   return (
     <li className="rounded-md border border-border bg-bg p-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             {showCategory ? <Chip tone="accent">{post.category}</Chip> : null}
-            <h4 className="text-sm font-semibold text-text">{post.title}</h4>
+            {!editing ? <h4 className="text-sm font-semibold text-text">{post.title}</h4> : null}
           </div>
           <p className="mt-1 text-xs text-text-subtle">
             <span className="font-semibold text-text-muted">{post.author}</span> ·{' '}
             {formatRelativeTime(post.createdAt)}
+            {post.editedAt ? ' · 수정됨' : ''}
           </p>
         </div>
-        {canDelete ? <DeleteButton label="내 글 삭제" onClick={onDelete} /> : null}
+        {mine && !editing ? (
+          <div className="flex shrink-0 items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => {
+                setTitle(post.title)
+                setBody(post.body)
+                setEditing(true)
+              }}
+              className="text-xs font-semibold text-text-subtle transition hover:text-text"
+            >
+              수정
+            </button>
+            <DeleteButton label="내 글 삭제" onClick={() => deleteBoardPost(post.id)} />
+          </div>
+        ) : null}
       </div>
-      <p className="mt-2 line-clamp-3 text-sm leading-6 whitespace-pre-wrap text-text-muted">
-        {post.body}
-      </p>
+
+      {editing ? (
+        <div className="mt-2 space-y-2">
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="제목"
+            className="h-9 w-full rounded-md border border-border bg-surface px-3 text-sm text-text outline-none focus:border-accent"
+          />
+          <textarea
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            rows={3}
+            className="w-full resize-y rounded-md border border-border bg-surface px-3 py-2 text-sm leading-6 text-text outline-none focus:border-accent"
+          />
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={saveEdit}
+              disabled={!title.trim() || !body.trim()}
+              className="rounded-md border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg disabled:opacity-50"
+            >
+              저장
+            </button>
+            <button
+              type="button"
+              onClick={() => setEditing(false)}
+              className="rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted"
+            >
+              취소
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p className="mt-2 text-sm leading-6 whitespace-pre-wrap text-text-muted">{post.body}</p>
+      )}
+
+      {!editing ? (
+        <button
+          type="button"
+          onClick={() => setShowComments((v) => !v)}
+          aria-expanded={showComments}
+          className="mt-2 text-xs font-semibold text-text-subtle transition hover:text-text"
+        >
+          💬 댓글 {commentCount}
+          {showComments ? ' 접기' : ''}
+        </button>
+      ) : null}
+      {showComments && !editing ? <CommentSection postId={post.id} nickname={nickname} /> : null}
     </li>
   )
 }
@@ -383,14 +623,14 @@ function BoardComposer({
 /* ── 게시판 탭 ───────────────────────────────────────────────────────── */
 
 function BoardTab({ nickname }: { nickname: string }) {
-  const [refreshToken, setRefreshToken] = useState(0)
-  const refresh = () => setRefreshToken((token) => token + 1)
   const [activeCategory, setActiveCategory] = useState<string>('all')
 
-  const posts = useMemo<BoardPost[]>(() => {
-    void refreshToken
-    return activeCategory === 'all' ? listBoardPosts() : listBoardPosts(activeCategory)
-  }, [activeCategory, refreshToken])
+  // 외부 store 구독 — 글 작성/수정/삭제(saveState) 시 자동 갱신.
+  const state = useSyncExternalStore(subscribeCommunity, getCommunitySnapshot, getCommunitySnapshot)
+  const posts = useMemo<BoardPost[]>(
+    () => selectBoardPosts(state, activeCategory === 'all' ? undefined : activeCategory),
+    [state, activeCategory]
+  )
 
   const filterItems = useMemo(
     () => [
@@ -403,12 +643,6 @@ function BoardTab({ nickname }: { nickname: string }) {
   const handleSubmit = (input: { category: string; title: string; body: string }) => {
     addBoardPost({ ...input, author: nickname })
     setActiveCategory('all')
-    refresh()
-  }
-
-  const handleDelete = (id: string) => {
-    deleteBoardPost(id)
-    refresh()
   }
 
   return (
@@ -430,12 +664,7 @@ function BoardTab({ nickname }: { nickname: string }) {
         {posts.length > 0 ? (
           <ul className="space-y-2">
             {posts.map((post) => (
-              <BoardPostRow
-                key={post.id}
-                post={post}
-                canDelete={post.author === nickname}
-                onDelete={() => handleDelete(post.id)}
-              />
+              <BoardPostRow key={post.id} post={post} nickname={nickname} />
             ))}
           </ul>
         ) : (
@@ -459,22 +688,19 @@ function BoardTab({ nickname }: { nickname: string }) {
 /* ── 카페 카드 + 가입 시 미니 게시판 ─────────────────────────────────── */
 
 function CafeCard({ cafe, nickname }: { cafe: Cafe; nickname: string }) {
-  const [refreshToken, setRefreshToken] = useState(0)
-  const refresh = () => setRefreshToken((token) => token + 1)
-
   const cafeCategory = `cafe:${cafe.id}`
-  const joined = useMemo(() => {
-    void refreshToken
-    return isCafeMember(cafe.id)
-  }, [cafe.id, refreshToken])
-  const memberCount = useMemo(() => {
-    void refreshToken
-    return getCafeMemberCount(cafe.id)
-  }, [cafe.id, refreshToken])
-  const cafePosts = useMemo<BoardPost[]>(() => {
-    void refreshToken
-    return listBoardPosts(cafeCategory)
-  }, [cafeCategory, refreshToken])
+  // 외부 store 구독 — 가입/탈퇴·글 작성(saveState/멤버십 쓰기) 시 자동 갱신.
+  // joined/memberCount(별도 localStorage 키)도 state를 쓰는 같은 memo에 묶어
+  // React Compiler가 갱신을 보장하게 한다(쓰기 시 snapshot 무효화 → 재계산).
+  const state = useSyncExternalStore(subscribeCommunity, getCommunitySnapshot, getCommunitySnapshot)
+  const { joined, memberCount, cafePosts } = useMemo(
+    () => ({
+      joined: isCafeMember(cafe.id),
+      memberCount: getCafeMemberCount(cafe.id),
+      cafePosts: selectBoardPosts(state, cafeCategory),
+    }),
+    [state, cafe.id, cafeCategory]
+  )
 
   const toggleMembership = () => {
     if (joined) {
@@ -482,17 +708,10 @@ function CafeCard({ cafe, nickname }: { cafe: Cafe; nickname: string }) {
     } else {
       joinCafe(cafe.id)
     }
-    refresh()
   }
 
   const handleSubmit = (input: { category: string; title: string; body: string }) => {
     addBoardPost({ ...input, author: nickname })
-    refresh()
-  }
-
-  const handleDelete = (id: string) => {
-    deleteBoardPost(id)
-    refresh()
   }
 
   return (
@@ -537,12 +756,7 @@ function CafeCard({ cafe, nickname }: { cafe: Cafe; nickname: string }) {
           {cafePosts.length > 0 ? (
             <ul className="space-y-2">
               {cafePosts.map((post) => (
-                <BoardPostRow
-                  key={post.id}
-                  post={post}
-                  canDelete={post.author === nickname}
-                  onDelete={() => handleDelete(post.id)}
-                />
+                <BoardPostRow key={post.id} post={post} nickname={nickname} />
               ))}
             </ul>
           ) : (

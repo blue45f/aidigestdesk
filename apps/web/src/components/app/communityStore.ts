@@ -30,6 +30,10 @@ export type Post = {
   body: string
   /** ISO 8601 문자열 */
   createdAt: string
+  /** 작성자 멤버 ID(소유권 — 수정/삭제 권한 판정). 구버전 데이터는 없을 수 있다. */
+  authorId?: string
+  /** 마지막 수정 시각(수정된 경우만). */
+  editedAt?: string
 }
 
 /** 게시판 카테고리(한국어). 카페 게시판은 `cafe:${id}` 형식을 별도로 쓴다. */
@@ -45,6 +49,22 @@ export type BoardPost = {
   body: string
   /** ISO 8601 문자열 */
   createdAt: string
+  /** 작성자 멤버 ID(소유권 — 수정/삭제 권한 판정). 구버전 데이터는 없을 수 있다. */
+  authorId?: string
+  /** 마지막 수정 시각(수정된 경우만). */
+  editedAt?: string
+}
+
+/** 게시판 글의 댓글. postId 로 BoardPost 와 연결한다. */
+export type Comment = {
+  id: string
+  postId: string
+  author: string
+  body: string
+  /** ISO 8601 문자열 */
+  createdAt: string
+  authorId?: string
+  editedAt?: string
 }
 
 export type Cafe = {
@@ -60,6 +80,7 @@ export type CommunityState = {
   posts: Post[]
   boardPosts: BoardPost[]
   cafes: Cafe[]
+  comments: Comment[]
 }
 
 const seedChannels: Channel[] = [
@@ -197,6 +218,7 @@ function createSeedState(): CommunityState {
     posts: seedPosts.map((post) => ({ ...post })),
     boardPosts: [...seedBoardPosts, ...seedCafeBoardPosts].map((post) => ({ ...post })),
     cafes: seedCafes.map((cafe) => ({ ...cafe })),
+    comments: [],
   }
 }
 
@@ -230,6 +252,18 @@ function isBoardPost(value: unknown): value is BoardPost {
     typeof candidate.id === 'string' &&
     typeof candidate.category === 'string' &&
     typeof candidate.title === 'string' &&
+    typeof candidate.author === 'string' &&
+    typeof candidate.body === 'string' &&
+    typeof candidate.createdAt === 'string'
+  )
+}
+
+function isComment(value: unknown): value is Comment {
+  if (typeof value !== 'object' || value === null) return false
+  const candidate = value as Record<string, unknown>
+  return (
+    typeof candidate.id === 'string' &&
+    typeof candidate.postId === 'string' &&
     typeof candidate.author === 'string' &&
     typeof candidate.body === 'string' &&
     typeof candidate.createdAt === 'string'
@@ -283,6 +317,7 @@ export function loadState(): CommunityState {
     ? candidate.boardPosts.filter(isBoardPost)
     : []
   const cafes = Array.isArray(candidate.cafes) ? candidate.cafes.filter(isCafe) : []
+  const comments = Array.isArray(candidate.comments) ? candidate.comments.filter(isComment) : []
 
   const seed = createSeedState()
 
@@ -292,6 +327,7 @@ export function loadState(): CommunityState {
     posts,
     boardPosts: boardPosts.length > 0 ? boardPosts : seed.boardPosts,
     cafes: cafes.length > 0 ? cafes : seed.cafes,
+    comments,
   }
 }
 
@@ -303,6 +339,57 @@ export function saveState(state: CommunityState): void {
   } catch {
     // 저장 공간 초과나 프라이빗 모드 등은 데모에서 치명적이지 않으므로 무시한다.
   }
+  notifyCommunity()
+}
+
+/* ── 외부 store 구독(useSyncExternalStore) ──────────────────────────────
+ * 쓰기(saveState·카페 멤버십)마다 스냅샷을 무효화하고 구독자에게 알린다.
+ * 컴포넌트는 getCommunitySnapshot() 으로 안정 참조를 읽고 select*() 로 파생한다.
+ * (수동 refreshToken·setState-in-effect 없이 React Compiler·lint 안전.) */
+const communityListeners = new Set<() => void>()
+let stateSnapshot: CommunityState | null = null
+
+/** useSyncExternalStore용 안정 스냅샷 — 다음 쓰기 전까지 동일 참조. */
+export function getCommunitySnapshot(): CommunityState {
+  if (!stateSnapshot) stateSnapshot = loadState()
+  return stateSnapshot
+}
+
+function notifyCommunity(): void {
+  stateSnapshot = null // 다음 스냅샷은 새 참조로 재생성 → 구독자 리렌더
+  for (const listener of communityListeners) listener()
+}
+
+export function subscribeCommunity(listener: () => void): () => void {
+  communityListeners.add(listener)
+  return () => {
+    communityListeners.delete(listener)
+  }
+}
+
+/* ── 스냅샷 기반 selector(컴포넌트 useMemo에서 state를 실제로 사용) ── */
+/** 채널 글 — 오래된 순. */
+export function selectChannelPosts(state: CommunityState, channelId: string): Post[] {
+  return state.posts
+    .filter((post) => post.channelId === channelId)
+    .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+}
+/** 게시판 글 — 최신순. category 미지정 시 일반 게시판(카페 제외). */
+export function selectBoardPosts(state: CommunityState, category?: string): BoardPost[] {
+  const filtered = category
+    ? state.boardPosts.filter((post) => post.category === category)
+    : state.boardPosts.filter((post) => !post.category.startsWith('cafe:'))
+  return [...filtered].sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+}
+/** 글의 댓글 — 작성순. */
+export function selectComments(state: CommunityState, postId: string): Comment[] {
+  return state.comments
+    .filter((comment) => comment.postId === postId)
+    .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+}
+/** 글의 댓글 수. */
+export function selectCommentCount(state: CommunityState, postId: string): number {
+  return state.comments.filter((comment) => comment.postId === postId).length
 }
 
 /** 채널 목록(읽기 전용 사본). */
@@ -342,6 +429,7 @@ export function addPost(input: { channelId: string; author: string; body: string
     author,
     body,
     createdAt: new Date().toISOString(),
+    authorId: getMemberId(),
   }
 
   const state = loadState()
@@ -349,9 +437,24 @@ export function addPost(input: { channelId: string; author: string; body: string
   return post
 }
 
-/** 글을 삭제한다. */
+/** 채널 글 본문을 수정한다(작성자 본인만). 권한 없음/빈 본문이면 던진다. */
+export function editPost(id: string, body: string): Post {
+  const trimmed = body.trim()
+  if (!trimmed) throw new Error('빈 메시지로 수정할 수 없습니다.')
+  const state = loadState()
+  const target = state.posts.find((post) => post.id === id)
+  if (!target) throw new Error('메시지를 찾을 수 없습니다.')
+  if (!isOwner(target.authorId)) throw new Error('본인 글만 수정할 수 있습니다.')
+  const updated: Post = { ...target, body: trimmed, editedAt: new Date().toISOString() }
+  saveState({ ...state, posts: state.posts.map((post) => (post.id === id ? updated : post)) })
+  return updated
+}
+
+/** 채널 글을 삭제한다(작성자 본인만). */
 export function deletePost(id: string): void {
   const state = loadState()
+  const target = state.posts.find((post) => post.id === id)
+  if (!target || !isOwner(target.authorId)) return
   saveState({ ...state, posts: state.posts.filter((post) => post.id !== id) })
 }
 
@@ -393,6 +496,7 @@ export function addBoardPost(input: {
     author,
     body,
     createdAt: new Date().toISOString(),
+    authorId: getMemberId(),
   }
 
   const state = loadState()
@@ -400,10 +504,96 @@ export function addBoardPost(input: {
   return post
 }
 
-/** 게시판 글을 삭제한다. */
+/** 게시판 글의 제목/본문을 수정한다(작성자 본인만). 빈 값/권한 없음이면 던진다. */
+export function editBoardPost(id: string, input: { title: string; body: string }): BoardPost {
+  const title = input.title.trim()
+  const body = input.body.trim()
+  if (!title) throw new Error('제목을 입력해 주세요.')
+  if (!body) throw new Error('내용을 입력해 주세요.')
+  const state = loadState()
+  const target = state.boardPosts.find((post) => post.id === id)
+  if (!target) throw new Error('글을 찾을 수 없습니다.')
+  if (!isOwner(target.authorId)) throw new Error('본인 글만 수정할 수 있습니다.')
+  const updated: BoardPost = { ...target, title, body, editedAt: new Date().toISOString() }
+  saveState({
+    ...state,
+    boardPosts: state.boardPosts.map((post) => (post.id === id ? updated : post)),
+  })
+  return updated
+}
+
+/** 게시판 글을 삭제한다(작성자 본인만). 딸린 댓글도 함께 삭제. */
 export function deleteBoardPost(id: string): void {
   const state = loadState()
-  saveState({ ...state, boardPosts: state.boardPosts.filter((post) => post.id !== id) })
+  const target = state.boardPosts.find((post) => post.id === id)
+  if (!target || !isOwner(target.authorId)) return
+  saveState({
+    ...state,
+    boardPosts: state.boardPosts.filter((post) => post.id !== id),
+    comments: state.comments.filter((comment) => comment.postId !== id),
+  })
+}
+
+/* ── 댓글(Comment) ─────────────────────────────────────────────── */
+
+/** 글의 댓글을 작성순(오름차순)으로 돌려준다. */
+export function listComments(postId: string): Comment[] {
+  return loadState()
+    .comments.filter((comment) => comment.postId === postId)
+    .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+}
+
+/** 글의 댓글 수. */
+export function countComments(postId: string): number {
+  return loadState().comments.filter((comment) => comment.postId === postId).length
+}
+
+/** 댓글을 등록한다. 빈 본문이면 던진다. */
+export function addComment(input: { postId: string; author: string; body: string }): Comment {
+  const body = input.body.trim()
+  if (!body) throw new Error('댓글 내용을 입력해 주세요.')
+  const author = input.author.trim() || DEFAULT_NICKNAME
+  const comment: Comment = {
+    id: createId('comment'),
+    postId: input.postId,
+    author,
+    body,
+    createdAt: new Date().toISOString(),
+    authorId: getMemberId(),
+  }
+  const state = loadState()
+  saveState({ ...state, comments: [...state.comments, comment] })
+  return comment
+}
+
+/** 댓글을 수정한다(작성자 본인만). */
+export function editComment(id: string, body: string): Comment {
+  const trimmed = body.trim()
+  if (!trimmed) throw new Error('빈 댓글로 수정할 수 없습니다.')
+  const state = loadState()
+  const target = state.comments.find((comment) => comment.id === id)
+  if (!target) throw new Error('댓글을 찾을 수 없습니다.')
+  if (!isOwner(target.authorId)) throw new Error('본인 댓글만 수정할 수 있습니다.')
+  const updated: Comment = { ...target, body: trimmed, editedAt: new Date().toISOString() }
+  saveState({
+    ...state,
+    comments: state.comments.map((comment) => (comment.id === id ? updated : comment)),
+  })
+  return updated
+}
+
+/** 댓글을 삭제한다(작성자 본인만). */
+export function deleteComment(id: string): void {
+  const state = loadState()
+  const target = state.comments.find((comment) => comment.id === id)
+  if (!target || !isOwner(target.authorId)) return
+  saveState({ ...state, comments: state.comments.filter((comment) => comment.id !== id) })
+}
+
+/** 현재 브라우저 멤버가 해당 authorId 의 소유자인지. (구버전 데이터는 authorId 없음 → false) */
+export function isOwner(authorId: string | undefined): boolean {
+  if (!authorId) return false
+  return authorId === getMemberId()
 }
 
 /** 카페 목록(읽기 전용 사본). */
@@ -432,6 +622,7 @@ function writeCafeMembership(ids: string[]): void {
   } catch {
     // 멤버십 저장 실패는 데모에서 치명적이지 않으므로 무시한다.
   }
+  notifyCommunity()
 }
 
 /** 해당 카페에 가입했는지 여부. */
