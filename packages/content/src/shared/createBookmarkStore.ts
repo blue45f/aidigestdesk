@@ -19,15 +19,28 @@ export interface BookmarkStore<T> {
 }
 
 /**
+ * 원격(DB) 동기 어댑터 — env 설정 시 주입. 오프라인-퍼스트: 로컬 캐시가 즉시 동작하고,
+ * load 로 서버 상태를 받아 동기화, 쓰기마다 save 로 서버에 반영(실패는 조용히 무시).
+ */
+export interface RemoteBookmarkAdapter<T> {
+  /** 서버 목록 로드(실패/없음이면 null → 로컬 유지). */
+  load(): Promise<T[] | null>;
+  /** 서버에 전체 목록 저장(fire-and-forget). */
+  save(items: T[]): void;
+}
+
+/**
  * @param storageKey  localStorage 키(앱별 고유)
  * @param getKey      항목 → 식별키(웹은 b.id, 토스는 `${b.type}:${b.id}` 등)
  * @param isValid     로드 시 항목 유효성 가드(손상 데이터 필터)
+ * @param remote      선택 — 원격(DB) 어댑터. 주면 로컬 캐시 + 서버 동기화(오프라인-퍼스트).
  */
 export function createBookmarkStore<T>(
   storageKey: string,
   getKey: (item: T) => string,
   isValid: (value: unknown) => value is T = (v): v is T =>
-    typeof v === 'object' && v !== null
+    typeof v === 'object' && v !== null,
+  remote?: RemoteBookmarkAdapter<T>
 ): BookmarkStore<T> {
   const listeners = new Set<() => void>();
   // 직렬화 비교 캐시 — 매 read 마다 localStorage 를 보되, raw 문자열이 같으면 동일 배열
@@ -55,7 +68,8 @@ export function createBookmarkStore<T>(
     return cachedValue;
   }
 
-  function write(items: T[]): void {
+  // 로컬만 반영(서버 동기 없음) — init 로드·내부 동기화용.
+  function writeLocal(items: T[]): void {
     if (typeof window !== 'undefined') {
       try {
         window.localStorage.setItem(storageKey, JSON.stringify(items));
@@ -66,10 +80,29 @@ export function createBookmarkStore<T>(
     for (const listener of listeners) listener();
   }
 
+  // 사용자 변경 — 로컬 + 서버(원격 어댑터 있을 때) 양쪽 반영.
+  function write(items: T[]): void {
+    writeLocal(items);
+    remote?.save(items);
+  }
+
   if (typeof window !== 'undefined') {
     // 다른 탭 변경 — read 가 raw 비교로 감지하므로 알림만 보낸다.
     window.addEventListener('storage', (event) => {
       if (event.key === storageKey) for (const listener of listeners) listener();
+    });
+  }
+
+  // 원격(DB) 초기 동기화 — 서버 목록과 로컬을 키 기준으로 병합(둘 다 보존하고 수렴).
+  if (remote) {
+    void remote.load().then((serverItems) => {
+      if (!serverItems) return; // 로드 실패 → 로컬 유지(오프라인-퍼스트)
+      const local = read();
+      const seen = new Set(serverItems.map(getKey));
+      const merged = [...serverItems, ...local.filter((item) => !seen.has(getKey(item)))];
+      writeLocal(merged);
+      // 로컬에만 있던 항목이 있으면 서버에도 올려 양쪽을 맞춘다.
+      if (merged.length !== serverItems.length) remote.save(merged);
     });
   }
 

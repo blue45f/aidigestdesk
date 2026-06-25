@@ -1,9 +1,12 @@
-import { createBookmarkStore } from '@aidigestdesk/content/shared';
+import {
+  createBookmarkStore,
+  createFavoritesRemote,
+  getMemberId,
+} from '@aidigestdesk/content/shared';
 import { useSyncExternalStore } from 'react';
 
 // 즐겨찾기 — 웹과 공유하는 createBookmarkStore 메커니즘 위에 토스 타입만 주입(중복 제거).
-// localStorage 기반. 모델/확장/매뉴얼을 저장해 /saved 에서 모아본다. 서버 의존 없음.
-// (DB 백엔드 도입 시 createBookmarkStore 를 원격 어댑터로 교체하면 소비처 무변경.)
+// 오프라인-퍼스트: localStorage 즉시 + desk-platform favorites(DB) 동기화(웹과 같은 owner면 기기 간 공유).
 
 export type BookmarkType = 'model' | 'extension' | 'manual';
 export interface Bookmark {
@@ -14,7 +17,18 @@ export interface Bookmark {
   route: string;
 }
 
-const store = createBookmarkStore<Bookmark>('aid-bookmarks', (b) => `${b.type}:${b.id}`);
+/** desk-platform 공개 favorites REST — 문의(lib/inquiry)와 동일 base·appId. */
+const DESK_PLATFORM_URL =
+  (import.meta.env.VITE_DESK_PLATFORM_URL as string | undefined) ??
+  'https://desk-platform.vercel.app';
+const APP_ID = 'aidigestdesk';
+
+const store = createBookmarkStore<Bookmark>(
+  'aid-bookmarks',
+  (b) => `${b.type}:${b.id}`,
+  undefined,
+  createFavoritesRemote<Bookmark>(DESK_PLATFORM_URL, APP_ID, getMemberId())
+);
 
 export function getBookmarks(): Bookmark[] {
   return store.getSnapshot();

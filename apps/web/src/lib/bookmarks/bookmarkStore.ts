@@ -1,11 +1,21 @@
-import { createBookmarkStore } from '@aidigestdesk/content/shared'
+import { createBookmarkStore, createFavoritesRemote, getMemberId } from '@aidigestdesk/content/shared'
 
 import type { AppRoute } from '@/components/app/appRoutes'
 
 // 토스와 공유하는 createBookmarkStore 메커니즘 위에 웹 타입·정렬만 얹는다(중복 제거).
-// localStorage 기반. DB 백엔드 도입 시 createBookmarkStore 를 원격 어댑터로 교체하면 됨.
+// 오프라인-퍼스트: localStorage 즉시 + desk-platform favorites(DB) 동기화(env 기본=라이브).
 
 const STORAGE_KEY = 'aidigestdesk.bookmarks.v1'
+
+/** desk-platform 공개 favorites REST — 문의(inquiryApi)와 동일 base·appId. */
+const DESK_PLATFORM_URL = import.meta.env.VITE_DESK_PLATFORM_URL ?? 'https://desk-platform.vercel.app'
+const APP_ID = 'aidigestdesk'
+
+// 테스트(vitest)에선 원격 동기화를 끈다 — 모듈 로드 시 네트워크 호출/플래키 방지.
+const favoritesRemote =
+  import.meta.env.MODE === 'test'
+    ? undefined
+    : createFavoritesRemote<Bookmark>(DESK_PLATFORM_URL, APP_ID, getMemberId())
 
 /** 북마크 가능한 콘텐츠 종류. 새 종류를 붙일 때 라벨/배지 매핑만 늘리면 된다. */
 export type BookmarkKind = 'model' | 'benchmark' | 'deal' | 'resource'
@@ -39,7 +49,8 @@ const store = createBookmarkStore<Bookmark>(
     typeof value === 'object' &&
     value !== null &&
     typeof (value as Bookmark).id === 'string' &&
-    typeof (value as Bookmark).title === 'string'
+    typeof (value as Bookmark).title === 'string',
+  favoritesRemote
 )
 
 export function listBookmarks(): Bookmark[] {

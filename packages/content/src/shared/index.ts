@@ -9,6 +9,7 @@
 
 export * from './tokens';
 export * from './createBookmarkStore';
+export * from './favorites';
 export * from './parse';
 export * from './time';
 export * from './sort';
