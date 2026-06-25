@@ -5,6 +5,7 @@ import { RankExtensionDetailPage } from './pages/RankExtensionDetailPage.tsx';
 import { RankingListPage } from './pages/RankingListPage.tsx';
 import { RankModelDetailPage } from './pages/RankModelDetailPage.tsx';
 import { ResourcesPage } from './pages/ResourcesPage.tsx';
+import { SupportPage } from './pages/SupportPage.tsx';
 import { UpdateDetailPage } from './pages/UpdateDetailPage.tsx';
 import { UpdateListPage } from './pages/UpdateListPage.tsx';
 import { navigate, usePathname } from './router';
@@ -19,16 +20,19 @@ export function App() {
   const modelDetail = path.match(/^\/rank\/m\/(.+)$/);
   const extDetail = path.match(/^\/rank\/x\/(.+)$/);
   const manualDetail = path.match(/^\/manual\/(.+)$/);
+  const isSupport = path === '/support';
 
-  if (updateDetail || modelDetail || extDetail || manualDetail) {
+  if (updateDetail || modelDetail || extDetail || manualDetail || isSupport) {
     const detail = updateDetail ? (
       <UpdateDetailPage id={decodeURIComponent(updateDetail[1])} />
     ) : modelDetail ? (
       <RankModelDetailPage id={decodeURIComponent(modelDetail[1])} />
     ) : extDetail ? (
       <RankExtensionDetailPage id={decodeURIComponent(extDetail[1])} />
+    ) : manualDetail ? (
+      <ManualDetailPage slug={decodeURIComponent(manualDetail[1])} />
     ) : (
-      <ManualDetailPage slug={decodeURIComponent(manualDetail![1])} />
+      <SupportPage />
     );
     return (
       <>

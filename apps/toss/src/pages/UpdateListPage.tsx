@@ -55,6 +55,19 @@ export function UpdateListPage() {
           ))}
           {filtered.length === 0 && <p style={{ textAlign: 'center', color: theme.textMuted, padding: '40px 0' }}>‘{q || provider}’ 결과가 없어요.</p>}
         </div>
+
+        {/* 문의·의견(desk-platform 연동) 진입 */}
+        <button type="button" onClick={() => navigate('/support')} className="pressable"
+          style={{ width: '100%', marginTop: 18, display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left',
+            background: theme.surface, border: `1px solid ${theme.border}`, borderRadius: theme.radius, padding: 16,
+            color: theme.text, cursor: 'pointer' }}>
+          <span aria-hidden style={{ fontSize: 22 }}>💬</span>
+          <span style={{ flex: 1, minWidth: 0 }}>
+            <span style={{ display: 'block', fontSize: 15, fontWeight: 700 }}>문의 · 의견 보내기</span>
+            <span style={{ display: 'block', fontSize: 12.5, color: theme.textMuted, marginTop: 2 }}>제휴·버그·이용 문의나 사이트 의견</span>
+          </span>
+          <span aria-hidden style={{ fontSize: 20, color: theme.textMuted }}>›</span>
+        </button>
       </div>
     </div>
   );
