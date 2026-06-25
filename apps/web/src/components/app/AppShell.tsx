@@ -278,6 +278,45 @@ export function Header({
   )
 }
 
+/**
+ * 모바일 하단 고정 탭바 — 토스 인앱의 엄지 접근성 패턴을 웹 모바일에 이식.
+ * 데스크톱(lg+)에서는 상단 GNB·사이드바로 충분하므로 숨긴다. 주요 5개 라우트만.
+ */
+const bottomNav = primaryNav.slice(0, 5)
+
+export function BottomTabBar({
+  route,
+  onNavigate,
+}: {
+  route: AppRoute
+  onNavigate: (route: AppRoute) => void
+}) {
+  return (
+    <nav
+      aria-label="모바일 메뉴"
+      className="fixed inset-x-0 bottom-0 z-40 flex border-t border-border bg-bg/90 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+    >
+      {bottomNav.map((item) => {
+        const active = route === item.id
+        return (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => onNavigate(item.id)}
+            aria-current={active ? 'page' : undefined}
+            className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[0.6875rem] font-semibold transition-colors ${
+              active ? 'text-accent' : 'text-text-muted hover:text-text'
+            }`}
+          >
+            <item.icon className="size-5" aria-hidden />
+            {item.mobileLabel}
+          </button>
+        )
+      })}
+    </nav>
+  )
+}
+
 export function Sidebar({
   route,
   onNavigate,

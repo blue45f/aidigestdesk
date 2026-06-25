@@ -49,7 +49,7 @@ import {
   VibeCodingSection,
 } from '@/components/app/AiCodingSections'
 import { getCurrentRoute, routePath, routeTitles, type AppRoute } from '@/components/app/appRoutes'
-import { Header, Sidebar } from '@/components/app/AppShell'
+import { BottomTabBar, Header, Sidebar } from '@/components/app/AppShell'
 import { BookmarksRail } from '@/components/app/BookmarksRail'
 import { CliComparisonSection, LlmCliManualSection } from '@/components/app/CliComparisonSection'
 import { ActiveFilterChips, MultiSegmentBar } from '@/components/app/CommonUi'
@@ -880,7 +880,8 @@ export default function App() {
   const isContentRoute = (contentRoutes as AppRoute[]).includes(route)
 
   return (
-    <div className="min-h-screen bg-bg text-text">
+    // 모바일 하단 탭바 높이만큼 여백 확보(lg+에서는 탭바 숨김 → 여백 0)
+    <div className="min-h-screen bg-bg text-text pb-[calc(3.75rem+env(safe-area-inset-bottom))] lg:pb-0">
       <IntroSplashScreen />
       <SkipLink />
       <RouteAnnouncer routeKey={route} />
@@ -992,6 +993,7 @@ export default function App() {
           </main>
         </div>
       )}
+      <BottomTabBar route={route} onNavigate={navigateToRoute} />
     </div>
   )
 }
