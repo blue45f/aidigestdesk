@@ -447,7 +447,7 @@ export type SearchResults = {
   sources: SourceRef[]
 }
 
-export const SNAPSHOT_DATE = '2026-06-18'
+export const SNAPSHOT_DATE = '2026-06-25'
 
 export const providerCatalog: Array<{
   id: ProviderId

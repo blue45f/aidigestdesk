@@ -9,6 +9,7 @@ import {
   type BenchmarkDomain,
   type BenchmarkEntry,
   type ExtensionKind,
+  type ExtensionPlatform,
   type ProviderId,
 } from '@aidigestdesk/content'
 import {
@@ -85,6 +86,17 @@ const extensionKinds: Array<{ id: ExtensionKind | 'all'; label: string; icon: Lu
   { id: '슬래시 명령', label: '슬래시', icon: TerminalSquare },
   { id: '서브에이전트', label: '서브에이전트', icon: Bot },
   { id: '워크플로우', label: '워크플로우', icon: Workflow },
+]
+
+/* LLM/플랫폼별 추천 — 확장 랭킹의 1차 축. */
+const extensionPlatforms: Array<{ id: ExtensionPlatform | 'all'; label: string }> = [
+  { id: 'all', label: '전체 LLM' },
+  { id: 'Claude Code', label: 'Claude Code' },
+  { id: 'Codex CLI', label: 'Codex CLI' },
+  { id: 'Gemini CLI', label: 'Gemini CLI' },
+  { id: 'Cursor', label: 'Cursor' },
+  { id: 'GitHub Copilot', label: 'Copilot' },
+  { id: '범용', label: '범용' },
 ]
 
 type Scope = 'models' | 'extensions'
@@ -286,6 +298,7 @@ export function RankingBoard({
   const [scope, setScope] = useState<Scope>(defaultScope)
   const [domain, setDomain] = useState<BenchmarkDomain>('overall')
   const [kind, setKind] = useState<ExtensionKind | 'all'>('all')
+  const [extPlatform, setExtPlatform] = useState<ExtensionPlatform | 'all'>('all')
   const [modelSort, setModelSort] = useState<ModelSort>('rank')
   const [modelDir, setModelDir] = useState<SortDirection>('asc')
   const [extSort, setExtSort] = useState<ExtensionSort>('rank')
@@ -329,12 +342,17 @@ export function RankingBoard({
   const rankedExtensions = useMemo(() => {
     const dirMul = extDir === 'asc' ? 1 : -1
     return agentExtensions
-      .filter((entry) => typeof entry.rank === 'number' && (kind === 'all' || entry.kind === kind))
+      .filter(
+        (entry) =>
+          typeof entry.rank === 'number' &&
+          (kind === 'all' || entry.kind === kind) &&
+          (extPlatform === 'all' || entry.platform === extPlatform),
+      )
       .toSorted((a, b) => {
         if (extSort === 'name') return a.name.localeCompare(b.name) * dirMul
         return ((a.rank ?? 999) - (b.rank ?? 999)) * dirMul
       })
-  }, [kind, extSort, extDir])
+  }, [kind, extPlatform, extSort, extDir])
 
   const visibleModels = limit ? rankedModels.slice(0, limit) : rankedModels
   const visibleExtensions = limit ? rankedExtensions.slice(0, limit) : rankedExtensions
@@ -396,6 +414,30 @@ export function RankingBoard({
         {scopeButton('models', Sparkles, 'AI 모델')}
         {scopeButton('extensions', Puzzle, '확장 도구')}
       </div>
+
+      {/* LLM/플랫폼 칩 — 확장 스코프 전용(어떤 도구에서 쓰는 확장인지) */}
+      {scope === 'extensions' ? (
+        <div className="touch-scroll -mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1">
+          {extensionPlatforms.map((item) => {
+            const active = extPlatform === item.id
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setExtPlatform(item.id)}
+                aria-pressed={active}
+                className={
+                  active
+                    ? 'inline-flex min-h-9 shrink-0 snap-start items-center rounded-full border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg'
+                    : 'inline-flex min-h-9 shrink-0 snap-start items-center rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
+                }
+              >
+                {item.label}
+              </button>
+            )
+          })}
+        </div>
+      ) : null}
 
       {/* 카테고리 칩 */}
       <div className="touch-scroll -mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1">

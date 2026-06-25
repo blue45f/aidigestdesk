@@ -68,6 +68,13 @@ export const extensionKinds: string[] = [
   ...KIND_ORDER.filter((kind) => extensionEntries.some((entry) => entry.kind === kind)),
 ];
 
+/** LLM/플랫폼 칩 목록(전체 LLM + 데이터에 존재하는 플랫폼, 보기 좋은 순서). */
+const PLATFORM_ORDER = ['Claude Code', 'Codex CLI', 'Gemini CLI', 'Cursor', 'GitHub Copilot', 'Windsurf', '범용'];
+export const extensionPlatforms: string[] = [
+  '전체 LLM',
+  ...PLATFORM_ORDER.filter((p) => extensionEntries.some((entry) => entry.platform === p)),
+];
+
 export function parseNum(raw: string | null | undefined): number | null {
   if (!raw) return null;
   const match = raw.replace(/,/g, '').match(/-?\d+(?:\.\d+)?/);

@@ -49,7 +49,7 @@ describe('catalog search', () => {
       true
     )
 
-    const checkedDateResults = searchCatalog('2026-06-18', 'all', 'learning')
+    const checkedDateResults = searchCatalog('2026-06-25', 'all', 'learning')
     expect(checkedDateResults.resources.length).toBeGreaterThan(0)
   })
 

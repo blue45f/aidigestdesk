@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import {
   extensionEntries,
   extensionKinds,
+  extensionPlatforms,
   modelDomains,
   parseNum,
   snapshotDate,
@@ -145,6 +146,7 @@ export function RankingListPage() {
 
   // 확장
   const [kind, setKind] = useState('전체');
+  const [platform, setPlatform] = useState('전체 LLM');
   const [extSort, setExtSort] = useState('rank');
   const [extDir, setExtDir] = useState<Dir>('asc');
 
@@ -167,10 +169,12 @@ export function RankingListPage() {
   }, [activeDomain, modelSort, modelDir]);
 
   const sortedExtensions = useMemo(() => {
-    const base = kind === '전체' ? extensionEntries : extensionEntries.filter((e) => e.kind === kind);
+    const base = extensionEntries.filter(
+      (e) => (kind === '전체' || e.kind === kind) && (platform === '전체 LLM' || e.platform === platform)
+    );
     const conf = EXT_SORTS.find((s) => s.id === extSort);
     return conf ? sortBy(base, conf.pick, extDir) : base;
-  }, [kind, extSort, extDir]);
+  }, [kind, platform, extSort, extDir]);
 
   const toggle = (
     id: string,
@@ -223,6 +227,9 @@ export function RankingListPage() {
           </>
         ) : (
           <>
+            <div className="rise" style={{ marginBottom: 10 }}>
+              <Chips items={extensionPlatforms} active={platform} onPick={(p) => { setPlatform(p); setShowAllExt(false); }} />
+            </div>
             <div className="rise" style={{ animationDelay: '50ms', marginBottom: 12 }}>
               <Chips items={extensionKinds} active={kind} onPick={(k) => { setKind(k); setShowAllExt(false); }} />
             </div>
