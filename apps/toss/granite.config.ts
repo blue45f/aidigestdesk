@@ -11,5 +11,7 @@ export default defineConfig({
   ],
   outdir: 'dist',
   webViewProps: { type: 'partner' },
-  navigationBar: { withBackButton: true, withHomeButton: true },
+  // 비게임 내비게이션 바 테마(2026-06-22 패키지 업데이트) — 앱이 다크(theme.bg #0a0f1a)라
+  // 네이티브 내비게이션 바도 dark 로 맞춰 상단 영역 이질감을 없앤다.
+  navigationBar: { withBackButton: true, withHomeButton: true, theme: 'dark' },
 });

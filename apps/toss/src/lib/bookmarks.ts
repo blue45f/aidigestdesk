@@ -18,9 +18,7 @@ export interface Bookmark {
 }
 
 /** desk-platform 공개 favorites REST — 문의(lib/inquiry)와 동일 base·appId. */
-const DESK_PLATFORM_URL =
-  (import.meta.env.VITE_DESK_PLATFORM_URL as string | undefined) ??
-  'https://desk-platform.vercel.app';
+const DESK_PLATFORM_URL = import.meta.env.VITE_DESK_PLATFORM_URL ?? 'https://desk-platform.vercel.app';
 const APP_ID = 'aidigestdesk';
 
 const store = createBookmarkStore<Bookmark>(

@@ -13,6 +13,8 @@ import {
   type ExtensionRankEntry,
   type ModelRankEntry,
 } from '../lib/rankings';
+import { BannerAd } from '../components/BannerAd';
+import { AD_GROUPS } from '../lib/ads';
 import { navigate } from '../router';
 import { theme, pageShell } from '../theme';
 import { Badge, Chips, MetaChip, RankBadge, Segmented, SortChip } from '../ui';
@@ -246,6 +248,9 @@ export function RankingListPage() {
             )}
           </>
         )}
+
+        {/* 인앱 배너 광고 — 랭킹(자주 보는 목록) 하단. 토스 5.241.0+ 에서만 노출, 그 외 미노출. */}
+        <BannerAd adGroupId={AD_GROUPS.feedList} marginTop={18} />
 
         <p style={{ fontSize: 11.5, color: theme.textMuted, textAlign: 'center', marginTop: 22, lineHeight: 1.6 }}>
           {snapshotDate} 기준 · 점수는 공개 벤치마크 출처 기반 추정치예요

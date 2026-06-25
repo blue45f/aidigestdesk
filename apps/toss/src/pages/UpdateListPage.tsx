@@ -1,7 +1,9 @@
 import { Top } from '@toss/tds-mobile';
 import { useMemo, useState } from 'react';
 
+import { BannerAd } from '../components/BannerAd';
 import { getUpdates, type Update } from '../lib/api';
+import { AD_GROUPS } from '../lib/ads';
 import { navigate } from '../router';
 import { theme, pageShell } from '../theme';
 import { SearchBar, Chips, Badge } from '../ui';
@@ -79,6 +81,9 @@ export function UpdateListPage() {
           ))}
           {filtered.length === 0 && <p style={{ textAlign: 'center', color: theme.textMuted, padding: '40px 0' }}>‘{q || provider}’ 결과가 없어요.</p>}
         </div>
+
+        {/* 인앱 배너 광고 — 홈 피드(가장 자주 보는 목록)에 인라인 배치. 토스 5.241.0+ 에서만 노출. */}
+        <BannerAd adGroupId={AD_GROUPS.feedList} marginTop={18} />
 
         {/* 커뮤니티(채팅·게시판·카페) 진입 — 웹과 동일 기능, shared 스토어 공용. 1차 기능이라 강조. */}
         <button type="button" onClick={() => navigate('/community')} className="pressable"

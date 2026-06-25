@@ -20,7 +20,7 @@ export {
 
 import type { Inquiry, InquiryList, SubmitInquiryInput } from '@aidigestdesk/content/shared';
 
-const BASE = (import.meta.env.VITE_DESK_PLATFORM_URL as string | undefined) ?? 'https://desk-platform.vercel.app';
+const BASE = import.meta.env.VITE_DESK_PLATFORM_URL ?? 'https://desk-platform.vercel.app';
 export const APP_ID = 'aidigestdesk';
 
 export function submitInquiry(input: SubmitInquiryInput): Promise<Inquiry> {

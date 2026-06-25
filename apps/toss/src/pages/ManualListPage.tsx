@@ -1,5 +1,7 @@
 import { Top } from '@toss/tds-mobile';
 
+import { BannerAd } from '../components/BannerAd';
+import { AD_GROUPS } from '../lib/ads';
 import { cliManuals, manualSnapshotDate } from '../lib/manuals';
 import { navigate } from '../router';
 import { theme, pageShell } from '../theme';
@@ -32,6 +34,8 @@ export function ManualListPage() {
             </button>
           ))}
         </div>
+        {/* 인앱 배너 광고 — 자주 보는 목록. 토스 5.241.0+ 에서만 노출, 그 외 미노출. */}
+        <BannerAd adGroupId={AD_GROUPS.feedList} marginTop={16} />
         <p style={{ fontSize: 11.5, color: theme.textMuted, textAlign: 'center', marginTop: 22, lineHeight: 1.6 }}>
           {manualSnapshotDate} 기준 · 공식 문서 정리
         </p>
