@@ -16,6 +16,30 @@ export function MusicToggle() {
   const [muted, setMuted] = useState(() => isSoundMuted())
   const [on, setOn] = useState(() => isBgmPlaying())
   const [track, setTrack] = useState('')
+  // 거슬리지 않게 — 몇 초 뒤 자동 숨김(투명), 스크롤·마우스·터치 등 활동하면 다시 나타남.
+  const [visible, setVisible] = useState(true)
+
+  useEffect(() => {
+    let hideTimer = 0
+    const reveal = () => {
+      setVisible(true)
+      window.clearTimeout(hideTimer)
+      hideTimer = window.setTimeout(() => setVisible(false), 3500)
+    }
+    reveal()
+    const opts: AddEventListenerOptions = { passive: true }
+    window.addEventListener('mousemove', reveal, opts)
+    window.addEventListener('scroll', reveal, opts)
+    window.addEventListener('touchstart', reveal, opts)
+    window.addEventListener('keydown', reveal)
+    return () => {
+      window.clearTimeout(hideTimer)
+      window.removeEventListener('mousemove', reveal)
+      window.removeEventListener('scroll', reveal)
+      window.removeEventListener('touchstart', reveal)
+      window.removeEventListener('keydown', reveal)
+    }
+  }, [])
 
   useEffect(() => {
     if (!on) return
@@ -51,7 +75,12 @@ export function MusicToggle() {
   return (
     <div
       className="fixed right-4 z-40 flex items-center gap-2"
-      style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 84px)' }}
+      style={{
+        bottom: 'calc(env(safe-area-inset-bottom, 0px) + 84px)',
+        opacity: visible ? 1 : 0,
+        pointerEvents: visible ? 'auto' : 'none',
+        transition: 'opacity 0.45s ease',
+      }}
     >
       {on && track && (
         <span className="rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-bold text-accent shadow-sm">

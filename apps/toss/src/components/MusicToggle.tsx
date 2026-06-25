@@ -19,7 +19,29 @@ export function MusicToggle() {
   const [muted, setMuted] = useState(() => isSoundMuted());
   const [on, setOn] = useState(() => isBgmPlaying());
   const [track, setTrack] = useState('');
+  const [visible, setVisible] = useState(true);
   const hideTimer = useRef<number | null>(null);
+
+  // 거슬리지 않게 — 몇 초 뒤 자동 숨김(투명), 스크롤·터치 등 활동하면 다시 나타남.
+  useEffect(() => {
+    let t = 0;
+    const reveal = () => {
+      setVisible(true);
+      window.clearTimeout(t);
+      t = window.setTimeout(() => setVisible(false), 3500);
+    };
+    reveal();
+    const opts: AddEventListenerOptions = { passive: true };
+    window.addEventListener('scroll', reveal, opts);
+    window.addEventListener('touchstart', reveal, opts);
+    window.addEventListener('pointerdown', reveal, opts);
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener('scroll', reveal);
+      window.removeEventListener('touchstart', reveal);
+      window.removeEventListener('pointerdown', reveal);
+    };
+  }, []);
 
   useEffect(() => {
     if (!on) return;
@@ -74,6 +96,9 @@ export function MusicToggle() {
         display: 'flex',
         alignItems: 'center',
         gap: 8,
+        opacity: visible ? 1 : 0,
+        pointerEvents: visible ? 'auto' : 'none',
+        transition: 'opacity 0.45s ease',
       }}
     >
       {on && track && (

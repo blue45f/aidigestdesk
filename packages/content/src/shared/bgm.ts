@@ -90,22 +90,24 @@ function playChord() {
   chordCounter += 1;
 }
 
-export function startBgm(): void {
-  if (playing) return;
+let visibilityBound = false;
+
+// 스케줄 시작(게인 페이드인 + 코드 루프). fadeSeconds 로 첫 진입은 부드럽게.
+function resumeScheduling(fadeSeconds: number) {
   const ctx = getAudioContext();
   if (!ctx) return;
   master ??= ctx.createGain();
   master.gain.cancelScheduledValues(ctx.currentTime);
   master.gain.setValueAtTime(0.0001, ctx.currentTime);
-  master.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 1.2);
+  master.gain.linearRampToValueAtTime(0.5, ctx.currentTime + fadeSeconds);
   master.connect(ctx.destination);
-  playing = true;
   playChord();
+  if (timer) clearInterval(timer);
   timer = (globalThis.setInterval as Window['setInterval'])(playChord, CHORD_SECONDS * 1000);
 }
 
-export function stopBgm(): void {
-  playing = false;
+// 스케줄 정지(게인 페이드아웃 + 타이머 해제). playing 플래그는 호출부가 관리.
+function pauseScheduling(fadeSeconds: number) {
   if (timer) {
     clearInterval(timer);
     timer = null;
@@ -113,8 +115,29 @@ export function stopBgm(): void {
   const ctx = getAudioContext();
   if (ctx && master) {
     master.gain.cancelScheduledValues(ctx.currentTime);
-    master.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+    master.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + fadeSeconds);
   }
+}
+
+export function startBgm(): void {
+  if (playing) return;
+  if (!getAudioContext()) return;
+  playing = true;
+  resumeScheduling(1.2); // 첫 시작은 1.2s 페이드인 — 갑작스럽지 않게
+  // 탭이 숨겨지면(다른 탭/앱) 자동 일시정지, 돌아오면 재개 — 백그라운드 소음 방지(1회 바인딩).
+  if (!visibilityBound && typeof document !== 'undefined') {
+    visibilityBound = true;
+    document.addEventListener('visibilitychange', () => {
+      if (!playing) return;
+      if (document.hidden) pauseScheduling(0.4);
+      else resumeScheduling(0.8);
+    });
+  }
+}
+
+export function stopBgm(): void {
+  playing = false;
+  pauseScheduling(0.6);
 }
 
 export function isBgmPlaying(): boolean {
