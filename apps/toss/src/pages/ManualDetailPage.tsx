@@ -74,6 +74,9 @@ export function ManualDetailPage({ slug }: { slug: string }) {
       <BackBar onBack={back} label="매뉴얼" />
       <div style={pageShell}>
         <h1 style={{ fontSize: 24, fontWeight: 800, lineHeight: 1.3, wordBreak: 'keep-all' }}>{manual.platform}</h1>
+        {manual.tagline && (
+          <p style={{ fontSize: 14, fontWeight: 700, color: theme.accent, marginTop: 6, lineHeight: 1.5 }}>{manual.tagline}</p>
+        )}
         {manual.overview && (
           <p style={{ fontSize: 14.5, color: theme.text, lineHeight: 1.7, marginTop: 12 }}>{manual.overview}</p>
         )}
