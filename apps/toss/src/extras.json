@@ -1,0 +1,4637 @@
+{
+  "snapshotDate": "2026-06-25",
+  "deals": [
+    {
+      "id": "deal-openai-academy",
+      "provider": "OpenAI",
+      "dealType": "학생/교육",
+      "audience": "학생",
+      "region": "글로벌",
+      "title": "OpenAI Academy · 무료 학습 + ChatGPT Edu",
+      "summary": "OpenAI Academy의 무료 강의/실습과 교육기관용 ChatGPT Edu로 학생·교육자가 정식 도구를 비용 없이 학습합니다.",
+      "discountLabel": "무료 학습",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "전 세계 학습자 누구나(Academy). ChatGPT Edu는 대학·교육기관 단위 도입.",
+      "howToClaim": "OpenAI Academy 가입 후 강의 수강. 기관은 영업팀 통해 Edu 도입.",
+      "koreanNote": "Academy는 한국에서 바로 접속 가능. ChatGPT Edu는 소속 대학 IT부서에 도입 문의 필요.",
+      "url": "https://academy.openai.com/",
+      "tags": [
+        "학생",
+        "교육",
+        "무료",
+        "ChatGPT"
+      ]
+    },
+    {
+      "id": "deal-openai-batch",
+      "provider": "OpenAI",
+      "dealType": "배치/캐싱 절감",
+      "audience": "개인",
+      "region": "글로벌",
+      "title": "OpenAI Batch API · 50% 할인 + 프롬프트 캐싱",
+      "summary": "비실시간 작업을 Batch API로 보내면 입·출력 단가가 50% 저렴하고, 반복 프롬프트는 캐싱으로 추가 절감됩니다.",
+      "discountLabel": "최대 50% 절감",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "API 사용자 전체. 24시간 내 완료 허용 작업에 적합.",
+      "howToClaim": "`/v1/batches` 엔드포인트로 작업 제출. 캐싱은 동일 prefix 반복 시 자동.",
+      "koreanNote": "대량 분류·요약·임베딩 파이프라인에 바로 적용. 실시간 응답이 필요 없는 국내 백오피스 자동화에 유효.",
+      "url": "https://platform.openai.com/docs/guides/batch",
+      "tags": [
+        "배치",
+        "캐싱",
+        "비용",
+        "API"
+      ]
+    },
+    {
+      "id": "deal-anthropic-education",
+      "provider": "Anthropic",
+      "dealType": "학생/교육",
+      "audience": "학생",
+      "region": "글로벌",
+      "title": "Claude for Education · 캠퍼스 프로그램",
+      "summary": "대학 단위로 Claude를 도입하는 교육 프로그램과 학생 앰배서더(Claude Campus) 트랙을 운영합니다.",
+      "discountLabel": "교육기관 혜택",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "참여 대학 소속 학생·교직원. 앰배서더는 개별 모집.",
+      "howToClaim": "대학의 Claude for Education 도입 여부 확인 또는 앰배서더 지원.",
+      "koreanNote": "국내 대학은 아직 도입 초기 단계 — 소속 기관 도입 현황을 먼저 확인하세요.",
+      "url": "https://www.anthropic.com/education",
+      "tags": [
+        "학생",
+        "교육",
+        "Claude",
+        "캠퍼스"
+      ]
+    },
+    {
+      "id": "deal-anthropic-caching",
+      "provider": "Anthropic",
+      "dealType": "배치/캐싱 절감",
+      "audience": "개인",
+      "region": "글로벌",
+      "title": "Claude 프롬프트 캐싱 + Batch · 최대 90% 절감",
+      "summary": "캐시된 입력 토큰은 최대 90% 저렴하고, Message Batches API는 입·출력 단가를 50% 낮춥니다.",
+      "discountLabel": "캐시 -90% / 배치 -50%",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "Anthropic API 사용자 전체.",
+      "howToClaim": "긴 시스템 프롬프트에 cache_control 지정, 대량 작업은 Batches API 사용.",
+      "koreanNote": "긴 한국어 가이드라인·약관을 시스템 프롬프트로 고정하는 워크플로에서 절감 폭이 큽니다.",
+      "url": "https://www.anthropic.com/pricing",
+      "tags": [
+        "캐싱",
+        "배치",
+        "비용",
+        "Claude"
+      ]
+    },
+    {
+      "id": "deal-google-students",
+      "provider": "Google",
+      "dealType": "학생/교육",
+      "audience": "학생",
+      "region": "글로벌",
+      "title": "Google AI Pro · 대학생 무료 플랜",
+      "summary": "자격을 갖춘 대학생에게 Gemini 고급 기능이 포함된 Google AI Pro 플랜을 일정 기간 무료로 제공합니다.",
+      "discountLabel": "학생 무료",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "만 18세 이상 재학 중인 대학생(국가별 제공 여부 상이).",
+      "howToClaim": "Google One/AI Pro 학생 페이지에서 재학 인증 후 등록.",
+      "koreanNote": "국가별 제공 범위가 달라 한국 계정에서 자격/제공 여부를 먼저 확인하세요.",
+      "url": "https://gemini.google/students/",
+      "tags": [
+        "학생",
+        "무료",
+        "Gemini"
+      ]
+    },
+    {
+      "id": "deal-google-aistudio-free",
+      "provider": "Google",
+      "dealType": "무료 크레딧",
+      "audience": "개인",
+      "region": "글로벌",
+      "title": "Google AI Studio · 무료 등급 + 컨텍스트 캐싱",
+      "summary": "AI Studio에서 무료 등급으로 Gemini API를 테스트하고, 컨텍스트 캐싱으로 반복 입력 비용을 낮춥니다.",
+      "discountLabel": "무료 등급",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "Google 계정 보유자. 무료 등급은 속도/쿼터 제한 존재.",
+      "howToClaim": "AI Studio에서 API 키 발급 후 무료 등급으로 시작.",
+      "koreanNote": "한국어 문서가 제공되어 진입 장벽이 낮습니다. 프로덕션은 유료 등급으로 전환 필요.",
+      "url": "https://ai.google.dev/pricing",
+      "tags": [
+        "무료",
+        "크레딧",
+        "캐싱",
+        "Gemini"
+      ]
+    },
+    {
+      "id": "deal-deepseek-offpeak",
+      "provider": "DeepSeek",
+      "dealType": "API 가격 인하",
+      "audience": "개인",
+      "region": "글로벌",
+      "title": "DeepSeek 오프피크 할인 · 최대 75%",
+      "summary": "UTC 기준 오프피크 시간대(16:30–00:30)에 API 요청 단가를 모델에 따라 50–75% 할인합니다.",
+      "discountLabel": "최대 75% 할인",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "DeepSeek API 사용자 전체. 오프피크 시간대 요청에 자동 적용.",
+      "howToClaim": "오프피크 시간대에 요청 — 별도 신청 불필요.",
+      "koreanNote": "UTC 16:30–00:30은 한국시간(KST) 익일 01:30–09:30. 야간 배치 작업에 유리합니다.",
+      "url": "https://api-docs.deepseek.com/quick_start/pricing",
+      "tags": [
+        "가격인하",
+        "오프피크",
+        "비용",
+        "DeepSeek"
+      ]
+    },
+    {
+      "id": "deal-qwen-free-quota",
+      "provider": "Alibaba Qwen",
+      "dealType": "무료 크레딧",
+      "audience": "개인",
+      "region": "아시아",
+      "title": "Alibaba Model Studio · 신규 무료 토큰",
+      "summary": "Model Studio 신규 사용자에게 Qwen 모델별 무료 토큰 쿼터를 활성화 후 일정 기간 제공합니다.",
+      "discountLabel": "신규 무료 토큰",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "Alibaba Cloud 신규 가입자. 모델별 무료 한도 상이.",
+      "howToClaim": "Model Studio 활성화 시 무료 쿼터 자동 부여.",
+      "koreanNote": "국제(Singapore) 리전 기준 안내. 결제수단 등록 및 본인확인이 필요할 수 있습니다.",
+      "url": "https://www.alibabacloud.com/help/en/model-studio/billing-for-model-studio",
+      "tags": [
+        "무료",
+        "크레딧",
+        "Qwen"
+      ]
+    },
+    {
+      "id": "deal-mistral-free-tier",
+      "provider": "Mistral AI",
+      "dealType": "무료 크레딧",
+      "audience": "개인",
+      "region": "글로벌",
+      "title": "Mistral La Plateforme · 무료 실험 등급",
+      "summary": "La Plateforme의 무료 실험 등급과 Le Chat 무료 사용으로 비용 없이 Mistral 모델을 평가합니다.",
+      "discountLabel": "무료 등급",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "Mistral 계정 보유자. 무료 등급은 속도 제한 존재.",
+      "howToClaim": "La Plateforme에서 무료 등급 활성화 후 API 키 발급.",
+      "koreanNote": "EU 기반 서비스로 데이터 처리 위치를 중시하는 국내 팀에 선택지가 됩니다.",
+      "url": "https://mistral.ai/pricing",
+      "tags": [
+        "무료",
+        "크레딧",
+        "Mistral"
+      ]
+    },
+    {
+      "id": "deal-cursor-students",
+      "provider": "Cursor",
+      "dealType": "학생/교육",
+      "audience": "학생",
+      "region": "글로벌",
+      "title": "Cursor for Students · Pro 1년 무료",
+      "summary": "재학 인증을 마친 학생에게 Cursor Pro를 1년간 무료로 제공합니다.",
+      "discountLabel": "학생 1년 무료",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "인증 가능한 재학생.",
+      "howToClaim": "Cursor 학생 페이지에서 학교 이메일/재학 증빙으로 인증.",
+      "koreanNote": "ac.kr 학교 이메일로 인증이 가능한 경우가 많습니다. 인증 실패 시 SheerID 증빙으로 재시도.",
+      "url": "https://cursor.com/students",
+      "tags": [
+        "학생",
+        "무료",
+        "Cursor",
+        "IDE"
+      ]
+    },
+    {
+      "id": "deal-github-copilot-free",
+      "provider": "GitHub",
+      "dealType": "구독 할인",
+      "audience": "개인",
+      "region": "글로벌",
+      "title": "GitHub Copilot Free · 무료 등급",
+      "summary": "모든 GitHub 계정에서 월간 한도 내 코드 완성·채팅을 쓸 수 있는 Copilot Free 등급을 제공합니다.",
+      "discountLabel": "무료 등급",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "GitHub 계정 보유자. 월간 완성/채팅 횟수 제한.",
+      "howToClaim": "GitHub에서 Copilot Free 활성화 — 결제수단 불필요.",
+      "koreanNote": "한국어 문서가 제공됩니다. 한도 초과 시 Pro로 업그레이드하거나 학생 무료 자격을 확인하세요.",
+      "url": "https://github.com/features/copilot/plans",
+      "tags": [
+        "무료",
+        "구독",
+        "Copilot"
+      ]
+    },
+    {
+      "id": "deal-github-education",
+      "provider": "GitHub Education",
+      "dealType": "학생/교육",
+      "audience": "학생",
+      "region": "글로벌",
+      "title": "GitHub Student Pack · Copilot Pro 무료",
+      "summary": "학생 개발자 팩 인증 시 Copilot Pro를 비롯한 다수 개발 도구를 무료로 사용합니다.",
+      "discountLabel": "학생 Pro 무료",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "재학 인증을 마친 학생.",
+      "howToClaim": "GitHub Education에서 학생 팩 신청 후 재학 증빙 제출.",
+      "koreanNote": "국내 학교 이메일/재학증명서로 인증 가능. 인증 후 Copilot Pro가 자동 적용됩니다.",
+      "url": "https://education.github.com/pack",
+      "tags": [
+        "학생",
+        "무료",
+        "Copilot",
+        "팩"
+      ]
+    },
+    {
+      "id": "deal-gemini-code-assist-free",
+      "provider": "Google",
+      "dealType": "구독 할인",
+      "audience": "개인",
+      "region": "글로벌",
+      "title": "Gemini Code Assist · 개인 무료 등급",
+      "summary": "개인 개발자용 Gemini Code Assist 무료 등급으로 IDE 코드 완성·채팅을 비용 없이 사용합니다.",
+      "discountLabel": "무료 등급",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "개인 Google 계정. 무료 등급 한도 내 사용.",
+      "howToClaim": "VS Code/JetBrains에 Gemini Code Assist 확장 설치 후 로그인.",
+      "koreanNote": "한국어 안내 문서가 제공되어 설정이 쉽습니다.",
+      "url": "https://codeassist.google/",
+      "tags": [
+        "무료",
+        "구독",
+        "Gemini",
+        "IDE"
+      ]
+    },
+    {
+      "id": "deal-upstage-credit",
+      "provider": "Upstage",
+      "dealType": "국내 혜택",
+      "audience": "스타트업",
+      "region": "국내",
+      "title": "Upstage Solar · 신규 API 크레딧",
+      "summary": "국내 LLM 제공사 Upstage가 Solar API 신규 가입자에게 평가용 크레딧을 제공합니다.",
+      "discountLabel": "신규 크레딧",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "Upstage Console 신규 가입자.",
+      "howToClaim": "Console 가입 시 평가 크레딧 부여 — 콘솔에서 잔액 확인.",
+      "koreanNote": "한국어 문서·국내 결제 지원. 한국어 문서 처리(Document AI) 결합 시 강점이 큽니다.",
+      "url": "https://www.upstage.ai/products/solar-pro",
+      "tags": [
+        "국내",
+        "크레딧",
+        "Upstage",
+        "Solar"
+      ]
+    },
+    {
+      "id": "deal-naver-clova-trial",
+      "provider": "NAVER Cloud",
+      "dealType": "국내 혜택",
+      "audience": "팀/조직",
+      "region": "국내",
+      "title": "CLOVA Studio · 무료 체험 크레딧",
+      "summary": "네이버클라우드 CLOVA Studio가 HyperCLOVA X 기반 서비스의 무료 체험 크레딧을 제공합니다.",
+      "discountLabel": "무료 체험",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "네이버클라우드 플랫폼 가입자. 체험 한도 내 사용.",
+      "howToClaim": "네이버클라우드 콘솔에서 CLOVA Studio 신청 후 체험 크레딧 사용.",
+      "koreanNote": "국내 데이터센터·한국어 특화 모델. 공공/금융 등 국내 규제 환경에 적합합니다.",
+      "url": "https://www.ncloud.com/product/aiService/clovaStudio",
+      "tags": [
+        "국내",
+        "무료체험",
+        "CLOVA",
+        "HyperCLOVA"
+      ]
+    },
+    {
+      "id": "deal-gov-bizinfo-ai-support-hub",
+      "provider": "기업마당",
+      "dealType": "정부지원사업",
+      "audience": "전체",
+      "region": "국내",
+      "title": "기업마당 AI/AX 정부지원사업 모니터링",
+      "summary": "중소벤처기업부 기업마당에서 AI, AX, 온디바이스 AI, 딥테크, 제조혁신 관련 최신 정부지원사업 공고를 통합 확인합니다.",
+      "discountLabel": "공고 1,571건",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "중소기업, 스타트업, 예비창업자, 지역 기업 등 공고별 상이.",
+      "howToClaim": "기업마당에서 AI/AX/딥테크 키워드로 검색 후 해당 공고의 주관기관 시스템에서 신청.",
+      "koreanNote": "공고별 접수기간이 짧으므로 마감임박 필터와 지역/부처 필터를 함께 확인하세요. 2026-06-19 기준 온디바이스 AI, 스마트그린 AX, 첨단로봇ㆍAI 활용 제조혁신 공고가 노출됩니다.",
+      "url": "https://www.bizinfo.go.kr/",
+      "tags": [
+        "정부지원사업",
+        "AI",
+        "AX",
+        "중소기업"
+      ]
+    },
+    {
+      "id": "deal-gov-gwangju-ondevice-ai-scaleup",
+      "provider": "기업마당",
+      "dealType": "정부지원사업",
+      "audience": "스타트업",
+      "region": "국내",
+      "title": "광주 온디바이스 AI 스케일업 밸리 성장스케일업",
+      "summary": "차세대 지능형 반도체 적용 온디바이스 AI 스케일업 밸리 육성사업의 성장스케일업 수혜기업 추가모집 공고입니다.",
+      "discountLabel": "AI 스케일업",
+      "status": "진행중",
+      "periodLabel": "2026-06-17 ~ 2026-07-01",
+      "eligibility": "광주 차세대 지능형 반도체/온디바이스 AI 관련 수혜기업. 세부 요건은 공고 확인.",
+      "howToClaim": "기업마당 공고에서 주관기관, 신청서류, 접수 시스템을 확인해 기한 내 제출.",
+      "koreanNote": "온디바이스 AI, 반도체, 엣지 모델 PoC 기업은 모델 경량화·데이터·시제품 계획을 함께 준비하세요.",
+      "url": "https://www.bizinfo.go.kr/",
+      "tags": [
+        "정부지원사업",
+        "온디바이스 AI",
+        "광주",
+        "딥테크"
+      ]
+    },
+    {
+      "id": "deal-gov-jeonnam-robot-ai-manufacturing",
+      "provider": "기업마당",
+      "dealType": "정부지원사업",
+      "audience": "팀/조직",
+      "region": "국내",
+      "title": "전남 첨단로봇ㆍAI 활용 제조혁신 기획 컨설팅",
+      "summary": "전남 지역 중소기업을 대상으로 첨단로봇과 AI를 활용한 제조혁신 사업 기업지원 기획 컨설팅을 모집합니다.",
+      "discountLabel": "AI 제조혁신",
+      "status": "진행중",
+      "periodLabel": "2026-06-17 ~ 2026-07-10",
+      "eligibility": "전남 제조 중소기업 등 지역/업종 요건 충족 기업. 세부 요건은 공고 확인.",
+      "howToClaim": "기업마당 공고의 신청서와 사업계획서 양식에 제조공정 AI 활용 계획을 작성해 제출.",
+      "koreanNote": "로봇 비전, 예지보전, 품질검사, 공정 자동화 LLM/멀티모달 적용 기업이 우선 검토할 만합니다.",
+      "url": "https://www.bizinfo.go.kr/",
+      "tags": [
+        "정부지원사업",
+        "첨단로봇 AI 제조혁신",
+        "제조AI",
+        "전남"
+      ]
+    },
+    {
+      "id": "deal-gov-deeptech-startup-college",
+      "provider": "K-Startup",
+      "dealType": "정부지원사업",
+      "audience": "스타트업",
+      "region": "국내",
+      "title": "딥테크 특화 창업중심대학 창업기업 모집",
+      "summary": "딥테크 특화 창업중심대학을 통해 AI, 로봇, 반도체, 바이오 등 고기술 창업기업을 모집하는 정부 창업지원 트랙입니다.",
+      "discountLabel": "딥테크 창업",
+      "status": "진행중",
+      "periodLabel": "2026-06-19 ~ 2026-07-08",
+      "eligibility": "딥테크 분야 창업기업. 업력, 분야, 대학/주관기관별 요건은 공고 확인.",
+      "howToClaim": "K-Startup 또는 기업마당 공고에서 주관 대학과 신청 요건을 확인한 뒤 온라인 신청.",
+      "koreanNote": "AI 모델/API 기반 서비스도 기술성, 시장성, 데이터/보안 계획을 명확히 써야 평가 대응이 쉽습니다.",
+      "url": "https://www.k-startup.go.kr/",
+      "tags": [
+        "정부지원사업",
+        "딥테크",
+        "창업",
+        "AI 스타트업"
+      ]
+    },
+    {
+      "id": "deal-gov-aihub-public-datasets",
+      "provider": "AI-Hub",
+      "dealType": "정부지원사업",
+      "audience": "전체",
+      "region": "국내",
+      "title": "AI-Hub 공공 AI 학습데이터 활용",
+      "summary": "AI-Hub에서 한국어, 멀티모달, 로봇·피지컬AI, 헬스케어, 제조, 법률, 금융 등 공공 AI 학습데이터와 리더보드를 제공합니다.",
+      "discountLabel": "공공 데이터",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "AI-Hub 회원 및 데이터별 이용정책 준수 사용자.",
+      "howToClaim": "AI-Hub 회원가입 후 필요한 데이터셋, API, 안심존 이용 정책을 확인하고 다운로드/활용 신청.",
+      "koreanNote": "LLM/RAG 평가용 한국어 데이터와 공공 민원 상담 LLM 데이터, 멀티모달 데이터 후보를 먼저 검색하세요.",
+      "url": "https://www.aihub.or.kr/",
+      "tags": [
+        "정부지원사업",
+        "공공데이터",
+        "한국어 데이터",
+        "LLM"
+      ]
+    },
+    {
+      "id": "deal-xai-free-credits",
+      "provider": "xAI",
+      "dealType": "무료 크레딧",
+      "audience": "개인",
+      "region": "글로벌",
+      "title": "xAI · 데이터 공유 시 월 무료 크레딧",
+      "summary": "데이터 공유 프로그램에 동의한 개발자에게 매달 일정액의 무료 API 크레딧을 제공합니다.",
+      "discountLabel": "월 무료 크레딧",
+      "status": "상시",
+      "periodLabel": "상시",
+      "eligibility": "xAI 콘솔 사용자 중 데이터 공유 동의 계정.",
+      "howToClaim": "xAI 콘솔의 결제 설정에서 데이터 공유를 활성화.",
+      "koreanNote": "데이터 공유 동의가 전제 — 민감 데이터를 다루는 국내 팀은 정책을 먼저 검토하세요.",
+      "url": "https://docs.x.ai/docs/overview",
+      "tags": [
+        "무료",
+        "크레딧",
+        "Grok",
+        "xAI"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "schedule-openai-academy-builder-bootcamp-agents",
+      "title": "Builder Bootcamp: Agents",
+      "organizer": "OpenAI Academy",
+      "type": "웨비나",
+      "startDate": "2026-06-18",
+      "endDate": null,
+      "timeLabel": "17:00-18:00 GMT",
+      "status": "진행예정",
+      "format": "온라인",
+      "region": "글로벌",
+      "language": "영어",
+      "location": "Online",
+      "summary": "OpenAI Academy 공개 이벤트 허브의 Agents/Builder Bootcamp 온라인 세션. Codex와 에이전트 워크플로 학습 큐에 연결한다.",
+      "url": "https://academy.openai.com/public/events",
+      "tags": [
+        "OpenAI Academy",
+        "Agents",
+        "Codex",
+        "온라인"
+      ]
+    },
+    {
+      "id": "schedule-upstage-ax-document-automation-meetup",
+      "title": "퇴근길 AX 문서 자동화 밋업",
+      "organizer": "Upstage",
+      "type": "세미나/모임",
+      "startDate": "2026-06-18",
+      "endDate": null,
+      "timeLabel": "19:00 KST",
+      "status": "진행예정",
+      "format": "상시 확인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "Upstage 이벤트 페이지 확인",
+      "summary": "Upstage KR 이벤트 목록에 등록된 문서 자동화 밋업. Document AI, Solar, Studio agent를 업무 자동화 사례로 확인한다.",
+      "url": "https://www.upstage.ai/events",
+      "tags": [
+        "Upstage",
+        "AX",
+        "Document AI",
+        "문서 자동화"
+      ]
+    },
+    {
+      "id": "schedule-modulabs-cvpr-ai-seminar",
+      "title": "모두의 CVPR: Faculty와 함께하는 연구 트렌드와 논문",
+      "organizer": "모두의연구소",
+      "type": "세미나/모임",
+      "startDate": "2026-06-30",
+      "endDate": null,
+      "timeLabel": "19:00-21:30 KST",
+      "status": "모집중",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "강남 캠퍼스",
+      "summary": "모두의연구소 세미나 목록의 CVPR 연구 트렌드 세션. 멀티모달 임베딩, 효율적 파인튜닝, 연구자 커리어 키워드를 포함한다.",
+      "url": "https://modulabs.co.kr/",
+      "tags": [
+        "모두의연구소",
+        "CVPR",
+        "멀티모달",
+        "파인튜닝"
+      ]
+    },
+    {
+      "id": "schedule-modulabs-ai-for-science",
+      "title": "공간생물학의 AI for Science 데이터폭발, 인프라, 그리고 신약개발",
+      "organizer": "모두의연구소",
+      "type": "세미나/모임",
+      "startDate": "2026-07-01",
+      "endDate": null,
+      "timeLabel": "19:00-21:00 KST",
+      "status": "모집중",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "강남 캠퍼스",
+      "summary": "모두의연구소 세미나 목록의 AI for Science 세션. 공간생물학 데이터, AI 인프라, 신약개발 사례를 다룬다.",
+      "url": "https://modulabs.co.kr/",
+      "tags": [
+        "모두의연구소",
+        "AI for Science",
+        "데이터",
+        "인프라"
+      ]
+    },
+    {
+      "id": "schedule-dacon-baram-2026",
+      "title": "제3회 풍력발전량 예측 AI 경진대회 - BARAM 2026",
+      "organizer": "DACON",
+      "type": "공모전/챌린지",
+      "startDate": "2026-07-06",
+      "endDate": null,
+      "timeLabel": null,
+      "status": "진행예정",
+      "format": "온라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "DACON 온라인",
+      "summary": "DACON 진행 중인 경진대회 목록의 풍력발전량 예측 AI 챌린지. 정형 회귀, 에너지, NMAE 평가를 사용한다.",
+      "url": "https://dacon.io/",
+      "tags": [
+        "DACON",
+        "AI 경진대회",
+        "정형 회귀",
+        "에너지"
+      ]
+    },
+    {
+      "id": "schedule-dacon-scpc-ai-challenge-2026",
+      "title": "2026 Samsung Collegiate Programming Challenge : AI 챌린지",
+      "organizer": "DACON",
+      "type": "공모전/챌린지",
+      "startDate": "2026-07-06",
+      "endDate": null,
+      "timeLabel": null,
+      "status": "진행예정",
+      "format": "온라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "DACON 온라인",
+      "summary": "DACON에 등록된 SCPC AI 챌린지. sLM Harness Engineering, 알고리즘, 채용 연계 키워드를 함께 추적한다.",
+      "url": "https://dacon.io/",
+      "tags": [
+        "DACON",
+        "SCPC",
+        "AI 챌린지",
+        "sLM"
+      ]
+    },
+    {
+      "id": "schedule-ai-engineer-worldsfair-hackathon-2026",
+      "title": "AI Engineer World’s Fair Hackathon 2026",
+      "organizer": "AI Engineer / Cerebral Valley",
+      "type": "해커톤",
+      "startDate": "2026-06-27",
+      "endDate": "2026-06-28",
+      "timeLabel": "09:00-17:00 PT",
+      "status": "진행예정",
+      "format": "오프라인",
+      "region": "북미",
+      "language": "영어",
+      "location": "San Francisco, CA",
+      "summary": "AI Engineer World’s Fair 공식 해커톤. recursive self-improvement와 출력 기반 자기 개선 시스템을 주제로 진행된다.",
+      "url": "https://www.ai.engineer/worldsfair/2026",
+      "tags": [
+        "AI Engineer",
+        "해커톤",
+        "Cerebral Valley",
+        "recursive self-improvement"
+      ]
+    },
+    {
+      "id": "schedule-ai-engineer-worldsfair-2026",
+      "title": "AI Engineer World’s Fair 2026",
+      "organizer": "AI Engineer",
+      "type": "컨퍼런스",
+      "startDate": "2026-06-29",
+      "endDate": "2026-07-02",
+      "timeLabel": null,
+      "status": "진행예정",
+      "format": "오프라인",
+      "region": "북미",
+      "language": "영어",
+      "location": "Moscone West, San Francisco",
+      "summary": "키노트, 브레이크아웃, 엑스포, 랩, 포스터 세션, 사이드 이벤트를 한 건물에서 운영하는 AI 엔지니어링 컨퍼런스.",
+      "url": "https://www.ai.engineer/worldsfair/2026",
+      "tags": [
+        "AI Engineer",
+        "컨퍼런스",
+        "AI 앱",
+        "LLM infra"
+      ]
+    },
+    {
+      "id": "schedule-nvidia-gtc-berlin-2026",
+      "title": "NVIDIA GTC Berlin",
+      "organizer": "NVIDIA",
+      "type": "컨퍼런스",
+      "startDate": "2026-10-20",
+      "endDate": "2026-10-22",
+      "timeLabel": null,
+      "status": "진행예정",
+      "format": "오프라인",
+      "region": "유럽",
+      "language": "영어",
+      "location": "Berlin",
+      "summary": "NVIDIA GTC 지역 컨퍼런스. AI infrastructure, agentic AI, physical AI, inference와 hands-on training 후보를 추적한다.",
+      "url": "https://www.nvidia.com/gtc/",
+      "tags": [
+        "NVIDIA",
+        "GTC",
+        "AI infrastructure",
+        "agentic AI"
+      ]
+    },
+    {
+      "id": "schedule-github-universe-2026",
+      "title": "GitHub Universe 2026",
+      "organizer": "GitHub",
+      "type": "컨퍼런스",
+      "startDate": "2026-10-28",
+      "endDate": "2026-10-29",
+      "timeLabel": null,
+      "status": "모집중",
+      "format": "하이브리드",
+      "region": "북미",
+      "language": "영어",
+      "location": "Fort Mason Center, San Francisco / Online",
+      "summary": "GitHub의 플래그십 개발자 행사. humans, agents, code를 연결하는 주제와 워크숍, 데모, 온라인 스트리밍을 제공한다.",
+      "url": "https://githubuniverse.com/",
+      "tags": [
+        "GitHub Universe",
+        "Copilot",
+        "Agents",
+        "개발자 컨퍼런스"
+      ]
+    },
+    {
+      "id": "schedule-github-universe-day-of-learning-2026",
+      "title": "GitHub Universe Day of Learning",
+      "organizer": "GitHub",
+      "type": "세미나/모임",
+      "startDate": "2026-10-30",
+      "endDate": null,
+      "timeLabel": "08:00-16:00 PT",
+      "status": "모집중",
+      "format": "오프라인",
+      "region": "북미",
+      "language": "영어",
+      "location": "GitHub Headquarters, San Francisco",
+      "summary": "GitHub Universe 별도 티켓형 day of learning. 라이브 데모, 전문가 세션, GitHub HQ 학습 프로그램을 제공한다.",
+      "url": "https://githubuniverse.com/",
+      "tags": [
+        "GitHub",
+        "학습일",
+        "워크숍",
+        "Copilot"
+      ]
+    },
+    {
+      "id": "schedule-aws-reinvent-2026",
+      "title": "AWS re:Invent 2026",
+      "organizer": "AWS",
+      "type": "컨퍼런스",
+      "startDate": "2026-11-30",
+      "endDate": "2026-12-04",
+      "timeLabel": null,
+      "status": "모집중",
+      "format": "오프라인",
+      "region": "북미",
+      "language": "영어",
+      "location": "Las Vegas, NV",
+      "summary": "AWS 연례 컨퍼런스. cloud and AI 커뮤니티, 2,200개 이상 세션/랩, GenAI와 Agentic AI 운영 사례를 추적한다.",
+      "url": "https://aws.amazon.com/events/reinvent/",
+      "tags": [
+        "AWS re:Invent",
+        "Bedrock",
+        "Agentic AI",
+        "Cloud"
+      ]
+    },
+    {
+      "id": "schedule-upstage-aws-ai-initiative",
+      "title": "Upstage-AWS AI Initiative",
+      "organizer": "Upstage / AWS",
+      "type": "프로모션/지원",
+      "startDate": "2026-06-25",
+      "endDate": "2027-03-31",
+      "timeLabel": "~2027-03-31 23:00 KST",
+      "status": "진행중",
+      "format": "상시 확인",
+      "region": "글로벌",
+      "language": "다국어",
+      "location": "공식 이벤트 페이지 확인",
+      "summary": "Upstage 이벤트 페이지의 Featured Event. Upstage와 AWS의 AI Initiative를 2027년 3월 31일까지 추적한다.",
+      "url": "https://www.upstage.ai/events",
+      "tags": [
+        "Upstage",
+        "AWS",
+        "AI Initiative",
+        "지원"
+      ]
+    },
+    {
+      "id": "schedule-teca-apple-swift-student-challenge",
+      "title": "Apple Swift Student Challenge",
+      "organizer": "Apple",
+      "type": "해커톤",
+      "startDate": "2026-02-06",
+      "endDate": "2026-02-28",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "온라인",
+      "region": "글로벌",
+      "language": "영어",
+      "location": "온라인",
+      "summary": "Apple 공식 주관 Swift Student Challenge. App Playground 제출 350명 수상, 상위 50명 WWDC 초청 항목.",
+      "url": "https://developer.apple.com/swift-student-challenge/",
+      "tags": [
+        "Swift",
+        "iOS",
+        "Apple",
+        "해커톤"
+      ]
+    },
+    {
+      "id": "schedule-teca-samsung-scpc",
+      "title": "Samsung SCPC",
+      "organizer": "삼성전자",
+      "type": "공모전/챌린지",
+      "startDate": "2025-06-11",
+      "endDate": "2025-07-10",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "하이브리드",
+      "region": "국내",
+      "language": "한국어",
+      "location": "삼성 리크루팅 채널",
+      "summary": "삼성전자 주관 프로그래밍 경진대회. AI/알고리즘 트랙 분리와 채용 연계를 병행한 국내 대회.",
+      "url": "https://research.samsung.com/scpc",
+      "tags": [
+        "삼성",
+        "알고리즘",
+        "채용우대",
+        "해커톤"
+      ]
+    },
+    {
+      "id": "schedule-teca-skt-ai-fellowship",
+      "title": "SKT AI Fellowship",
+      "organizer": "SKT",
+      "type": "해커톤",
+      "startDate": "2026-04-15",
+      "endDate": "2026-05-15",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "온라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "온라인",
+      "summary": "AI 연구 지원 프로그램으로 팀당 연구지원금 600만원 + 멘토링을 제공한다.",
+      "url": "https://devocean.sk.com/community/aiFellowshipRecruitment.do",
+      "tags": [
+        "SKT",
+        "AI",
+        "연구지원",
+        "펠로우십"
+      ]
+    },
+    {
+      "id": "schedule-teca-shake",
+      "title": "shake!",
+      "organizer": "서울권 대학 연합",
+      "type": "해커톤",
+      "startDate": "2025-12-01",
+      "endDate": "2025-12-31",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "경인지역",
+      "summary": "경인지역 7개 대학이 함께한 알고리즘 대회. 본선 2026년 1월 초 운영.",
+      "url": "https://shake.codes/",
+      "tags": [
+        "알고리즘",
+        "해커톤",
+        "학생"
+      ]
+    },
+    {
+      "id": "schedule-teca-ascii-thon",
+      "title": "ASCII-THON",
+      "organizer": "아주대",
+      "type": "해커톤",
+      "startDate": "2026-01-07",
+      "endDate": "2026-01-23",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "수도권",
+      "summary": "아주대 주관 수도권 대학 연합 해커톤. 1월 말 2박 3일 운영 구조가 기본형으로 알려진 실전형 행사.",
+      "url": "https://www.asciithon.dev/",
+      "tags": [
+        "해커톤",
+        "웹",
+        "백엔드",
+        "모바일"
+      ]
+    },
+    {
+      "id": "schedule-teca-goormthon-spring",
+      "title": "9oormthon in JEJU (spring)",
+      "organizer": "goorm",
+      "type": "해커톤",
+      "startDate": "2025-01-24",
+      "endDate": "2025-02-05",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "제주",
+      "summary": "카카오 주관 제주도 3박 4일 해커톤. 프론트엔드·백엔드·디자인·PM 동시 참가형.",
+      "url": "https://9oormthon.goorm.io/",
+      "tags": [
+        "해커톤",
+        "웹",
+        "백엔드",
+        "프론트엔드"
+      ]
+    },
+    {
+      "id": "schedule-teca-goormthon-summer",
+      "title": "9oormthon in JEJU (summer)",
+      "organizer": "goorm",
+      "type": "해커톤",
+      "startDate": "2025-06-09",
+      "endDate": "2025-06-22",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "제주",
+      "summary": "카카오 주관 3박 4일 대회. 프론트엔드·백엔드·디자인·PM 경로로 팀 구성이 큰 편.",
+      "url": "https://9oormthon.goorm.io/",
+      "tags": [
+        "해커톤",
+        "웹",
+        "백엔드",
+        "프론트엔드"
+      ]
+    },
+    {
+      "id": "schedule-teca-goormthon-fall",
+      "title": "9oormthon in JEJU (fall)",
+      "organizer": "goorm",
+      "type": "해커톤",
+      "startDate": "2025-08-26",
+      "endDate": "2025-09-08",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "제주",
+      "summary": "카카오 주관 제주도 3박 4일 해커톤 시리즈. 디자이너·기획자 트랙까지 합쳐진 복합형 이벤트.",
+      "url": "https://9oormthon.goorm.io/",
+      "tags": [
+        "해커톤",
+        "웹",
+        "백엔드",
+        "디자인"
+      ]
+    },
+    {
+      "id": "schedule-teca-goormthon-winter",
+      "title": "9oormthon in JEJU (winter)",
+      "organizer": "goorm",
+      "type": "해커톤",
+      "startDate": "2025-11-04",
+      "endDate": "2025-11-17",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "제주",
+      "summary": "카카오 주관 3박 4일 제주 해커톤. 시즌형 행사의 윈터 라인으로 오프라인 진행이 특성이다.",
+      "url": "https://9oormthon.goorm.io/",
+      "tags": [
+        "해커톤",
+        "웹",
+        "백엔드",
+        "디자인"
+      ]
+    },
+    {
+      "id": "schedule-teca-zero100-builderthon",
+      "title": "Zero100 글로벌 바이브코딩 빌더톤 in 서울",
+      "organizer": "Women in Vibe Coding",
+      "type": "해커톤",
+      "startDate": "2026-03-07",
+      "endDate": "2026-03-19",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "서울",
+      "summary": "서울 오프라인 바브코딩 빌더톤. 아이디어-프로토타입 단계 실습 강도가 높았던 실전형 행사.",
+      "url": "https://luma.com/pb000fua",
+      "tags": [
+        "바이브코딩",
+        "빌더톤",
+        "서울",
+        "AI"
+      ]
+    },
+    {
+      "id": "schedule-teca-dallkkakton",
+      "title": "딸깍톤",
+      "organizer": "바이브 코딩 클럽",
+      "type": "해커톤",
+      "startDate": "2026-03-14",
+      "endDate": "2026-03-20",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "숭실대",
+      "summary": "개발자 중심의 마니또형 오프라인 축제형 바이브 코딩 해커톤.",
+      "url": "https://ttalkkakthon.vibecodingclub.kr/",
+      "tags": [
+        "해커톤",
+        "바이브코딩",
+        "개발자"
+      ]
+    },
+    {
+      "id": "schedule-teca-agent-hackathon",
+      "title": "비즈니스 리더를 위한 Agent Hackathon",
+      "organizer": "메가존클라우드",
+      "type": "해커톤",
+      "startDate": "2026-03-19",
+      "endDate": "2026-03-26",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "온라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "온라인",
+      "summary": "메가존클라우드 주최 온라인 AI 에이전트 해커톤. 에이전트형 태스크 주간 운영의 실전 사례를 제공.",
+      "url": "https://events.teams.microsoft.com/event/b1532464-68b5-4997-825d-bc3430d621a3@97f42f55-f1db-4804-b1eb-08db083efd4f",
+      "tags": [
+        "해커톤",
+        "Agent",
+        "AI",
+        "에이전트"
+      ]
+    },
+    {
+      "id": "schedule-teca-ralphthon",
+      "title": "Ralphthon @SF",
+      "organizer": "Team Attention",
+      "type": "해커톤",
+      "startDate": "2026-03-14",
+      "endDate": "2026-03-29",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "오프라인",
+      "region": "북미",
+      "language": "영어",
+      "location": "San Francisco, CA",
+      "summary": "OpenAI 지원 샌프란시스코 오프라인 해커톤. 글로벌 AI 이벤트로 팀형 실습과 실전 배포성이 높음.",
+      "url": "https://luma.com/kxoq82yq",
+      "tags": [
+        "해커톤",
+        "샌프란시스코",
+        "OpenAI",
+        "AI"
+      ]
+    },
+    {
+      "id": "schedule-teca-vibe-coding-contest",
+      "title": "바이브코딩 공모전",
+      "organizer": "코리아IT 아카데미",
+      "type": "공모전/챌린지",
+      "startDate": "2026-03-16",
+      "endDate": "2026-04-03",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "온라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "온라인",
+      "summary": "온라인 바이브코딩 공모전. 웹 기반 구현 및 산출물 완성도를 중심으로 참가 조건이 구성됨.",
+      "url": "http://koreaitac.com/2025/landing/vibe_coding.asp",
+      "tags": [
+        "공모전",
+        "바이브코딩",
+        "온라인",
+        "코드"
+      ]
+    },
+    {
+      "id": "schedule-teca-snowflake-hackathon",
+      "title": "SNOWFLAKE Hackathon 2026",
+      "organizer": "Snowflake",
+      "type": "해커톤",
+      "startDate": "2026-03-17",
+      "endDate": "2026-04-05",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "영어",
+      "location": "오프라인(한국 주최)",
+      "summary": "Snowflake가 주최한 오프라인 AI 해커톤. 데이터·플랫폼 관점 과제 구성의 강점이 있었던 행사.",
+      "url": "https://www.snowflake.com/snowflake-hackathon-2026-korea/",
+      "tags": [
+        "해커톤",
+        "Snowflake",
+        "데이터",
+        "AI"
+      ]
+    },
+    {
+      "id": "schedule-teca-labor-data-ai-contest",
+      "title": "제5회 고용노동 공공데이터·AI 활용 공모전",
+      "organizer": "고용노동부",
+      "type": "공모전/챌린지",
+      "startDate": "2026-03-16",
+      "endDate": "2026-05-14",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "온라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "온라인",
+      "summary": "고용노동부 공공데이터·AI 활용 공모전. 데이터 정제와 AI 적용 시나리오 품질 평가가 중심.",
+      "url": "https://www.2026datacontest.co.kr/",
+      "tags": [
+        "공모전",
+        "공공데이터",
+        "AI",
+        "데이터분석"
+      ]
+    },
+    {
+      "id": "schedule-teca-hrd-ai-challenge",
+      "title": "HRD 미래산업인재혁신박람회 AI 아이디어 챌린지",
+      "organizer": "고용노동부",
+      "type": "공모전/챌린지",
+      "startDate": "2026-03-30",
+      "endDate": "2026-04-26",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "온라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "온라인",
+      "summary": "온라인 AI 아이디어 챌린지. 아이디어 도출형 평가 요소가 강한 공모전.",
+      "url": "https://xn--hrd-5b7m58oe6hhrj.kr/ideachallenge",
+      "tags": [
+        "챌린지",
+        "아이디어",
+        "AI",
+        "온라인"
+      ]
+    },
+    {
+      "id": "schedule-teca-cmux-aim-hackathon",
+      "title": "CMUX x AIM 해커톤",
+      "organizer": "Manaflow / AI Nexus",
+      "type": "해커톤",
+      "startDate": "2026-04-14",
+      "endDate": "2026-04-26",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "서울 강남",
+      "summary": "서울 강남 오프라인 AI 해커톤. AI 프로젝트 기획-개발 라운드로 운영됐다.",
+      "url": "https://luma.com/zun4wf73",
+      "tags": [
+        "해커톤",
+        "AI",
+        "서울",
+        "오프라인"
+      ]
+    },
+    {
+      "id": "schedule-teca-claude-code-hackathon",
+      "title": "Built with Opus 4.7: a Claude Code hackathon",
+      "organizer": "Cerebral Valley",
+      "type": "해커톤",
+      "startDate": "2026-04-18",
+      "endDate": "2026-04-26",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "온라인",
+      "region": "글로벌",
+      "language": "영어",
+      "location": "온라인",
+      "summary": "Anthropic 계열 오프라인 후보 대신 온라인에서 열린 Claude Code 중심 AI 해커톤.",
+      "url": "https://cerebralvalley.ai/e/built-with-4-7-hackathon",
+      "tags": [
+        "해커톤",
+        "Claude Code",
+        "Anthropic",
+        "온라인"
+      ]
+    },
+    {
+      "id": "schedule-teca-ai-eduthon",
+      "title": "전국민 AI 경진대회 - AI 에듀톤",
+      "organizer": "과학기술정보통신부",
+      "type": "공모전/챌린지",
+      "startDate": "2026-03-28",
+      "endDate": "2026-04-30",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "온라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "온라인",
+      "summary": "전국민 대상 AI 경진대회. 교육·실무 연계형 아이디어 제출 포인트가 핵심이었다.",
+      "url": "https://aichallenge4all.or.kr/competitions/ai-education",
+      "tags": [
+        "공모전",
+        "에듀톤",
+        "AI",
+        "온라인"
+      ]
+    },
+    {
+      "id": "schedule-teca-tour-data-contest",
+      "title": "2026 관광데이터 활용 공모전",
+      "organizer": "한국관광공사",
+      "type": "공모전/챌린지",
+      "startDate": "2026-03-30",
+      "endDate": "2026-05-06",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "온라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "온라인",
+      "summary": "공공 관광 데이터를 주제로 한 시각화/분석형 공모전.",
+      "url": "https://api.visitkorea.or.kr/#/cntSearchDetail?no=1",
+      "tags": [
+        "공모전",
+        "공공데이터",
+        "관광",
+        "시각화"
+      ]
+    },
+    {
+      "id": "schedule-teca-ict-women-leader",
+      "title": "2026 차세대 ICT여성리더 육성 협업 프로젝트",
+      "organizer": "과학기술정보통신부",
+      "type": "해커톤",
+      "startDate": "2026-04-08",
+      "endDate": "2026-05-06",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "온라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "온라인",
+      "summary": "차세대 ICT 여성리더 육성 목적의 협업형 프로젝트 지원사업 및 과제형 이벤트.",
+      "url": "http://www.kibwa.org/board/board_view?code=notice&no=1194",
+      "tags": [
+        "지원사업",
+        "ICT",
+        "여성리더",
+        "협업"
+      ]
+    },
+    {
+      "id": "schedule-teca-build-with-ai-daejeon",
+      "title": "Build with AI Hackathon 2026 in Daejeon",
+      "organizer": "GDG Daejeon",
+      "type": "해커톤",
+      "startDate": "2026-04-11",
+      "endDate": "2026-05-08",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "대전 유성구",
+      "summary": "GDG Daejeon에서 열린 AI 해커톤. 대전권 오프라인 중심 행사의 한 예시이다.",
+      "url": "https://ticketa.co/event/rshxbzui",
+      "tags": [
+        "해커톤",
+        "GDG",
+        "대전",
+        "AI"
+      ]
+    },
+    {
+      "id": "schedule-teca-nexon-mecathon",
+      "title": "넥슨 패스트 트랙 해커톤 '2026 메커톤'",
+      "organizer": "넥슨코리아",
+      "type": "해커톤",
+      "startDate": "2026-04-24",
+      "endDate": "2026-05-11",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "판교",
+      "summary": "넥슨코리아 주관 패스트 트랙 해커톤. 게임/개발 채용 연계형 특성을 가진 오프라인 행사.",
+      "url": "https://maplestoryworlds.career.greetinghr.com/ko/home",
+      "tags": [
+        "해커톤",
+        "넥슨",
+        "게임",
+        "오프라인"
+      ]
+    },
+    {
+      "id": "schedule-teca-seongnam-data-viz-contest",
+      "title": "2026 성남시 공공데이터 활용 시각화 경진대회",
+      "organizer": "성남시",
+      "type": "공모전/챌린지",
+      "startDate": "2026-04-20",
+      "endDate": "2026-05-13",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "온라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "온라인",
+      "summary": "시각화형 공공데이터 경진대회. 주제 분석·해석형 결과물 완성도가 핵심이다.",
+      "url": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=viewok&gp=1&ix=105710",
+      "tags": [
+        "공모전",
+        "시각화",
+        "공공데이터",
+        "지역시정"
+      ]
+    },
+    {
+      "id": "schedule-teca-piwuda-project",
+      "title": "제16회 글로벌 피우다프로젝트",
+      "organizer": "ICT콤플렉스",
+      "type": "해커톤",
+      "startDate": "2026-04-01",
+      "endDate": "2026-05-17",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "온라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "온라인",
+      "summary": "한국·일본 노인돌봄 ICT솔루션 개발 대회. 국내외 동시 협업 성격을 갖는 경진대회.",
+      "url": "https://ictcocpiuda.imweb.me/",
+      "tags": [
+        "공모전",
+        "사회문제",
+        "헬스케어",
+        "ICT"
+      ]
+    },
+    {
+      "id": "schedule-teca-gov-ai-innovation",
+      "title": "2026 공공기관 AI 혁신 챌린지",
+      "organizer": "과학기술정보통신부",
+      "type": "공모전/챌린지",
+      "startDate": "2026-05-11",
+      "endDate": "2026-08-31",
+      "timeLabel": null,
+      "status": "모집중",
+      "format": "온라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "온라인",
+      "summary": "NIA 주관 공공분야 AI 실증형 경진대회. 공공기관 주도 과제 특성의 장기 채용/기술 연계가 있음.",
+      "url": "https://aichallenge4all.or.kr/competitions/public-ai",
+      "tags": [
+        "챌린지",
+        "공공",
+        "AI 혁신",
+        "실증"
+      ]
+    },
+    {
+      "id": "schedule-teca-blockchain-ai-hackathon",
+      "title": "2026 블록체인 & AI 해커톤",
+      "organizer": "한국디지털인증협회",
+      "type": "해커톤",
+      "startDate": "2026-05-01",
+      "endDate": "2026-05-31",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "오프라인(국내)",
+      "summary": "행안부 후원 블록체인·AI 해커톤. 모바일 주민등록증 연계 서비스와 상금이 큰 편이었다.",
+      "url": "https://opendid.org/hackathon/2026/",
+      "tags": [
+        "해커톤",
+        "블록체인",
+        "AI",
+        "보안"
+      ]
+    },
+    {
+      "id": "schedule-teca-codegate-ai-startup-hackathon",
+      "title": "2026 코드게이트 AI 스타트업 해커톤",
+      "organizer": "코드게이트",
+      "type": "해커톤",
+      "startDate": "2026-05-01",
+      "endDate": "2026-07-08",
+      "timeLabel": null,
+      "status": "모집중",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "서울",
+      "summary": "AI 스타트업 중심 오프라인 해커톤. MVP 제작 2박2일 형식으로 진행되며 상금이 큼.",
+      "url": "https://codegate.org",
+      "tags": [
+        "해커톤",
+        "스타트업",
+        "MVP",
+        "AI"
+      ]
+    },
+    {
+      "id": "schedule-teca-hancom-edu-hackathon",
+      "title": "한컴 에듀 해커톤",
+      "organizer": "한컴",
+      "type": "해커톤",
+      "startDate": "2026-05-20",
+      "endDate": "2026-07-08",
+      "timeLabel": null,
+      "status": "모집중",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "오프라인(장소 미정)",
+      "summary": "한컴 주관 오프라인 해커톤. 교육/생산성 주제 편성의 실전형 과제형 이벤트.",
+      "url": "https://eduhancom.com/",
+      "tags": [
+        "해커톤",
+        "교육",
+        "생산성",
+        "오프라인"
+      ]
+    },
+    {
+      "id": "schedule-teca-namux-hackathon",
+      "title": "2nd 나무엑스 Hackathon",
+      "organizer": "SK인텔릭스",
+      "type": "해커톤",
+      "startDate": "2026-06-04",
+      "endDate": "2026-06-17",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "오프라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "서울 워커힐 호텔",
+      "summary": "로봇 활용 시나리오를 제안하는 오프라인 해커톤. AI 로봇 기반 실험 과제 특성이 뚜렷.",
+      "url": "https://event-us.kr/skintellixhackathon/event/125194",
+      "tags": [
+        "해커톤",
+        "로봇",
+        "AI",
+        "오프라인"
+      ]
+    },
+    {
+      "id": "schedule-teca-dacon-web-minigame-hackathon",
+      "title": "DACON 웹 미니게임 해커톤",
+      "organizer": "DACON",
+      "type": "해커톤",
+      "startDate": "2026-05-04",
+      "endDate": "2026-05-26",
+      "timeLabel": null,
+      "status": "종료",
+      "format": "온라인",
+      "region": "국내",
+      "language": "한국어",
+      "location": "온라인",
+      "summary": "웹 미니게임 주제의 온라인 해커톤. 실습 과제 단위가 짧고 팀 운영이 빠른 편.",
+      "url": "https://daker.ai/public/hackathons/monthly-hackathon-web-minigame-challenge",
+      "tags": [
+        "해커톤",
+        "웹",
+        "게임",
+        "온라인"
+      ]
+    }
+  ],
+  "glossary": [
+    {
+      "id": "glo-llm",
+      "term": "LLM",
+      "koName": "대규모 언어 모델",
+      "category": "기초",
+      "definition": "방대한 텍스트로 학습해 다음 토큰을 예측하는 대규모 신경망. GPT·Claude·Gemini 등 상용 모델의 토대.",
+      "note": null,
+      "tags": [
+        "기초",
+        "llm"
+      ]
+    },
+    {
+      "id": "glo-token",
+      "term": "Token",
+      "koName": "토큰",
+      "category": "기초",
+      "definition": "모델이 처리하는 텍스트의 최소 단위(단어 조각). 한국어는 영어보다 토큰 수가 많아 비용이 더 들 수 있다.",
+      "note": "입력·출력 토큰 수가 곧 API 비용이다. 한글 1글자가 1토큰 이상일 때가 많다.",
+      "tags": [
+        "기초",
+        "비용"
+      ]
+    },
+    {
+      "id": "glo-tokenizer",
+      "term": "Tokenizer",
+      "koName": "토크나이저",
+      "category": "기초",
+      "definition": "텍스트를 토큰 열로 변환하는 규칙/모델. BPE 계열이 흔하다.",
+      "note": null,
+      "tags": [
+        "기초"
+      ]
+    },
+    {
+      "id": "glo-transformer",
+      "term": "Transformer",
+      "koName": "트랜스포머",
+      "category": "아키텍처",
+      "definition": "셀프 어텐션으로 토큰 간 관계를 학습하는 신경망 구조. 현대 LLM의 표준 백본.",
+      "note": null,
+      "tags": [
+        "아키텍처"
+      ]
+    },
+    {
+      "id": "glo-attention",
+      "term": "Attention",
+      "koName": "어텐션",
+      "category": "아키텍처",
+      "definition": "각 토큰이 다른 토큰을 얼마나 참조할지 가중치로 계산하는 메커니즘.",
+      "note": null,
+      "tags": [
+        "아키텍처"
+      ]
+    },
+    {
+      "id": "glo-moe",
+      "term": "MoE",
+      "koName": "전문가 혼합",
+      "category": "아키텍처",
+      "definition": "Mixture of Experts. 입력마다 일부 전문가 서브네트워크만 활성화해 적은 연산으로 큰 용량을 얻는 구조.",
+      "note": "DeepSeek·Mistral 등이 채택. 총 파라미터는 크지만 활성 파라미터는 일부다.",
+      "tags": [
+        "아키텍처",
+        "효율"
+      ]
+    },
+    {
+      "id": "glo-pretraining",
+      "term": "Pretraining",
+      "koName": "사전학습",
+      "category": "학습/튜닝",
+      "definition": "대규모 코퍼스로 다음 토큰 예측을 학습하는 1차 단계. 모델의 일반 능력을 형성한다.",
+      "note": null,
+      "tags": [
+        "학습"
+      ]
+    },
+    {
+      "id": "glo-finetuning",
+      "term": "Fine-tuning",
+      "koName": "파인튜닝",
+      "category": "학습/튜닝",
+      "definition": "사전학습 모델을 특정 도메인·작업 데이터로 추가 학습해 성능을 맞추는 과정.",
+      "note": null,
+      "tags": [
+        "학습",
+        "튜닝"
+      ]
+    },
+    {
+      "id": "glo-lora",
+      "term": "LoRA",
+      "koName": "저랭크 적응",
+      "category": "학습/튜닝",
+      "definition": "Low-Rank Adaptation. 가중치 전체 대신 작은 어댑터만 학습해 저비용으로 파인튜닝하는 기법.",
+      "note": null,
+      "tags": [
+        "튜닝",
+        "효율"
+      ]
+    },
+    {
+      "id": "glo-rlhf",
+      "term": "RLHF",
+      "koName": "인간 피드백 강화학습",
+      "category": "안전/정렬",
+      "definition": "사람 선호 데이터로 보상 모델을 만들고 강화학습으로 응답을 정렬하는 기법. 유용성·안전성 개선.",
+      "note": null,
+      "tags": [
+        "정렬",
+        "안전"
+      ]
+    },
+    {
+      "id": "glo-dpo",
+      "term": "DPO",
+      "koName": "직접 선호 최적화",
+      "category": "안전/정렬",
+      "definition": "Direct Preference Optimization. 보상 모델 없이 선호쌍으로 직접 정렬하는 RLHF 대안.",
+      "note": null,
+      "tags": [
+        "정렬"
+      ]
+    },
+    {
+      "id": "glo-alignment",
+      "term": "Alignment",
+      "koName": "정렬",
+      "category": "안전/정렬",
+      "definition": "모델의 행동을 인간 의도·가치에 맞추는 연구/공정 전반.",
+      "note": null,
+      "tags": [
+        "안전"
+      ]
+    },
+    {
+      "id": "glo-context-window",
+      "term": "Context Window",
+      "koName": "컨텍스트 윈도우",
+      "category": "컨텍스트",
+      "definition": "모델이 한 번에 참조할 수 있는 최대 토큰 길이. 길수록 더 많은 자료를 한 번에 다룬다.",
+      "note": "길다고 항상 좋은 건 아니다 — 길어질수록 비용·지연이 늘고 중간 정보 손실(lost-in-the-middle)이 생길 수 있다.",
+      "tags": [
+        "컨텍스트"
+      ]
+    },
+    {
+      "id": "glo-rag",
+      "term": "RAG",
+      "koName": "검색 증강 생성",
+      "category": "컨텍스트",
+      "definition": "Retrieval-Augmented Generation. 외부 문서를 검색해 프롬프트에 넣어 최신·근거 있는 답을 생성하는 방식.",
+      "note": "환각을 줄이고 출처를 댈 수 있어 사내 문서 Q&A에 널리 쓰인다.",
+      "tags": [
+        "컨텍스트",
+        "검색"
+      ]
+    },
+    {
+      "id": "glo-embedding",
+      "term": "Embedding",
+      "koName": "임베딩",
+      "category": "컨텍스트",
+      "definition": "텍스트를 의미를 담은 벡터로 변환한 표현. 유사도 검색·RAG의 기반.",
+      "note": null,
+      "tags": [
+        "검색"
+      ]
+    },
+    {
+      "id": "glo-vector-db",
+      "term": "Vector DB",
+      "koName": "벡터 데이터베이스",
+      "category": "컨텍스트",
+      "definition": "임베딩 벡터를 저장하고 유사도로 빠르게 검색하는 데이터베이스.",
+      "note": null,
+      "tags": [
+        "검색",
+        "인프라"
+      ]
+    },
+    {
+      "id": "glo-prompt",
+      "term": "Prompt",
+      "koName": "프롬프트",
+      "category": "추론/생성",
+      "definition": "모델에 주는 입력 지시문. 시스템·사용자·어시스턴트 역할로 구성된다.",
+      "note": null,
+      "tags": [
+        "기초"
+      ]
+    },
+    {
+      "id": "glo-system-prompt",
+      "term": "System Prompt",
+      "koName": "시스템 프롬프트",
+      "category": "추론/생성",
+      "definition": "모델의 역할·규칙·톤을 고정하는 상위 지시. 대화 전반에 적용된다.",
+      "note": null,
+      "tags": [
+        "프롬프트"
+      ]
+    },
+    {
+      "id": "glo-few-shot",
+      "term": "Few-shot",
+      "koName": "퓨샷",
+      "category": "추론/생성",
+      "definition": "프롬프트에 예시 몇 개를 넣어 원하는 형식·행동을 유도하는 기법. 예시가 없으면 zero-shot.",
+      "note": null,
+      "tags": [
+        "프롬프트"
+      ]
+    },
+    {
+      "id": "glo-temperature",
+      "term": "Temperature",
+      "koName": "온도",
+      "category": "추론/생성",
+      "definition": "출력의 무작위성 조절값. 낮으면 결정적·일관적, 높으면 다양·창의적.",
+      "note": null,
+      "tags": [
+        "파라미터"
+      ]
+    },
+    {
+      "id": "glo-top-p",
+      "term": "Top-p",
+      "koName": "뉴클리어스 샘플링",
+      "category": "추론/생성",
+      "definition": "누적 확률 p 이내의 후보에서만 샘플링해 다양성을 조절하는 방식.",
+      "note": null,
+      "tags": [
+        "파라미터"
+      ]
+    },
+    {
+      "id": "glo-hallucination",
+      "term": "Hallucination",
+      "koName": "환각",
+      "category": "평가/벤치마크",
+      "definition": "사실이 아닌 내용을 그럴듯하게 생성하는 현상. 출처 검증·RAG로 완화한다.",
+      "note": "본 포털이 모든 항목에 출처를 다는 이유. 모델 답은 항상 원문으로 교차 확인.",
+      "tags": [
+        "평가",
+        "신뢰"
+      ]
+    },
+    {
+      "id": "glo-grounding",
+      "term": "Grounding",
+      "koName": "근거화",
+      "category": "평가/벤치마크",
+      "definition": "모델 답변을 실제 출처·데이터에 연결해 검증 가능하게 만드는 것.",
+      "note": null,
+      "tags": [
+        "신뢰"
+      ]
+    },
+    {
+      "id": "glo-cot",
+      "term": "Chain-of-Thought",
+      "koName": "사고 사슬",
+      "category": "추론/생성",
+      "definition": "중간 추론 단계를 명시적으로 생성해 복잡한 문제 정확도를 높이는 기법. 추론형 모델의 핵심.",
+      "note": null,
+      "tags": [
+        "추론"
+      ]
+    },
+    {
+      "id": "glo-reasoning-model",
+      "term": "Reasoning Model",
+      "koName": "추론 모델",
+      "category": "추론/생성",
+      "definition": "답하기 전에 길게 사고(thinking)하도록 학습된 모델. 수학·코딩·계획에 강하지만 지연·비용이 크다.",
+      "note": null,
+      "tags": [
+        "추론"
+      ]
+    },
+    {
+      "id": "glo-test-time-compute",
+      "term": "Test-time Compute",
+      "koName": "추론시 연산",
+      "category": "추론/생성",
+      "definition": "추론 단계에서 더 많은 연산(긴 사고·다중 샘플)을 써서 정확도를 높이는 접근.",
+      "note": null,
+      "tags": [
+        "추론",
+        "비용"
+      ]
+    },
+    {
+      "id": "glo-agent",
+      "term": "Agent",
+      "koName": "에이전트",
+      "category": "에이전트/도구",
+      "definition": "도구 호출·계획·반복으로 목표를 자율 수행하는 LLM 시스템. 코딩 에이전트가 대표적.",
+      "note": null,
+      "tags": [
+        "에이전트"
+      ]
+    },
+    {
+      "id": "glo-tool-use",
+      "term": "Tool Use",
+      "koName": "도구 사용",
+      "category": "에이전트/도구",
+      "definition": "모델이 외부 함수·API·검색을 호출해 능력을 확장하는 것. function calling이라고도 한다.",
+      "note": null,
+      "tags": [
+        "에이전트"
+      ]
+    },
+    {
+      "id": "glo-function-calling",
+      "term": "Function Calling",
+      "koName": "함수 호출",
+      "category": "에이전트/도구",
+      "definition": "모델이 정해진 스키마로 함수 인자를 생성해 호출하도록 하는 기능.",
+      "note": null,
+      "tags": [
+        "에이전트",
+        "api"
+      ]
+    },
+    {
+      "id": "glo-mcp",
+      "term": "MCP",
+      "koName": "모델 컨텍스트 프로토콜",
+      "category": "에이전트/도구",
+      "definition": "Model Context Protocol. 에이전트가 외부 도구·데이터 소스에 표준 방식으로 연결하는 개방 프로토콜.",
+      "note": "도구 확장 디렉터리의 MCP 서버 항목 참고. 한 번 연결하면 여러 클라이언트에서 재사용.",
+      "tags": [
+        "에이전트",
+        "프로토콜"
+      ]
+    },
+    {
+      "id": "glo-multimodal",
+      "term": "Multimodal",
+      "koName": "멀티모달",
+      "category": "멀티모달",
+      "definition": "텍스트뿐 아니라 이미지·오디오·비디오 등 여러 양식을 함께 입력·출력하는 능력.",
+      "note": null,
+      "tags": [
+        "멀티모달"
+      ]
+    },
+    {
+      "id": "glo-vlm",
+      "term": "VLM",
+      "koName": "비전 언어 모델",
+      "category": "멀티모달",
+      "definition": "이미지와 텍스트를 함께 이해하는 모델. 문서·스크린샷 이해, OCR형 작업에 쓰인다.",
+      "note": null,
+      "tags": [
+        "멀티모달"
+      ]
+    },
+    {
+      "id": "glo-quantization",
+      "term": "Quantization",
+      "koName": "양자화",
+      "category": "운영/비용",
+      "definition": "가중치를 낮은 정밀도(INT8/INT4 등)로 줄여 메모리·비용을 낮추는 기법. 약간의 품질 저하 가능.",
+      "note": null,
+      "tags": [
+        "효율",
+        "비용"
+      ]
+    },
+    {
+      "id": "glo-distillation",
+      "term": "Distillation",
+      "koName": "증류",
+      "category": "학습/튜닝",
+      "definition": "큰 교사 모델의 출력을 작은 학생 모델이 모방 학습해 경량·고속화하는 기법.",
+      "note": null,
+      "tags": [
+        "효율"
+      ]
+    },
+    {
+      "id": "glo-prompt-caching",
+      "term": "Prompt Caching",
+      "koName": "프롬프트 캐싱",
+      "category": "운영/비용",
+      "definition": "반복되는 프롬프트 접두부(시스템 지시 등)를 캐시해 입력 토큰 비용·지연을 크게 줄이는 기능.",
+      "note": "긴 한국어 가이드라인을 시스템 프롬프트로 고정하는 워크플로에서 절감 효과가 크다.",
+      "tags": [
+        "비용",
+        "운영"
+      ]
+    },
+    {
+      "id": "glo-batch-api",
+      "term": "Batch API",
+      "koName": "배치 API",
+      "category": "운영/비용",
+      "definition": "비실시간 작업을 모아 처리해 단가를 50% 안팎 낮추는 비동기 API.",
+      "note": null,
+      "tags": [
+        "비용",
+        "운영"
+      ]
+    },
+    {
+      "id": "glo-benchmark",
+      "term": "Benchmark",
+      "koName": "벤치마크",
+      "category": "평가/벤치마크",
+      "definition": "표준 과제 집합으로 모델 성능을 비교 측정하는 평가. 공식 스펙과 분리해 봐야 한다.",
+      "note": "벤치마크 점수는 평가 조건에 민감하다. 본 포털은 공식 문서 값과 벤치마크 값을 분리 표기한다.",
+      "tags": [
+        "평가"
+      ]
+    },
+    {
+      "id": "glo-eval",
+      "term": "Eval",
+      "koName": "평가셋",
+      "category": "평가/벤치마크",
+      "definition": "특정 능력을 측정하기 위한 과제·채점 기준 모음. 자체 eval로 도입 전 검증한다.",
+      "note": null,
+      "tags": [
+        "평가"
+      ]
+    },
+    {
+      "id": "glo-guardrail",
+      "term": "Guardrail",
+      "koName": "가드레일",
+      "category": "안전/정렬",
+      "definition": "유해·이탈 출력을 막는 입력/출력 필터·정책. 안전한 배포의 필수 요소.",
+      "note": null,
+      "tags": [
+        "안전",
+        "운영"
+      ]
+    },
+    {
+      "id": "glo-vibe-coding",
+      "term": "Vibe Coding",
+      "koName": "바이브 코딩",
+      "category": "에이전트/도구",
+      "definition": "자연어로 의도를 주고 에이전트가 코드를 생성·실행·반복하게 하는 개발 방식.",
+      "note": null,
+      "tags": [
+        "에이전트",
+        "코딩"
+      ]
+    }
+  ],
+  "learning": [
+    {
+      "id": "res-openai-videos",
+      "type": "강좌/영상",
+      "title": "OpenAI Developer Videos",
+      "author": "OpenAI Developers",
+      "language": "영어",
+      "level": "실무",
+      "summary": "Responses API, 에이전트, 도구 호출 등 OpenAI 개발자용 공식 영상 모음.",
+      "url": "https://developers.openai.com/learn/videos",
+      "tags": [
+        "OpenAI",
+        "API",
+        "Agents"
+      ]
+    },
+    {
+      "id": "res-claude-courses",
+      "type": "강좌/영상",
+      "title": "Anthropic Academy",
+      "author": "Anthropic",
+      "language": "영어",
+      "level": "입문",
+      "summary": "Claude, Claude Code, MCP, API 개발과 업무 적용법을 공식 학습 리소스로 따라갈 수 있다.",
+      "url": "https://www.anthropic.com/learn",
+      "tags": [
+        "Claude",
+        "Prompting",
+        "Workflows"
+      ]
+    },
+    {
+      "id": "res-gemini-docs",
+      "type": "공식 문서",
+      "title": "Gemini API Developer Docs",
+      "author": "Google AI for Developers",
+      "language": "영어",
+      "level": "실무",
+      "summary": "Gemini 모델, 검색 grounding, URL context, 파일 입력, Live API까지 확인하는 공식 문서.",
+      "url": "https://ai.google.dev/gemini-api/docs",
+      "tags": [
+        "Gemini",
+        "Multimodal",
+        "Grounding"
+      ]
+    },
+    {
+      "id": "res-gemma4-docs",
+      "type": "공식 문서",
+      "title": "Gemma 4 공식 문서와 설치 경로",
+      "author": "Google AI for Developers / Google DeepMind",
+      "language": "영어",
+      "level": "실무",
+      "summary": "Gemma 4 모델 개요, QAT 체크포인트, GGUF/LM Studio/Ollama/vLLM/SGLang/mobile 라우팅과 DeepMind 통합 목록을 확인하는 공식 자료.",
+      "url": "https://ai.google.dev/gemma/docs/core",
+      "tags": [
+        "Gemma",
+        "Gemma 4",
+        "QAT"
+      ]
+    },
+    {
+      "id": "res-manus-api",
+      "type": "공식 문서",
+      "title": "Manus API v2 Docs",
+      "author": "Manus",
+      "language": "영어",
+      "level": "실무",
+      "summary": "태스크, 프로젝트, 파일, 웹훅, 스킬, 에이전트를 API로 다루는 공식 문서.",
+      "url": "https://open.manus.ai/docs/v2/introduction",
+      "tags": [
+        "Manus",
+        "Agents",
+        "Automation"
+      ]
+    },
+    {
+      "id": "res-llama4-model-cards",
+      "type": "공식 문서",
+      "title": "Llama 4 Maverick / Scout 모델 카드",
+      "author": "Meta Llama on Hugging Face",
+      "language": "영어",
+      "level": "고급",
+      "summary": "Llama 4 Maverick과 Scout의 native multimodal MoE 스펙, 컨텍스트, 라이선스, vLLM/SGLang/Docker 실행 경로를 확인하는 모델 카드 묶음.",
+      "url": "https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct",
+      "tags": [
+        "Llama",
+        "Meta",
+        "Maverick"
+      ]
+    },
+    {
+      "id": "res-xai-docs",
+      "type": "공식 문서",
+      "title": "xAI API 공식 문서 묶음",
+      "author": "xAI Docs",
+      "language": "영어",
+      "level": "실무",
+      "summary": "Grok 모델 API 스펙, OpenAI 호환 엔드포인트, 가격 정책, quickstart까지 한 번에 확인하는 xAI 공식 문서 출처 묶음.",
+      "url": "https://docs.x.ai/docs/overview",
+      "tags": [
+        "xAI",
+        "Grok",
+        "OpenAI 호환 API"
+      ]
+    },
+    {
+      "id": "res-kimi-api-docs",
+      "type": "공식 문서",
+      "title": "Kimi API Platform Docs",
+      "author": "Moonshot AI",
+      "language": "영어",
+      "level": "실무",
+      "summary": "Kimi 모델 목록, K2.7 Code 빠른 시작, OpenAI SDK 호환, 멀티모달 도구 호출 제약을 확인하는 공식 문서.",
+      "url": "https://platform.kimi.ai/docs/models",
+      "tags": [
+        "Kimi",
+        "Moonshot",
+        "Coding"
+      ]
+    },
+    {
+      "id": "res-deepseek-api-docs",
+      "type": "공식 문서",
+      "title": "DeepSeek API Docs",
+      "author": "DeepSeek",
+      "language": "영어",
+      "level": "실무",
+      "summary": "DeepSeek V4 Flash/Pro, 가격, thinking mode, Anthropic/OpenAI 호환 API와 변경 로그를 확인하는 공식 문서.",
+      "url": "https://api-docs.deepseek.com/quick_start/pricing",
+      "tags": [
+        "DeepSeek",
+        "Pricing",
+        "API"
+      ]
+    },
+    {
+      "id": "res-qwen-docs",
+      "type": "공식 문서",
+      "title": "Qwen Documentation",
+      "author": "Alibaba Qwen Team",
+      "language": "영어",
+      "level": "고급",
+      "summary": "Qwen3-2507, Qwen3, 로컬 실행, vLLM/SGLang/TGI 배포, Qwen-Agent와 LangChain 연동을 확인하는 공식 문서.",
+      "url": "https://qwen.readthedocs.io/en/latest/",
+      "tags": [
+        "Qwen",
+        "Open Weight",
+        "Local"
+      ]
+    },
+    {
+      "id": "res-mistral-docs",
+      "type": "공식 문서",
+      "title": "Mistral AI Docs",
+      "author": "Mistral AI",
+      "language": "영어",
+      "level": "실무",
+      "summary": "Mistral Medium 3.5, Mistral Small 4, Ministral 3, OCR, Agents, self-deployment를 확인하는 공식 문서.",
+      "url": "https://docs.mistral.ai/models/overview",
+      "tags": [
+        "Mistral",
+        "Ministral",
+        "Open Weight"
+      ]
+    },
+    {
+      "id": "res-cursor-docs",
+      "type": "공식 문서",
+      "title": "Cursor 공식 문서",
+      "author": "Cursor",
+      "language": "영어",
+      "level": "실무",
+      "summary": "Cursor AI IDE의 agent, rules, MCP, model 설정, 팀 운영 방식을 확인하는 공식 문서.",
+      "url": "https://cursor.com/docs",
+      "tags": [
+        "Cursor",
+        "AI IDE",
+        "바이브 코딩"
+      ]
+    },
+    {
+      "id": "res-windsurf-docs",
+      "type": "공식 문서",
+      "title": "Windsurf 공식 문서",
+      "author": "Windsurf",
+      "language": "영어",
+      "level": "실무",
+      "summary": "Windsurf AI IDE와 Cascade, context, MCP, enterprise 설정을 확인하는 공식 문서.",
+      "url": "https://docs.windsurf.com",
+      "tags": [
+        "Windsurf",
+        "AI IDE",
+        "Cascade"
+      ]
+    },
+    {
+      "id": "res-cline-roo-docs",
+      "type": "공식 문서",
+      "title": "Cline / Roo Code 문서",
+      "author": "Cline, Roo Code",
+      "language": "영어",
+      "level": "고급",
+      "summary": "VS Code 기반 코딩 에이전트 Cline과 Roo Code의 오픈소스 에이전트, MCP, 모드 설정 자료.",
+      "url": "https://github.com/cline/cline",
+      "tags": [
+        "Cline",
+        "Roo Code",
+        "VS Code"
+      ]
+    },
+    {
+      "id": "res-aider-docs",
+      "type": "공식 문서",
+      "title": "Aider 공식 문서",
+      "author": "Aider",
+      "language": "영어",
+      "level": "실무",
+      "summary": "터미널 기반 pair programming, Git diff 중심 코딩, OpenAI 호환 모델 연결을 확인하는 Aider 문서.",
+      "url": "https://aider.chat",
+      "tags": [
+        "Aider",
+        "CLI",
+        "Git"
+      ]
+    },
+    {
+      "id": "res-continue-openhands-docs",
+      "type": "공식 문서",
+      "title": "Continue / OpenHands 문서",
+      "author": "Continue, All Hands AI",
+      "language": "영어",
+      "level": "고급",
+      "summary": "오픈소스 IDE assistant Continue와 개발 에이전트 OpenHands의 모델/provider 설정, context, 실행 환경 문서.",
+      "url": "https://docs.continue.dev",
+      "tags": [
+        "Continue",
+        "OpenHands",
+        "오픈소스"
+      ]
+    },
+    {
+      "id": "res-lovable-bolt-v0-docs",
+      "type": "공식 문서",
+      "title": "Lovable / Bolt / v0 문서",
+      "author": "Lovable, Bolt, Vercel",
+      "language": "영어",
+      "level": "입문",
+      "summary": "프롬프트 기반 웹 앱 제작, UI 생성, 배포와 프로젝트 운영을 확인하는 Lovable, Bolt, v0 공식 자료.",
+      "url": "https://docs.lovable.dev",
+      "tags": [
+        "Lovable",
+        "Bolt",
+        "v0"
+      ]
+    },
+    {
+      "id": "res-replit-devin-copilot-docs",
+      "type": "공식 문서",
+      "title": "Replit Agent / Devin / GitHub Copilot 문서",
+      "author": "Replit, Cognition, GitHub",
+      "language": "영어",
+      "level": "실무",
+      "summary": "Replit Agent, Devin, GitHub Copilot의 에이전트형 개발, IDE/CLI/조직 정책, GitHub 연동 문서.",
+      "url": "https://docs.github.com/en/copilot",
+      "tags": [
+        "GitHub Copilot",
+        "Devin",
+        "Replit Agent"
+      ]
+    },
+    {
+      "id": "res-claude-docs-ko",
+      "type": "공식 문서",
+      "title": "Claude API 한국어 공식 문서",
+      "author": "Anthropic",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "Claude 소개, 빠른 시작, Messages API, 도구 사용, MCP, 모델 선택을 한국어로 읽을 수 있는 공식 문서.",
+      "url": "https://platform.claude.com/docs/ko/intro",
+      "tags": [
+        "한국어",
+        "Claude",
+        "API"
+      ]
+    },
+    {
+      "id": "res-gemini-docs-ko",
+      "type": "공식 문서",
+      "title": "Gemini API 한국어 공식 문서",
+      "author": "Google AI for Developers",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "Gemini API 빠른 시작, 모델, 도구, 긴 컨텍스트, 함수 호출, 프롬프트 엔지니어링을 한국어로 확인한다.",
+      "url": "https://ai.google.dev/gemini-api/docs?hl=ko",
+      "tags": [
+        "한국어",
+        "Gemini",
+        "API"
+      ]
+    },
+    {
+      "id": "res-azure-openai-ko",
+      "type": "공식 문서",
+      "title": "Azure OpenAI 한국어 문서",
+      "author": "Microsoft Learn",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "Azure에서 OpenAI 모델을 배포하고 API/SDK로 호출하는 흐름, 콘텐츠 필터링과 엔터프라이즈 보안 개념을 한국어로 확인한다.",
+      "url": "https://learn.microsoft.com/ko-kr/azure/ai-services/openai/overview",
+      "tags": [
+        "한국어",
+        "OpenAI",
+        "Azure"
+      ]
+    },
+    {
+      "id": "res-aws-bedrock-ko",
+      "type": "공식 문서",
+      "title": "Amazon Bedrock 한국어 문서",
+      "author": "AWS Docs",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "Bedrock에서 Anthropic, DeepSeek, Moonshot AI(Kimi), OpenAI 등 여러 모델 제공사를 다루는 방법을 한국어로 확인한다.",
+      "url": "https://docs.aws.amazon.com/ko_kr/bedrock/latest/userguide/what-is-bedrock.html",
+      "tags": [
+        "한국어",
+        "Bedrock",
+        "Claude"
+      ]
+    },
+    {
+      "id": "res-korean-official-manual-matrix",
+      "type": "공식 문서",
+      "title": "한국어 공식 매뉴얼 매트릭스",
+      "author": "Anthropic, Google, Microsoft Learn, AWS Docs, Google Code Assist",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "Claude API, Gemini API, Google Cloud Vertex AI/Gemini, Azure OpenAI, Amazon Bedrock, Gemini Code Assist 한국어 공식 문서를 한 묶음으로 비교한다. 빠른 시작, 모델 선택, 도구 호출, MCP, 엔터프라이즈 배포, AI 코딩 제품 문서를 한국어 우선으로 찾는 용도.",
+      "url": "https://platform.claude.com/docs/ko/intro",
+      "tags": [
+        "한국어",
+        "공식 문서",
+        "매뉴얼"
+      ]
+    },
+    {
+      "id": "res-teddynote",
+      "type": "강좌/영상",
+      "title": "테디노트 TeddyNote",
+      "author": "TeddyNote",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "LangChain, RAG, LLM 앱 개발을 한국어 실습 영상으로 빠르게 따라가기 좋다.",
+      "url": "https://www.youtube.com/@teddynote",
+      "tags": [
+        "한국어",
+        "RAG",
+        "LangChain"
+      ]
+    },
+    {
+      "id": "res-jocoding",
+      "type": "강좌/영상",
+      "title": "조코딩 JoCoding",
+      "author": "JoCoding",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "AI 코딩 도구 and 자동화 트렌드를 비개발자도 이해하기 쉽게 훑기 좋은 한국어 채널.",
+      "url": "https://www.youtube.com/@jocoding",
+      "tags": [
+        "한국어",
+        "AI 코딩",
+        "자동화"
+      ]
+    },
+    {
+      "id": "res-hermes-agent-video",
+      "type": "강좌/영상",
+      "title": "헤르메스 에이전트 - 24시간 일하는 AI 팀",
+      "author": "YouTube",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "노트북을 꺼도 계속 일하는 AI 팀을 주제로 한 한국어 에이전트/자동화 영상. 바이브 코딩과 업무 자동화 자료 후보로 분류한다.",
+      "url": "https://www.youtube.com/watch?v=h_6jRAkMATI",
+      "tags": [
+        "한국어",
+        "AI 에이전트",
+        "자동화"
+      ]
+    },
+    {
+      "id": "res-youtube-vibe-coding-search",
+      "type": "강좌/영상",
+      "title": "한국어 바이브 코딩 유튜브 검색",
+      "author": "YouTube",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "바이브 코딩, Claude Code, Codex, Cursor 관련 한국어 유튜브 강좌 후보를 계속 찾는 검색 허브.",
+      "url": "https://www.youtube.com/results?search_query=%EB%B0%94%EC%9D%B4%EB%B8%8C+%EC%BD%94%EB%94%A9+Claude+Code+Codex+Cursor",
+      "tags": [
+        "한국어",
+        "유튜브",
+        "바이브 코딩"
+      ]
+    },
+    {
+      "id": "res-codefactory-ai-coding",
+      "type": "강좌/영상",
+      "title": "코드팩토리 AI 코딩 자료 검색",
+      "author": "Code Factory / Inflearn / YouTube",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "코드팩토리 이름으로 AI 코딩, 앱 개발, 개발 생산성 강좌 후보를 찾는 유튜브·인프런 검색 허브.",
+      "url": "https://www.youtube.com/results?search_query=%EC%BD%94%EB%93%9C%ED%8C%A9%ED%86%A0%EB%A6%AC+AI+%EC%BD%94%EB%94%A9",
+      "tags": [
+        "한국어",
+        "코드팩토리",
+        "AI 코딩"
+      ]
+    },
+    {
+      "id": "res-dev-dongsaeng-ai-coding",
+      "type": "강좌/영상",
+      "title": "개발동생 AI 코딩 자료 검색",
+      "author": "개발동생 / Inflearn / YouTube",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "개발동생 이름으로 AI 코딩, 개발 자동화, 실무 개발 강좌 후보를 찾는 유튜브·인프런 검색 허브.",
+      "url": "https://www.youtube.com/results?search_query=%EA%B0%9C%EB%B0%9C%EB%8F%99%EC%83%9D+AI+%EC%BD%94%EB%94%A9",
+      "tags": [
+        "한국어",
+        "개발동생",
+        "AI 코딩"
+      ]
+    },
+    {
+      "id": "res-cursor-korean-youtube",
+      "type": "강좌/영상",
+      "title": "Cursor 한국어 유튜브 강좌 검색",
+      "author": "YouTube",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "Cursor AI IDE, Composer/Agent, rules, MCP, 바이브 코딩 관련 한국어 영상 후보를 찾는 검색 허브.",
+      "url": "https://www.youtube.com/results?search_query=Cursor+AI+%EC%BD%94%EB%94%A9+%ED%95%9C%EA%B5%AD%EC%96%B4",
+      "tags": [
+        "한국어",
+        "Cursor",
+        "AI IDE"
+      ]
+    },
+    {
+      "id": "res-windsurf-korean-youtube",
+      "type": "강좌/영상",
+      "title": "Windsurf 한국어 유튜브 강좌 검색",
+      "author": "YouTube",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "Windsurf, Cascade, AI IDE, 바이브 코딩 관련 한국어 영상 후보를 찾는 검색 허브.",
+      "url": "https://www.youtube.com/results?search_query=Windsurf+AI+%EC%BD%94%EB%94%A9+%ED%95%9C%EA%B5%AD%EC%96%B4",
+      "tags": [
+        "한국어",
+        "Windsurf",
+        "AI IDE"
+      ]
+    },
+    {
+      "id": "res-cline-roo-korean-youtube",
+      "type": "강좌/영상",
+      "title": "Cline / Roo Code 한국어 유튜브 검색",
+      "author": "YouTube",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "Cline, Roo Code, VS Code 에이전트, MCP 기반 코딩 자동화 영상 후보를 찾는 검색 허브.",
+      "url": "https://www.youtube.com/results?search_query=Cline+Roo+Code+%ED%95%9C%EA%B5%AD%EC%96%B4",
+      "tags": [
+        "한국어",
+        "Cline",
+        "Roo Code"
+      ]
+    },
+    {
+      "id": "res-copilot-korean-youtube",
+      "type": "강좌/영상",
+      "title": "GitHub Copilot 한국어 유튜브 검색",
+      "author": "YouTube",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "GitHub Copilot, Copilot Chat, agent mode, IDE/CLI 활용 강좌 후보를 찾는 한국어 유튜브 검색 허브.",
+      "url": "https://www.youtube.com/results?search_query=GitHub+Copilot+%ED%95%9C%EA%B5%AD%EC%96%B4+%EA%B0%95%EC%A2%8C",
+      "tags": [
+        "한국어",
+        "GitHub Copilot",
+        "AI 코딩"
+      ]
+    },
+    {
+      "id": "res-v0-lovable-bolt-korean-youtube",
+      "type": "강좌/영상",
+      "title": "v0 / Lovable / Bolt 한국어 유튜브 검색",
+      "author": "YouTube",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "프롬프트 기반 웹앱 제작, UI 생성, 배포 자동화 도구의 한국어 영상 후보를 찾는 검색 허브.",
+      "url": "https://www.youtube.com/results?search_query=v0+Lovable+Bolt+AI+%ED%95%9C%EA%B5%AD%EC%96%B4",
+      "tags": [
+        "한국어",
+        "v0",
+        "Lovable"
+      ]
+    },
+    {
+      "id": "res-korean-creator-ai-youtube",
+      "type": "강좌/영상",
+      "title": "국내 개발 유튜버 AI 코딩 검색 묶음",
+      "author": "Nomad Coders, Dream Coding, Yalco, Coding Apple, Nado Coding",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "노마드 코더, 드림코딩, 얄코, 코딩애플, 나도코딩의 AI 코딩/개발 생산성 영상 후보를 묶어 추적한다.",
+      "url": "https://www.youtube.com/results?search_query=%EB%85%B8%EB%A7%88%EB%93%9C%EC%BD%94%EB%8D%94+AI+%EC%BD%94%EB%94%A9",
+      "tags": [
+        "한국어",
+        "유튜버",
+        "AI 코딩"
+      ]
+    },
+    {
+      "id": "res-openai-youtube",
+      "type": "강좌/영상",
+      "title": "OpenAI 공식 유튜브",
+      "author": "OpenAI",
+      "language": "영어",
+      "level": "입문",
+      "summary": "ChatGPT, API, 모델 발표, 제품 데모를 공식 영상으로 확인하는 채널.",
+      "url": "https://www.youtube.com/@OpenAI",
+      "tags": [
+        "OpenAI",
+        "YouTube",
+        "Official"
+      ]
+    },
+    {
+      "id": "res-anthropic-youtube",
+      "type": "강좌/영상",
+      "title": "Anthropic 공식 유튜브",
+      "author": "Anthropic",
+      "language": "영어",
+      "level": "입문",
+      "summary": "Claude 제품 발표, Claude Code, 연구/안전성 관련 세션을 공식 영상으로 확인하는 채널.",
+      "url": "https://www.youtube.com/@anthropic-ai",
+      "tags": [
+        "Claude",
+        "YouTube",
+        "Official"
+      ]
+    },
+    {
+      "id": "res-google-dev-youtube",
+      "type": "강좌/영상",
+      "title": "Google for Developers 공식 유튜브",
+      "author": "Google for Developers",
+      "language": "영어",
+      "level": "실무",
+      "summary": "Gemini API와 Google 개발자 생태계 영상을 공식 채널에서 추적한다.",
+      "url": "https://www.youtube.com/@GoogleDevelopers",
+      "tags": [
+        "Gemini",
+        "Google",
+        "YouTube"
+      ]
+    },
+    {
+      "id": "res-google-cloud-youtube",
+      "type": "강좌/영상",
+      "title": "Google Cloud Tech 공식 유튜브",
+      "author": "Google Cloud",
+      "language": "영어",
+      "level": "실무",
+      "summary": "Vertex AI, Gemini Enterprise, Agent Platform, 클라우드 생성형 AI 세션을 공식 영상으로 확인한다.",
+      "url": "https://www.youtube.com/@GoogleCloudTech",
+      "tags": [
+        "Gemini",
+        "Vertex AI",
+        "Cloud"
+      ]
+    },
+    {
+      "id": "res-google-dev-korea-youtube",
+      "type": "강좌/영상",
+      "title": "Google Developers Korea",
+      "author": "Google Developers Korea",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "Gemini, Google Cloud, 개발자 행사 세션을 한국어로 확인하는 공식 개발자 채널.",
+      "url": "https://www.youtube.com/@GoogleDevelopersKorea",
+      "tags": [
+        "한국어",
+        "Gemini",
+        "Google"
+      ]
+    },
+    {
+      "id": "res-aws-korea-youtube",
+      "type": "강좌/영상",
+      "title": "AWS Korea",
+      "author": "AWS Korea",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "Amazon Bedrock과 생성형 AI 아키텍처 세션을 한국어 영상으로 추적한다.",
+      "url": "https://www.youtube.com/@AWSKorea",
+      "tags": [
+        "한국어",
+        "Bedrock",
+        "YouTube"
+      ]
+    },
+    {
+      "id": "res-ms-dev-korea-youtube",
+      "type": "강좌/영상",
+      "title": "Microsoft Developer Korea",
+      "author": "Microsoft Developer Korea",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "Azure OpenAI, Copilot, 개발자 워크플로 관련 한국어 세션을 추적한다.",
+      "url": "https://www.youtube.com/@MicrosoftDeveloperKorea",
+      "tags": [
+        "한국어",
+        "Azure OpenAI",
+        "Copilot"
+      ]
+    },
+    {
+      "id": "res-devocean-youtube",
+      "type": "강좌/영상",
+      "title": "DEVOCEAN 유튜브",
+      "author": "DEVOCEAN",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "국내 개발자 컨퍼런스와 AI/ML 세션 영상을 계속 추적하는 한국어 채널.",
+      "url": "https://www.youtube.com/@devocean",
+      "tags": [
+        "한국어",
+        "AI",
+        "ML"
+      ]
+    },
+    {
+      "id": "res-mistral-youtube",
+      "type": "강좌/영상",
+      "title": "Mistral AI 유튜브",
+      "author": "Mistral AI",
+      "language": "영어",
+      "level": "실무",
+      "summary": "Mistral 모델 발표와 제품 데모, 연구/개발자 콘텐츠를 추적하는 채널.",
+      "url": "https://www.youtube.com/@MistralAI",
+      "tags": [
+        "Mistral",
+        "Ministral",
+        "YouTube"
+      ]
+    },
+    {
+      "id": "res-kimi-youtube-hub",
+      "type": "강좌/영상",
+      "title": "Kimi K2 유튜브 검색 허브",
+      "author": "YouTube",
+      "language": "영어",
+      "level": "실무",
+      "summary": "Kimi K2.7 Code, Moonshot API, 코딩 에이전트 관련 최신 영상 강좌를 찾는 검색 링크.",
+      "url": "https://www.youtube.com/results?search_query=Kimi+K2.7+Code",
+      "tags": [
+        "Kimi",
+        "Moonshot",
+        "YouTube"
+      ]
+    },
+    {
+      "id": "res-deepseek-youtube-hub",
+      "type": "강좌/영상",
+      "title": "DeepSeek V4 유튜브 검색 허브",
+      "author": "YouTube",
+      "language": "영어",
+      "level": "실무",
+      "summary": "DeepSeek V4, DeepSeek API, R1/V3 계열, 저비용 장문 처리 강좌를 찾는 검색 링크.",
+      "url": "https://www.youtube.com/results?search_query=DeepSeek+V4+API",
+      "tags": [
+        "DeepSeek",
+        "YouTube",
+        "Search"
+      ]
+    },
+    {
+      "id": "res-qwen-youtube-hub",
+      "type": "강좌/영상",
+      "title": "Qwen3 유튜브 검색 허브",
+      "author": "YouTube",
+      "language": "영어",
+      "level": "고급",
+      "summary": "Qwen3, Qwen 로컬 실행, Ollama, vLLM, SGLang 배포 강좌를 찾는 검색 링크.",
+      "url": "https://www.youtube.com/results?search_query=Qwen3+LLM+Korean",
+      "tags": [
+        "Qwen",
+        "Open Weight",
+        "YouTube"
+      ]
+    },
+    {
+      "id": "res-xai-youtube-hub",
+      "type": "강좌/영상",
+      "title": "xAI Grok 유튜브 검색 허브",
+      "author": "YouTube",
+      "language": "영어",
+      "level": "실무",
+      "summary": "Grok API, X Search, 실시간 리서치 사용법 영상을 찾는 검색 링크. 공식 채널은 추가 확인 대상으로 둔다.",
+      "url": "https://www.youtube.com/results?search_query=xAI+Grok+API",
+      "tags": [
+        "Grok",
+        "xAI",
+        "YouTube"
+      ]
+    },
+    {
+      "id": "res-manus-youtube-hub",
+      "type": "강좌/영상",
+      "title": "Manus AI 유튜브 검색 허브",
+      "author": "YouTube",
+      "language": "영어",
+      "level": "입문",
+      "summary": "Manus 에이전트, 브라우저 오퍼레이터, 업무 자동화 영상 강좌를 찾는 검색 링크.",
+      "url": "https://www.youtube.com/results?search_query=Manus+AI+agent+tutorial",
+      "tags": [
+        "Manus",
+        "Agent",
+        "YouTube"
+      ]
+    },
+    {
+      "id": "res-teddynote-blog",
+      "type": "블로그/글",
+      "title": "TeddyNote Blog",
+      "author": "TeddyNote",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "LangChain, RAG, LLM 앱 개발을 한국어 글과 코드 예제로 따라갈 수 있는 블로그.",
+      "url": "https://teddylee777.github.io/",
+      "tags": [
+        "한국어",
+        "블로그",
+        "LangChain"
+      ]
+    },
+    {
+      "id": "res-naver-d2-ai",
+      "type": "블로그/글",
+      "title": "NAVER D2",
+      "author": "NAVER D2",
+      "language": "한국어",
+      "level": "고급",
+      "summary": "네이버의 AI, 검색, 추천, 대규모 시스템 기술 글을 찾아볼 수 있는 한국어 기술 블로그.",
+      "url": "https://d2.naver.com/home",
+      "tags": [
+        "한국어",
+        "블로그",
+        "검색"
+      ]
+    },
+    {
+      "id": "res-kakao-tech-ai",
+      "type": "블로그/글",
+      "title": "Kakao Tech",
+      "author": "Kakao",
+      "language": "한국어",
+      "level": "고급",
+      "summary": "카카오의 생성형 AI, 검색, 추천, 데이터/플랫폼 기술 글을 찾는 한국어 공식 기술 블로그.",
+      "url": "https://tech.kakao.com/",
+      "tags": [
+        "한국어",
+        "블로그",
+        "AI"
+      ]
+    },
+    {
+      "id": "res-toss-tech-ai",
+      "type": "블로그/글",
+      "title": "Toss Tech",
+      "author": "Viva Republica",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "제품 개발, 데이터, ML/AI 적용 경험을 한국어로 확인하는 기술 블로그.",
+      "url": "https://toss.tech/",
+      "tags": [
+        "한국어",
+        "블로그",
+        "Product"
+      ]
+    },
+    {
+      "id": "res-woowahan-ai",
+      "type": "블로그/글",
+      "title": "우아한형제들 AI 기술 블로그",
+      "author": "Woowahan Brothers",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "국내 서비스 조직의 AI 적용 사례와 운영 경험을 확인하는 한국어 AI 글 카테고리.",
+      "url": "https://techblog.woowahan.com/category/ai/",
+      "tags": [
+        "한국어",
+        "블로그",
+        "AI"
+      ]
+    },
+    {
+      "id": "res-google-dev-blog-ko",
+      "type": "블로그/글",
+      "title": "Google Developers Blog 한국어",
+      "author": "Google Developers",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "Google의 Gemini, AI 개발자 뉴스, 제품 업데이트를 한국어 글로 확인하는 공식 블로그.",
+      "url": "https://developers.googleblog.com/ko/",
+      "tags": [
+        "한국어",
+        "Gemini",
+        "Google"
+      ]
+    },
+    {
+      "id": "res-korean-ai-company-blogs",
+      "type": "블로그/글",
+      "title": "국내 AI 기업/플랫폼 블로그 묶음",
+      "author": "Upstage, NAVER Cloud, LY Corporation, Superb AI",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "Upstage, NAVER Cloud, LY Corporation, Superb AI의 LLM, 클라우드 AI, 비전 AI, 제품/연구 업데이트를 묶어 추적한다.",
+      "url": "https://www.upstage.ai/blog",
+      "tags": [
+        "한국어",
+        "블로그",
+        "최신 업데이트"
+      ]
+    },
+    {
+      "id": "res-line-engineering-blog",
+      "type": "블로그/글",
+      "title": "LINE Engineering Blog AI/플랫폼 글",
+      "author": "LINE Corporation",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "LINE Engineering의 플랫폼, 검색, AI 추천, 음성 AI, 실전 운영 사례 등 한국어 기술 글을 추적한다.",
+      "url": "https://engineering.linecorp.com/ko/blog",
+      "tags": [
+        "한국어",
+        "LINE",
+        "공학"
+      ]
+    },
+    {
+      "id": "res-korean-llm-official-products",
+      "type": "공식 문서",
+      "title": "국내 LLM 공식 제품/가격 허브",
+      "author": "NAVER Cloud, Upstage",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "NAVER Cloud CLOVA Studio의 HyperCLOVA X, Function calling, 비전 모델, 튜닝, 스킬 트레이너와 Upstage Solar Pro 3, API 가격, Document AI, 이벤트/지원 프로그램을 국내 API/클라우드 기준으로 묶어 확인한다.",
+      "url": "https://www.ncloud.com/product/aiService/clovaStudio",
+      "tags": [
+        "한국어",
+        "국내 LLM",
+        "HyperCLOVA X"
+      ]
+    },
+    {
+      "id": "res-korean-open-llm-technical-reports",
+      "type": "공식 문서",
+      "title": "국내 오픈웨이트/기술보고서 LLM 묶음",
+      "author": "NAVER Cloud, LG AI Research, Kakao",
+      "language": "영어",
+      "level": "고급",
+      "summary": "HyperCLOVA X THINK/8B Omni/32B Think, EXAONE 4.5/Deep, Kakao Kanana 기술보고서와 EXAONE Hugging Face 모델 카드를 한국어 성능, 멀티모달, reasoning, 오픈웨이트 여부 기준으로 비교한다.",
+      "url": "https://arxiv.org/abs/2506.22403",
+      "tags": [
+        "국내 LLM",
+        "오픈웨이트",
+        "HyperCLOVA X"
+      ]
+    },
+    {
+      "id": "res-korean-llm-benchmark-suite",
+      "type": "공식 문서",
+      "title": "한국어 LLM 벤치마크 세트",
+      "author": "KMMLU, KMMMU, KoBALT, HRET, KITE, HAE-RAE",
+      "language": "영어",
+      "level": "고급",
+      "summary": "KMMLU, KMMMU, KoBALT, HRET, KITE, Open Ko-LLM Leaderboard, HAE-RAE Bench를 묶어 한국어 문화·제도·언어학·지시 따르기·멀티모달 성능을 영어권 리더보드와 별도 축으로 추적한다.",
+      "url": "https://arxiv.org/abs/2402.11548",
+      "tags": [
+        "한국어 벤치마크",
+        "KMMLU",
+        "KMMMU"
+      ]
+    },
+    {
+      "id": "res-kmooc-boostcourse-ai",
+      "type": "강좌/영상",
+      "title": "K-MOOC / 부스트코스 AI 온라인 강좌",
+      "author": "K-MOOC, NAVER Connect Foundation",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "국내 대학·기관 공개강좌와 부스트코스의 AI, 데이터, 컴퓨터공학 온라인 강좌를 찾는 공공/무료 교육 허브.",
+      "url": "https://www.kmooc.kr",
+      "tags": [
+        "한국어",
+        "교육기관",
+        "원격 교육"
+      ]
+    },
+    {
+      "id": "res-korean-remote-bootcamps",
+      "type": "강좌/영상",
+      "title": "국내 원격 교육기관 AI 강좌 허브",
+      "author": "Elice, Programmers, goorm, Fast Campus, Codeit, Codepresso, Sparta, DACON",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "엘리스, 프로그래머스, 구름EDU, 패스트캠퍼스, 코드잇, 코드프레소, 스파르타코딩클럽, 데이콘 데이스쿨의 AI/개발/자동화 강좌 후보를 추적한다.",
+      "url": "https://elice.io/ko",
+      "tags": [
+        "한국어",
+        "교육기관",
+        "원격 교육"
+      ]
+    },
+    {
+      "id": "res-kdigital-public-training-hub",
+      "type": "강좌/영상",
+      "title": "고용24 K-디지털/국비지원 AI 훈련 허브",
+      "author": "고용24, K-MOOC, 부스트코스",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "고용24의 K-디지털 훈련, 국민내일배움카드, AI추천(훈련), K-디지털 아카데미와 K-MOOC/부스트코스 공개강좌를 함께 추적해 국비지원·공공 원격 교육 경로를 찾는다.",
+      "url": "https://www.work24.go.kr/cm/main.do",
+      "tags": [
+        "한국어",
+        "K-디지털",
+        "국비지원"
+      ]
+    },
+    {
+      "id": "res-korean-ai-certification-hub",
+      "type": "공식 문서",
+      "title": "AI 자격·시험·평가 정보 허브(한글)",
+      "author": "Microsoft / AWS / Google Cloud / Q-Net",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "AI 기초부터 MLOps, 엔지니어링까지 공식 자격증 가이드와 시험 스코프, 스터디/공식 경로를 한 번에 비교한다.",
+      "url": "https://learn.microsoft.com/ko-kr/certifications/",
+      "tags": [
+        "한국어",
+        "자격증",
+        "AI-900"
+      ]
+    },
+    {
+      "id": "res-ms-ai-cert-learning",
+      "type": "강좌/영상",
+      "title": "MS AI 자격 준비 가이드(한글)",
+      "author": "Microsoft Learn",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "Microsoft AI Fundamentals, AI Engineer 문서와 실습형 학습 경로를 한글로 확인할 수 있는 공식 페이지 집합.",
+      "url": "https://learn.microsoft.com/ko-kr/credentials/",
+      "tags": [
+        "한국어",
+        "공식 문서",
+        "Microsoft"
+      ]
+    },
+    {
+      "id": "res-k-cloud-certification-hub",
+      "type": "공식 문서",
+      "title": "클라우드 기반 AI 자격증 한글 허브",
+      "author": "AWS / Google Cloud",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "AWS와 Google Cloud의 AI/ML 관련 자격증 항목, 갱신 정책, 시험 비용/언어 정책을 빠르게 찾는 기준점 허브.",
+      "url": "https://aws.amazon.com/ko/certification/",
+      "tags": [
+        "한국어",
+        "클라우드 자격증",
+        "AI"
+      ]
+    },
+    {
+      "id": "res-korean-course-platforms",
+      "type": "강좌/영상",
+      "title": "인프런 유사 국내 강좌 플랫폼 묶음",
+      "author": "Nomad Coders, Dream Coding, CLASS101, Coloso",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "노마드코더, 드림코딩 아카데미, 클래스101, 콜로소의 개발·AI·업무 자동화·디자인 강좌 후보를 계속 추적한다.",
+      "url": "https://nomadcoders.co/",
+      "tags": [
+        "한국어",
+        "강좌 플랫폼",
+        "인프런 유사"
+      ]
+    },
+    {
+      "id": "res-korean-course-platforms-expanded-search",
+      "type": "강좌/영상",
+      "title": "인프런 대체/보완 강좌 플랫폼 확장 검색",
+      "author": "Fast Campus, Codeit, Codepresso, Sparta, Elice, Programmers, goorm, Udemy, Multicampus, Wanted, DACON",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "인프런 외에도 패스트캠퍼스, 코드잇, 코드프레소, 스파르타코딩클럽, 엘리스, 프로그래머스, 구름EDU/KDT, Udemy 한국어, 멀티캠퍼스, 원티드 프리온보딩, 데이콘 데이스쿨의 AI 코딩·LLM·업무 자동화 강좌 후보를 함께 추적한다.",
+      "url": "https://fastcampus.co.kr",
+      "tags": [
+        "한국어",
+        "강좌 플랫폼",
+        "인프런 대체"
+      ]
+    },
+    {
+      "id": "res-korean-course-marketplace-matrix",
+      "type": "강좌/영상",
+      "title": "인프런/패스트캠퍼스/코드잇 AI 코딩 강좌 매트릭스",
+      "author": "Inflearn, Fast Campus, Codeit, Codepresso, Sparta, Elice, Programmers, goorm, Nomad Coders, Dream Coding, CLASS101, Coloso, Udemy, Multicampus, Wanted, DACON",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "인프런 검색 허브와 패스트캠퍼스, 코드잇, 코드프레소, 스파르타코딩클럽, 엘리스, 프로그래머스, 구름EDU/KDT, 노마드코더, 드림코딩, 클래스101, 콜로소, Udemy 한국어, 멀티캠퍼스, 원티드 프리온보딩, 데이콘 데이스쿨을 함께 비교한다. 바이브 코딩, Cursor, Claude Code, Codex, GitHub Copilot, LangChain, RAG, 업무 자동화 강좌를 유료/무료, 온라인/부트캠프, 입문/실무 기준으로 찾는 용도.",
+      "url": "https://www.inflearn.com/search?s=AI%20%EC%BD%94%EB%94%A9",
+      "tags": [
+        "한국어",
+        "강좌 플랫폼",
+        "인프런"
+      ]
+    },
+    {
+      "id": "res-korean-ai-competition-hackathon-learning",
+      "type": "강좌/영상",
+      "title": "데이콘/카카오테크캠퍼스 AI 실전 교육·해커톤",
+      "author": "DACON, DAKER, Kakao Tech Campus, Codepresso",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "데이콘의 데이스쿨 LLM·프롬프트·AI 에이전트·RAG 학습, DAKER 바이브코딩 해커톤, AI 경진대회와 카카오테크캠퍼스 Agentic AI 과정, 코드프레소 AI/데이터 강좌 후보를 실전 프로젝트·해커톤·모집 상태 기준으로 묶어 추적한다.",
+      "url": "https://dacon.io/",
+      "tags": [
+        "한국어",
+        "강좌 플랫폼",
+        "해커톤"
+      ]
+    },
+    {
+      "id": "res-national-ai-bootcamp-watchlist",
+      "type": "강좌/영상",
+      "title": "국가/대기업형 AI·SW 부트캠프 모집 감시 목록",
+      "author": "Boostcamp, SSAFY, AI·SW Maestro, SeSAC, Kakao Tech Bootcamp, Kakao Tech Campus, goormthon Training, Programmers DevCourse, Code States",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "부스트캠프 AI Tech/Web·Mobile, 삼성청년SW아카데미 SSAFY, AI·SW마에스트로, 서울시 SeSAC, 카카오테크 부트캠프, 카카오테크캠퍼스 Agentic AI, 구름톤 트레이닝, 프로그래머스 데브코스, 코드스테이츠를 모집 상태·과정 분야·온라인 여부·취업 연계 기준으로 추적한다.",
+      "url": "https://boostcamp.connect.or.kr/",
+      "tags": [
+        "한국어",
+        "부트캠프",
+        "SSAFY"
+      ]
+    },
+    {
+      "id": "res-korean-dev-youtube-core-channels",
+      "type": "강좌/영상",
+      "title": "한국어 개발 유튜브 직접 채널 묶음",
+      "author": "노마드코더, 드림코딩, 코딩애플, 나도코딩, 얄코, 생활코딩, 빵형의 개발도상국",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "AI 바이브 코딩을 따라가기 전에 필요한 웹/앱 개발 기초, 프론트엔드 실무, Python 자동화, AI/ML 실험 영상을 직접 채널 단위로 추적한다.",
+      "url": "https://www.youtube.com/@nomadcoders",
+      "tags": [
+        "한국어",
+        "유튜브",
+        "개발 입문"
+      ]
+    },
+    {
+      "id": "res-korean-ai-youtube-creator-watchlist",
+      "type": "강좌/영상",
+      "title": "한국어 AI 코딩 크리에이터 감시 목록",
+      "author": "테디노트, 조코딩, 코드팩토리, 개발동생, 코딩 알려주는 누나, 메타코드M",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "LLM 앱, RAG, 자동화, AI IDE, Cursor/Claude Code/Codex류 도구를 다루는 한국어 크리에이터와 검색 허브를 주간 큐레이션 후보로 묶는다.",
+      "url": "https://www.youtube.com/@teddynote",
+      "tags": [
+        "한국어",
+        "유튜브",
+        "바이브 코딩"
+      ]
+    },
+    {
+      "id": "res-model-youtube-channel-matrix",
+      "type": "강좌/영상",
+      "title": "모델별 공식/후보 유튜브 채널 매트릭스",
+      "author": "OpenAI, Anthropic, Google, xAI, Moonshot, DeepSeek, Qwen, Mistral, Manus",
+      "language": "영어",
+      "level": "실무",
+      "summary": "OpenAI, Anthropic, Google for Developers/Cloud, Mistral 공식 채널과 xAI, Moonshot/Kimi, DeepSeek, Qwen, Manus 후보 채널·검색 링크를 모델별로 분리해 추적한다. 공식 확인이 약한 채널은 후보로만 표시한다.",
+      "url": "https://www.youtube.com/@OpenAI",
+      "tags": [
+        "YouTube",
+        "공식 채널",
+        "후보 채널"
+      ]
+    },
+    {
+      "id": "res-model-korean-youtube-search-matrix",
+      "type": "강좌/영상",
+      "title": "모델별 한국어 유튜브 강좌 검색 매트릭스",
+      "author": "YouTube Search",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "Codex, Claude Code, Gemini CLI, Grok, Manus, Kimi, DeepSeek, Qwen, Mistral을 모델명·CLI명·바이브 코딩 키워드로 나눈 한국어 영상 검색 허브.",
+      "url": "https://www.youtube.com/results?search_query=OpenAI+Codex+CLI+%ED%95%9C%EA%B5%AD%EC%96%B4",
+      "tags": [
+        "한국어",
+        "유튜브",
+        "모델별"
+      ]
+    },
+    {
+      "id": "res-codefactory-devdongsaeng-focused-watch",
+      "type": "강좌/영상",
+      "title": "코드팩토리/개발동생 AI 코딩 집중 감시",
+      "author": "Code Factory, 개발동생, Inflearn, YouTube",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "사용자 요청으로 코드팩토리와 개발동생을 별도 묶음으로 분리했다. AI 코딩, 앱 개발, Cursor/Claude Code/Codex, 자동화 강좌 후보를 유튜브와 인프런 검색 기준으로 계속 추적한다.",
+      "url": "https://www.youtube.com/results?search_query=%EC%BD%94%EB%93%9C%ED%8C%A9%ED%86%A0%EB%A6%AC+AI+%EC%BD%94%EB%94%A9",
+      "tags": [
+        "한국어",
+        "코드팩토리",
+        "개발동생"
+      ]
+    },
+    {
+      "id": "res-korean-bootcamp-expanded",
+      "type": "강좌/영상",
+      "title": "국내 AI/개발 부트캠프 확장 묶음",
+      "author": "LIKELION, AIFFEL, ZeroBase, OZ Coding School, Multicampus",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "멋쟁이사자처럼, AIFFEL, 제로베이스, 오즈코딩스쿨, 멀티캠퍼스의 AI/데이터/개발자 교육과 기업교육 후보를 추적한다.",
+      "url": "https://likelion.net/",
+      "tags": [
+        "한국어",
+        "부트캠프",
+        "원격 교육"
+      ]
+    },
+    {
+      "id": "res-korean-open-course-hubs",
+      "type": "강좌/영상",
+      "title": "무료/공개 개발 강좌 허브",
+      "author": "OpenTutorials, edwith, KOCW",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "생활코딩/OpenTutorials, edwith, KOCW의 무료 공개 개발·AI·데이터 강좌 후보를 함께 추적한다.",
+      "url": "https://opentutorials.org/course/1",
+      "tags": [
+        "한국어",
+        "무료 강좌",
+        "공개강좌"
+      ]
+    },
+    {
+      "id": "res-korean-dev-events",
+      "type": "커뮤니티",
+      "title": "국내 개발자 AI 교육/이벤트/커뮤니티 허브",
+      "author": "Wanted, DEVOCEAN, 모두의연구소, OKKY",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "원티드 이벤트, DEVOCEAN, 모두의연구소, OKKY에서 AI/개발/데이터 웨비나, 커뮤니티 학습 이벤트, 바이브 코딩 사례 후보를 추적한다.",
+      "url": "https://www.wanted.co.kr/events",
+      "tags": [
+        "한국어",
+        "이벤트",
+        "웨비나"
+      ]
+    },
+    {
+      "id": "res-korean-ai-newsletter-community-hub",
+      "type": "커뮤니티",
+      "title": "한국어 AI 뉴스레터/커뮤니티 웹진 허브",
+      "author": "GeekNews, 요즘IT, Disquiet, EO Planet, Maily, OKKY, Velog",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "GeekNews의 개발자 링크, 요즘IT AI/개발 매거진과 뉴스레터, Disquiet/EO Planet의 AI 제품·메이커 커뮤니티, Maily의 AI 뉴스레터 검색, OKKY/Velog의 실무 경험담을 웹진형 커뮤니티 섹션 후보로 묶는다.",
+      "url": "https://news.hada.io/",
+      "tags": [
+        "한국어",
+        "뉴스레터",
+        "커뮤니티"
+      ]
+    },
+    {
+      "id": "res-korean-community-ai-writing",
+      "type": "커뮤니티",
+      "title": "한국어 AI 코딩 커뮤니티/개인 블로그 검색",
+      "author": "OKKY, Velog, Brunch",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "OKKY의 AI/기술 글과 Velog, Brunch의 AI 코딩·LLM·생산성 글을 묶어 최신 커뮤니티 경험담과 실무 적용 글 후보를 찾는다.",
+      "url": "https://okky.kr/",
+      "tags": [
+        "한국어",
+        "커뮤니티",
+        "블로그"
+      ]
+    },
+    {
+      "id": "res-modulabs-aihub",
+      "type": "커뮤니티",
+      "title": "모두의연구소 / AI Hub",
+      "author": "모두의연구소, AI Hub",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "AI 학습 모임, 연구 커뮤니티, 데이터셋, 공공 AI 자료를 찾는 국내 커뮤니티·공공 데이터 허브.",
+      "url": "https://modulabs.co.kr",
+      "tags": [
+        "한국어",
+        "커뮤니티",
+        "교육기관"
+      ]
+    },
+    {
+      "id": "res-inflearn-langchain",
+      "type": "강좌/영상",
+      "title": "인프런 LangChain 강좌 검색",
+      "author": "Inflearn",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "LangChain, RAG, LLM 앱 개발 관련 한국어 유료/무료 강좌를 계속 찾는 검색 허브.",
+      "url": "https://www.inflearn.com/search?s=langchain",
+      "tags": [
+        "한국어",
+        "강좌",
+        "LangChain"
+      ]
+    },
+    {
+      "id": "res-inflearn-vibe-coding",
+      "type": "강좌/영상",
+      "title": "인프런 바이브 코딩 강좌 검색",
+      "author": "Inflearn",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "바이브 코딩, AI 코딩 도구, Cursor/Claude Code/Codex류 강좌 후보를 계속 찾는 한국어 강좌 허브.",
+      "url": "https://www.inflearn.com/search?s=%EB%B0%94%EC%9D%B4%EB%B8%8C%20%EC%BD%94%EB%94%A9",
+      "tags": [
+        "한국어",
+        "강좌",
+        "바이브 코딩"
+      ]
+    },
+    {
+      "id": "res-inflearn-ai-coding",
+      "type": "강좌/영상",
+      "title": "인프런 AI 코딩 강좌 검색",
+      "author": "Inflearn",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "AI 코딩, 개발 자동화, 생성형 AI 활용 개발 강좌 후보를 계속 찾는 인프런 검색 허브.",
+      "url": "https://www.inflearn.com/search?s=AI%20%EC%BD%94%EB%94%A9",
+      "tags": [
+        "한국어",
+        "강좌",
+        "AI 코딩"
+      ]
+    },
+    {
+      "id": "res-inflearn-xai",
+      "type": "강좌/영상",
+      "title": "인프런 xAI 강좌 검색",
+      "author": "Inflearn",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "xAI/Grok, API 연동, LLM 실험 과금/코딩 워크플로 강좌 후보를 추적하는 인프런 검색 허브.",
+      "url": "https://www.inflearn.com/search?s=xAI",
+      "tags": [
+        "한국어",
+        "인프런",
+        "xAI"
+      ]
+    },
+    {
+      "id": "res-inflearn-claude-code",
+      "type": "강좌/영상",
+      "title": "인프런 Claude Code 강좌 검색",
+      "author": "Inflearn",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "Claude Code, Claude 기반 코딩 에이전트, AI pair programming 강좌 후보를 추적하는 인프런 검색 링크.",
+      "url": "https://www.inflearn.com/search?s=Claude%20Code",
+      "tags": [
+        "한국어",
+        "Claude Code",
+        "AI 코딩"
+      ]
+    },
+    {
+      "id": "res-inflearn-codex",
+      "type": "강좌/영상",
+      "title": "인프런 Codex 강좌 검색",
+      "author": "Inflearn",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "OpenAI Codex, Codex CLI, GPT 기반 코딩 워크플로 강좌 후보를 추적하는 인프런 검색 링크.",
+      "url": "https://www.inflearn.com/search?s=Codex",
+      "tags": [
+        "한국어",
+        "Codex",
+        "OpenAI"
+      ]
+    },
+    {
+      "id": "res-inflearn-cursor",
+      "type": "강좌/영상",
+      "title": "인프런 Cursor 강좌 검색",
+      "author": "Inflearn",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "Cursor, AI IDE, AI pair programming 강좌 후보를 찾는 인프런 검색 링크.",
+      "url": "https://www.inflearn.com/search?s=Cursor",
+      "tags": [
+        "한국어",
+        "Cursor",
+        "AI IDE"
+      ]
+    },
+    {
+      "id": "res-inflearn-ai-coding-tools",
+      "type": "강좌/영상",
+      "title": "인프런 AI 코딩 도구 강좌 검색 묶음",
+      "author": "Inflearn",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "GitHub Copilot, Cursor, Windsurf, Cline, v0, Lovable 관련 한국어 강좌 후보를 묶어 추적한다.",
+      "url": "https://www.inflearn.com/search?s=GitHub%20Copilot",
+      "tags": [
+        "한국어",
+        "AI IDE",
+        "Copilot"
+      ]
+    },
+    {
+      "id": "res-official-ai-coding-tools",
+      "type": "공식 문서",
+      "title": "AI 코딩 도구 공식 문서 묶음",
+      "author": "Cursor, GitHub, JetBrains, AWS, Sourcegraph, Augment, Tabnine, CodeRabbit, TRAE",
+      "language": "영어",
+      "level": "실무",
+      "summary": "AI IDE, IDE 확장, CLI, PR 리뷰, 클라우드 에이전트 도구의 공식 문서를 한 번에 추적하는 리소스 묶음.",
+      "url": "https://cursor.com/docs",
+      "tags": [
+        "공식 문서",
+        "AI 코딩 도구",
+        "IDE"
+      ]
+    },
+    {
+      "id": "res-gemini-code-assist-ko",
+      "type": "공식 문서",
+      "title": "Gemini Code Assist 한국어 제품/가격 페이지",
+      "author": "Google Code Assist",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "Gemini Code Assist의 한국어 제품 설명, VS Code/JetBrains/Cloud Workstations, Gemini CLI, smart actions, 가격 정보를 확인한다.",
+      "url": "https://codeassist.google/products/business?hl=ko",
+      "tags": [
+        "한국어",
+        "공식 문서",
+        "Gemini Code Assist"
+      ]
+    },
+    {
+      "id": "res-ai-coding-student-benefits",
+      "type": "공식 문서",
+      "title": "AI 코딩 학생/교육 혜택 확인 묶음",
+      "author": "GitHub, Cursor, JetBrains, Google",
+      "language": "영어",
+      "level": "입문",
+      "summary": "Copilot Student, GitHub Education Pack, Cursor Students, JetBrains Student Pack, Gemini 학생 혜택을 한 곳에서 비교한다.",
+      "url": "https://education.github.com/pack",
+      "tags": [
+        "학생 혜택",
+        "이벤트",
+        "교육"
+      ]
+    },
+    {
+      "id": "res-korean-ai-tool-youtube-searches",
+      "type": "강좌/영상",
+      "title": "한국어 AI 코딩 도구 YouTube 검색 묶음",
+      "author": "YouTube",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "Cursor, Copilot, JetBrains Junie, Amazon Q, Augment, Tabnine, CodeRabbit, TRAE, Cline/Roo, v0/Lovable/Bolt 한국어 영상 후보를 계속 찾는 검색 묶음.",
+      "url": "https://www.youtube.com/results?search_query=AI+%EC%BD%94%EB%94%A9+%EB%8F%84%EA%B5%AC+%ED%95%9C%EA%B5%AD%EC%96%B4",
+      "tags": [
+        "한국어",
+        "유튜브",
+        "AI 코딩 도구"
+      ]
+    },
+    {
+      "id": "res-inflearn-expanded-ai-tools",
+      "type": "강좌/영상",
+      "title": "인프런 AI 코딩 도구 세부 검색 묶음",
+      "author": "Inflearn",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "GitHub Copilot, Cursor, JetBrains AI, Amazon Q Developer, CodeRabbit, TRAE, Cline, v0, Lovable 강좌 후보를 세부 검색으로 추적한다.",
+      "url": "https://www.inflearn.com/search?s=AI%20%EC%BD%94%EB%94%A9",
+      "tags": [
+        "한국어",
+        "인프런",
+        "AI IDE"
+      ]
+    },
+    {
+      "id": "res-pr-review-ai-tools",
+      "type": "공식 문서",
+      "title": "AI PR 리뷰 도구 공식 문서",
+      "author": "CodeRabbit, GitHub, Cursor",
+      "language": "영어",
+      "level": "실무",
+      "summary": "CodeRabbit, GitHub Copilot code review, Cursor Bugbot처럼 PR 리뷰와 코드 검토에 특화된 AI 도구를 비교한다.",
+      "url": "https://docs.coderabbit.ai/",
+      "tags": [
+        "PR 리뷰",
+        "CodeRabbit",
+        "Copilot"
+      ]
+    },
+    {
+      "id": "res-cloud-coding-agents",
+      "type": "공식 문서",
+      "title": "클라우드 코딩 에이전트 공식 문서",
+      "author": "Google, Cognition, Replit, Manus",
+      "language": "영어",
+      "level": "실무",
+      "summary": "Jules, Devin, Replit Agent, Manus처럼 로컬 PC 밖에서 repo/task를 실행하는 클라우드 에이전트 문서 묶음.",
+      "url": "https://jules.google/docs",
+      "tags": [
+        "Cloud agent",
+        "Jules",
+        "Devin"
+      ]
+    },
+    {
+      "id": "res-official-agent-cookbooks",
+      "type": "공식 문서",
+      "title": "LLM 앱/에이전트 공식 Cookbook 묶음",
+      "author": "OpenAI, Anthropic, Google Gemini, Vercel",
+      "language": "영어",
+      "level": "실무",
+      "summary": "OpenAI Cookbook, OpenAI Agents SDK, Claude Cookbooks, Gemini Cookbook, Vercel AI SDK를 묶어 tool use, streaming UI, RAG, function calling, agent handoff, tracing 예제를 바로 찾는다.",
+      "url": "https://github.com/openai/openai-cookbook",
+      "tags": [
+        "공식 문서",
+        "Cookbook",
+        "Agents SDK"
+      ]
+    },
+    {
+      "id": "res-agent-frameworks-official",
+      "type": "공식 문서",
+      "title": "에이전트 프레임워크 공식 문서 묶음",
+      "author": "LangChain, LangGraph, LlamaIndex, Pydantic AI, CrewAI, AutoGen, Mastra",
+      "language": "영어",
+      "level": "실무",
+      "summary": "상태ful agent orchestration, RAG, multi-agent, type-safe tool calling, workflow, memory, evals 구현을 비교할 수 있는 공식 프레임워크 문서 모음.",
+      "url": "https://docs.langchain.com/",
+      "tags": [
+        "공식 문서",
+        "Agent framework",
+        "LangGraph"
+      ]
+    },
+    {
+      "id": "res-mcp-local-open-stack",
+      "type": "공식 문서",
+      "title": "MCP/로컬 오픈모델 구현 스택",
+      "author": "Model Context Protocol, Ollama, Hugging Face, Qwen, Mistral",
+      "language": "영어",
+      "level": "실무",
+      "summary": "MCP server/client, 로컬 모델 실행, open-weight agent 학습, Qwen/Mistral 자체 배포, Ollama 모델 허브를 묶어 보안/자체배포와 저비용 실험 경로를 설계한다.",
+      "url": "https://modelcontextprotocol.io/docs",
+      "tags": [
+        "공식 문서",
+        "MCP",
+        "로컬 모델"
+      ]
+    },
+    {
+      "id": "res-agent-observability-evals",
+      "type": "공식 문서",
+      "title": "에이전트 관측성/평가 공식 문서 묶음",
+      "author": "LangSmith, Pydantic AI, LlamaIndex, OpenAI, Anthropic",
+      "language": "영어",
+      "level": "고급",
+      "summary": "LangSmith tracing/evaluation, Pydantic AI evals, LlamaIndex evaluation, OpenAI/Claude cookbook 예제를 연결해 agent 실패 분석과 벤치마크 운영 루프를 만든다.",
+      "url": "https://docs.langchain.com/langsmith/observability",
+      "tags": [
+        "공식 문서",
+        "Observability",
+        "Evaluation"
+      ]
+    },
+    {
+      "id": "res-benchmark-hubs-coding-agent",
+      "type": "공식 문서",
+      "title": "코딩/에이전트 벤치마크 허브",
+      "author": "SWE-bench, SWE-Bench Pro, Dialogue-SWEBench, Claw-SWE-Bench, SWE-Lancer, KernelBench, EVMbench, SWE Context Bench, SWE-Bench Mobile, SWE-MERA, LiveCodeBench, Aider, BigCodeBench, BFCL, Terminal-Bench, OSWorld",
+      "language": "영어",
+      "level": "고급",
+      "summary": "SWE-bench, 장기 기업형 SWE, 대화형 SWE, harness 비교, freelance engineering, GPU kernel, smart contract security, 경험 재사용, 모바일 앱 개발, 동적 평가, LiveCodeBench, Aider Polyglot, BigCodeBench, BFCL, Terminal-Bench, OSWorld, WebArena를 코딩/에이전트 평가 근거로 묶어 추적한다.",
+      "url": "https://www.swebench.com/",
+      "tags": [
+        "Benchmark",
+        "Coding",
+        "Agent"
+      ]
+    },
+    {
+      "id": "res-benchmark-hubs-research-ml",
+      "type": "공식 문서",
+      "title": "리서치/ML 엔지니어링 벤치마크 허브",
+      "author": "PaperBench, MLE-bench, RE-Bench, ScienceAgentBench, SciVisAgentBench, BrowseComp, BrowseComp-V3, HCAST",
+      "language": "영어",
+      "level": "고급",
+      "summary": "AI 논문 재현, Kaggle형 ML engineering, frontier AI R&D, 데이터 기반 scientific discovery, scientific visualization, deep web browsing, multimodal browsing, 사람 소요 시간 기반 autonomy 평가를 묶어 리서치/ML 작업 추천 근거로 추적한다.",
+      "url": "https://arxiv.org/abs/2504.01848",
+      "tags": [
+        "Benchmark",
+        "Research",
+        "ML engineering"
+      ]
+    },
+    {
+      "id": "res-benchmark-hubs-security",
+      "type": "공식 문서",
+      "title": "보안/스마트컨트랙트 에이전트 벤치마크 허브",
+      "author": "EVMbench, Re-EVMbench, Cybench, SecureWebArena",
+      "language": "영어",
+      "level": "고급",
+      "summary": "스마트컨트랙트 취약점 탐지·패치·exploit, CTF 기반 cybersecurity agent, LVLM web agent 보안 공격/실패 분석, scaffold/오염 재평가 자료를 보안/자체배포 추천 근거로 추적한다.",
+      "url": "https://arxiv.org/abs/2603.04915",
+      "tags": [
+        "Benchmark",
+        "Security",
+        "Cybersecurity"
+      ]
+    },
+    {
+      "id": "res-benchmark-hubs-web-os-agents",
+      "type": "공식 문서",
+      "title": "웹/OS 에이전트 벤치마크 허브",
+      "author": "GAIA, Mind2Web, WebArena, OSWorld, Windows Agent Arena, BrowseComp, SecureWebArena",
+      "language": "영어",
+      "level": "고급",
+      "summary": "브라우징, 실제 웹사이트 조작, 데스크톱/Windows OS 작업, 스크린 이해, tool-use, 웹 보안 공격 내성을 함께 비교해 AI 에이전트와 바이브 코딩 도구의 자동화 범위를 판단한다.",
+      "url": "https://arxiv.org/abs/2311.12983",
+      "tags": [
+        "Benchmark",
+        "Web agent",
+        "OS agent"
+      ]
+    },
+    {
+      "id": "res-benchmark-hubs-work-office",
+      "type": "공식 문서",
+      "title": "업무/PPT/스프레드시트 벤치마크 허브",
+      "author": "OpenAI GDPval, SpreadsheetBench, BlueFin, OfficeBench, τ²-Bench",
+      "language": "영어",
+      "level": "고급",
+      "summary": "PPT, 문서, 다이어그램, 스프레드시트, 금융 workbook, 다중 office app 자동화, 고객지원 대화처럼 실제 업무 산출물을 평가하는 벤치마크를 묶어 추적한다.",
+      "url": "https://openai.com/index/gdpval/",
+      "tags": [
+        "Benchmark",
+        "PPT",
+        "문서"
+      ]
+    },
+    {
+      "id": "res-benchmark-hubs-multimodal-docs",
+      "type": "공식 문서",
+      "title": "멀티모달/PPT/문서 벤치마크 허브",
+      "author": "MMMU, DocVQA, ChartQA",
+      "language": "영어",
+      "level": "고급",
+      "summary": "PPT, 리포트, 차트, 문서 이미지, 인포그래픽, 디자인/기술 도면 이해력을 평가할 때 MMMU, DocVQA, ChartQA를 보조 지표로 연결한다.",
+      "url": "https://mmmu-benchmark.github.io/",
+      "tags": [
+        "Benchmark",
+        "PPT",
+        "문서 이해"
+      ]
+    },
+    {
+      "id": "res-benchmark-hubs-overall",
+      "type": "공식 문서",
+      "title": "종합 모델 벤치마크 허브",
+      "author": "Artificial Analysis, LMArena, Scale Labs, Stanford HELM",
+      "language": "영어",
+      "level": "실무",
+      "summary": "Artificial Analysis, LMArena, Scale Labs, Stanford HELM을 종합 성능·가격·선호도·안전성·효율 평가 근거로 함께 추적한다.",
+      "url": "https://artificialanalysis.ai/leaderboards/models",
+      "tags": [
+        "Benchmark",
+        "리더보드",
+        "가격"
+      ]
+    },
+    {
+      "id": "res-benchmark-freshness-quality-audit",
+      "type": "공식 문서",
+      "title": "벤치마크 신뢰도/오염/테스트 품질 감시 허브",
+      "author": "SWE-bench Live, SWE-Bench Illusion, UTBoost, Automated Benchmark Auditing",
+      "language": "영어",
+      "level": "고급",
+      "summary": "SWE-bench류 점수가 과대평가될 수 있는 데이터 오염, repository memory, test insufficiency, ambiguous grading 문제를 추적한다. 리더보드 순위만 보지 않고 fresh task, unit test 보강, audit 결과를 같이 보는 용도.",
+      "url": "https://arxiv.org/abs/2505.23419",
+      "tags": [
+        "Benchmark",
+        "SWE-bench",
+        "오염"
+      ]
+    },
+    {
+      "id": "res-code-generation-benchmark-hub",
+      "type": "공식 문서",
+      "title": "코드 생성/바이브 코딩 벤치마크 허브",
+      "author": "SWE-Bench++, SWE-Skills-Bench, SWE-Explore, CodeElo, DS-1000, MultiPL-E, LiveCodeBench, Aider",
+      "language": "영어",
+      "level": "고급",
+      "summary": "repo issue 해결, skill-augmented coding agent, repo 탐색, competition-level algorithm, data science code, 다국어 코드 생성, 실전 편집 비용/속도까지 묶어 바이브 코딩 추천 근거로 추적한다.",
+      "url": "https://arxiv.org/abs/2512.17419",
+      "tags": [
+        "Benchmark",
+        "Coding",
+        "바이브 코딩"
+      ]
+    },
+    {
+      "id": "res-mobile-mcp-computer-use-benchmark-hub",
+      "type": "공식 문서",
+      "title": "모바일/MCP/computer-use 에이전트 벤치마크 허브",
+      "author": "AppWorld, WorkArena++, VisualWebArena, AndroidWorld, iOSWorld, MobileWorld, MCPWorld, MCP-Bench, LiveMCPBench",
+      "language": "영어",
+      "level": "고급",
+      "summary": "API 앱 조작, 엔터프라이즈 웹 업무, 시각 웹 조작, Android/iOS 앱 조작, MCP tool routing, 개인화 도구 사용을 함께 추적해 코딩 외 자동화 에이전트 선택 근거로 쓴다.",
+      "url": "https://arxiv.org/abs/2407.18901",
+      "tags": [
+        "Benchmark",
+        "MCP",
+        "Computer use"
+      ]
+    },
+    {
+      "id": "res-ppt-slide-benchmark-hub",
+      "type": "공식 문서",
+      "title": "PPT/슬라이드/업무 산출물 벤치마크 허브",
+      "author": "PPTC, PPTC-R, PresentBench, SlidesGen-Bench, GDPval, APEX-Agents",
+      "language": "영어",
+      "level": "고급",
+      "summary": "PowerPoint 파일 생성·편집, instruction robustness, slide deck checklist 평가, content/aesthetics/editability, white-collar cross-application 업무 산출물을 PPT/문서 제작 추천 근거로 묶는다.",
+      "url": "https://arxiv.org/abs/2311.01767",
+      "tags": [
+        "Benchmark",
+        "PPT",
+        "슬라이드"
+      ]
+    },
+    {
+      "id": "res-ai-service-status-release-hub",
+      "type": "공식 문서",
+      "title": "AI 서비스 상태/릴리스 감시 허브",
+      "author": "OpenAI, Anthropic, Google, GitHub, Vercel, Cursor, Hugging Face",
+      "language": "영어",
+      "level": "실무",
+      "summary": "API 장애, Codex/Claude Code/GitHub Copilot/Cursor Agent 가용성, Vercel AI Gateway, Google Cloud/Gemini 장애, Hugging Face Hub/Inference API 상태와 공식 release note를 묶어 운영 fallback 판단에 쓴다.",
+      "url": "https://status.openai.com/",
+      "tags": [
+        "Status",
+        "장애",
+        "릴리스 노트"
+      ]
+    },
+    {
+      "id": "res-cost-optimization-official-hub",
+      "type": "공식 문서",
+      "title": "공식 비용 최적화/프로모션 감시 허브",
+      "author": "OpenAI, Google, DeepSeek, Qwen, Mistral, Cursor, GitHub",
+      "language": "영어",
+      "level": "실무",
+      "summary": "OpenAI Batch/Flex/cache, Gemini pricing/free tier/batch/cache, DeepSeek cache hit, Qwen 무료 quota와 Batch 반값, Mistral pricing, Cursor/Copilot 학생·플랜 혜택을 이벤트 비용 비교와 분리해 추적한다.",
+      "url": "https://developers.openai.com/api/docs/guides/cost-optimization",
+      "tags": [
+        "비용 최적화",
+        "Batch",
+        "Flex"
+      ]
+    },
+    {
+      "id": "res-ai-engineering-book",
+      "type": "도서",
+      "title": "AI Engineering",
+      "author": "Chip Huyen",
+      "language": "영어",
+      "level": "고급",
+      "summary": "LLM 애플리케이션을 제품 수준으로 만들 때 필요한 평가, 데이터, 운영, 시스템 설계를 폭넓게 다룬다.",
+      "url": "https://www.oreilly.com/library/view/ai-engineering/9781098166298/",
+      "tags": [
+        "AI Engineering",
+        "Evaluation",
+        "Production"
+      ]
+    },
+    {
+      "id": "res-hands-on-llm-book",
+      "type": "도서",
+      "title": "Hands-On Large Language Models",
+      "author": "Jay Alammar, Maarten Grootendorst",
+      "language": "영어",
+      "level": "입문",
+      "summary": "임베딩, 검색, RAG, 파인튜닝 등 LLM 실무 기초를 시각적으로 이해하기 좋다.",
+      "url": "https://www.oreilly.com/library/view/hands-on-large-language/9781098150952/",
+      "tags": [
+        "LLM",
+        "Embedding",
+        "RAG"
+      ]
+    },
+    {
+      "id": "res-build-llm-scratch-book",
+      "type": "도서",
+      "title": "Build a Large Language Model (from Scratch)",
+      "author": "Sebastian Raschka",
+      "language": "영어",
+      "level": "고급",
+      "summary": "PyTorch를 사용해 GPT 스타일의 거대 언어 모델을 처음부터 직접 설계하고 사전 학습 및 파인튜닝까지 구현해 보는 Hands-on 가이드.",
+      "url": "https://www.manning.com/books/build-a-large-language-model-from-scratch",
+      "tags": [
+        "LLM",
+        "GPT",
+        "PyTorch"
+      ]
+    },
+    {
+      "id": "res-langchain-rag-wiki-book",
+      "type": "도서",
+      "title": "랭체인과 RAG로 배우는 실전 LLM 애플리케이션 개발",
+      "author": "양기빈, 조국일, 장지선, 조수현",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "RAG 시스템 구축, 리트리버/리랭커 최적화, 멀티모달 처리 및 GraphRAG 실무 아키텍처 구현을 수록한 종합 도서.",
+      "url": "https://www.yes24.com/Product/Goods/139360155",
+      "tags": [
+        "한국어",
+        "LangChain",
+        "RAG"
+      ]
+    },
+    {
+      "id": "res-learning-langchain-book",
+      "type": "도서",
+      "title": "러닝 랭체인",
+      "author": "메이오 오신, 누노 캄포스 저 / 강민혁 역",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "랭체인과 랭그래프의 기초부터 에이전틱 RAG, MCP(Model Context Protocol) 연동까지 LLM 개발 라이프사이클을 안내하는 실무 도서.",
+      "url": "https://www.yes24.com/Product/Goods/146327472",
+      "tags": [
+        "한국어",
+        "LangChain",
+        "LangGraph"
+      ]
+    },
+    {
+      "id": "res-ai-agent-jpub-book",
+      "type": "도서",
+      "title": "혼자서도 척척 해내는 AI 에이전트 만들기 with 랭체인 & 랭그래프",
+      "author": "강병진",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "다양한 에이전틱 디자인 패턴과 랭그래프를 이용한 복습 루프, Ollama 및 로컬 LLM 연동, 실무 AI 에이전트 설계 및 구축 실습.",
+      "url": "https://www.yes24.com/Product/Goods/144670233",
+      "tags": [
+        "한국어",
+        "AI 에이전트",
+        "LangGraph"
+      ]
+    },
+    {
+      "id": "res-karpathy-intro-llm",
+      "type": "강좌/영상",
+      "title": "Intro to Large Language Models",
+      "author": "Andrej Karpathy",
+      "language": "영어",
+      "level": "입문",
+      "summary": "거대 언어 모델(LLM)의 개념, 작동 방식, 학습 단계(Pretraining/SFT/RLHF)와 미래 트렌드를 대중적으로 명쾌하게 소개하는 1시간 핵심 특강.",
+      "url": "https://www.youtube.com/watch?v=zjkBMFhNj_g",
+      "tags": [
+        "Intro",
+        "LLM",
+        "Pretraining"
+      ]
+    },
+    {
+      "id": "res-karpathy-build-gpt",
+      "type": "강좌/영상",
+      "title": "Let's build GPT: from scratch, in code, spelled out.",
+      "author": "Andrej Karpathy",
+      "language": "영어",
+      "level": "고급",
+      "summary": "PyTorch를 사용해 GPT의 구성 요소인 Attention, Transformer block을 백지 상태에서 하나하나 구현하고 가벼운 셰익스피어 데이터로 직접 학습시키는 강의.",
+      "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY",
+      "tags": [
+        "GPT",
+        "Transformer",
+        "PyTorch"
+      ]
+    },
+    {
+      "id": "res-kamradt-langchain-cookbook",
+      "type": "강좌/영상",
+      "title": "The LangChain Cookbook - Beginner Guide To 7 Essential Concepts",
+      "author": "Greg Kamradt",
+      "language": "영어",
+      "level": "입문",
+      "summary": "LangChain의 7가지 필수 컴포넌트(Models, Prompts, Indexes, Memory, Chains, Agents 등)를 코드 예제와 함께 설명하는 최고의 입문 영상.",
+      "url": "https://www.youtube.com/watch?v=2xxziIWmaSA",
+      "tags": [
+        "LangChain",
+        "Cookbook",
+        "Intro"
+      ]
+    },
+    {
+      "id": "res-udemy-ai-coding-agents",
+      "type": "강좌/영상",
+      "title": "Udemy AI Coding Agents 강좌 검색",
+      "author": "Udemy",
+      "language": "영어",
+      "level": "입문",
+      "summary": "AI coding agents, Claude Code, Cursor, agentic coding 관련 해외 강좌 후보를 계속 찾는 검색 허브.",
+      "url": "https://www.udemy.com/courses/search/?q=ai%20coding%20agents",
+      "tags": [
+        "English",
+        "Course",
+        "AI Coding Agents"
+      ]
+    },
+    {
+      "id": "res-coursera-ai-coding-agents",
+      "type": "강좌/영상",
+      "title": "Coursera AI Coding Agents 강좌 검색",
+      "author": "Coursera",
+      "language": "영어",
+      "level": "입문",
+      "summary": "AI coding agents, software engineering with AI, 개발 생산성 관련 해외 강좌 후보를 찾는 검색 허브.",
+      "url": "https://www.coursera.org/search?query=ai%20coding%20agents",
+      "tags": [
+        "English",
+        "Course",
+        "Software Engineering"
+      ]
+    },
+    {
+      "id": "res-deeplearning-ai-courses",
+      "type": "강좌/영상",
+      "title": "DeepLearning.AI Short Courses",
+      "author": "DeepLearning.AI",
+      "language": "영어",
+      "level": "실무",
+      "summary": "프롬프트, 에이전트, LLM 앱 개발 단기 강좌를 주제별로 추적하는 해외 강좌 허브.",
+      "url": "https://www.deeplearning.ai/short-courses/",
+      "tags": [
+        "English",
+        "Short Course",
+        "Agents"
+      ]
+    },
+    {
+      "id": "res-oreilly-ai-coding-books",
+      "type": "도서",
+      "title": "O'Reilly AI Coding Agents 도서 검색",
+      "author": "O'Reilly",
+      "language": "영어",
+      "level": "실무",
+      "summary": "AI coding agents, agentic software development, LLM application engineering 관련 해외 도서 후보를 찾는 O'Reilly 검색 허브.",
+      "url": "https://www.oreilly.com/search/?q=AI%20coding%20agents&type=book",
+      "tags": [
+        "English",
+        "Books",
+        "AI Coding Agents"
+      ]
+    },
+    {
+      "id": "res-manning-llm-agent-books",
+      "type": "도서",
+      "title": "Manning LLM Agents 도서 검색",
+      "author": "Manning",
+      "language": "영어",
+      "level": "실무",
+      "summary": "LLM agents, AI engineering, agentic application development 관련 해외 도서 후보를 찾는 Manning 검색 허브.",
+      "url": "https://www.manning.com/search?q=LLM%20agents",
+      "tags": [
+        "English",
+        "Books",
+        "LLM Agents"
+      ]
+    },
+    {
+      "id": "res-yes24-llm-books",
+      "type": "도서",
+      "title": "YES24 LLM 도서 검색",
+      "author": "YES24",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "한국어 LLM, 생성형 AI, 프롬프트 엔지니어링, RAG 도서 후보를 계속 찾는 도서 검색 허브.",
+      "url": "https://www.yes24.com/Product/Search?domain=BOOK&query=LLM",
+      "tags": [
+        "한국어",
+        "도서",
+        "LLM"
+      ]
+    },
+    {
+      "id": "res-yes24-langchain-books",
+      "type": "도서",
+      "title": "YES24 LangChain 도서 검색",
+      "author": "YES24",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "LangChain, RAG, LLM 앱 개발 실무 도서를 별도로 찾는 한국어 도서 검색 링크.",
+      "url": "https://www.yes24.com/Product/Search?domain=BOOK&query=LangChain",
+      "tags": [
+        "한국어",
+        "도서",
+        "LangChain"
+      ]
+    },
+    {
+      "id": "res-yes24-vibe-coding-books",
+      "type": "도서",
+      "title": "YES24 바이브 코딩 도서 검색",
+      "author": "YES24",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "바이브 코딩, AI 코딩, 코딩 자동화 관련 한국어 도서 후보를 계속 찾는 YES24 검색 허브.",
+      "url": "https://www.yes24.com/Product/Search?domain=BOOK&query=%EB%B0%94%EC%9D%B4%EB%B8%8C%20%EC%BD%94%EB%94%A9",
+      "tags": [
+        "한국어",
+        "도서",
+        "바이브 코딩"
+      ]
+    },
+    {
+      "id": "res-aladin-llm-books",
+      "type": "도서",
+      "title": "알라딘 LLM 도서 검색",
+      "author": "Aladin",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "LLM, 생성형 AI, 프롬프트 엔지니어링, AI 앱 개발 도서 후보를 찾는 알라딘 검색 허브.",
+      "url": "https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=LLM",
+      "tags": [
+        "한국어",
+        "도서",
+        "LLM"
+      ]
+    },
+    {
+      "id": "res-kyobo-llm-books",
+      "type": "도서",
+      "title": "교보문고 LLM 도서 검색",
+      "author": "Kyobo Book Centre",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "LLM과 생성형 AI 관련 국내 도서 후보를 찾는 교보문고 검색 허브.",
+      "url": "https://search.kyobobook.co.kr/search?keyword=LLM&target=total&gbCode=TOT",
+      "tags": [
+        "한국어",
+        "도서",
+        "LLM"
+      ]
+    },
+    {
+      "id": "res-gilbut-llm-books",
+      "type": "도서",
+      "title": "길벗 LLM 도서 검색",
+      "author": "Gilbut",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "길벗 출판사의 LLM, AI 개발, 데이터/자동화 관련 도서 후보를 찾는 검색 링크.",
+      "url": "https://www.gilbut.co.kr/search?keyword=LLM",
+      "tags": [
+        "한국어",
+        "도서",
+        "LLM"
+      ]
+    },
+    {
+      "id": "res-wikibook-llm-books",
+      "type": "도서",
+      "title": "위키북스 LLM 도서 검색",
+      "author": "Wikibook",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "위키북스의 LLM, 생성형 AI, 개발 실무 도서 후보를 찾는 검색 링크.",
+      "url": "https://wikibook.co.kr/?s=LLM",
+      "tags": [
+        "한국어",
+        "도서",
+        "LLM"
+      ]
+    },
+    {
+      "id": "res-korean-publisher-llm-books",
+      "type": "도서",
+      "title": "국내 출판사 LLM/AI 신간 검색",
+      "author": "Hanbit, JPub, Acorn Publishing",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "한빛미디어, 제이펍, 에이콘출판사의 LLM, 생성형 AI, 데이터/개발 실무 신간 후보를 계속 찾는 검색 허브.",
+      "url": "https://www.hanbit.co.kr/search/search_list.html?keyword=LLM",
+      "tags": [
+        "한국어",
+        "도서",
+        "신간"
+      ]
+    },
+    {
+      "id": "res-korean-bookstore-publisher-matrix",
+      "type": "도서",
+      "title": "국내 서점/출판사 LLM·바이브 코딩 도서 매트릭스",
+      "author": "YES24, 알라딘, 교보문고, 길벗, 위키북스, 한빛미디어, 제이펍, 에이콘출판사, WikiDocs",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "YES24, 알라딘, 교보문고 같은 서점 검색과 길벗, 위키북스, 한빛미디어, 제이펍, 에이콘출판사 출판사 검색을 함께 비교한다. LLM, 생성형 AI, LangChain, RAG, 프롬프트 엔지니어링, AI 코딩, 바이브 코딩 신간 도서와 WikiDocs 무료 전자책 후보를 찾는 한국어 도서 허브.",
+      "url": "https://www.yes24.com/Product/Search?domain=BOOK&query=LLM",
+      "tags": [
+        "한국어",
+        "도서",
+        "신간"
+      ]
+    },
+    {
+      "id": "res-packt-llm-agent-books",
+      "type": "도서",
+      "title": "Packt LLM Agent 도서 검색",
+      "author": "Packt",
+      "language": "영어",
+      "level": "실무",
+      "summary": "LLM agents, AI coding, LangChain/LangGraph, agentic development 관련 해외 실무 도서 후보를 찾는 검색 허브.",
+      "url": "https://www.packtpub.com/search?query=LLM%20agents",
+      "tags": [
+        "English",
+        "Books",
+        "LLM Agents"
+      ]
+    },
+    {
+      "id": "res-wikidocs-ai",
+      "type": "커뮤니티",
+      "title": "WikiDocs AI/개발 전자책",
+      "author": "WikiDocs",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "한국어 무료 전자책과 튜토리얼을 검색해 Python, 데이터, AI 기초 학습 경로를 찾는 커뮤니티 문서 허브.",
+      "url": "https://wikidocs.net/",
+      "tags": [
+        "한국어",
+        "무료 문서",
+        "전자책"
+      ]
+    },
+    {
+      "id": "res-prompt-engineering-book",
+      "type": "도서",
+      "title": "Prompt Engineering for Generative AI",
+      "author": "James Phoenix, Mike Taylor",
+      "language": "영어",
+      "level": "실무",
+      "summary": "성공적인 생성형 AI 프롬프트 설계 기법과 다양한 모델들의 입출력 최적화 기법을 체계적으로 가이드한다.",
+      "url": "https://www.oreilly.com/library/view/prompt-engineering-for/9781098153434/",
+      "tags": [
+        "Prompt Engineering",
+        "GenAI",
+        "O'Reilly"
+      ]
+    },
+    {
+      "id": "res-developing-apps-gpt4-book",
+      "type": "도서",
+      "title": "Developing Apps with GPT-4 and ChatGPT",
+      "author": "Olivier Caelen, Marie-Alice Blete",
+      "language": "영어",
+      "level": "실무",
+      "summary": "GPT-4 및 ChatGPT API를 연동하여 지능형 웹/앱 서비스를 빌드하고 배포하기 위한 아키텍처 및 구현 가이드.",
+      "url": "https://www.oreilly.com/library/view/developing-apps-with/9781098152482/",
+      "tags": [
+        "GPT-4",
+        "ChatGPT",
+        "API"
+      ]
+    },
+    {
+      "id": "res-nlp-transformers-book",
+      "type": "도서",
+      "title": "Natural Language Processing with Transformers",
+      "author": "Lewis Tunstall, Leandro von Werra, Thomas Wolf",
+      "language": "영어",
+      "level": "고급",
+      "summary": "Hugging Face 허브와 트랜스포머 라이브러리를 활용하여 분류, 생성, 질문 응답 등 다양한 NLP 모델을 구축하고 학습하는 바이블.",
+      "url": "https://www.oreilly.com/library/view/natural-language-processing/9781098136796/",
+      "tags": [
+        "NLP",
+        "Transformers",
+        "Hugging Face"
+      ]
+    },
+    {
+      "id": "res-designing-ml-systems-book",
+      "type": "도서",
+      "title": "Designing Machine Learning Systems",
+      "author": "Chip Huyen",
+      "language": "영어",
+      "level": "고급",
+      "summary": "실시간 피드백 루프, 데이터 파이프라인, 모니터링 및 서빙 인프라까지 프로덕션 수준의 머신러닝 시스템 설계 원칙.",
+      "url": "https://www.oreilly.com/library/view/designing-machine-learning/9781098107963/",
+      "tags": [
+        "ML Systems",
+        "MLOps",
+        "System Design"
+      ]
+    },
+    {
+      "id": "res-langchain-llm-acorn-book",
+      "type": "도서",
+      "title": "LangChain으로 구현하는 LLM: 파이썬, ChatGPT로 LLM 애플리케이션 만들기",
+      "author": "Ben Auffarth 저 / 이병욱 역",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "생성형 AI의 원리부터 LangChain 프레임워크를 활용한 텍스트, 이미지, 비디오 LLM 서비스 개발 및 실전에 배포하는 가이드.",
+      "url": "https://www.yes24.com/Product/Goods/125633800",
+      "tags": [
+        "한국어",
+        "LangChain",
+        "LLM Apps"
+      ]
+    },
+    {
+      "id": "res-generative-deep-learning-book",
+      "type": "도서",
+      "title": "Generative Deep Learning",
+      "author": "David Foster",
+      "language": "영어",
+      "level": "고급",
+      "summary": "GAN, VAE, Diffusion, GPT-4, MuseNet 등 딥러닝 생성 모델의 이론부터 TensorFlow, Keras 실전 아키텍처 구현.",
+      "url": "https://www.oreilly.com/library/view/generative-deep-learning/9781098134181/",
+      "tags": [
+        "Generative AI",
+        "Diffusion",
+        "Deep Learning"
+      ]
+    },
+    {
+      "id": "res-what-is-chatgpt-book",
+      "type": "도서",
+      "title": "What Is ChatGPT Doing... and Why Does It Work?",
+      "author": "Stephen Wolfram",
+      "language": "영어",
+      "level": "입문",
+      "summary": "스티븐 울프람이 직접 쓴 대중 교양서로, 뉴럴 네트워크의 원리부터 ChatGPT가 문맥을 생성하는 알고리즘을 직관적으로 풀어낸 도서.",
+      "url": "https://www.amazon.com/What-ChatGPT-Doing-Why-Works/dp/1579550819",
+      "tags": [
+        "ChatGPT",
+        "AI 교양",
+        "Wolfram"
+      ]
+    },
+    {
+      "id": "res-3b1b-what-is-gpt",
+      "type": "강좌/영상",
+      "title": "But what is a GPT? Visual intro to transformers",
+      "author": "3Blue1Brown",
+      "language": "영어",
+      "level": "입문",
+      "summary": "GPT 모델이 단어를 어떻게 이해하고 생성하는지 트랜스포머 아키텍처의 직관적 기하학적 원리를 시각화하여 소개한다.",
+      "url": "https://www.youtube.com/watch?v=wjZofJX0v4M",
+      "tags": [
+        "Transformers",
+        "GPT",
+        "Visual Explanation"
+      ]
+    },
+    {
+      "id": "res-3b1b-attention",
+      "type": "강좌/영상",
+      "title": "Attention in transformers, visually explained",
+      "author": "3Blue1Brown",
+      "language": "영어",
+      "level": "입문",
+      "summary": "트랜스포머의 핵심 엔진인 셀프 어텐션(Self-Attention)의 동작 방식을 행렬 계산 없이 기하학적으로 완벽히 이해시키는 시각 가이드.",
+      "url": "https://www.youtube.com/watch?v=eMlx5fFNoYc",
+      "tags": [
+        "Attention",
+        "Transformers",
+        "Visual Intro"
+      ]
+    },
+    {
+      "id": "res-fireship-vibe-coding",
+      "type": "강좌/영상",
+      "title": "The 'vibe coding' mind virus explained…",
+      "author": "Fireship",
+      "language": "영어",
+      "level": "입문",
+      "summary": "코드 한 줄 작성하지 않고 자연어로 앱을 개발하는 새로운 트렌드인 \"바이브 코딩\"과 AI 에이전트 시대의 명과 암.",
+      "url": "https://www.youtube.com/watch?v=Tw18-4U7mts",
+      "tags": [
+        "Vibe Coding",
+        "AI Coding",
+        "Agents"
+      ]
+    },
+    {
+      "id": "res-matt-wolfe-best-tools",
+      "type": "강좌/영상",
+      "title": "The BEST AI Coding Tools",
+      "author": "Matt Wolfe",
+      "language": "영어",
+      "level": "입문",
+      "summary": "Cursor, Claude Code, Windsurf 등 최신 AI 코딩 도구의 활용도와 생산성을 종합 분석하고 최선의 툴킷을 선정하는 추천 영상.",
+      "url": "https://www.youtube.com/watch?v=FjS6p7t_Y-g",
+      "tags": [
+        "AI Tools",
+        "Coding Assistant",
+        "Comparison"
+      ]
+    },
+    {
+      "id": "res-sam-witteveen-langchain",
+      "type": "강좌/영상",
+      "title": "LangChain Basics Tutorial #1 - LLMs & PromptTemplates with Colab",
+      "author": "Sam Witteveen",
+      "language": "영어",
+      "level": "입문",
+      "summary": "코랩(Colab) 환경에서 LangChain의 핵심 요소인 LLM 호출, PromptTemplate 정의, Chains 구성의 첫걸음을 떼는 강의.",
+      "url": "https://www.youtube.com/watch?v=vH34x0h7u-c",
+      "tags": [
+        "LangChain",
+        "Basics",
+        "Tutorial"
+      ]
+    },
+    {
+      "id": "res-james-briggs-rag",
+      "type": "강좌/영상",
+      "title": "Chatbots with RAG: LangChain Full Walkthrough",
+      "author": "James Briggs",
+      "language": "영어",
+      "level": "실무",
+      "summary": "LangChain과 Pinecone 벡터 DB를 결합하여 자신만의 문서를 학습한 답변 챗봇을 설계하는 RAG 시스템 풀 가이드.",
+      "url": "https://www.youtube.com/watch?v=L4P-c7j2pW8",
+      "tags": [
+        "RAG",
+        "VectorDB",
+        "LangChain"
+      ]
+    },
+    {
+      "id": "res-ai-jason-rag",
+      "type": "강좌/영상",
+      "title": "How To Build RAG Solution In 5 Lines Of Code With LlamaIndex",
+      "author": "AI Jason",
+      "language": "영어",
+      "level": "입문",
+      "summary": "초보자도 5줄의 코드만으로 텍스트 파일이나 문서를 질의응답할 수 있게 만드는 LlamaIndex 기반 초단편 RAG 구현 가이드.",
+      "url": "https://www.youtube.com/watch?v=TRjq7t2Ms5I",
+      "tags": [
+        "RAG",
+        "LlamaIndex",
+        "Rapid Dev"
+      ]
+    },
+    {
+      "id": "res-dave-ebbelaar-rag",
+      "type": "강좌/영상",
+      "title": "Building Agentic RAG From Scratch in Pure Python",
+      "author": "Dave Ebbelaar",
+      "language": "영어",
+      "level": "실무",
+      "summary": "외부 라이브러리 사용을 최소화하고, 순수 파이썬(Pure Python)과 Pydantic AI로 에이전트 기반 RAG 아키텍처를 밑바닥부터 구축하는 영상.",
+      "url": "https://www.youtube.com/watch?v=RxwjoegpI98",
+      "tags": [
+        "Agentic RAG",
+        "Python",
+        "Scratch"
+      ]
+    },
+    {
+      "id": "res-teddynote-langgraph",
+      "type": "강좌/영상",
+      "title": "#LangGraph 개념 완전 정복 몰아보기(3시간)",
+      "author": "테디노트 (TeddyNote)",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "순환형 AI 워크플로를 구축하는 LangGraph의 노드, 엣지, 상태 관리 기법과 실무 에이전트 설계 기법을 3시간으로 압축 정리한 강의.",
+      "url": "https://www.youtube.com/watch?v=Kk61o16vR7Q",
+      "tags": [
+        "한국어",
+        "LangGraph",
+        "AI Agent"
+      ]
+    },
+    {
+      "id": "res-huggingface-nlp-course",
+      "type": "강좌/영상",
+      "title": "Hugging Face Transformers NLP Course",
+      "author": "Hugging Face",
+      "language": "영어",
+      "level": "실무",
+      "summary": "Hugging Face 공식 NLP 코스 영상으로, 파이프라인 활용, 모델 파인튜닝, 토크나이저 설정 및 데이터셋 처리까지 배우는 시리즈.",
+      "url": "https://www.youtube.com/watch?v=uT3sbzycL_k",
+      "tags": [
+        "NLP",
+        "Hugging Face",
+        "Transformers"
+      ]
+    },
+    {
+      "id": "res-nomadcoders-ai-tiktok",
+      "type": "강좌/영상",
+      "title": "AI로 틱톡 자동화했더니 7일 만에 100만뷰",
+      "author": "노마드코더 (Nomad Coders)",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "생성형 AI와 영상 편집 자동화 도구를 연결하여 실제로 7일 만에 조회수 100만을 만들어낸 실제 프로젝트 리뷰와 인사이트.",
+      "url": "https://www.youtube.com/watch?v=kYJzK3Y085s",
+      "tags": [
+        "한국어",
+        "AI 자동화",
+        "콘텐츠 제작"
+      ]
+    },
+    {
+      "id": "res-opentutorials-tensorflowjs",
+      "type": "강좌/영상",
+      "title": "Tensorflow.js 입문 강의",
+      "author": "생활코딩 (egoing)",
+      "language": "한국어",
+      "level": "입문",
+      "summary": "웹브라우저에서 직접 인공지능 모델을 구동하고 훈련시키는 Tensorflow.js의 핵심 개념을 기초부터 쉽게 풀어주는 한국어 강의.",
+      "url": "https://www.youtube.com/playlist?list=PLU9-uwewPMe2-vtJAgWB6SNhHcTjJDgEO",
+      "tags": [
+        "한국어",
+        "Tensorflow.js",
+        "Web AI"
+      ]
+    },
+    {
+      "id": "res-bbanghyong-realtime-api",
+      "type": "강좌/영상",
+      "title": "빵형이 AI와 말하면서 일하는 방법 - Realtime API o1 어시스턴트",
+      "author": "빵형의 개발도상국",
+      "language": "한국어",
+      "level": "실무",
+      "summary": "OpenAI Realtime API와 o1 모델을 결합해 실시간 음성 대화 기반의 AI 비서와 페어 프로그래밍을 구축하는 실전 튜토리얼.",
+      "url": "https://www.youtube.com/watch?v=FRKtrqu5Pek",
+      "tags": [
+        "한국어",
+        "Realtime API",
+        "Voice AI"
+      ]
+    }
+  ],
+  "tools": [
+    {
+      "id": "tool-cursor",
+      "toolName": "Cursor",
+      "vendor": "Anysphere",
+      "category": "AI IDE",
+      "pricing": "Hobby 무료, Pro/Teams/Enterprise. Pro는 월 $20 기준이며 학생 Pro 혜택은 별도 조건 확인.",
+      "eventSignal": "학생 1년 Pro 무료, Cloud agents/Bugbot/CLI 변경, Pro 포함 사용량과 on-demand usage 변동 감시.",
+      "bestFor": [
+        "기존 저장소를 열어 바로 수정하는 바이브 코딩",
+        "프론트엔드 화면 보정과 테스트 재실행",
+        "팀 rules, MCP, Bugbot 리뷰까지 포함한 PR 루프"
+      ],
+      "integrations": [
+        "VS Code 계열 IDE",
+        "Agent, Tab, Rules, MCP, Skills, Hooks",
+        "Cloud agents, Bugbot, Cursor CLI"
+      ],
+      "tags": [
+        "Cursor",
+        "AI IDE",
+        "Agent",
+        "Bugbot"
+      ]
+    },
+    {
+      "id": "tool-github-copilot",
+      "toolName": "GitHub Copilot",
+      "vendor": "GitHub",
+      "category": "IDE 확장",
+      "pricing": "Free, Student, Pro $10, Pro+ $39, Max $100, Business $19/seat, Enterprise $39/seat/month 기준.",
+      "eventSignal": "GitHub Education Copilot 신규 sign-up 일시 중단, Business self-serve pause, AI Credits/모델 제공 범위 변경 감시.",
+      "bestFor": [
+        "VS Code/JetBrains/Visual Studio 안의 보편적 코드 보조",
+        "GitHub PR, issue, code review, cloud agent 흐름",
+        "팀/엔터프라이즈 정책과 감사 로그가 필요한 조직"
+      ],
+      "integrations": [
+        "VS Code, Visual Studio, JetBrains, Eclipse, Xcode, Vim/Neovim",
+        "GitHub.com, GitHub Mobile, Copilot CLI",
+        "MCP, cloud agent, code review, Spark"
+      ],
+      "tags": [
+        "Copilot",
+        "GitHub",
+        "AI Credits",
+        "MCP"
+      ]
+    },
+    {
+      "id": "tool-jetbrains-junie",
+      "toolName": "JetBrains AI / Junie",
+      "vendor": "JetBrains",
+      "category": "AI IDE",
+      "pricing": "JetBrains AI 플랜과 IDE 라이선스 정책을 함께 확인. 학생용 JetBrains 개발 도구 혜택은 별도 학생 팩에서 확인.",
+      "eventSignal": "Junie 지원 IDE, AI Assistant 플랜, JetBrains 학생 팩, Gemini/OpenAI 모델 통합 변경 감시.",
+      "bestFor": [
+        "IntelliJ, WebStorm, PyCharm, GoLand 중심 개발팀",
+        "IDE 인덱스와 리팩터링 도구를 깊게 쓰는 JVM/백엔드 프로젝트",
+        "JetBrains 생태계에서 AI 코딩 에이전트를 쓰려는 팀"
+      ],
+      "integrations": [
+        "JetBrains IDEs",
+        "Junie coding agent",
+        "AI Assistant, Mellum, OpenAI/Google 모델 연동"
+      ],
+      "tags": [
+        "JetBrains",
+        "Junie",
+        "IntelliJ",
+        "WebStorm"
+      ]
+    },
+    {
+      "id": "tool-amazon-q-developer",
+      "toolName": "Amazon Q Developer",
+      "vendor": "AWS",
+      "category": "IDE 확장",
+      "pricing": "Free tier와 Pro $19/user/month. Free는 월 agentic request/변환 LOC 제한, Pro는 더 높은 한도와 관리자 기능 제공.",
+      "eventSignal": "Free tier agentic request, Pro 포함 LOC, Java/.NET transformation overage, AWS Builder ID 무료 로그인 조건 감시.",
+      "bestFor": [
+        "AWS 아키텍처와 코드베이스를 같이 다루는 개발",
+        "Java/.NET 업그레이드와 보안 취약점 스캔",
+        "AWS Console, IDE, CLI를 같이 쓰는 클라우드 팀"
+      ],
+      "integrations": [
+        "VS Code, JetBrains, Visual Studio, Eclipse",
+        "AWS Console, AWS docs/site, AWS Chatbot",
+        "Amazon Bedrock 기반 Q Developer"
+      ],
+      "tags": [
+        "AWS",
+        "Amazon Q",
+        "IDE",
+        "CLI"
+      ]
+    },
+    {
+      "id": "tool-gemini-code-assist-jules",
+      "toolName": "Gemini Code Assist / Jules",
+      "vendor": "Google",
+      "category": "클라우드 에이전트",
+      "pricing": "Gemini Code Assist Standard 월 $22.80/user, 30일 무료 체험 가능. Jules 사용량/limits는 별도 문서 확인.",
+      "eventSignal": "Gemini Code Assist trial, Gemini CLI 라이선스 연동, Jules usage limits, Google 학생/교육 혜택 감시.",
+      "bestFor": [
+        "Google Cloud, Firebase, Apigee, BigQuery 개발 흐름",
+        "Gemini CLI와 IDE chat/completion을 함께 쓰는 팀",
+        "GitHub repo를 VM에서 비동기 수정하는 Jules 작업"
+      ],
+      "integrations": [
+        "VS Code, JetBrains IDEs, Cloud Workstations",
+        "Gemini CLI",
+        "Jules GitHub integration, REST API, scheduled tasks"
+      ],
+      "tags": [
+        "Gemini",
+        "Code Assist",
+        "Jules",
+        "Google Cloud"
+      ]
+    },
+    {
+      "id": "tool-sourcegraph-amp",
+      "toolName": "Amp",
+      "vendor": "Sourcegraph",
+      "category": "CLI/터미널",
+      "pricing": "Amp 자체 사용 정책은 manual/pricing 확인. Sourcegraph enterprise는 starting at $16K와 AI credits 포함 안내.",
+      "eventSignal": "Amp 모델 모드, Oracle/subagents, Sourcegraph credit pooling, MCP/CLI/agents 연동 변경 감시.",
+      "bestFor": [
+        "터미널 중심 장시간 coding agent 작업",
+        "Oracle, subagents, thread sharing을 쓰는 리뷰/탐색",
+        "대형 codebase context를 Sourcegraph와 같이 쓰는 엔터프라이즈 팀"
+      ],
+      "integrations": [
+        "Amp CLI",
+        "VS Code/Cursor/Windsurf, JetBrains, Neovim, Zed",
+        "Sourcegraph MCP, code graph, Deep Search"
+      ],
+      "tags": [
+        "Amp",
+        "Sourcegraph",
+        "CLI",
+        "Subagents"
+      ]
+    },
+    {
+      "id": "tool-zed-ai",
+      "toolName": "Zed AI",
+      "vendor": "Zed",
+      "category": "AI IDE",
+      "pricing": "Zed AI 사용 비용은 Zed 계정/모델/API 설정 기준으로 별도 확인. ACP 기반 외부 agent 연결 가능.",
+      "eventSignal": "ACP, Claude Agent/Codex/OpenCode 연동, agentic editing, MCP support, review diff 기능 변경 감시.",
+      "bestFor": [
+        "빠른 Rust 기반 editor와 agentic editing을 함께 쓰는 개발자",
+        "실시간 협업과 AI agent 진행 상황을 같이 보는 팀",
+        "Codex/Claude/OpenCode 등 외부 agent를 editor 안에 붙이는 실험"
+      ],
+      "integrations": [
+        "Zed Agent Panel",
+        "ACP, MCP",
+        "Claude Agent, Codex, OpenCode"
+      ],
+      "tags": [
+        "Zed",
+        "ACP",
+        "Agentic editing",
+        "MCP"
+      ]
+    },
+    {
+      "id": "tool-augment-code",
+      "toolName": "Augment Code",
+      "vendor": "Augment",
+      "category": "클라우드 에이전트",
+      "pricing": "Business $100/month flat, up to 50 seats, $100/month usage included, top-ups/pay as you go. Enterprise custom.",
+      "eventSignal": "Cosmos, Auggie CLI, Context Engine, usage top-up, enterprise/compliance 기능과 가격 변경 감시.",
+      "bestFor": [
+        "큰 코드베이스 맥락을 Context Engine으로 잡아야 하는 팀",
+        "Auggie CLI와 IDE/Slack/PR 리뷰를 함께 쓰는 엔터프라이즈 SDLC",
+        "반복 workflow automation과 ticket-to-PR 흐름"
+      ],
+      "integrations": [
+        "VS Code, JetBrains, Vim/Neovim",
+        "Auggie CLI, Cosmos, Context Engine MCP",
+        "Slack, Code Review, admin analytics"
+      ],
+      "tags": [
+        "Augment",
+        "Auggie",
+        "Cosmos",
+        "Context Engine"
+      ]
+    },
+    {
+      "id": "tool-tabnine",
+      "toolName": "Tabnine",
+      "vendor": "Tabnine",
+      "category": "IDE 확장",
+      "pricing": "Code Assistant $39/user/month, Agentic Platform $59/user/month annual subscription 기준. 자체 LLM 사용 시 별도 quota/handling fee 조건 확인.",
+      "eventSignal": "Tabnine CLI, Agentic Platform, Context Engine, air-gapped/VPC/on-prem 배포, zero retention 정책 변경 감시.",
+      "bestFor": [
+        "코드 프라이버시와 자체 배포 요구가 강한 조직",
+        "IDE completion/chat을 빠르게 표준화하려는 팀",
+        "on-prem/air-gapped 환경의 AI coding assistant"
+      ],
+      "integrations": [
+        "All major IDEs",
+        "Tabnine CLI",
+        "Jira, Confluence, Git providers, MCP"
+      ],
+      "tags": [
+        "Tabnine",
+        "Privacy",
+        "On-prem",
+        "CLI"
+      ]
+    },
+    {
+      "id": "tool-coderabbit",
+      "toolName": "CodeRabbit",
+      "vendor": "CodeRabbit",
+      "category": "PR 리뷰",
+      "pricing": "Pro/Pro Plus/Enterprise. 공개 저장소 무료 리뷰, Slack agent는 agent minute 기준 과금.",
+      "eventSignal": "OSS free review, Slack agent minute, Pro/Pro Plus review limit, Autofix/UTG/merge conflict 기능 변경 감시.",
+      "bestFor": [
+        "PR 리뷰, 요약, walkthrough, pre-merge checks 자동화",
+        "IDE/CLI에서 리뷰 피드백을 빠르게 받는 팀",
+        "issue/Slack에서 계획과 PR 생성까지 연결하는 흐름"
+      ],
+      "integrations": [
+        "GitHub, GitLab",
+        "IDE review extension, CLI review tool",
+        "Slack agent, Jira, Linear, MCP/tool catalog"
+      ],
+      "tags": [
+        "CodeRabbit",
+        "PR review",
+        "Autofix",
+        "Slack agent"
+      ]
+    },
+    {
+      "id": "tool-trae",
+      "toolName": "TRAE",
+      "vendor": "TRAE",
+      "category": "AI IDE",
+      "pricing": "Free/Lite $3, Pro $10 after 7-day trial, Pro+ $30, Ultra $100/month. Basic usage와 cloud task 동시 실행 수 차등.",
+      "eventSignal": "Pro 7일 무료 체험, SOLO mode, cloud task concurrency, Basic/Bonus usage, Model early access 변경 감시.",
+      "bestFor": [
+        "SOLO mode 중심의 AI IDE 실험",
+        "cloud task 동시 실행으로 여러 개발 작업을 돌리는 개인/소규모 팀",
+        "Cursor/Windsurf와 비교할 신규 AI IDE 후보"
+      ],
+      "integrations": [
+        "TRAE IDE",
+        "SOLO mode",
+        "TRAE Work Web/Desktop cloud tasks"
+      ],
+      "tags": [
+        "TRAE",
+        "SOLO",
+        "AI IDE",
+        "Cloud tasks"
+      ]
+    },
+    {
+      "id": "tool-open-source-agent-stack",
+      "toolName": "Cline / Roo Code / Aider / Continue / OpenHands",
+      "vendor": "Open-source ecosystem",
+      "category": "오픈소스 스택",
+      "pricing": "도구는 오픈소스 중심. 비용은 연결한 API 모델, 로컬 GPU, 자체 호스팅, MCP/서빙 인프라에 따라 달라짐.",
+      "eventSignal": "GitHub release, model provider 지원, MCP/tool calling, VS Code extension 정책, 로컬 실행 가이드 변경 감시.",
+      "bestFor": [
+        "모델을 직접 고르고 OpenAI 호환 API를 바꿔가며 실험",
+        "저비용/로컬/사내망 코딩 agent 구성",
+        "Cursor/Copilot에 종속되지 않는 개발 워크플로"
+      ],
+      "integrations": [
+        "VS Code extensions",
+        "Terminal Git workflow",
+        "OpenAI-compatible APIs, local models, MCP"
+      ],
+      "tags": [
+        "Cline",
+        "Roo Code",
+        "Aider",
+        "Continue"
+      ]
+    },
+    {
+      "id": "tool-web-app-builders",
+      "toolName": "Lovable / Bolt / v0",
+      "vendor": "Lovable, StackBlitz, Vercel",
+      "category": "웹앱 제작",
+      "pricing": "도구별 무료/유료 플랜과 배포/크레딧 정책 상이. 실제 비용은 생성 횟수, 배포, 팀 기능, 모델 사용량을 같이 확인.",
+      "eventSignal": "신규 사용자 크레딧, 생성 한도, GitHub export, Vercel/StackBlitz 배포, 팀 플랜 이벤트 변경 감시.",
+      "bestFor": [
+        "랜딩 페이지와 CRUD 웹앱의 빠른 초안",
+        "디자인 시안과 프론트엔드 구조를 프롬프트로 생성",
+        "비개발자와 개발자가 함께 요구사항을 시각화"
+      ],
+      "integrations": [
+        "Lovable projects and integrations",
+        "Bolt app generation and deployment",
+        "v0 UI generation and Vercel workflow"
+      ],
+      "tags": [
+        "Lovable",
+        "Bolt",
+        "v0",
+        "웹앱"
+      ]
+    },
+    {
+      "id": "tool-cloud-agents",
+      "toolName": "Devin / Replit Agent / Manus",
+      "vendor": "Cognition, Replit, Manus",
+      "category": "클라우드 에이전트",
+      "pricing": "제품별 task/session/credit/seat 구조가 달라 공식 가격과 사용량 로그를 함께 확인해야 함.",
+      "eventSignal": "초대/크레딧, cloud workspace limits, GitHub/Slack 연동, 태스크 병렬 실행, 브라우저 조작 기능 변경 감시.",
+      "bestFor": [
+        "로컬 노트북을 켜두지 않는 비동기 개발/자동화",
+        "issue-to-PR, 브라우저 조작, 웹사이트/PPT 산출물 제작",
+        "비개발자도 태스크 단위로 결과를 검수하는 업무"
+      ],
+      "integrations": [
+        "GitHub repositories",
+        "Slack/웹앱/브라우저",
+        "Files, webhooks, project instructions"
+      ],
+      "tags": [
+        "Devin",
+        "Replit Agent",
+        "Manus",
+        "Cloud agent"
+      ]
+    }
+  ]
+}

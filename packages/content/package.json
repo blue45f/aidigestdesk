@@ -29,6 +29,7 @@
     "snapshot:sources": "pnpm run build && node scripts/snapshot-sources.mjs",
     "generate:toss-rankings": "pnpm run build && node scripts/generate-toss-rankings.mjs",
     "generate:toss-manuals": "pnpm run build && node scripts/generate-toss-manuals.mjs",
+    "generate:toss-extras": "pnpm run build && node scripts/generate-toss-extras.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "clean": "rm -rf dist"
