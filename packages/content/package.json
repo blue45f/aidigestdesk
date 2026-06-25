@@ -12,6 +12,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./cliManuals": {
+      "types": "./dist/cliManuals.d.ts",
+      "import": "./dist/cliManuals.js",
+      "require": "./dist/cliManuals.cjs"
     }
   },
   "files": [

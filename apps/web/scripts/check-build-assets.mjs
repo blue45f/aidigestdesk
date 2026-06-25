@@ -9,9 +9,12 @@ const distAssetsDir = new URL('../dist/assets/', import.meta.url)
 // 런어웨이 방지용 상한으로 둔다.
 // 2026-06-19: 하네스/플러그인/로컬 모델 UI/설치형 모델 비교, Gemma/Llama 모델 카드,
 // GLM-5.2, 정부지원사업, 에이전트 프레임워크 quickstart 매뉴얼 추가로 상향 조정.
+// 2026-06-25: 출처 교차검증 기반 분야별 leaderboard 신설(+벤치마크 reference 분리 보존)으로
+// content-catalog 데이터가 늘어 소폭 상향. CLI 매뉴얼(명령 287개)은 별도 lazy 청크로 분리해
+// 메인 청크 밖으로 뺐다(@aidigestdesk/content/cliManuals).
 const budgets = {
-  maxJavaScriptBytes: 680 * 1024,
-  maxJavaScriptGzipBytes: 192 * 1024,
+  maxJavaScriptBytes: 760 * 1024,
+  maxJavaScriptGzipBytes: 210 * 1024,
   maxCssBytes: 80 * 1024,
 }
 

@@ -31,7 +31,7 @@ import {
   Trophy,
   Workflow,
 } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 
 import type { CSSProperties } from 'react'
 
@@ -52,7 +52,6 @@ import { getCurrentRoute, routePath, routeTitles, type AppRoute } from '@/compon
 import { Header, Sidebar } from '@/components/app/AppShell'
 import { BookmarksRail } from '@/components/app/BookmarksRail'
 import { CliComparisonSection, LlmCliManualSection } from '@/components/app/CliComparisonSection'
-import { CliManualSection } from '@/components/app/CliManualSection'
 import { ActiveFilterChips, MultiSegmentBar } from '@/components/app/CommonUi'
 import { CommunityRoute } from '@/components/app/CommunityRoute'
 import { EventCostComparisonSection, ModelCostCalculator } from '@/components/app/CostSections'
@@ -96,6 +95,11 @@ import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { useSearchHotkey } from '@/hooks/useSearchHotkey'
 import { shareOrCopy } from '@/lib/share'
 import { useToast } from '@/lib/toast'
+
+// CLI 매뉴얼(명령 287개)은 데이터가 커서 lazy 로드 — /resources 진입 시에만 청크 fetch.
+const CliManualSection = lazy(() =>
+  import('@/components/app/CliManualSection').then((m) => ({ default: m.CliManualSection })),
+)
 
 const providerFilters: Array<{ id: ProviderId | 'all'; label: string }> = [
   { id: 'all', label: '전체' },
@@ -814,7 +818,15 @@ export default function App() {
             <PageHeader route="resources" />
             <Briefing results={results} useFallback={!hasActiveFilter} />
             <ResourceLibrary resources={visibleResources} />
-            <CliManualSection id="cli-manuals" />
+            <Suspense
+              fallback={
+                <div className="rounded-2xl border border-border bg-surface/60 p-6 text-center text-sm text-text-subtle">
+                  CLI 매뉴얼 불러오는 중…
+                </div>
+              }
+            >
+              <CliManualSection id="cli-manuals" />
+            </Suspense>
             <GlossarySection />
             <ManualGuides guides={visibleGuides} />
             <PersonaPlaybooks guides={visiblePersonaGuides} />

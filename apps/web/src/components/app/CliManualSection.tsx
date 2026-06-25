@@ -1,8 +1,5 @@
-import {
-  cliToolManuals,
-  type CliToolManual,
-  type ProviderId,
-} from '@aidigestdesk/content'
+import { type ProviderId } from '@aidigestdesk/content'
+import { cliToolManuals, type CliToolManual } from '@aidigestdesk/content/cliManuals'
 import {
   BookOpen,
   Download,
