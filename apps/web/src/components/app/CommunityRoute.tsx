@@ -1,31 +1,4 @@
 import {
-  AlertTriangle,
-  ClipboardList,
-  Coffee,
-  Hash,
-  Home,
-  Loader2,
-  LogIn,
-  MessagesSquare,
-  Plus,
-  Send,
-  Trash2,
-  Users,
-} from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
-
-import type { AppRoute } from '@/components/app/appRoutes'
-import type { Board, CommunityClient, PostSummary } from '@heejun/deskcloud'
-
-import {
-  Chip,
-  EmptyState,
-  SearchField,
-  SectionHeader,
-  SegmentBar,
-  Select,
-} from '@/components/app/CommonUi'
-import {
   addBoardPost,
   addComment,
   addPost,
@@ -56,7 +29,34 @@ import {
   type Channel,
   type Comment,
   type Post,
-} from '@/components/app/communityStore'
+} from '@aidigestdesk/content/shared'
+import {
+  AlertTriangle,
+  ClipboardList,
+  Coffee,
+  Hash,
+  Home,
+  Loader2,
+  LogIn,
+  MessagesSquare,
+  Plus,
+  Send,
+  Trash2,
+  Users,
+} from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
+
+import type { AppRoute } from '@/components/app/appRoutes'
+import type { Board, CommunityClient, PostSummary } from '@heejun/deskcloud'
+
+import {
+  Chip,
+  EmptyState,
+  SearchField,
+  SectionHeader,
+  SegmentBar,
+  Select,
+} from '@/components/app/CommonUi'
 import { getCommunityClient } from '@/components/app/deskcloud'
 
 type CommunityTab = 'chat' | 'board' | 'cafe'
