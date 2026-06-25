@@ -80,10 +80,10 @@ export function UpdateListPage() {
           {filtered.length === 0 && <p style={{ textAlign: 'center', color: theme.textMuted, padding: '40px 0' }}>‘{q || provider}’ 결과가 없어요.</p>}
         </div>
 
-        {/* 커뮤니티(채팅·게시판·카페) 진입 — 웹과 동일 기능, shared 스토어 공용 */}
+        {/* 커뮤니티(채팅·게시판·카페) 진입 — 웹과 동일 기능, shared 스토어 공용. 1차 기능이라 강조. */}
         <button type="button" onClick={() => navigate('/community')} className="pressable"
           style={{ width: '100%', marginTop: 18, display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left',
-            background: theme.surface, border: `1px solid ${theme.border}`, borderRadius: theme.radius, padding: 16,
+            background: theme.accentSoft, border: `1px solid ${theme.accent}`, borderRadius: theme.radius, padding: 16,
             color: theme.text, cursor: 'pointer' }}>
           <span aria-hidden style={{ fontSize: 22 }}>👥</span>
           <span style={{ flex: 1, minWidth: 0 }}>

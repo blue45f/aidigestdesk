@@ -1195,7 +1195,7 @@ export function CommunityRoute({
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
                   채팅방에서 실시간 대화를, 게시판에서 카테고리별 글을, 카페에서 관심 주제 모임을
                   즐겨 보세요. 이 공간은 데모 단계이며 모든 글과 가입 정보는 백엔드 없이 이
-                  브라우저에만 저장됩니다.
+                  브라우저(localStorage)에만 저장됩니다.
                 </p>
               )}
               <div className="mt-3">

@@ -65,6 +65,10 @@ function ManualDetail({ manual }: { manual: CliToolManual }) {
 
   return (
     <div className="space-y-5">
+      {/* 도구 한 줄 소개(tagline) — 데이터에 있는 부제를 노출 */}
+      {manual.tagline ? (
+        <p className="text-sm font-semibold text-text">{manual.tagline}</p>
+      ) : null}
       {/* 개요 */}
       {manual.overview ? (
         <p className="text-sm leading-6 text-text-muted">{manual.overview}</p>
