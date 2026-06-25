@@ -1,3 +1,5 @@
+import { burstAt } from '@aidigestdesk/content/shared';
+
 import { toggleBookmark, useIsBookmarked, type Bookmark } from './lib/bookmarks';
 import { theme } from './theme';
 
@@ -7,10 +9,16 @@ import type { ReactNode } from 'react';
 export function BookmarkButton({ item }: { item: Bookmark }) {
   const saved = useIsBookmarked(item.type, item.id);
   return (
-    <button type="button" onClick={() => toggleBookmark(item)} aria-pressed={saved}
+    <button type="button"
+      onClick={(e) => {
+        const wasSaved = saved;
+        toggleBookmark(item);
+        if (!wasSaved) burstAt(e.clientX, e.clientY, ['#f5c842', '#ff6b6b', '#6ea8fe', '#74d6a3'], 14);
+      }}
+      aria-pressed={saved}
       aria-label={saved ? '즐겨찾기 해제' : '즐겨찾기 추가'} className="pressable"
       style={{ display: 'inline-flex', alignItems: 'center', gap: 5, height: 38, padding: '0 14px', flexShrink: 0,
-        borderRadius: 999, cursor: 'pointer', fontSize: 13.5, fontWeight: 700,
+        borderRadius: 999, cursor: 'pointer', fontSize: 13.5, fontWeight: 700, transition: 'border-color .18s, background-color .18s, color .18s',
         border: saved ? `1px solid ${theme.accent}` : `1px solid ${theme.border}`,
         background: saved ? theme.accentSoft : 'transparent', color: saved ? theme.accent : theme.textMuted }}>
       <span aria-hidden style={{ fontSize: 15 }}>{saved ? '★' : '☆'}</span>
@@ -37,6 +45,7 @@ export function Chips({ items, active, onPick }: { items:string[]; active:string
     {items.map((c)=>{ const on=c===active; return (
       <button key={c} type="button" onClick={()=>onPick(c)} className="pressable" style={{ flexShrink:0, height:34, padding:'0 14px',
         borderRadius:999, fontSize:14, fontWeight:600, cursor:'pointer', border: on?'none':'1px solid rgba(255,255,255,0.1)',
+        transition:'background-color .18s, color .18s, border-color .18s',
         background: on?theme.accent:'transparent', color: on?theme.accentInk:theme.textMuted }}>{c}</button>); })}
   </div>;
 }
@@ -90,6 +99,7 @@ export function Segmented({ options, value, onChange }: { options:{id:string;lab
       {options.map((o)=>{ const on=o.id===value; return (
         <button key={o.id} type="button" onClick={()=>onChange(o.id)} aria-pressed={on} className="pressable"
           style={{ flex:1, height:46, borderRadius:'var(--r-md)', fontSize:15, fontWeight:700, cursor:'pointer',
+            transition:'background-color .22s ease, color .22s ease, border-color .22s ease',
             border: on ? 'none' : `1px solid ${theme.border}`,
             background: on ? theme.accent : theme.surface, color: on ? theme.accentInk : theme.textMuted }}>
           {o.label}
@@ -115,9 +125,12 @@ export function TabBar({ active, onPick }: { active:TabId; onPick:(t:TabId)=>voi
       paddingBottom:'env(safe-area-inset-bottom)' }}>
       {items.map((it)=>{ const on=it.id===active; return (
         <button key={it.id} type="button" onClick={()=>onPick(it.id)} aria-current={on?'page':undefined} className="pressable"
-          style={{ flex:1, height:56, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:2,
-            background:'none', border:'none', cursor:'pointer', color: on ? theme.accent : theme.textMuted, fontWeight:700 }}>
-          <span aria-hidden style={{ fontSize:18, filter: on ? 'none' : 'grayscale(0.4) opacity(0.8)' }}>{it.icon}</span>
+          style={{ flex:1, height:56, position:'relative', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:2,
+            background:'none', border:'none', cursor:'pointer', color: on ? theme.accent : theme.textMuted, fontWeight:700,
+            transition:'color .18s ease' }}>
+          {on && <span aria-hidden style={{ position:'absolute', top:0, width:22, height:3, borderRadius:3, background:theme.accent }} />}
+          <span aria-hidden style={{ fontSize:18, transition:'transform .18s cubic-bezier(.22,1,.36,1), filter .18s ease',
+            transform: on ? 'scale(1.14)' : 'scale(1)', filter: on ? 'none' : 'grayscale(0.4) opacity(0.8)' }}>{it.icon}</span>
           <span style={{ fontSize:11.5 }}>{it.label}</span>
         </button>); })}
     </nav>

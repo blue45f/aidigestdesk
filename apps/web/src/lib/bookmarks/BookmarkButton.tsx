@@ -1,3 +1,4 @@
+import { burstAt } from '@aidigestdesk/content/shared'
 import { Bookmark as BookmarkIcon, BookmarkCheck } from 'lucide-react'
 import { useSyncExternalStore } from 'react'
 
@@ -37,6 +38,7 @@ export function BookmarkButton({
     event.preventDefault()
     event.stopPropagation()
     const added = toggleBookmark({ sourceId, kind, title, subtitle, route, anchor, href })
+    if (added) burstAt(event.clientX, event.clientY, ['#f5c842', '#ff6b6b', '#6ea8fe', '#74d6a3'], 14)
     toast.show({
       message: added ? `북마크에 저장했습니다 · ${title}` : `북마크에서 제거했습니다 · ${title}`,
       tone: added ? 'success' : 'neutral',

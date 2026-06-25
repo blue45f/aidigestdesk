@@ -10,7 +10,7 @@ import { SavedPage } from './pages/SavedPage.tsx';
 import { SupportPage } from './pages/SupportPage.tsx';
 import { UpdateDetailPage } from './pages/UpdateDetailPage.tsx';
 import { UpdateListPage } from './pages/UpdateListPage.tsx';
-import { enhanceRails, playTick } from '@aidigestdesk/content/shared';
+import { enhanceRails, playTick, tapRipple } from '@aidigestdesk/content/shared';
 import { useEffect } from 'react';
 
 import { navigate, usePathname } from './router';
@@ -31,6 +31,7 @@ export function App() {
       if (target.closest('button, a, [role="button"], [role="tab"], label, select, input:not([type="text"]):not([type="email"]):not([type="search"])')) {
         playTick();
         haptic('tickWeak');
+        tapRipple(e.clientX, e.clientY);
       }
     };
     document.addEventListener('click', onClick, true);
@@ -71,7 +72,7 @@ export function App() {
     return (
       <>
         <IntroSplashScreen />
-        {detail}
+        <div key={path} className="page-enter">{detail}</div>
         <MusicToggle />
       </>
     );
@@ -98,7 +99,7 @@ export function App() {
   return (
     <>
       <IntroSplashScreen />
-      {page}
+      <div key={path} className="page-enter">{page}</div>
       {/* 하단 고정 탭바에 가려지지 않도록 여백 확보 */}
       <div aria-hidden style={{ height: 'calc(56px + env(safe-area-inset-bottom))' }} />
       <TabBar active={tab} onPick={(t) => navigate(tabToPath[t])} />

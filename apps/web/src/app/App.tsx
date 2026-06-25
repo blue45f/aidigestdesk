@@ -14,7 +14,7 @@ import {
   vibeCodingCommands,
   type ProviderId,
 } from '@aidigestdesk/content'
-import { attachDragScroll, playTick } from '@aidigestdesk/content/shared'
+import { attachDragScroll, playTick, tapRipple } from '@aidigestdesk/content/shared'
 import {
   BadgePercent,
   BarChart3,
@@ -545,6 +545,7 @@ export default function App() {
         )
       ) {
         playTick()
+        tapRipple(e.clientX, e.clientY)
       }
     }
     document.addEventListener('click', onClick, true)
