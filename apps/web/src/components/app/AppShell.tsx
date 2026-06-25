@@ -56,7 +56,7 @@ const routeSections: Partial<
     { href: '#comparison', label: '모델 카드', icon: Table2 },
     { href: '#local-models', label: '설치형 모델', icon: Boxes },
     { href: '#benchmarks', label: '벤치마크', icon: Table2 },
-    { href: '#costs', label: '비용', icon: Calculator },
+    { href: '#cost-calculator', label: '비용', icon: Calculator },
   ],
   tools: [
     { href: '#task-recommendations', label: '작업 추천', icon: Sparkles },

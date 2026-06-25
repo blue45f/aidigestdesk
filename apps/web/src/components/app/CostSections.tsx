@@ -86,7 +86,7 @@ export function ModelCostCalculator() {
   };
 
   return (
-    <section id="costs" className="space-y-4">
+    <section id="cost-calculator" className="scroll-mt-32 space-y-4">
       <SectionHeader
         icon={Calculator}
         title="모델 비용 계산기"

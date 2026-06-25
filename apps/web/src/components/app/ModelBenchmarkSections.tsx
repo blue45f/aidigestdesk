@@ -1239,7 +1239,7 @@ export function BenchmarkBoard() {
       <SectionHeader
         icon={BarChart3}
         title="벤치마크와 비용"
-        description="종합 리더보드, SWE-Bench Pro, SWE-Lancer, PaperBench, MLE-bench, BrowseComp, RE-Bench, EVMbench, Cybench, GDPval, SpreadsheetBench를 분야별 점수·규모·비용·latency와 함께 봅니다."
+        description="종합 리더보드, SWE-Bench Pro, SWE-Lancer, PaperBench, MLE-bench, BrowseComp, RE-Bench, EVMbench, Cybench, GDPval, SpreadsheetBench를 분야별 점수·규모·비용·latency와 함께 봅니다. 점수 앞 ≈는 공식 미발표분의 추정/근삿값입니다."
       />
       <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 xl:grid-cols-4">
         <label className="block xl:col-span-2">
