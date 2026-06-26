@@ -435,6 +435,7 @@ export function BrandMark({
       width={px}
       height={px}
       loading="lazy"
+      decoding="async"
       onError={() => setFailed(true)}
       className={`${box} shrink-0 rounded-md border border-border bg-surface object-contain p-1`}
     />
@@ -489,6 +490,7 @@ export function Thumbnail({
             src={src}
             alt={alt}
             loading="lazy"
+            decoding="async"
             onLoad={() => setLoaded(true)}
             onError={() => setFailed(true)}
             className={`size-full ${imageFitClass} transition-all duration-500 ease-out ${

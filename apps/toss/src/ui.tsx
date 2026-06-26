@@ -53,7 +53,7 @@ export function Chips({ items, active, onPick }: { items:string[]; active:string
 export function Cover({ gradient, src, alt, height=150, radius=12 }: { gradient?: string[]; src?: string|null; alt:string; height?:number; radius?:number }) {
   const grad = gradient && gradient.length>=2 ? `linear-gradient(140deg, ${gradient[0]}, ${gradient[1]})` : theme.surfaceAlt;
   return <div style={{ height, borderRadius:radius, overflow:'hidden', background:grad, flexShrink:0 }}>
-    {src ? <img src={src} alt={alt} loading="lazy" style={{ width:'100%', height:'100%', objectFit:'cover' }}
+    {src ? <img src={src} alt={alt} loading="lazy" decoding="async" style={{ width:'100%', height:'100%', objectFit:'cover' }}
       onError={(e)=>{ (e.currentTarget as HTMLImageElement).style.display='none'; }} /> : null}
   </div>;
 }
