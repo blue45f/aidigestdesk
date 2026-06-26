@@ -1,3 +1,4 @@
+import { PlatformContext, webPlatformBridge } from '@aidigestdesk/client'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 
@@ -12,13 +13,15 @@ if (!root) throw new Error('#root element를 찾을 수 없습니다')
 
 createRoot(root).render(
   <StrictMode>
-    <ErrorBoundary>
-      <ToastProvider>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
-      </ToastProvider>
-    </ErrorBoundary>
+    <PlatformContext.Provider value={webPlatformBridge}>
+      <ErrorBoundary>
+        <ToastProvider>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </ToastProvider>
+      </ErrorBoundary>
+    </PlatformContext.Provider>
   </StrictMode>
 )
 

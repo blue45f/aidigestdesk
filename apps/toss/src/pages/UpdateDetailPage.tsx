@@ -1,14 +1,15 @@
+import { usePlatform } from '@aidigestdesk/client';
 import { Button } from '@toss/tds-mobile';
 import { useEffect, useState } from 'react';
 
 import { getUpdate } from '../lib/api';
 import { onExternalClick } from '../lib/links';
-import { shareMessage } from '../lib/toss';
 import { navigate } from '../router';
 import { theme } from '../theme';
 import { Badge } from '../ui';
 
 export function UpdateDetailPage({ id = '' }: { id?: string }) {
+  const platform = usePlatform();
   const u = getUpdate(id);
   const [toast, setToast] = useState<string | null>(null);
   useEffect(() => {
@@ -27,8 +28,8 @@ export function UpdateDetailPage({ id = '' }: { id?: string }) {
   if (!u) return <div style={{ background: theme.bg, minHeight: '100dvh' }}>{Header}<p style={{ textAlign: 'center', color: theme.textMuted, paddingTop: 40 }}>소식을 찾을 수 없어요.</p></div>;
 
   const share = async () => {
-    const r = await shareMessage(`[AI다이제스트] ${u.title}\n${u.summary}`);
-    if (r === 'clipboard') setToast('클립보드에 복사했어요.');
+    const r = await platform.share({ title: '[AI다이제스트]', text: `${u.title}\n${u.summary}` });
+    if (r === 'copied') setToast('클립보드에 복사했어요.');
   };
   const hasUrl = Boolean(u.url);
 
