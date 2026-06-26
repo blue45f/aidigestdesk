@@ -91,7 +91,7 @@ function MessageRow({ post }: { post: Post }) {
                 setBody(post.body)
                 setEditing(true)
               }}
-              className="text-xs font-semibold text-text-subtle transition hover:text-text"
+              className="inline-flex min-h-9 items-center rounded-md px-2 text-xs font-semibold text-text-subtle transition hover:bg-surface-2 hover:text-text"
             >
               수정
             </button>
@@ -332,21 +332,21 @@ function CommentSection({ postId, nickname }: { postId: string; nickname: string
                     {comment.editedAt ? ' · 수정됨' : ''}
                   </p>
                   {mine && !editing ? (
-                    <div className="flex shrink-0 items-center gap-1">
+                    <div className="flex shrink-0 items-center gap-1.5">
                       <button
                         type="button"
                         onClick={() => {
                           setEditingId(comment.id)
                           setEditBody(comment.body)
                         }}
-                        className="text-xs font-semibold text-text-subtle transition hover:text-text"
+                        className="inline-flex min-h-9 items-center rounded-md px-2 text-xs font-semibold text-text-subtle transition hover:bg-surface-2 hover:text-text"
                       >
                         수정
                       </button>
                       <button
                         type="button"
                         onClick={() => deleteComment(comment.id)}
-                        className="text-xs font-semibold text-text-subtle transition hover:text-bad"
+                        className="inline-flex min-h-9 items-center rounded-md px-2 text-xs font-semibold text-text-subtle transition hover:bg-surface-2 hover:text-bad"
                       >
                         삭제
                       </button>

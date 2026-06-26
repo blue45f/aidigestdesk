@@ -440,7 +440,9 @@ function NumberField({
       <span className="text-xs font-semibold text-text-subtle">{label}</span>
       <input
         type="number"
+        inputMode="numeric"
         min={0}
+        step={1}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         className="mt-1 h-10 w-full rounded-md border border-border bg-bg px-3 text-sm font-semibold text-text outline-none transition focus:border-accent"

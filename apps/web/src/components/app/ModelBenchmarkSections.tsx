@@ -1659,7 +1659,7 @@ export function ComparisonMatrix() {
         <table className="min-w-[112rem] w-full border-collapse text-left">
           <thead>
             <tr className="border-b border-border text-xs text-text-subtle">
-              <th className="w-36 px-4 py-3 font-semibold">
+              <th className="sticky left-0 z-20 w-36 border-r border-border bg-surface px-4 py-3 font-semibold">
                 <button
                   type="button"
                   onClick={() => handleMatrixSort('axis')}
@@ -1700,7 +1700,7 @@ export function ComparisonMatrix() {
           <tbody>
             {pagedComparisonRows.map((row) => (
               <tr key={row.id} className="border-b border-border last:border-b-0">
-                <th className="bg-bg px-4 py-4 align-top text-xs font-semibold text-text">
+                <th className="sticky left-0 z-10 border-r border-border bg-bg px-4 py-4 align-top text-xs font-semibold text-text">
                   {row.axis}
                 </th>
                 {comparisonProviderOrder.map((providerId) => (

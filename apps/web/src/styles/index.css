@@ -100,11 +100,18 @@
     text-decoration: none;
   }
 
+  /* 앵커/탭 이동 시 sticky 헤더에 가리지 않을 만큼만 — 모바일 헤더는 낮으므로 과한 여백 방지. */
   :where(section[id], [id='main-content']) {
-    scroll-margin-top: 8rem;
+    scroll-margin-top: 4.75rem;
   }
 
   @media (min-width: 768px) {
+    :where(section[id], [id='main-content']) {
+      scroll-margin-top: 7rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
     :where(section[id], [id='main-content']) {
       scroll-margin-top: 8rem;
     }
