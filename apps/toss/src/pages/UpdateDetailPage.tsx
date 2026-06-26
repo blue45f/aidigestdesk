@@ -1,4 +1,4 @@
-import { usePlatform } from '@aidigestdesk/client';
+import { usePlatform } from '@heejun/platform-bridge';
 import { Button } from '@toss/tds-mobile';
 import { useEffect, useState } from 'react';
 

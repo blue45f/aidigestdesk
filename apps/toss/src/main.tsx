@@ -1,4 +1,4 @@
-import { PlatformContext } from '@aidigestdesk/client';
+import { PlatformContext } from '@heejun/platform-bridge';
 import { TDSMobileAITProvider } from '@toss/tds-mobile-ait';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';

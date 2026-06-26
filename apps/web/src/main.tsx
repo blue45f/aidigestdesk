@@ -1,4 +1,4 @@
-import { PlatformContext, webPlatformBridge } from '@aidigestdesk/client'
+import { PlatformContext, webPlatformBridge } from '@heejun/platform-bridge'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 
