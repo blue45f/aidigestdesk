@@ -4,17 +4,18 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "granite dev",
+    "dev": "vite --host localhost --port 5183",
     "predata": "pnpm --filter @aidigestdesk/content run generate:toss-data",
     "build:preview": "pnpm run predata && PREVIEW_NO_TDS=1 vite build",
     "deploy": "ait deploy",
     "typecheck": "tsc -b",
     "preview": "vite preview",
-    "build:ait": "pnpm run predata && ait build"
+    "build:ait": "pnpm run predata && vite build && ait build",
+    "build": "pnpm run predata && vite build && ait build"
   },
   "dependencies": {
     "@aidigestdesk/content": "workspace:*",
-    "@apps-in-toss/web-framework": "^2.9.1",
+    "@apps-in-toss/web-framework": "^3.0.0-beta.b36d7b5",
     "@heejun/platform-bridge": "^0.1.0",
     "@emotion/react": "^11.14.0",
     "@toss/tds-mobile": "^2.5.0",
