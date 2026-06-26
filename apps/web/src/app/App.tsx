@@ -371,7 +371,7 @@ const toolsPaneMeta: Array<{
   {
     id: 'cli-manual',
     title: 'CLI 매뉴얼',
-    description: '설치·운영·보안 절차',
+    description: '도구별 명령·옵션 상세 레퍼런스',
     icon: FileText,
   },
   {
@@ -760,7 +760,17 @@ export default function App() {
       case 'extensions':
         return <ExtensionsSection />
       case 'cli-manual':
-        return <LlmCliManualSection manuals={visibleLlmCliManuals} />
+        return (
+          <Suspense
+            fallback={
+              <div className="rounded-2xl border border-border bg-surface/60 p-6 text-center text-sm text-text-subtle">
+                CLI 매뉴얼 불러오는 중…
+              </div>
+            }
+          >
+            <CliManualSection id="cli-manuals" />
+          </Suspense>
+        )
       case 'vibe-coding':
         return <VibeCodingSection commands={visibleVibeCommands} />
       case 'cli-comparison':
@@ -869,15 +879,7 @@ export default function App() {
             <PageHeader route="resources" />
             <Briefing results={results} useFallback={!hasActiveFilter} />
             <ResourceLibrary resources={visibleResources} />
-            <Suspense
-              fallback={
-                <div className="rounded-2xl border border-border bg-surface/60 p-6 text-center text-sm text-text-subtle">
-                  CLI 매뉴얼 불러오는 중…
-                </div>
-              }
-            >
-              <CliManualSection id="cli-manuals" />
-            </Suspense>
+            <LlmCliManualSection manuals={visibleLlmCliManuals} />
             <GlossarySection />
             <ManualGuides guides={visibleGuides} />
             <PersonaPlaybooks guides={visiblePersonaGuides} />
