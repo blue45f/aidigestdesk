@@ -283,7 +283,8 @@ function ModelsTabSwitcher({
   onSelect: (tabId: ModelsTabId) => void
 }) {
   return (
-    <section className="scroll-mt-32 space-y-3">
+    // 데스크톱(lg+)은 사이드바 목차가 탭 전환을 담당 → 중복 카드 그리드 숨겨 밀도↓. 모바일은 유지.
+    <section className="scroll-mt-32 space-y-3 lg:hidden">
       <div className="touch-scroll -mx-3 flex snap-x gap-2 overflow-x-auto px-3 pb-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3 xl:grid-cols-6">
         {modelsTabMeta.map((tab) => {
           const Icon = tab.icon

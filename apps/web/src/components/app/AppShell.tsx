@@ -53,10 +53,12 @@ const routeSections: Partial<
     { href: '#fresh', label: '신규 등록', icon: Flame },
   ],
   models: [
-    { href: '#comparison', label: '모델 카드', icon: Table2 },
-    { href: '#local-models', label: '설치형 모델', icon: Boxes },
-    { href: '#benchmarks', label: '벤치마크', icon: Table2 },
-    { href: '#cost-calculator', label: '비용', icon: Calculator },
+    { href: '#rankings', label: '분야별 랭킹', icon: Sparkles },
+    { href: '#comparison', label: '주요 모델 비교', icon: Boxes },
+    { href: '#local-models', label: '설치형 로컬 모델', icon: Boxes },
+    { href: '#benchmarks', label: '벤치마크 보드', icon: Table2 },
+    { href: '#matrix', label: '기능 비교표', icon: Table2 },
+    { href: '#cost-calculator', label: '비용 계산기', icon: Calculator },
   ],
   tools: [
     { href: '#task-recommendations', label: '작업 추천', icon: Sparkles },
