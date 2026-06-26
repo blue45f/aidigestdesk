@@ -1,3 +1,4 @@
+import { configureCommunityRemote } from '@aidigestdesk/content/shared'
 import { PlatformContext, webPlatformBridge } from '@heejun/platform-bridge'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -7,6 +8,12 @@ import { ErrorBoundary } from '@/components/layout/ErrorBoundary'
 import { AuthProvider } from '@/lib/firebaseAuth'
 import { ToastProvider } from '@/lib/toast'
 import '@/styles/index.css'
+
+// 커뮤니티(채팅·게시판·댓글)를 desk-platform 실 DB와 동기화 — 토스와 같은 appId 라 기기·플랫폼 공유.
+configureCommunityRemote({
+  baseUrl: import.meta.env.VITE_DESK_PLATFORM_URL ?? 'https://desk-platform.vercel.app',
+  appId: 'aidigestdesk',
+})
 
 const root = document.getElementById('root')
 if (!root) throw new Error('#root element를 찾을 수 없습니다')

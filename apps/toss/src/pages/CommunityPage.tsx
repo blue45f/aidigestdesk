@@ -367,7 +367,7 @@ export function CommunityPage() {
     <div style={{ minHeight: '100dvh', background: theme.bg }}>
       <BackBar onBack={() => goBack('/')} label="소식" />
       <Top title={<Top.TitleParagraph size={22}>💬 <AnimatedTitle size={22}>커뮤니티</AnimatedTitle></Top.TitleParagraph>}
-        subtitleBottom={<Top.SubtitleParagraph size={15}>채팅·게시판·카페 — 데모(이 기기에만 저장)</Top.SubtitleParagraph>} />
+        subtitleBottom={<Top.SubtitleParagraph size={15}>채팅·게시판·카페 — 서버에 저장, 기기·웹과 공유</Top.SubtitleParagraph>} />
       <div style={pageShell}>
         <div style={{ marginBottom: 14 }}>
           <Segmented options={SCOPES} value={scope} onChange={(v) => setScope(v as Scope)} />

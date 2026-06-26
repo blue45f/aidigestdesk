@@ -115,7 +115,7 @@ const seedPosts: Post[] = [
     id: 'seed-welcome-general',
     channelId: 'general',
     author: 'AIDigestDesk',
-    body: '커뮤니티 베타에 오신 것을 환영합니다! 이 공간은 데모 단계이며 모든 글은 이 브라우저에만 저장됩니다.',
+    body: '커뮤니티에 오신 것을 환영합니다! 글은 서버에 저장되어 다른 기기·웹에서도 함께 보여요.',
     createdAt: '2026-06-18T00:00:00.000Z',
   },
   {
@@ -133,7 +133,7 @@ const seedBoardPosts: BoardPost[] = [
     category: '정보공유',
     title: '게시판 베타 오픈 — 카테고리별로 글을 정리해요',
     author: 'AIDigestDesk',
-    body: '자유/질문/정보공유/후기 네 카테고리로 글을 나눠 올릴 수 있습니다. 모든 글은 백엔드 없이 이 브라우저에만 저장됩니다.',
+    body: '자유/질문/정보공유/후기 네 카테고리로 글을 나눠 올릴 수 있습니다. 글은 서버에 저장되어 기기·웹과 공유됩니다.',
     createdAt: '2026-06-18T01:00:00.000Z',
   },
   {
@@ -207,7 +207,7 @@ const seedCafeBoardPosts: BoardPost[] = [
     category: 'cafe:prompt-engineering',
     title: '카페 게시판 사용법 — 가입하면 글을 쓸 수 있어요',
     author: 'AIDigestDesk',
-    body: '가입한 카페에는 전용 미니 게시판이 열립니다. 여기 글도 이 브라우저에만 저장되는 데모입니다.',
+    body: '가입한 카페에는 전용 미니 게시판이 열립니다. 카페 게시판 글도 서버에 저장되어 공유됩니다.',
     createdAt: '2026-06-18T04:00:00.000Z',
   },
 ]
@@ -415,6 +415,107 @@ function createId(prefix = 'post'): string {
 /** crypto.randomUUID 폴백용 단조 증가 카운터(같은 ms 내 충돌 방지). */
 let idCounter = 0
 
+/* ── 실 DB 연동(desk-platform 공개 REST) — 오프라인 퍼스트 ──────────────
+ * configureCommunityRemote()를 앱 시작 시 호출하면 채팅·게시판·댓글이 서버(DB)와 동기화된다.
+ * 미설정(SSR/오프라인)이면 localStorage 단독으로 그대로 동작한다. 채널·카페는 시드 설정 유지.
+ * 쓰기는 낙관적(즉시 로컬 반영) + write-through(서버 POST/DELETE), 임시 id는 서버 id로 치환한다. */
+type CommunityRemoteCfg = { baseUrl: string; appId: string }
+let communityRemote: CommunityRemoteCfg | null = null
+
+type ServerPost = {
+  id: string
+  kind: 'chat' | 'board' | 'comment'
+  channel: string | null
+  parentId: string | null
+  title: string | null
+  author: string
+  authorId: string
+  body: string
+  createdAt: string
+}
+
+function communityPostsUrl(suffix = ''): string {
+  const base = communityRemote!.baseUrl.replace(/\/$/, '')
+  return `${base}/api/v1/apps/${communityRemote!.appId}/community/posts${suffix}`
+}
+
+/** 커뮤니티를 desk-platform 실 DB와 동기화. 앱 1회 호출(웹=main, 토스=main). */
+export function configureCommunityRemote(cfg: CommunityRemoteCfg): void {
+  communityRemote = cfg
+  void syncCommunityFromServer()
+}
+
+/** 서버(DB)를 권위 소스로 채팅/게시판/댓글을 받아 로컬 상태에 반영(채널·카페 시드 유지). */
+export async function syncCommunityFromServer(): Promise<void> {
+  if (!communityRemote || typeof fetch === 'undefined') return
+  try {
+    const res = await fetch(communityPostsUrl())
+    if (!res.ok) return
+    const data = (await res.json()) as { posts: ServerPost[] }
+    const posts: Post[] = []
+    const boardPosts: BoardPost[] = []
+    const comments: Comment[] = []
+    for (const p of data.posts) {
+      if (p.kind === 'chat') {
+        posts.push({ id: p.id, channelId: p.channel ?? 'general', author: p.author, body: p.body, createdAt: p.createdAt, authorId: p.authorId })
+      } else if (p.kind === 'board') {
+        boardPosts.push({ id: p.id, category: p.channel ?? '자유', title: p.title ?? '', author: p.author, body: p.body, createdAt: p.createdAt, authorId: p.authorId })
+      } else {
+        comments.push({ id: p.id, postId: p.parentId ?? '', author: p.author, body: p.body, createdAt: p.createdAt, authorId: p.authorId })
+      }
+    }
+    posts.sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+    boardPosts.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    const state = loadState()
+    saveState({ ...state, posts, boardPosts, comments })
+  } catch {
+    /* 오프라인 — localStorage 캐시로 계속 동작 */
+  }
+}
+
+type ServerKind = ServerPost['kind']
+async function createOnServer(
+  kind: ServerKind,
+  fields: { channel?: string; parentId?: string; title?: string; author: string; body: string }
+): Promise<string | null> {
+  if (!communityRemote || typeof fetch === 'undefined') return null
+  try {
+    const res = await fetch(communityPostsUrl(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ kind, authorKey: getMemberId(), ...fields }),
+    })
+    if (!res.ok) return null
+    const p = (await res.json()) as ServerPost
+    return p.id
+  } catch {
+    return null
+  }
+}
+
+function deleteOnServer(id: string): void {
+  if (!communityRemote || typeof fetch === 'undefined') return
+  void fetch(`${communityPostsUrl(`/${encodeURIComponent(id)}`)}?authorKey=${encodeURIComponent(getMemberId())}`, {
+    method: 'DELETE',
+  }).catch(() => {})
+}
+
+/** 낙관적 추가분의 임시 id를 서버 id로 치환(다음 동기화 시 중복 방지). */
+function reconcileCommunityId(
+  collection: 'posts' | 'boardPosts' | 'comments',
+  tempId: string,
+  serverId: string
+): void {
+  const state = loadState()
+  if (collection === 'posts') {
+    saveState({ ...state, posts: state.posts.map((x) => (x.id === tempId ? { ...x, id: serverId } : x)) })
+  } else if (collection === 'boardPosts') {
+    saveState({ ...state, boardPosts: state.boardPosts.map((x) => (x.id === tempId ? { ...x, id: serverId } : x)) })
+  } else {
+    saveState({ ...state, comments: state.comments.map((x) => (x.id === tempId ? { ...x, id: serverId } : x)) })
+  }
+}
+
 /** 글을 추가하고 새로 만든 Post 를 돌려준다. body 가 비면 던진다. */
 export function addPost(input: { channelId: string; author: string; body: string }): Post {
   const body = input.body.trim()
@@ -434,6 +535,9 @@ export function addPost(input: { channelId: string; author: string; body: string
 
   const state = loadState()
   saveState({ ...state, posts: [...state.posts, post] })
+  void createOnServer('chat', { channel: post.channelId, author: post.author, body: post.body }).then(
+    (serverId) => serverId && reconcileCommunityId('posts', post.id, serverId)
+  )
   return post
 }
 
@@ -460,6 +564,7 @@ export function deletePost(id: string): void {
     posts: state.posts.filter((post) => post.id !== id),
     comments: state.comments.filter((comment) => comment.postId !== id),
   })
+  deleteOnServer(id)
 }
 
 /**
@@ -505,6 +610,9 @@ export function addBoardPost(input: {
 
   const state = loadState()
   saveState({ ...state, boardPosts: [post, ...state.boardPosts] })
+  void createOnServer('board', { channel: post.category, title: post.title, author: post.author, body: post.body }).then(
+    (serverId) => serverId && reconcileCommunityId('boardPosts', post.id, serverId)
+  )
   return post
 }
 
@@ -536,6 +644,7 @@ export function deleteBoardPost(id: string): void {
     boardPosts: state.boardPosts.filter((post) => post.id !== id),
     comments: state.comments.filter((comment) => comment.postId !== id),
   })
+  deleteOnServer(id)
 }
 
 /* ── 댓글(Comment) ─────────────────────────────────────────────── */
@@ -567,6 +676,9 @@ export function addComment(input: { postId: string; author: string; body: string
   }
   const state = loadState()
   saveState({ ...state, comments: [...state.comments, comment] })
+  void createOnServer('comment', { parentId: comment.postId, author: comment.author, body: comment.body }).then(
+    (serverId) => serverId && reconcileCommunityId('comments', comment.id, serverId)
+  )
   return comment
 }
 
@@ -592,6 +704,7 @@ export function deleteComment(id: string): void {
   const target = state.comments.find((comment) => comment.id === id)
   if (!target || !isOwner(target.authorId)) return
   saveState({ ...state, comments: state.comments.filter((comment) => comment.id !== id) })
+  deleteOnServer(id)
 }
 
 /** 현재 브라우저 멤버가 해당 authorId 의 소유자인지. (구버전 데이터는 authorId 없음 → false) */
