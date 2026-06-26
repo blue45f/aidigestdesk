@@ -37,13 +37,19 @@ apps/web    ← Tailwind 렌더 셸(웹 UX)        apps/toss ← 인라인 스�
    (웹 컴포넌트를 토스에 그대로 못 쓰는 이유: Tailwind 런타임 부재 + 비게임 미니앱의 TDS UX 기대 + catalog 번들.)
 3. **효과/오디오/이펙트도 shared** — `sound`·`bgm`·`burst`·`tapRipple`·`dragScroll`·`clipboard` 는 순수 DOM/Web Audio 라
    양쪽이 동일 함수를 호출하고, 각 앱은 트리거만 연결(웹=전역 리스너, 토스=전역 리스너+`haptic`).
+4. **네이티브 능력은 공통 패키지 `@heejun/platform-bridge`** — 공유·햅틱·클립보드·외부링크·식별키·딥링크를
+   `usePlatform()` 단일 인터페이스로. `if (isToss)` 분기 금지. 웹=`webPlatformBridge`, 토스=`createTossPlatformBridge`
+   를 각 `main.tsx`에서 `PlatformContext.Provider`로 주입. 인터페이스 확장은 패키지(desk-platform)에서 하고
+   minor 발행 → 형제 레포 공통 수신. 상세=`desk-platform/docs/PLATFORM_BRIDGE_INTEGRATION.md`.
 
 ## 토스 정책 분기(불가피한 경우만)
 
 아래만 토스 전용 코드를 둔다. 그 외에는 공유한다.
 
 - **스타일 메커니즘** — 토스는 `theme.ts` 인라인 + TDS(`Top`·`Button`). 비게임 미니앱은 TDS UX 를 따른다.
-- **네이티브 API** — `lib/ads`(TossAds)·`lib/haptic`(generateHapticFeedback)·`lib/links`(openURL)·`lib/toss`(env·share).
+- **네이티브 API** — 공통 패키지 `@heejun/platform-bridge`로 추상화(공유 코드는 `usePlatform()`만 호출).
+  토스 네이티브 호출 자체(generateHapticFeedback·openURL·share·env)는 패키지의 `/toss` 구현에 격리되고,
+  배너 광고 UI 플러밍만 `lib/ads`(TossAds)에 남는다.
 - **번들 제약** — catalog 직접 import 대신 생성 JSON(위 표).
 
 ## CI
