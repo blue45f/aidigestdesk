@@ -346,16 +346,30 @@ export function Sidebar({
           <>
             <p className="px-3 pb-2 text-xs font-semibold text-text-subtle">이 페이지 목차</p>
             <nav className="space-y-1">
-              {sections.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-text-muted transition hover:bg-surface-2 hover:text-text"
-                >
-                  <item.icon className="size-4" aria-hidden />
-                  {item.label}
-                </a>
-              ))}
+              {sections.map((item) => {
+                // 활성 표시 — 탭/페인 전환(/tools·/models)은 해시로 동기화되므로 현재 해시와 비교.
+                // App 이 페인 전환 시 리렌더되어 이 값이 갱신된다(없으면 첫 항목을 기본 활성).
+                const hash = typeof window !== 'undefined' ? window.location.hash : ''
+                const active = hash ? item.href === hash : item === sections[0]
+                return (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    aria-current={active ? 'true' : undefined}
+                    className={
+                      active
+                        ? 'flex items-center gap-3 rounded-md bg-surface-2 px-3 py-2 text-sm font-semibold text-text'
+                        : 'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-text-muted transition hover:bg-surface-2 hover:text-text'
+                    }
+                  >
+                    <item.icon
+                      className={active ? 'size-4 text-accent' : 'size-4'}
+                      aria-hidden
+                    />
+                    {item.label}
+                  </a>
+                )
+              })}
             </nav>
           </>
         ) : null}

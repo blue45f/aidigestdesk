@@ -425,7 +425,9 @@ function ToolsPaneSwitcher({
 }) {
   const activeMeta = toolsPaneMeta.find((pane) => pane.id === activePane)
   return (
-    <section id="tools-workbench" className="scroll-mt-32 space-y-3">
+    // 데스크톱(lg+)은 좌측 사이드바 목차가 페인 전환을 담당하므로 중복 카드 그리드를 숨겨
+    // 첫 화면 밀도를 낮춘다. 모바일(<lg)은 사이드바가 없어 이 카드가 유일한 전환 수단.
+    <section id="tools-workbench" className="scroll-mt-32 space-y-3 lg:hidden">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-text-subtle">
