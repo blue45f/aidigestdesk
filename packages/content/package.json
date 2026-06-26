@@ -35,7 +35,8 @@
     "snapshot:sources": "pnpm run build && node scripts/snapshot-sources.mjs",
     "generate:toss-rankings": "pnpm run build && node scripts/generate-toss-rankings.mjs",
     "generate:toss-extras": "pnpm run build && node scripts/generate-toss-extras.mjs",
-    "generate:toss-data": "pnpm run build && node scripts/generate-toss-rankings.mjs && node scripts/generate-toss-extras.mjs",
+    "generate:toss-updates": "pnpm run build && node scripts/generate-toss-updates.mjs",
+    "generate:toss-data": "pnpm run build && node scripts/generate-toss-rankings.mjs && node scripts/generate-toss-extras.mjs && node scripts/generate-toss-updates.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "clean": "rm -rf dist"
