@@ -27,9 +27,12 @@ const sitemapSections: SitemapSection[] = [
     title: '모델·벤치마크·비용',
     description: '제공사별 모델 스펙, 분야별 벤치마크, 비교표, 토큰 비용을 비교합니다.',
     links: [
-      { href: '#comparison', label: '모델 카드', note: '제공사별 스펙·강점·주의점' },
-      { href: '#benchmarks', label: '벤치마크', note: '분야별 점수·속도' },
-      { href: '#costs', label: '비용', note: '토큰 단가·이벤트 비용' },
+      { href: '#rankings', label: '분야별 랭킹', note: '분야별 1위부터 한눈에' },
+      { href: '#comparison', label: '주요 모델 비교', note: '제공사별 스펙·강점·주의점' },
+      { href: '#local-models', label: '설치형 로컬 모델', note: '오픈소스 서빙·프론트엔드' },
+      { href: '#benchmarks', label: '벤치마크 보드', note: '분야별 점수·속도' },
+      { href: '#matrix', label: '기능 비교표', note: '상용 모델 기능 축 비교' },
+      { href: '#cost-calculator', label: '비용 계산기', note: '토큰 단가·할인 일정' },
     ],
   },
   {
@@ -41,7 +44,7 @@ const sitemapSections: SitemapSection[] = [
       { href: '#task-recommendations', label: '작업별 추천', note: '코딩·PPT·리서치·비용' },
       { href: '#ai-tools', label: 'AI 코딩 도구', note: 'IDE·CLI·PR 리뷰·에이전트' },
       { href: '#extensions', label: '확장 디렉터리', note: '플러그인·훅·스킬·MCP·워크플로우' },
-      { href: '#cli-manual', label: 'CLI 비교·매뉴얼', note: '설치·실행·적합도 비교' },
+      { href: '#cli-manual', label: 'CLI 매뉴얼', note: '도구별 명령·옵션 상세 레퍼런스' },
       { href: '#vibe-coding', label: 'CLI 명령어', note: 'CLI/API/IDE 실행형 비교' },
       { href: '#cli-comparison', label: 'CLI 비교표', note: '표면·강점·주의점 비교' },
       { href: '#design', label: '디자인 워크플로', note: '프롬프트·산출물 제작 흐름' },
@@ -82,7 +85,7 @@ const sitemapSections: SitemapSection[] = [
     id: 'community',
     route: 'community',
     title: '커뮤니티',
-    description: '채팅방·게시판·카페로 모델·할인·도움 요청을 나눕니다. (베타 · 브라우저 로컬 저장)',
+    description: '채팅방·게시판·카페로 모델·할인·도움 요청을 나눕니다. (베타 · 서버 공유 저장)',
     links: [{ label: '커뮤니티 열기', note: '토론 채팅방·게시판·카페' }],
   },
   {
