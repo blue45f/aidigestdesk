@@ -2,7 +2,6 @@ import { Top } from '@toss/tds-mobile';
 import { useMemo, useState } from 'react';
 
 import {
-  compareNullsLast,
   extensionEntries,
   extensionKinds,
   extensionPlatforms,
@@ -10,6 +9,7 @@ import {
   modelDomains,
   parseNum,
   snapshotDate,
+  sortBy,
   type ExtensionRankEntry,
   type ModelRankEntry,
 } from '../lib/rankings';
@@ -40,18 +40,6 @@ const EXT_SORTS: { id: string; label: string; pick: (e: ExtensionRankEntry) => n
   { id: 'rank', label: '추천순위', pick: (e) => e.rank },
   { id: 'name', label: '이름', pick: (e) => e.name.toLowerCase() },
 ];
-
-function sortBy<T>(items: T[], pick: (x: T) => number | string | null, dir: Dir): T[] {
-  // 빈 값은 방향 무관 항상 뒤로 — 웹 RankingBoard 와 같은 shared comparator(중복 제거).
-  // 동률은 원본 인덱스로 안정 정렬.
-  return items
-    .map((item, index) => ({ item, index, key: pick(item) }))
-    .sort((a, b) => {
-      const cmp = compareNullsLast(a.key, b.key, dir);
-      return cmp !== 0 ? cmp : a.index - b.index;
-    })
-    .map((x) => x.item);
-}
 
 const rowStyle: React.CSSProperties = {
   display: 'flex', gap: 12, alignItems: 'flex-start', width: '100%', textAlign: 'left', cursor: 'pointer',

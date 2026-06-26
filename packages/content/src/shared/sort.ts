@@ -22,3 +22,21 @@ export function compareNullsLast(
   else cmp = String(a).localeCompare(String(b), 'ko');
   return dir === 'asc' ? cmp : -cmp;
 }
+
+/**
+ * 키 추출자(pick)로 안정 정렬 — compareNullsLast 규칙(빈 값 뒤로) + 동률은 원본 인덱스로 안정화.
+ * 웹·토스가 같은 "키로 정렬" 로직을 공유한다(각 앱의 sortBy 중복 제거).
+ */
+export function sortBy<T>(
+  items: readonly T[],
+  pick: (item: T) => number | string | null | undefined,
+  dir: SortDir = 'asc'
+): T[] {
+  return items
+    .map((item, index) => ({ item, index, key: pick(item) }))
+    .sort((a, b) => {
+      const cmp = compareNullsLast(a.key, b.key, dir);
+      return cmp !== 0 ? cmp : a.index - b.index;
+    })
+    .map((x) => x.item);
+}

@@ -13,11 +13,11 @@ import {
   type ProviderId,
 } from '@aidigestdesk/content'
 import {
-  compareNullsLast,
   looksPrice,
   looksSpeed,
   parseNum,
   parseRank,
+  sortBy,
 } from '@aidigestdesk/content/shared'
 import {
   ArrowRight,
@@ -328,28 +328,27 @@ export function RankingBoard({
     : 'rank'
 
   const rankedModels = useMemo(() => {
-    const dirMul = modelDir === 'asc' ? 1 : -1
-    // 빈 값은 방향 무관 항상 끝으로 — 토스 RankingListPage 와 같은 shared comparator 사용(중복 제거).
-    return domainModels
-      .toSorted((a, b) => {
-        switch (effectiveModelSort) {
-          case 'score':
-            return compareNullsLast(parseNum(a.score), parseNum(b.score), modelDir)
-          case 'price':
-            return compareNullsLast(parseNum(a.price), parseNum(b.price), modelDir)
-          case 'speed':
-            return compareNullsLast(parseNum(a.speed), parseNum(b.speed), modelDir)
-          case 'rank':
-          default: {
-            const ra = parseRank(a.rankLabel) ?? 999
-            const rb = parseRank(b.rankLabel) ?? 999
-            if (ra !== rb) return (ra - rb) * dirMul
-            const sa = parseNum(a.score) ?? -Infinity
-            const sb = parseNum(b.score) ?? -Infinity
-            return (sb - sa) * dirMul
-          }
-        }
+    // 순위(rank)는 특수 타이브레이크(랭크→점수)라 별도, 그 외는 토스와 동일한 shared sortBy(중복 제거).
+    if (effectiveModelSort === 'rank') {
+      const dirMul = modelDir === 'asc' ? 1 : -1
+      return domainModels.toSorted((a, b) => {
+        const ra = parseRank(a.rankLabel) ?? 999
+        const rb = parseRank(b.rankLabel) ?? 999
+        if (ra !== rb) return (ra - rb) * dirMul
+        const sa = parseNum(a.score) ?? -Infinity
+        const sb = parseNum(b.score) ?? -Infinity
+        return (sb - sa) * dirMul
       })
+    }
+    return sortBy(
+      domainModels,
+      effectiveModelSort === 'price'
+        ? (m) => parseNum(m.price)
+        : effectiveModelSort === 'speed'
+          ? (m) => parseNum(m.speed)
+          : (m) => parseNum(m.score),
+      modelDir
+    )
   }, [domainModels, effectiveModelSort, modelDir])
 
   const rankedExtensions = useMemo(() => {
