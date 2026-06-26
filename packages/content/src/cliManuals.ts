@@ -32,6 +32,1179 @@ export type CliToolManual = {
 
 export const cliToolManuals: CliToolManual[] = [
   {
+    "id": "cli-manual-crush",
+    "slug": "crush",
+    "platform": "Crush",
+    "tagline": "터미널에서 바로 쓰는 Charm의 화려한 에이전트형 AI 코딩 도구",
+    "overview": "Crush는 Charm(charmbracelet)이 만든 터미널 우선 AI 코딩 에이전트로, 화려한 TUI 안에서 코드를 읽고 수정하고 명령을 실행한다. Anthropic, OpenAI, Google Gemini, Groq, OpenRouter, Amazon Bedrock, Azure, Vertex AI 등 거의 모든 주요 LLM 프로바이더를 지원하며 세션 도중 모델을 자유롭게 전환할 수 있다. MCP(stdio/http/sse)와 LSP를 결합해 도구와 코드 인텔리전스를 확장하고, 권한 시스템으로 위험한 작업을 통제한다. 대화형 TUI뿐 아니라 `crush run`으로 파이프·스크립트·CI에서 비대화형으로도 쓸 수 있어 자동화에 적합하다. macOS/Linux/Windows를 모두 지원하고 brew, npm, go 등 다양한 경로로 설치된다.",
+    "install": "Homebrew로 설치하는 것이 가장 간편하다: `brew install charmbracelet/tap/crush`. npm 사용자는 `npm install -g @charmland/crush`, Go 사용자는 `go install github.com/charmbracelet/crush@latest`로 설치할 수 있다. Windows는 `winget install charmbracelet.crush` 또는 Scoop(`scoop bucket add charm https://github.com/charmbracelet/scoop-bucket.git` 후 `scoop install crush`)을 쓴다. Nix는 `nix run github:numtide/nix-ai-tools#crush`, Arch는 `yay -S crush-bin`, FreeBSD는 `pkg install crush`로 설치한다. Debian/Ubuntu·Fedora/RHEL은 Charm의 공식 apt/yum 저장소(repo.charm.sh)를 등록한 뒤 `sudo apt install crush` 또는 `sudo yum install crush`로 설치할 수 있다.",
+    "auth": "Crush는 프로바이더별 API 키를 환경변수로 읽는다. 예: `export ANTHROPIC_API_KEY=...`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `GROQ_API_KEY`, `OPENROUTER_API_KEY`, `VERCEL_API_KEY`(AI Gateway), `HF_TOKEN`(Hugging Face), `CEREBRAS_API_KEY`, `HYPER_API_KEY`(Charm Hyper). Amazon Bedrock은 `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`/`AWS_REGION`, Azure는 `AZURE_OPENAI_API_ENDPOINT`/`AZURE_OPENAI_API_KEY`, Vertex AI는 `VERTEXAI_PROJECT`/`VERTEXAI_LOCATION`을 사용한다. 키는 `crush.json`의 `providers`에 직접 넣거나 셸 변수 확장(`$VAR`, `${VAR:-기본값}`, `$(명령)`)으로 주입할 수도 있다. OAuth 기반 플랫폼인 Charm Hyper와 GitHub Copilot은 환경변수 대신 `crush login copilot`처럼 로그인하면 토큰이 저장된다. 모델은 TUI에서 `/models`로 전환하거나 비대화형 모드에서 `crush run -m provider/model`로 지정한다.",
+    "commands": [
+      {
+        "command": "crush",
+        "description": "서브커맨드 없이 실행하면 대화형 TUI 세션이 시작된다(기본 사용 방식).",
+        "example": "crush",
+        "category": "실행"
+      },
+      {
+        "command": "crush run [prompt...]",
+        "description": "단일 프롬프트를 비대화형으로 실행하고 결과를 stdout으로 출력한 뒤 종료한다.",
+        "example": "crush run \"Explain what this repo does\"",
+        "category": "실행"
+      },
+      {
+        "command": "crush run (stdin)",
+        "description": "프롬프트를 인자 대신 표준입력(stdin)으로 파이프해 넘길 수 있어 스크립트·CI에 적합하다.",
+        "example": "curl https://charm.land | crush run \"Summarize this website\"",
+        "category": "실행"
+      },
+      {
+        "command": "-y, --yolo",
+        "description": "모든 권한 프롬프트를 건너뛰고 도구 실행을 자동 승인한다(위험 모드, 신뢰된 환경에서만 사용).",
+        "example": "crush -y",
+        "category": "실행"
+      },
+      {
+        "command": "-s, --session <id>",
+        "description": "지정한 ID의 이전 세션을 이어서 진행한다(루트·run 공통, --continue와 동시 사용 불가).",
+        "example": "crush -s 4f3a2b1c",
+        "category": "세션"
+      },
+      {
+        "command": "-C, --continue",
+        "description": "가장 최근 세션을 이어서 진행한다(루트·run 공통).",
+        "example": "crush -C",
+        "category": "세션"
+      },
+      {
+        "command": "-c, --cwd <dir>",
+        "description": "현재 작업 디렉터리를 재정의한다(모든 명령에 적용되는 전역 플래그).",
+        "example": "crush -c ./my-project",
+        "category": "설정"
+      },
+      {
+        "command": "-D, --data-dir <dir>",
+        "description": "DB와 로그가 저장되는 Crush 데이터 디렉터리를 재정의한다(전역 플래그).",
+        "example": "crush -D ./.crush-data",
+        "category": "설정"
+      },
+      {
+        "command": "-d, --debug",
+        "description": "디버그 로깅을 활성화한다(전역 플래그).",
+        "example": "crush -d",
+        "category": "로그"
+      },
+      {
+        "command": "-H, --host <host>",
+        "description": "특정 Crush 서버 호스트에 연결한다(원격 워크스페이스 관리용 고급 옵션).",
+        "example": "crush -H localhost:7070",
+        "category": "기타"
+      },
+      {
+        "command": "-h, --help",
+        "description": "도움말과 사용법을 출력한다.",
+        "example": "crush --help",
+        "category": "기타"
+      },
+      {
+        "command": "--version",
+        "description": "설치된 Crush 버전을 출력한다.",
+        "example": "crush --version",
+        "category": "기타"
+      },
+      {
+        "command": "-q, --quiet",
+        "description": "crush run에서 진행 스피너를 숨긴다(출력 리디렉션에 유용).",
+        "example": "crush run -q \"Generate a README for this project\"",
+        "category": "실행"
+      },
+      {
+        "command": "-v, --verbose",
+        "description": "crush run에서 로그를 stderr로 출력한다.",
+        "example": "crush run -v \"Refactor this function\"",
+        "category": "로그"
+      },
+      {
+        "command": "-m, --model <model>",
+        "description": "crush run에서 사용할 대형 모델을 지정한다. 'model' 또는 'provider/model' 형식 모두 허용.",
+        "example": "crush run -m openai/gpt-4o \"Add tests\"",
+        "category": "모델"
+      },
+      {
+        "command": "--small-model <model>",
+        "description": "crush run에서 보조(소형) 모델을 지정한다. 미지정 시 프로바이더 기본 소형 모델 사용.",
+        "example": "crush run --small-model openai/gpt-4o-mini \"Summarize this file\"",
+        "category": "모델"
+      },
+      {
+        "command": "crush logs",
+        "description": "Crush가 생성한 로그를 본다(기본으로 마지막 1000줄 출력).",
+        "example": "crush logs",
+        "category": "로그"
+      },
+      {
+        "command": "-f, --follow",
+        "description": "crush logs에서 로그 출력을 실시간으로 팔로우한다.",
+        "example": "crush logs -f",
+        "category": "로그"
+      },
+      {
+        "command": "-t, --tail <N>",
+        "description": "crush logs에서 마지막 N줄만 표시한다(기본 1000).",
+        "example": "crush logs --tail 500",
+        "category": "로그"
+      },
+      {
+        "command": "crush session list",
+        "description": "모든 세션을 ID·제목과 함께 나열한다(별칭: crush session ls, crush sessions).",
+        "example": "crush session list",
+        "category": "세션"
+      },
+      {
+        "command": "crush session show <id>",
+        "description": "특정 세션의 전체 메시지 기록을 표시한다.",
+        "example": "crush session show 4f3a2b1c",
+        "category": "세션"
+      },
+      {
+        "command": "crush session last",
+        "description": "가장 최근 세션을 표시한다.",
+        "example": "crush session last",
+        "category": "세션"
+      },
+      {
+        "command": "crush session delete <id>",
+        "description": "DB에서 세션을 삭제한다(별칭: crush session rm).",
+        "example": "crush session delete 4f3a2b1c",
+        "category": "세션"
+      },
+      {
+        "command": "crush session rename <id> <title>",
+        "description": "세션 제목을 변경한다.",
+        "example": "crush session rename 4f3a2b1c \"Refactor auth\"",
+        "category": "세션"
+      },
+      {
+        "command": "--json",
+        "description": "session·projects 명령의 출력을 JSON으로 내보낸다(자동화·파싱용).",
+        "example": "crush session list --json",
+        "category": "세션"
+      },
+      {
+        "command": "crush projects",
+        "description": "Crush 프로젝트 데이터가 존재하는 디렉터리 목록을 표시한다(--json 지원).",
+        "example": "crush projects --json",
+        "category": "기타"
+      },
+      {
+        "command": "crush update-providers [path-or-url]",
+        "description": "Catwalk에서 프로바이더 정보를 원격으로 갱신한다. 커스텀 URL이나 로컬 파일 경로도 인자로 받는다.",
+        "example": "crush update-providers",
+        "category": "모델"
+      },
+      {
+        "command": "crush update-providers embedded",
+        "description": "프로바이더 정보를 바이너리에 내장된 버전으로 되돌린다.",
+        "example": "crush update-providers embedded",
+        "category": "모델"
+      },
+      {
+        "command": "--source <catwalk|hyper>",
+        "description": "update-providers에서 갱신할 프로바이더 소스를 선택한다(기본 catwalk).",
+        "example": "crush update-providers --source=hyper",
+        "category": "모델"
+      },
+      {
+        "command": "crush login [platform]",
+        "description": "플랫폼에 로그인한다. 사용 가능 플랫폼: hyper, copilot(인자 없으면 Charm Hyper).",
+        "example": "crush login copilot",
+        "category": "인증"
+      },
+      {
+        "command": "-f, --force (login)",
+        "description": "login에서 이미 로그인돼 있어도 강제로 재인증한다(logout에서는 확인 프롬프트 건너뜀).",
+        "example": "crush login -f copilot",
+        "category": "인증"
+      },
+      {
+        "command": "crush logout [platform]",
+        "description": "플랫폼에서 로그아웃하고 저장된 자격증명을 제거한다(인자 없으면 로그인된 플랫폼 목록 표시).",
+        "example": "crush logout copilot",
+        "category": "인증"
+      },
+      {
+        "command": "crush stats",
+        "description": "토큰 사용량·비용·활동 패턴 등 로컬 사용 통계를 생성·표시한다.",
+        "example": "crush stats",
+        "category": "기타"
+      },
+      {
+        "command": "crush dirs",
+        "description": "Crush가 설정과 데이터를 저장하는 디렉터리 경로(발견된 프로젝트 설정 포함)를 보여준다.",
+        "example": "crush dirs",
+        "category": "설정"
+      },
+      {
+        "command": "crush schema",
+        "description": "crush.json 설정 파일의 JSON 스키마를 생성한다(숨김 명령).",
+        "example": "crush schema > crush.schema.json",
+        "category": "설정"
+      }
+    ],
+    "features": [
+      {
+        "title": "화려한 터미널 TUI 에이전트",
+        "body": "Charm 특유의 미려한 TUI 안에서 AI가 파일을 읽고 편집하며 셸 명령을 실행한다. 터미널을 떠나지 않고 에이전트형 코딩 워크플로를 수행할 수 있다."
+      },
+      {
+        "title": "멀티 모델·멀티 프로바이더",
+        "body": "Anthropic, OpenAI, Gemini, Groq, OpenRouter, Vercel AI Gateway, Bedrock, Azure, Vertex AI, Cerebras, Hugging Face, Charm Hyper, GitHub Copilot을 지원하고 세션 도중 /models로 모델을 전환할 수 있다."
+      },
+      {
+        "title": "비대화형 run 모드",
+        "body": "`crush run`으로 단일 프롬프트를 실행해 stdout으로 결과를 받는다. stdin 파이프, 파일 입력, 출력 리디렉션을 지원해 스크립트와 CI 파이프라인에 통합하기 좋다."
+      },
+      {
+        "title": "영속 세션 관리",
+        "body": "대화가 DB에 저장되어 list/show/last/delete/rename으로 관리하고 -s/-C로 이어갈 수 있다. --json 출력으로 자동화 파이프라인에서 파싱하기 쉽다."
+      },
+      {
+        "title": "MCP(Model Context Protocol) 지원",
+        "body": "stdio·http·sse 전송 방식으로 외부 MCP 서버를 연결해 도구를 확장한다. 설정 전반에서 $VAR·${VAR:-default}·$(command) 셸 변수 확장을 사용할 수 있다."
+      },
+      {
+        "title": "LSP 통합",
+        "body": "언어 서버(LSP)를 연동해 코드 인텔리전스를 제공하므로 에이전트가 더 정확하게 코드를 이해하고 수정한다."
+      },
+      {
+        "title": "권한 시스템과 YOLO 모드",
+        "body": "도구 실행 전 권한을 확인하며 permissions.allowed_tools로 허용 도구를 화이트리스트할 수 있다. 신뢰 환경에서는 -y/--yolo로 모든 승인을 건너뛴다."
+      },
+      {
+        "title": "유연한 설정 파일",
+        "body": "프로젝트 로컬 `.crush.json`/`crush.json`과 전역 `~/.config/crush/crush.json`을 계층적으로 병합한다. `crush schema`로 스키마를 생성하고 `crush dirs`로 경로를 확인한다."
+      },
+      {
+        "title": "Catwalk 프로바이더 카탈로그",
+        "body": "모델·프로바이더 메타데이터를 Charm의 Catwalk에서 가져오며 `crush update-providers`로 최신 목록을 동기화하거나 내장 버전으로 되돌릴 수 있다."
+      }
+    ],
+    "tips": [
+      "프로젝트 루트에 `.crush.json`을 두면 그 프로젝트 전용 설정이 적용된다. 경로가 헷갈리면 `crush dirs`로 설정·데이터 위치를 바로 확인하자.",
+      "CI나 스크립트에서는 `curl ... | crush run \"...\"`처럼 stdin 파이프로 비대화형 실행을 활용하면 좋다. 출력은 `>`로 파일에 바로 저장할 수 있다.",
+      "세션을 자동화로 다룰 때는 `--json`을 붙여 기계가 읽기 좋은 출력을 받자(예: `crush session list --json`).",
+      "`-y/--yolo`는 모든 권한 확인을 건너뛰므로 반드시 신뢰할 수 있는 디렉터리·환경에서만 사용한다.",
+      "문제 추적 시 `crush -d`로 디버그 로깅을 켜고 `crush logs -f`로 실시간 로그를 따라가면 원인을 빠르게 찾을 수 있다.",
+      "세션 ID는 전체 UUID 대신 해시 접두어만으로도 매칭되므로 `crush session show 4f3a`처럼 짧게 입력해도 된다.",
+      "모델 비교가 필요하면 TUI에서 `/models`로 전환하거나, 비대화형에서는 `crush run -m provider/model`로 모델을 직접 지정한다.",
+      "새 모델이 안 보이면 `crush update-providers`로 Catwalk 카탈로그를 갱신하고, 오프라인이면 `crush update-providers embedded`로 내장 버전을 쓴다.",
+      "API 키는 환경변수 또는 `crush.json`에 넣되, 민감정보는 `${VAR}`나 `$(...)` 확장으로 주입해 평문 노출을 줄이자.",
+      "GitHub Copilot이나 Charm Hyper는 키 대신 `crush login copilot`/`crush login`으로 OAuth 인증하면 토큰이 안전하게 저장된다."
+    ],
+    "sourceUrls": [
+      "https://github.com/charmbracelet/crush",
+      "https://github.com/charmbracelet/crush/blob/main/README.md",
+      "https://charmbracelet-crush.mintlify.app/quickstart"
+    ]
+  },
+  {
+    "id": "cli-manual-goose",
+    "slug": "goose",
+    "platform": "Goose",
+    "tagline": "코드와 워크플로를 자동화하는 오픈소스 로컬 AI 에이전트 (데스크톱·CLI·API)",
+    "overview": "Goose는 Block에서 시작해 현재 Linux Foundation 산하 Agentic AI Foundation(AAIF, aaif-goose)이 관리하는 오픈소스 AI 에이전트다. 데스크톱 앱·CLI·API 형태로 로컬에서 동작하며 Rust로 작성되어 빠르고 이식성이 좋다. 단순 코드 제안을 넘어 코드 작성·실행·수정·테스트는 물론 리서치, 자동화, 데이터 분석 같은 범용 작업까지 직접 수행한다. Anthropic, OpenAI, Google, Ollama 등 40여 개 LLM 프로바이더와 MCP(Model Context Protocol) 기반 확장 생태계를 지원한다. 레시피(Recipes)로 워크플로를 패키징·공유하고, 스케줄로 무인 자동화까지 구성할 수 있다.",
+    "install": "macOS/Linux에서는 공식 설치 스크립트로 CLI를 설치한다: `curl -fsSL https://github.com/aaif-goose/goose/releases/download/stable/download_cli.sh | bash`. 설치 중 대화형 설정을 건너뛰려면 `CONFIGURE=false`를 붙인다. Homebrew를 쓰면 CLI는 `brew install block-goose-cli`, 데스크톱 앱은 `brew install --cask block-goose`로 설치한다. Windows는 PowerShell에서 `download_cli.ps1`을 받아 실행하거나 Git Bash/WSL에서 동일한 curl 명령을 사용한다. (저장소는 block/goose에서 AAIF의 aaif-goose/goose로, 문서는 block.github.io/goose에서 goose-docs.ai로 이전되었다.)",
+    "auth": "설치 후 `goose configure`를 실행해 LLM 프로바이더를 설정한다. 메뉴에서 'Configure Providers'를 선택한 뒤 프로바이더(Anthropic, OpenAI, Google Gemini, Ollama, OpenRouter, Azure OpenAI, Amazon Bedrock 등 40+)를 고르고 API 키와 모델을 입력하면 자동 저장된다. 같은 메뉴의 'Add Extension'으로 MCP 확장도 추가/토글할 수 있다. 환경변수로도 지정 가능하다: `export GOOSE_PROVIDER=anthropic`, `export GOOSE_MODEL=claude-sonnet-4-0`. 실행 단위로는 `goose run --provider anthropic --model claude-sonnet-4-0`처럼 덮어쓴다. API 키는 시스템 키체인 또는 설정 파일에 저장되며, 현재 설정 파일 위치는 `goose info`로 확인할 수 있다.",
+    "commands": [
+      {
+        "command": "goose configure",
+        "description": "프로바이더·모델·확장 등 Goose 설정을 대화형 메뉴로 구성한다.",
+        "example": "goose configure",
+        "category": "설정"
+      },
+      {
+        "command": "goose session",
+        "description": "대화형 채팅 세션을 새로 시작한다. -n으로 이름을 지정한다.",
+        "example": "goose session -n my-project",
+        "category": "세션"
+      },
+      {
+        "command": "goose session -r, --resume",
+        "description": "이전 세션을 이어서 재개한다(이름 또는 --session-id로 지정).",
+        "example": "goose session --resume -n my-project",
+        "category": "세션"
+      },
+      {
+        "command": "goose session --fork",
+        "description": "기존 세션을 복제(분기)해 원본을 보존한 채 새 갈래로 진행한다.",
+        "example": "goose session --resume --fork --name my-project",
+        "category": "세션"
+      },
+      {
+        "command": "goose session list",
+        "description": "저장된 세션 목록을 표시한다(-f json, -w 작업 디렉터리 필터, -l 개수 제한).",
+        "example": "goose session list --format json",
+        "category": "세션"
+      },
+      {
+        "command": "goose session remove",
+        "description": "저장된 세션을 하나 이상 삭제한다(-n 이름, --session-id, -r 정규식).",
+        "example": "goose session remove --session-id 20251108_3",
+        "category": "세션"
+      },
+      {
+        "command": "goose session export",
+        "description": "세션 내용을 markdown/json/yaml 파일로 내보낸다.",
+        "example": "goose session export -n my-session --format json -o session-backup.json",
+        "category": "세션"
+      },
+      {
+        "command": "goose session diagnostics",
+        "description": "문제 해결용 진단 JSON 리포트를 생성한다.",
+        "example": "goose session diagnostics -n my-session -o report.json",
+        "category": "세션"
+      },
+      {
+        "command": "goose run",
+        "description": "비대화형(헤드리스)으로 작업을 실행한다. 텍스트·파일·레시피 입력을 지원한다.",
+        "example": "goose run --instructions plan.md",
+        "category": "실행"
+      },
+      {
+        "command": "goose run -i, --instructions <FILE>",
+        "description": "지시문 파일의 내용을 실행한다.",
+        "example": "goose run -i plan.md",
+        "category": "실행"
+      },
+      {
+        "command": "goose run -t, --text <TEXT>",
+        "description": "인라인 텍스트 지시를 바로 실행한다.",
+        "example": "goose run -t \"list all TODOs in this repo\"",
+        "category": "실행"
+      },
+      {
+        "command": "goose run --recipe <FILE>",
+        "description": "레시피 파일을 실행한다. --interactive와 함께 대화형으로 진입할 수 있다.",
+        "example": "goose run --recipe recipe.yaml --interactive",
+        "category": "실행"
+      },
+      {
+        "command": "goose run --params <KEY=VALUE>",
+        "description": "레시피 실행 시 파라미터를 주입한다.",
+        "example": "goose run --recipe recipe.yaml --params environment=production",
+        "category": "실행"
+      },
+      {
+        "command": "goose run --provider <P> --model <M>",
+        "description": "이번 실행에 사용할 프로바이더·모델을 덮어쓴다.",
+        "example": "goose run -t \"hi\" --provider anthropic --model claude-sonnet-4-0",
+        "category": "실행"
+      },
+      {
+        "command": "goose session --with-builtin <ids>",
+        "description": "내장 확장(developer, computercontroller 등)을 세션에 즉시 로드한다.",
+        "example": "goose session --with-builtin \"developer,computercontroller\"",
+        "category": "확장(MCP)"
+      },
+      {
+        "command": "goose session --with-extension <cmd>",
+        "description": "외부 MCP 서버(stdio 명령)를 일회성으로 연결한다. 환경변수도 앞에 붙일 수 있다.",
+        "example": "goose session --with-extension \"uvx mcp-server-fetch\"",
+        "category": "확장(MCP)"
+      },
+      {
+        "command": "goose session --with-streamable-http-extension <url>",
+        "description": "원격 Streamable HTTP MCP 확장을 연결한다.",
+        "example": "goose session --with-streamable-http-extension \"https://example.com/streamable\"",
+        "category": "확장(MCP)"
+      },
+      {
+        "command": "goose mcp <name>",
+        "description": "활성화된 내장 확장을 MCP 서버로 실행해 다른 클라이언트에서 사용한다.",
+        "example": "goose mcp developer",
+        "category": "확장(MCP)"
+      },
+      {
+        "command": "goose recipe list",
+        "description": "사용 가능한 레시피를 나열한다(-v 상세, --format 지정).",
+        "example": "goose recipe list --verbose",
+        "category": "레시피"
+      },
+      {
+        "command": "goose recipe validate <FILE>",
+        "description": "레시피 파일의 형식·필드 유효성을 검사한다.",
+        "example": "goose recipe validate my-recipe.yaml",
+        "category": "레시피"
+      },
+      {
+        "command": "goose recipe deeplink <FILE>",
+        "description": "레시피로 세션을 바로 여는 공유용 딥링크 URL을 생성한다(-p 파라미터).",
+        "example": "goose recipe deeplink my-recipe.yaml",
+        "category": "레시피"
+      },
+      {
+        "command": "goose recipe open <FILE>",
+        "description": "레시피를 열어 해당 설정으로 세션을 시작한다.",
+        "example": "goose recipe open my-recipe.yaml",
+        "category": "레시피"
+      },
+      {
+        "command": "goose schedule add",
+        "description": "cron 식으로 레시피 자동 실행 일정을 등록한다.",
+        "example": "goose schedule add --schedule-id daily --cron \"0 0 9 * * *\" --recipe-source ./recipes/daily.yaml",
+        "category": "스케줄"
+      },
+      {
+        "command": "goose schedule list",
+        "description": "등록된 스케줄 목록을 표시한다.",
+        "example": "goose schedule list",
+        "category": "스케줄"
+      },
+      {
+        "command": "goose schedule remove",
+        "description": "등록된 스케줄을 삭제한다.",
+        "example": "goose schedule remove --schedule-id daily",
+        "category": "스케줄"
+      },
+      {
+        "command": "goose schedule sessions",
+        "description": "특정 스케줄이 생성한 세션들을 조회한다.",
+        "example": "goose schedule sessions --schedule-id daily",
+        "category": "스케줄"
+      },
+      {
+        "command": "goose schedule run-now",
+        "description": "스케줄을 기다리지 않고 즉시 한 번 실행한다.",
+        "example": "goose schedule run-now --schedule-id daily",
+        "category": "스케줄"
+      },
+      {
+        "command": "goose project",
+        "description": "마지막 프로젝트를 이어서 시작하거나 새 프로젝트를 만든다(별칭 p).",
+        "example": "goose project",
+        "category": "프로젝트"
+      },
+      {
+        "command": "goose projects",
+        "description": "저장된 프로젝트 중 하나를 골라 시작한다(별칭 ps).",
+        "example": "goose projects",
+        "category": "프로젝트"
+      },
+      {
+        "command": "goose plugin install <URL>",
+        "description": "git 저장소 기반 Goose 플러그인을 설치한다(--auto-update 지원).",
+        "example": "goose plugin install https://github.com/example/my-goose-plugin.git",
+        "category": "플러그인"
+      },
+      {
+        "command": "goose plugin update <NAME>",
+        "description": "설치된 플러그인을 최신으로 갱신한다.",
+        "example": "goose plugin update my-goose-plugin",
+        "category": "플러그인"
+      },
+      {
+        "command": "goose acp",
+        "description": "stdio로 Agent Client Protocol 서버를 실행해 에디터(예: Zed)와 통합한다.",
+        "example": "goose acp",
+        "category": "통합"
+      },
+      {
+        "command": "@goose, @g",
+        "description": "셸 프롬프트에서 명령 히스토리를 포함해 Goose에게 바로 질문한다(터미널 통합).",
+        "example": "@goose why did the last command fail?",
+        "category": "통합"
+      },
+      {
+        "command": "goose info",
+        "description": "버전·설정 파일 위치·세션 저장소·로그 경로를 표시한다(-v 상세).",
+        "example": "goose info -v",
+        "category": "정보·유지보수"
+      },
+      {
+        "command": "goose update",
+        "description": "Goose CLI를 최신 버전으로 갱신한다(-c 카나리 개발판, -r 재설정).",
+        "example": "goose update --canary",
+        "category": "정보·유지보수"
+      },
+      {
+        "command": "goose completion <SHELL>",
+        "description": "셸 자동완성 스크립트를 생성한다(bash/zsh/fish/powershell/elvish/nu).",
+        "example": "goose completion zsh",
+        "category": "정보·유지보수"
+      },
+      {
+        "command": "goose --help",
+        "description": "전체 명령·옵션 도움말을 표시한다.",
+        "example": "goose --help",
+        "category": "정보·유지보수"
+      },
+      {
+        "command": "goose --version",
+        "description": "설치된 Goose 버전을 출력한다.",
+        "example": "goose --version",
+        "category": "정보·유지보수"
+      }
+    ],
+    "features": [
+      {
+        "title": "멀티 인터페이스 로컬 에이전트",
+        "body": "데스크톱 앱·CLI·API를 모두 제공하며 Rust로 작성되어 빠르고 이식성이 높다. 작업이 사용자 머신에서 로컬로 실행된다."
+      },
+      {
+        "title": "40+ LLM 프로바이더",
+        "body": "Anthropic, OpenAI, Google Gemini, Ollama, OpenRouter, Azure OpenAI, Amazon Bedrock, Groq, Databricks 등 40여 개 프로바이더를 지원해 모델을 자유롭게 교체한다."
+      },
+      {
+        "title": "MCP 확장 생태계",
+        "body": "Model Context Protocol 기반으로 developer·computercontroller·memory 같은 내장 확장과 외부 MCP 서버(stdio/Streamable HTTP)를 연결해 기능을 확장한다."
+      },
+      {
+        "title": "레시피(Recipes)",
+        "body": "확장·프롬프트·설정을 하나로 묶은 재사용 워크플로다. 파라미터·서브레시피를 지원하고 딥링크 URL로 팀과 공유·재현할 수 있다."
+      },
+      {
+        "title": "스케줄 자동화",
+        "body": "cron 식으로 레시피를 정기 실행하도록 등록하고, 실행 이력 조회나 즉시 실행(run-now)도 가능하다."
+      },
+      {
+        "title": "헤드리스 실행",
+        "body": "goose run으로 지시문 파일·인라인 텍스트·레시피를 비대화형으로 실행해 CI나 스크립트에 통합한다."
+      },
+      {
+        "title": "도구 실행 모드 제어",
+        "body": "auto/approve/chat/smart_approve 모드(GOOSE_MODE)로 에이전트의 도구 실행 승인 방식을 세밀하게 통제한다."
+      },
+      {
+        "title": "플랜 모드와 플래너 모델",
+        "body": "계획 단계와 실행 단계를 분리하고, GOOSE_PLANNER_PROVIDER/MODEL로 계획 전용 모델을 따로 지정할 수 있다."
+      },
+      {
+        "title": "세션/프로젝트 관리",
+        "body": "세션 재개(--resume)·분기(--fork)·내보내기(export)·진단(diagnostics)과 프로젝트 단위 작업 전환을 지원한다."
+      },
+      {
+        "title": "에디터·셸 통합",
+        "body": "ACP 서버(goose acp)로 Zed 같은 에디터와 연동하고, @goose/@g로 셸에서 곧바로 질문할 수 있다."
+      }
+    ],
+    "tips": [
+      "설치 중 대화형 설정을 건너뛰려면 설치 스크립트에 `CONFIGURE=false`를 전달한다.",
+      "프로바이더·확장 관리는 `goose configure`로, 현재 설정 파일·로그·세션 저장 위치 확인은 `goose info`로 한다.",
+      "긴 작업은 `--resume`로 이어가고, 분기 실험이 필요하면 `--fork`로 원본 세션을 보존한다.",
+      "기본 모델을 고정하려면 `GOOSE_PROVIDER`, `GOOSE_MODEL` 환경변수를 쓰고, 일회성 변경은 run의 --provider/--model로 덮어쓴다.",
+      "도구 실행 승인 방식은 `GOOSE_MODE=auto|approve|chat|smart_approve`로 조정한다(예: 무인 자동화는 auto).",
+      "컨텍스트 한도 초과 처리는 `GOOSE_CONTEXT_STRATEGY`(summarize/truncate/clear/prompt)로 제어한다.",
+      "확장을 영구 등록 없이 그 세션에만 쓰려면 `--with-builtin`/`--with-extension`를 활용한다.",
+      "반복 워크플로는 레시피로 패키징하고 `goose recipe deeplink`로 공유 URL을 만들어 팀과 재현한다.",
+      "무인 자동화는 schedule + recipe 조합으로 구성하고, 등록 전 `goose recipe validate`로 레시피를 검증한다.",
+      "`GOOSE_CLI_THEME`(light/dark/ansi)와 `GOOSE_PROMPT_EDITOR`로 CLI 사용 경험을 커스터마이즈한다."
+    ],
+    "sourceUrls": [
+      "https://github.com/aaif-goose/goose",
+      "https://goose-docs.ai/",
+      "https://goose-docs.ai/docs/guides/goose-cli-commands/"
+    ]
+  },
+  {
+    "id": "cli-manual-amazon-q-cli",
+    "slug": "amazon-q-cli",
+    "platform": "Amazon Q Developer CLI",
+    "tagline": "터미널에서 동작하는 AWS의 AI 코딩 에이전트 — 자연어로 셸 명령을 만들고 MCP 도구까지 연결하는 q 커맨드",
+    "overview": "Amazon Q Developer CLI(`q`)는 터미널에서 바로 쓰는 생성형 AI 어시스턴트로, Amazon Bedrock을 기반으로 동작한다. 핵심 명령 `q chat`은 에이전트형 환경으로, 파일을 읽고 쓰고 bash 명령을 실행하며 AWS API를 호출해 작업을 자율적으로 수행한다(작업 전 승인 가능). `q translate`로 자연어를 셸 명령으로 변환하고, MCP 서버를 연결해 외부 도구를 확장할 수 있다. 무료 AWS Builder ID 또는 조직용 IAM Identity Center(Pro)로 로그인하며, 채팅 세션 안에서는 `/`로 시작하는 슬래시 명령으로 컨텍스트·도구·모델을 제어한다. 참고로 이 오픈소스 프로젝트는 현재 유지보수 모드이며 최신 기능은 후속 제품 Kiro CLI로 이전되고 있다.",
+    "install": "macOS에서는 Homebrew로 `brew install --cask amazon-q`를 실행하거나 공식 DMG를 내려받아 설치한다. Linux는 Ubuntu/Debian용 `.deb` 패키지, 배포판 독립 `AppImage`, zip 기반 대체 빌드를 제공한다(공식 설치 문서 참고). 설치 후 `q --version`으로 확인하고, 셸 자동완성·인라인 기능이 필요하면 `q integrations install dotfiles`로 셸 통합을 추가한 뒤 `q login`으로 인증한다.",
+    "auth": "Amazon Q는 무료 AWS Builder ID 또는 조직용 IAM Identity Center(Pro)로 로그인한다. `q login`을 실행하면 로그인 방식 선택 프롬프트가 뜨고 브라우저가 열려 PKCE 인증을 진행한다. 무료는 `q login --license free`, 조직 SSO는 `q login --license pro --identity-provider <start-url> --region <region>` 형태로 지정하며, 원격/헤드리스 환경은 `q login --use-device-flow`로 디바이스 코드 방식을 쓴다. 현재 로그인 상태는 `q whoami`, 로그아웃은 `q logout`, Pro 프로필 전환은 `q profile`로 처리한다.",
+    "commands": [
+      {
+        "command": "q chat",
+        "description": "터미널에서 Amazon Q AI 에이전트와 대화를 시작한다. 파일 읽기·쓰기, bash 실행, 코드 생성을 수행한다. 주요 옵션: -r/--resume, --model, --agent, --trust-all-tools, --no-interactive.",
+        "example": "q chat \"Explain the error in app.log and fix it\"",
+        "category": "대화"
+      },
+      {
+        "command": "q translate",
+        "description": "자연어 설명을 셸 명령으로 변환한다(별칭 q ai). 생성된 명령을 검토 후 실행할 수 있다.",
+        "example": "q translate \"find files larger than 100MB modified this week\"",
+        "category": "자연어 변환"
+      },
+      {
+        "command": "q login",
+        "description": "Builder ID(무료) 또는 IAM Identity Center(Pro)로 로그인한다. --use-device-flow로 디바이스 코드 방식도 쓸 수 있다.",
+        "example": "q login --license pro --identity-provider https://my-sso.awsapps.com/start --region us-east-1",
+        "category": "인증"
+      },
+      {
+        "command": "q logout",
+        "description": "현재 계정에서 로그아웃하고 저장된 인증 토큰을 제거한다.",
+        "example": "q logout",
+        "category": "인증"
+      },
+      {
+        "command": "q whoami",
+        "description": "현재 로그인 세션 정보(계정 유형, start URL, 리전)를 출력한다. --format json 지원.",
+        "example": "q whoami --format json",
+        "category": "인증"
+      },
+      {
+        "command": "q profile",
+        "description": "IAM Identity Center(Pro) 사용자의 Q Developer 프로필을 조회·전환한다.",
+        "example": "q profile",
+        "category": "인증"
+      },
+      {
+        "command": "q settings",
+        "description": "CLI 외형과 동작 설정값을 읽고 쓴다. `q settings open`으로 설정 파일을 열고, `q settings list --all`로 전체 설정을 본다.",
+        "example": "q settings chat.enableKnowledge true",
+        "category": "설정"
+      },
+      {
+        "command": "q mcp add",
+        "description": "MCP 서버를 설정에 추가한다. --name, --command 필수이며 --args, --env, --scope, --agent, --timeout, --force를 지원한다.",
+        "example": "q mcp add --name git --command uvx --args git-mcp-server",
+        "category": "MCP 관리"
+      },
+      {
+        "command": "q mcp list",
+        "description": "설정된 MCP 서버 목록을 스코프별로 출력한다.",
+        "example": "q mcp list global",
+        "category": "MCP 관리"
+      },
+      {
+        "command": "q mcp import",
+        "description": "다른 파일에서 MCP 서버 구성을 가져온다. --force로 동일 이름 서버를 덮어쓴다.",
+        "example": "q mcp import --file servers.json",
+        "category": "MCP 관리"
+      },
+      {
+        "command": "q mcp remove",
+        "description": "설정에서 지정한 MCP 서버를 제거한다(별칭 rm).",
+        "example": "q mcp remove --name git",
+        "category": "MCP 관리"
+      },
+      {
+        "command": "q agent",
+        "description": "재사용 가능한 에이전트(도구·컨텍스트·권한·모델 묶음)를 관리한다. 하위: list, create, edit, validate, migrate, set-default.",
+        "example": "q agent create --name backend-dev",
+        "category": "에이전트 관리"
+      },
+      {
+        "command": "q doctor",
+        "description": "설치·통합과 관련된 일반적인 문제를 자동으로 진단하고 수정한다.",
+        "example": "q doctor",
+        "category": "진단·유지보수"
+      },
+      {
+        "command": "q diagnostic",
+        "description": "환경·설치 상태 진단 정보를 수집해 출력한다(별칭 diagnostics). --format json 지원.",
+        "example": "q diagnostic",
+        "category": "진단·유지보수"
+      },
+      {
+        "command": "q update",
+        "description": "Amazon Q 애플리케이션을 최신 버전으로 업데이트한다(별칭 upgrade).",
+        "example": "q update",
+        "category": "진단·유지보수"
+      },
+      {
+        "command": "q inline",
+        "description": "셸 입력 중 실시간 인라인 자동완성 기능을 제어한다. 하위: enable, disable, status.",
+        "example": "q inline status",
+        "category": "셸 통합"
+      },
+      {
+        "command": "q integrations install",
+        "description": "셸 dotfile, 입력기 등 시스템 통합을 설치한다. uninstall/reinstall/status도 지원한다.",
+        "example": "q integrations install dotfiles",
+        "category": "셸 통합"
+      },
+      {
+        "command": "q issue",
+        "description": "Amazon Q CLI GitHub 저장소에 새 이슈(버그·기능 요청)를 생성한다.",
+        "example": "q issue \"Bug: chat hangs on large files\"",
+        "category": "기타 CLI"
+      },
+      {
+        "command": "q --version",
+        "description": "설치된 CLI 버전을 출력한다. `q version --changelog`로 변경 이력도 본다.",
+        "example": "q --version",
+        "category": "기타 CLI"
+      },
+      {
+        "command": "q --help",
+        "description": "전체 명령·옵션 도움말을 출력한다. 모든 하위 명령 도움말은 `q --help-all`.",
+        "example": "q chat --help",
+        "category": "기타 CLI"
+      },
+      {
+        "command": "/help",
+        "description": "채팅 세션에서 사용할 수 있는 모든 슬래시 명령과 단축키 목록을 표시한다.",
+        "example": "/help",
+        "category": "채팅 슬래시 명령"
+      },
+      {
+        "command": "/quit",
+        "description": "채팅 세션을 종료한다(별칭 /q, /exit).",
+        "example": "/quit",
+        "category": "채팅 슬래시 명령"
+      },
+      {
+        "command": "/clear",
+        "description": "현재 대화 기록을 모두 지운다.",
+        "example": "/clear",
+        "category": "채팅 슬래시 명령"
+      },
+      {
+        "command": "/editor",
+        "description": "$EDITOR(기본 vi)를 열어 긴 프롬프트를 작성한다.",
+        "example": "/editor",
+        "category": "채팅 슬래시 명령"
+      },
+      {
+        "command": "/compact",
+        "description": "대화 내용을 AI 요약으로 압축해 컨텍스트 공간을 확보한다.",
+        "example": "/compact",
+        "category": "채팅 슬래시 명령"
+      },
+      {
+        "command": "/usage",
+        "description": "현재 세션의 컨텍스트 윈도우 사용량(토큰)을 항목별로 표시한다.",
+        "example": "/usage",
+        "category": "채팅 슬래시 명령"
+      },
+      {
+        "command": "/context",
+        "description": "세션에 포함되는 컨텍스트 파일/규칙을 관리한다. 하위: show, add, rm, clear.",
+        "example": "/context add README.md",
+        "category": "채팅 슬래시 명령"
+      },
+      {
+        "command": "/tools",
+        "description": "사용 가능한 도구와 권한을 확인·관리한다. 하위: trust, untrust, reset, schema.",
+        "example": "/tools trust fs_read",
+        "category": "채팅 슬래시 명령"
+      },
+      {
+        "command": "/model",
+        "description": "현재 대화에 사용할 모델을 선택한다.",
+        "example": "/model",
+        "category": "채팅 슬래시 명령"
+      },
+      {
+        "command": "/save",
+        "description": "현재 대화를 파일로 저장한다. -f/--force로 덮어쓰기.",
+        "example": "/save my-conversation.json",
+        "category": "채팅 슬래시 명령"
+      },
+      {
+        "command": "/load",
+        "description": "이전에 저장한 대화 파일을 불러온다.",
+        "example": "/load my-conversation.json",
+        "category": "채팅 슬래시 명령"
+      },
+      {
+        "command": "/agent",
+        "description": "세션 내 에이전트를 관리·전환한다. 하위: list, create, edit, generate, schema, set-default, swap.",
+        "example": "/agent list",
+        "category": "채팅 슬래시 명령"
+      },
+      {
+        "command": "/prompts",
+        "description": "저장된 프롬프트(프롬프트 라이브러리)를 조회·사용한다.",
+        "example": "/prompts list",
+        "category": "채팅 슬래시 명령"
+      },
+      {
+        "command": "/mcp",
+        "description": "현재 세션에 로드된 MCP 서버와 도구 상태를 표시한다.",
+        "example": "/mcp",
+        "category": "채팅 슬래시 명령"
+      },
+      {
+        "command": "/knowledge",
+        "description": "영구 컨텍스트 저장용 지식 베이스를 관리한다(Beta, 설정 활성화 필요). 하위: show, add, update, remove, clear.",
+        "example": "/knowledge show",
+        "category": "채팅 슬래시 명령"
+      },
+      {
+        "command": "/subscribe",
+        "description": "쿼리 한도를 늘리기 위해 Amazon Q Developer Pro 구독으로 업그레이드한다.",
+        "example": "/subscribe",
+        "category": "채팅 슬래시 명령"
+      },
+      {
+        "command": "/todos",
+        "description": "에이전트가 만든 to-do 리스트를 보고 관리하거나 이어서 재개한다.",
+        "example": "/todos",
+        "category": "채팅 슬래시 명령"
+      }
+    ],
+    "features": [
+      {
+        "title": "에이전트형 코딩",
+        "body": "`q chat`이 파일 읽기·쓰기, bash 명령 실행, AWS API 호출, 코드 작성을 자율적으로 수행한다. 각 동작 전 승인 프롬프트 또는 --trust-all-tools 자동 실행이 가능하다."
+      },
+      {
+        "title": "자연어 → 셸 변환",
+        "body": "`q translate`(별칭 ai)로 평범한 설명을 정확한 셸 명령으로 바꿔, 복잡한 옵션·파이프 문법을 외우지 않고도 명령을 만들고 실행한다."
+      },
+      {
+        "title": "MCP 도구 확장",
+        "body": "`q mcp` 명령과 mcpServers 구성으로 Model Context Protocol 서버를 표준 방식으로 연결해 외부 데이터·도구를 채팅 세션의 도구로 끌어온다."
+      },
+      {
+        "title": "정밀한 컨텍스트 관리",
+        "body": "/context로 파일·규칙을 주입하고, /compact·/usage로 컨텍스트 윈도우 사용량을 압축·점검한다."
+      },
+      {
+        "title": "재사용 가능한 에이전트",
+        "body": "`q agent`/`/agent`로 도구·권한·컨텍스트·모델을 묶은 에이전트를 JSON으로 정의해 작업 유형별로 전환한다."
+      },
+      {
+        "title": "도구 권한 모델",
+        "body": "/tools로 도구별 신뢰(trust/untrust)와 스키마를 관리해 위험한 동작을 통제하고, 비대화 실행 시 --trust-all-tools로 허용 범위를 지정한다."
+      },
+      {
+        "title": "유연한 인증",
+        "body": "무료 AWS Builder ID와 조직용 IAM Identity Center(Pro)를 모두 지원하며, 브라우저 PKCE와 헤드리스용 디바이스 코드 흐름을 제공한다."
+      },
+      {
+        "title": "대화 영속성",
+        "body": "/save·/load로 대화를 파일로 저장·복원하고, `q chat --resume`(-r)로 디렉터리의 직전 세션을 그대로 이어간다."
+      },
+      {
+        "title": "셸 통합과 자동완성",
+        "body": "`q inline`의 인라인 완성과 `q integrations install`의 dotfile·입력기 통합으로 기존 터미널 워크플로에 자연스럽게 들어간다."
+      },
+      {
+        "title": "지식 베이스 (Beta)",
+        "body": "/knowledge로 파일·디렉터리를 인덱싱해 시맨틱 검색이 가능한 영구 컨텍스트를 만들고 세션을 넘어 재사용한다."
+      }
+    ],
+    "tips": [
+      "스크립트·CI에서는 `q chat --no-interactive \"...\"`로 비대화 실행하고 출력을 파이프로 활용하라.",
+      "위험한 자동 실행을 막으려면 /tools로 현재 권한을 확인하고 필요한 도구만 trust 하라(--trust-all-tools는 신중히).",
+      "긴 세션에서 응답 품질이 떨어지면 /compact로 대화를 요약 압축하고 /usage로 토큰 사용량을 점검하라.",
+      "자주 쓰는 프롬프트는 `~/.aws/amazonq/prompts`에 Markdown으로 저장해 /prompts로 재사용하라.",
+      "프로젝트별 규칙·문서는 에이전트 resources나 /context add로 주입하면 답변 정확도가 올라간다.",
+      "원격 서버·헤드리스 환경에서 로그인이 안 되면 `q login --use-device-flow`를 사용하라.",
+      "설치·통합 문제는 우선 `q doctor`와 `q diagnostic`으로 자가 진단하라.",
+      "무료 한도를 넘으면 /subscribe로 Pro 업그레이드가 가능하며, 한도·사용량은 /usage로 확인한다.",
+      "MCP 서버는 워크스페이스(--scope workspace)와 전역(--scope global)을 구분해 관리하면 충돌을 피한다.",
+      "이 오픈소스 q CLI는 유지보수 모드이고 최신 기능은 Kiro CLI로 이전 중이므로, 신규 도입 시 후속 제품도 함께 검토하라."
+    ],
+    "sourceUrls": [
+      "https://github.com/aws/amazon-q-developer-cli",
+      "https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/what-is.html",
+      "https://aws.amazon.com/q/developer/"
+    ]
+  },
+  {
+    "id": "cli-manual-qwen-code",
+    "slug": "qwen-code",
+    "platform": "Qwen Code",
+    "tagline": "터미널에서 동작하는 Qwen 모델 기반 오픈소스 AI 코딩 에이전트 (Gemini CLI 포크)",
+    "overview": "Qwen Code는 터미널에서 동작하는 오픈소스 AI 코딩 에이전트로, Google의 Gemini CLI를 포크하여 Qwen3-Coder 등 Qwen 계열 모델에 맞게 파서·프롬프트·도구 호출을 최적화한 도구다. 대화형 TUI와 헤드리스(`qwen -p`) 실행을 모두 지원하며, JSON·stream-json 출력으로 스크립트와 CI 자동화에 활용할 수 있다. OpenAI 호환·Anthropic·Gemini·Vertex AI 등 여러 모델 프로토콜을 settings.json의 modelProviders로 구성하고 `/model`로 런타임 전환한다. 계층형 메모리(QWEN.md), MCP 도구 연결, 서브에이전트·스킬, 세션 체크포인트/되감기, 커스텀 슬래시 명령 등을 제공한다. 기존 Qwen OAuth 무료 등급은 2026-04-15에 종료되어, 현재는 Alibaba ModelStudio 또는 서드파티 API 키로 인증한다.",
+    "install": "Node.js 22 이상이 필요하다. npm으로 전역 설치하는 것이 기본이다: `npm install -g @qwen-code/qwen-code@latest`. macOS/Linux는 Homebrew(`brew install qwen-code`)나 설치 스크립트로 standalone 설치할 수 있고, Windows는 PowerShell 설치 스크립트를 사용한다. 설치 후 프로젝트 폴더에서 `qwen`으로 실행한다.",
+    "auth": "첫 실행 시 또는 세션 안에서 `/auth`로 인증을 설정한다(별칭 `/connect`, `/login`). 메뉴는 세 가지다: Alibaba ModelStudio(Coding Plan·Token Plan·Standard API Key), 서드파티 프로바이더(DeepSeek·MiniMax·Z.AI·ModelScope·OpenRouter·Requesty 등), Custom Provider(OpenAI·Anthropic·Gemini 호환 엔드포인트). 키는 환경변수로 주입한다: OpenAI 호환은 `OPENAI_API_KEY`/`OPENAI_BASE_URL`/`OPENAI_MODEL`, Dashscope는 `DASHSCOPE_API_KEY`, Anthropic은 `ANTHROPIC_API_KEY`, Gemini는 `GEMINI_API_KEY`. settings.json의 modelProviders로 프로토콜·모델을 정의하고 `/model`로 전환하며, 우선순위는 CLI 플래그 > 시스템 env > .env > settings.json env 순이다. 현재 인증·환경 상태는 `/doctor`로 확인한다. 참고: 기존 `qwen auth` CLI 명령은 제거되었고 Qwen OAuth 무료 등급은 2026-04-15에 종료되었다.",
+    "commands": [
+      {
+        "command": "qwen",
+        "description": "대화형 세션을 시작한다. 프로젝트 폴더에서 실행하면 환영 화면과 최근 대화가 표시되고 `/help`로 명령을 볼 수 있다.",
+        "example": "qwen",
+        "category": "실행"
+      },
+      {
+        "command": "qwen -p / --prompt",
+        "description": "헤드리스(비대화) 모드로 단일 프롬프트를 실행한다. 스크립트·CI·배치 처리에 적합하며 stdin 파이프 입력도 지원한다.",
+        "example": "qwen -p \"Explain this code\"",
+        "category": "실행"
+      },
+      {
+        "command": "qwen --output-format / -o",
+        "description": "출력 형식을 지정한다(text 기본, json, stream-json). json/stream-json은 프로그램적 파싱과 실시간 모니터링에 쓴다.",
+        "example": "qwen -p \"query\" --output-format json",
+        "category": "실행"
+      },
+      {
+        "command": "qwen --model",
+        "description": "이번 실행에 사용할 모델 ID를 지정한다.",
+        "example": "qwen --model \"qwen3-coder-plus\"",
+        "category": "실행"
+      },
+      {
+        "command": "qwen --continue",
+        "description": "현재 프로젝트의 가장 최근 세션을 이어받아 실행한다(헤드리스에서도 사용 가능).",
+        "example": "qwen --continue -p \"Run the tests again and summarize failures\"",
+        "category": "세션·체크포인트"
+      },
+      {
+        "command": "qwen --resume [sessionId]",
+        "description": "특정 세션 ID를 재개한다(미지정 시 대화형 선택). 대화 기록·도구 출력·압축 체크포인트를 복원한다.",
+        "example": "qwen --resume 123e4567 -p \"Apply the follow-up refactor\"",
+        "category": "세션·체크포인트"
+      },
+      {
+        "command": "qwen --yolo / -y",
+        "description": "모든 도구 호출(셸·쓰기·편집 포함)을 자동 승인한다. 샌드박스를 켜지 않으므로 신뢰·격리 환경에서만 사용한다.",
+        "example": "qwen -p \"Migrate callbacks to async/await in src/\" --yolo",
+        "category": "실행"
+      },
+      {
+        "command": "qwen --approval-mode",
+        "description": "도구 승인 모드를 설정한다(plan/default/auto_edit/auto/yolo).",
+        "example": "qwen -p \"query\" --approval-mode auto_edit",
+        "category": "실행"
+      },
+      {
+        "command": "qwen --include-directories",
+        "description": "컨텍스트에 추가 디렉터리를 포함한다(쉼표 구분).",
+        "example": "qwen -p \"Explain this schema\" --include-directories src,docs",
+        "category": "실행"
+      },
+      {
+        "command": "qwen --max-session-turns / --max-wall-time / --max-tool-calls",
+        "description": "무인 실행 예산을 건다. 각각 턴 수, 벽시계 시간, 누적 도구 호출 수를 제한해 폭주를 방지한다.",
+        "example": "qwen -p \"...\" --max-session-turns 30 --max-wall-time 10m",
+        "category": "실행"
+      },
+      {
+        "command": "qwen sessions list",
+        "description": "최근 대화 세션을 메타데이터와 함께 나열한다. JSON Lines 출력과 개수 제한을 지원한다.",
+        "example": "qwen sessions list --json --limit 50",
+        "category": "세션·체크포인트"
+      },
+      {
+        "command": "qwen serve",
+        "description": "HTTP+SSE로 공유 에이전트를 띄우는 데몬을 실행한다(실험적).",
+        "example": "qwen serve",
+        "category": "실행"
+      },
+      {
+        "command": "/help",
+        "description": "사용 가능한 명령에 대한 도움말을 표시한다(별칭 `/?`).",
+        "example": "/help",
+        "category": "도움말·정보"
+      },
+      {
+        "command": "/mcp",
+        "description": "구성된 MCP 서버와 도구를 나열한다. 설명 표시/숨김과 스키마 보기를 지원한다.",
+        "example": "/mcp desc",
+        "category": "도구·모델"
+      },
+      {
+        "command": "/tools",
+        "description": "현재 사용 가능한 도구 목록을 표시한다. `desc`로 각 도구 설명을 함께 본다.",
+        "example": "/tools desc",
+        "category": "도구·모델"
+      },
+      {
+        "command": "/model",
+        "description": "현재 세션의 모델을 전환한다. `--fast`는 프롬프트 제안용 경량 모델, `--voice`는 음성 전사 모델을 지정한다.",
+        "example": "/model --fast qwen3-coder-flash",
+        "category": "도구·모델"
+      },
+      {
+        "command": "/approval-mode",
+        "description": "현재 세션의 도구 승인 모드를 변경한다(plan/default/auto-edit/auto/yolo).",
+        "example": "/approval-mode auto-edit",
+        "category": "도구·모델"
+      },
+      {
+        "command": "/agents",
+        "description": "서브에이전트를 관리한다(생성·관리). 작업을 위임할 보조 에이전트를 다룬다.",
+        "example": "/agents manage",
+        "category": "도구·모델"
+      },
+      {
+        "command": "/skills",
+        "description": "사용 가능한 번들 스킬을 나열하고 실행한다.",
+        "example": "/skills",
+        "category": "도구·모델"
+      },
+      {
+        "command": "/plan",
+        "description": "플랜 모드로 전환하거나 종료한다. 분석·계획만 하고 실행은 하지 않는 안전 검토 모드다.",
+        "example": "/plan",
+        "category": "도구·모델"
+      },
+      {
+        "command": "/memory",
+        "description": "메모리 매니저 다이얼로그를 연다. QWEN.md 계층 메모리에서 로드된 지침 컨텍스트를 관리한다.",
+        "example": "/memory",
+        "category": "메모리·컨텍스트"
+      },
+      {
+        "command": "/init",
+        "description": "현재 디렉터리를 분석해 초기 컨텍스트 파일(QWEN.md)을 생성한다.",
+        "example": "/init",
+        "category": "메모리·컨텍스트"
+      },
+      {
+        "command": "/context",
+        "description": "컨텍스트 윈도우 사용량 내역을 보여준다. `detail`로 항목별 사용량을 본다.",
+        "example": "/context detail",
+        "category": "메모리·컨텍스트"
+      },
+      {
+        "command": "/directory",
+        "description": "멀티 디렉터리 워크스페이스를 관리한다(별칭 `/dir`).",
+        "example": "/dir add ./src,./tests",
+        "category": "설정"
+      },
+      {
+        "command": "/settings",
+        "description": "설정 편집기를 연다(.qwen/settings.json).",
+        "example": "/settings",
+        "category": "설정"
+      },
+      {
+        "command": "/compress",
+        "description": "대화 기록을 요약으로 치환해 토큰을 절약한다(별칭 `/summarize`, 파괴적).",
+        "example": "/compress",
+        "category": "세션·체크포인트"
+      },
+      {
+        "command": "/clear",
+        "description": "대화 기록을 초기화하고 컨텍스트를 비운다(별칭 `/reset`, `/new`).",
+        "example": "/clear",
+        "category": "세션·체크포인트"
+      },
+      {
+        "command": "/restore",
+        "description": "도구 호출이 실행되기 직전 체크포인트로 프로젝트 파일을 되돌린다.",
+        "example": "/restore",
+        "category": "세션·체크포인트"
+      },
+      {
+        "command": "/rewind",
+        "description": "대화를 이전 턴으로 되감는다(별칭 `/rollback`).",
+        "example": "/rewind",
+        "category": "세션·체크포인트"
+      },
+      {
+        "command": "/export",
+        "description": "세션 기록을 파일로 내보낸다(html·md·json·jsonl).",
+        "example": "/export md",
+        "category": "세션·체크포인트"
+      },
+      {
+        "command": "/stats",
+        "description": "인터랙티브 사용 통계 대시보드를 연다(별칭 `/usage`).",
+        "example": "/stats model",
+        "category": "도움말·정보"
+      },
+      {
+        "command": "/status",
+        "description": "버전 정보를 표시한다(별칭 `/about`). `/status paths`로 세션 파일·로그 경로를 본다.",
+        "example": "/status",
+        "category": "도움말·정보"
+      },
+      {
+        "command": "/theme",
+        "description": "Qwen Code 비주얼 테마를 변경한다.",
+        "example": "/theme",
+        "category": "인터페이스"
+      },
+      {
+        "command": "/vim",
+        "description": "입력창의 Vim 편집 모드를 켜고 끈다.",
+        "example": "/vim",
+        "category": "인터페이스"
+      },
+      {
+        "command": "/language",
+        "description": "언어 설정을 보거나 변경한다(ui 인터페이스 언어, output LLM 출력 언어).",
+        "example": "/language output Chinese",
+        "category": "인터페이스"
+      },
+      {
+        "command": "/auth",
+        "description": "인증 방식을 대화형으로 변경한다(별칭 `/connect`, `/login`).",
+        "example": "/auth",
+        "category": "인증"
+      },
+      {
+        "command": "/doctor",
+        "description": "설치·환경·인증 상태를 진단한다. memory, cpu-profile, rollback 하위 명령을 지원한다.",
+        "example": "/doctor",
+        "category": "인증"
+      },
+      {
+        "command": "/quit",
+        "description": "Qwen Code를 즉시 종료한다(별칭 `/exit`).",
+        "example": "/quit",
+        "category": "도움말·정보"
+      },
+      {
+        "command": "@<path>",
+        "description": "지정한 파일 내용을 주입하거나 디렉터리 내 텍스트 파일을 재귀적으로 읽어 대화에 추가한다.",
+        "example": "@src/main.py Please explain this code",
+        "category": "컨텍스트 주입"
+      },
+      {
+        "command": "!<command>",
+        "description": "하위 셸에서 시스템 명령을 실행한다. 단독 `!`는 셸 모드를 토글한다.",
+        "example": "!git status",
+        "category": "셸"
+      }
+    ],
+    "features": [
+      {
+        "title": "대화형 + 헤드리스 실행",
+        "body": "리치 렌더링 TUI와 `qwen -p` 헤드리스 모드를 모두 지원한다. text·json·stream-json 출력과 stdin 파이프, 일관된 종료 코드로 스크립트·CI/CD 파이프라인에 통합할 수 있다."
+      },
+      {
+        "title": "다중 모델 프로바이더",
+        "body": "OpenAI 호환·Anthropic·Gemini·Vertex AI 프로토콜을 settings.json의 modelProviders로 정의하고, OpenAI·OpenRouter·ModelScope·Requesty·Azure 등 다양한 엔드포인트를 연결해 `/model`로 런타임 전환한다."
+      },
+      {
+        "title": "계층형 메모리(QWEN.md)",
+        "body": "전역·프로젝트 컨텍스트 파일을 자동 로드하는 계층 메모리를 제공한다. `/init`로 초기 파일을 만들고 `/memory`로 관리한다."
+      },
+      {
+        "title": "MCP 통합",
+        "body": "Model Context Protocol로 외부 도구·DB·API를 연결한다. `/mcp`로 서버·도구·연결 상태를 확인하고, MCP가 노출한 프롬프트를 슬래시 명령으로 호출할 수 있다."
+      },
+      {
+        "title": "세션·체크포인트",
+        "body": "세션 재개(`--continue`/`--resume`), 도구 실행 전 파일 복원(`/restore`), 대화 되감기(`/rewind`), 내보내기(`/export`), 세션 목록(`qwen sessions list`)을 제공한다."
+      },
+      {
+        "title": "승인 모드 & 샌드박스",
+        "body": "plan·default·auto-edit·auto·yolo 5단계 승인 모드와 샌드박스(`--sandbox`) 격리 실행을 지원해 자동화 수준과 안전성을 상황에 맞게 조절한다."
+      },
+      {
+        "title": "서브에이전트·스킬",
+        "body": "`/agents` 서브에이전트와 `/skills` 번들 스킬로 작업을 위임·확장한다."
+      },
+      {
+        "title": "커스텀 슬래시 명령",
+        "body": "`~/.qwen/commands`(전역) 또는 프로젝트 `.qwen/commands`에 Markdown 파일로 슬래시 명령을 정의한다. {{args}} 파라미터, !{cmd} 셸 실행, @{file} 파일 주입을 지원한다."
+      },
+      {
+        "title": "무인 실행 안전장치",
+        "body": "`--max-session-turns`·`--max-wall-time`·`--max-tool-calls` 예산으로 폭주를 제한해 장기 CI 작업을 안전하게 지킨다."
+      }
+    ],
+    "tips": [
+      "Qwen OAuth 무료 등급은 2026-04-15에 종료됐다. `/auth`에서 Alibaba ModelStudio나 서드파티 프로바이더(OpenRouter 등)로 전환하라.",
+      "헤드리스 자동화는 `--output-format json`으로 받은 뒤 jq로 파싱하고, 실시간 모니터링은 `--output-format stream-json`을 쓴다.",
+      "비밀키는 settings.json의 env(평문)보다 `.qwen/.env`나 셸 export를 권장한다. 우선순위는 CLI 플래그 > 시스템 env > .env > settings.json env 순이다.",
+      "`--yolo`는 샌드박스를 켜지 않으므로, 신뢰 환경이 아니면 `--sandbox`와 턴·시간 예산을 함께 지정해 안전하게 돌려라.",
+      "`/model --fast qwen3-coder-flash`처럼 빠르고 저렴한 보조 모델을 지정하면 프롬프트 제안이 빨라진다.",
+      "`/compress`(=`/summarize`)는 대화 기록을 파괴적으로 압축하니, 보존이 필요하면 내보내기(`/export`) 후 사용하라.",
+      "Qwen Code는 필요한 파일을 알아서 읽으므로, 특정 파일만 강조하려면 `@경로`로 주입한다.",
+      "Node.js 22 이상이 필요하다. standalone 설치본은 문제가 생기면 `/doctor rollback`으로 이전 버전으로 되돌릴 수 있다.",
+      "`qwen auth` CLI는 제거됐다. 인증 설정은 세션 안에서 `/auth`, 상태 점검은 `/doctor`로 한다.",
+      "Tab 자동완성, `/` 입력 시 전체 슬래시 명령 표시, ↑로 명령 히스토리, `?`로 단축키 목록을 빠르게 확인할 수 있다."
+    ],
+    "sourceUrls": [
+      "https://github.com/QwenLM/qwen-code",
+      "https://qwenlm.github.io/qwen-code-docs/en/users/features/commands/",
+      "https://qwenlm.github.io/qwen-code-docs/en/users/configuration/auth/"
+    ]
+  },
+
+  {
     "id": "cli-manual-claude-code",
     "slug": "claude-code",
     "platform": "Claude Code",
