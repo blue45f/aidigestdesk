@@ -2,6 +2,7 @@ import { Top } from '@toss/tds-mobile';
 import { useMemo, useState } from 'react';
 
 import { AnimatedTitle } from '../components/AnimatedTitle';
+import { onExternalClick } from '../lib/links';
 
 import {
   extrasSnapshotDate,
@@ -104,8 +105,8 @@ export function ResourcesPage() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {(showAllLearning ? filteredLearning : filteredLearning.slice(0, VISIBLE)).map((l, i) => (
-                <a key={l.id} href={l.url} target="_blank" rel="noreferrer" className="pressable rise"
-                  style={{ animationDelay: `${90 + i * 10}ms`, display: 'block', background: theme.surface,
+                <a key={l.id} href={l.url} target="_blank" rel="noreferrer" onClick={onExternalClick(l.url)} className="pressable rise"
+                  style={{ animationDelay: `${90 + Math.min(i, 10) * 10}ms`, display: 'block', background: theme.surface,
                     border: `1px solid ${theme.border}`, borderRadius: theme.radius, padding: 16, color: theme.text }}>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
                     <Badge accent>{l.type}</Badge>

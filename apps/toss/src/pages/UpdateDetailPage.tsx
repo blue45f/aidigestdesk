@@ -2,6 +2,7 @@ import { Button } from '@toss/tds-mobile';
 import { useEffect, useState } from 'react';
 
 import { getUpdate } from '../lib/api';
+import { onExternalClick } from '../lib/links';
 import { shareMessage } from '../lib/toss';
 import { navigate } from '../router';
 import { theme } from '../theme';
@@ -58,7 +59,7 @@ export function UpdateDetailPage({ id = '' }: { id?: string }) {
       {hasUrl && (
         <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, padding: '12px 20px calc(12px + env(safe-area-inset-bottom))',
           background: `linear-gradient(to top, ${theme.bg} 72%, transparent)`, zIndex: 20 }}>
-          <a href={u.url} target="_blank" rel="noopener noreferrer"><Button style={{ width: '100%' }}>공식 문서 보기</Button></a>
+          <a href={u.url} target="_blank" rel="noopener noreferrer" onClick={onExternalClick(u.url)}><Button style={{ width: '100%' }}>공식 문서 보기</Button></a>
         </div>
       )}
       {toast && <div role="status" style={{ position: 'fixed', bottom: 'calc(84px + env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)',

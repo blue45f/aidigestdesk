@@ -2,6 +2,7 @@ import { Top } from '@toss/tds-mobile';
 import { useMemo, useState } from 'react';
 
 import { AnimatedTitle } from '../components/AnimatedTitle';
+import { onExternalClick } from '../lib/links';
 
 import {
   deals,
@@ -39,7 +40,7 @@ function StatusBadge({ status }: { status: string }) {
 
 function DealCard({ deal }: { deal: DealEntry }) {
   return (
-    <a href={deal.url} target="_blank" rel="noreferrer" className="pressable"
+    <a href={deal.url} target="_blank" rel="noreferrer" onClick={onExternalClick(deal.url)} className="pressable"
       style={{ display: 'block', background: theme.surface, border: `1px solid ${theme.border}`,
         borderRadius: theme.radius, padding: 16, color: theme.text }}>
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
@@ -73,7 +74,7 @@ function EventCard({ event }: { event: EventEntry }) {
   const date = event.endDate && event.endDate !== event.startDate
     ? `${event.startDate} ~ ${event.endDate}` : event.startDate;
   return (
-    <a href={event.url} target="_blank" rel="noreferrer" className="pressable"
+    <a href={event.url} target="_blank" rel="noreferrer" onClick={onExternalClick(event.url)} className="pressable"
       style={{ display: 'block', background: theme.surface, border: `1px solid ${theme.border}`,
         borderRadius: theme.radius, padding: 16, color: theme.text }}>
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>

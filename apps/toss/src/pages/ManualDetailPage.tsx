@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 
+import { onExternalClick } from '../lib/links';
 import { getManualBySlug, manualCategories, manualSnapshotDate } from '../lib/manuals';
 import { goBack } from '../router';
 import { theme, pageShell } from '../theme';
@@ -160,7 +161,7 @@ export function ManualDetailPage({ slug }: { slug: string }) {
               let host = url;
               try { host = new URL(url).hostname.replace(/^www\./, ''); } catch { /* keep raw */ }
               return (
-                <a key={url} href={url} target="_blank" rel="noreferrer" className="pressable">
+                <a key={url} href={url} target="_blank" rel="noreferrer" onClick={onExternalClick(url)} className="pressable">
                   <Badge>{host} ↗</Badge>
                 </a>
               );

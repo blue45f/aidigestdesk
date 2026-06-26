@@ -1,3 +1,4 @@
+import { onExternalClick } from '../lib/links';
 import { getExtensionById, GRADE_PALETTE, snapshotDate } from '../lib/rankings';
 import { goBack } from '../router';
 import { theme, pageShell } from '../theme';
@@ -114,7 +115,7 @@ export function RankExtensionDetailPage({ id }: { id: string }) {
         ) : null}
 
         {entry.url && (
-          <a href={entry.url} target="_blank" rel="noreferrer" className="pressable"
+          <a href={entry.url} target="_blank" rel="noreferrer" onClick={onExternalClick(entry.url)} className="pressable"
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 26,
               height: 50, borderRadius: theme.radius, background: theme.accent, color: theme.accentInk,
               fontSize: 15, fontWeight: 700 }}>

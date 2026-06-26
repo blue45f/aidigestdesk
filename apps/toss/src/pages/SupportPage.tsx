@@ -168,10 +168,27 @@ export function SupportPage() {
             })}
           </div>
         )}
-        <p style={{ fontSize: 11.5, color: theme.textMuted, textAlign: 'center', marginTop: 22, lineHeight: 1.6 }}>
-          문의(제목·내용·이름·이메일)는 운영 서버(desk-platform)로 전송·저장돼요.
-          이메일을 제외한 내용은 공개 문의 목록에 표시될 수 있어요.
-        </p>
+        <details style={{ marginTop: 26, border: `1px solid ${theme.border}`, borderRadius: 'var(--r-md)', background: theme.surface, padding: '0 16px' }}>
+          <summary style={{ padding: '14px 0', fontSize: 14, fontWeight: 700, cursor: 'pointer', color: theme.text }}>
+            약관 · 개인정보 처리방침
+          </summary>
+          <div style={{ paddingBottom: 16, fontSize: 13, color: theme.textMuted, lineHeight: 1.7, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <p style={{ margin: 0 }}>
+              <strong style={{ color: theme.text }}>서비스</strong> · AI다이제스트는 AI/LLM 소식·랭킹·매뉴얼·혜택을 모아
+              보여주는 정보 큐레이션 미니앱이에요. 정보 제공 목적이며 정확성을 보증하지 않으니, 최종 확인은 각 공식
+              출처에서 해주세요.
+            </p>
+            <p style={{ margin: 0 }}>
+              <strong style={{ color: theme.text }}>데이터</strong> · 랭킹 점수는 공개 벤치마크 기반 추정치(≈)이고, 모든
+              정보는 스냅샷 기준이라 실제와 다를 수 있어요. 외부 링크·혜택은 각 제공사 정책을 따라요.
+            </p>
+            <p style={{ margin: 0 }}>
+              <strong style={{ color: theme.text }}>개인정보</strong> · 닉네임·화면 설정은 이 기기에만 저장돼요. 문의(제목·내용·이름·이메일)는
+              운영 서버(desk-platform)로 전송·저장되며, 이메일을 제외한 내용은 공개 문의 목록에 표시될 수 있어요.
+              마케팅·판매 목적의 제3자 제공은 없어요.
+            </p>
+          </div>
+        </details>
       </div>
     </div>
   );
