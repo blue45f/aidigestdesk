@@ -1,7 +1,10 @@
 import { type ProviderId } from '@aidigestdesk/content'
 import { cliToolManuals, getCliManualBySlug, type CliToolManual } from '@aidigestdesk/content/cliManuals'
+import { copyText } from '@aidigestdesk/content/shared'
 import {
   BookOpen,
+  Check,
+  Copy,
   Download,
   ExternalLink,
   KeyRound,
@@ -15,12 +18,34 @@ import { BrandMark, SearchField, SortChip, type SortDirection } from '@/componen
 
 type CmdSort = 'default' | 'command' | 'category'
 
-/** 코드/명령 블록. */
+/** 코드/명령 블록 — 우상단 복사 버튼(복사 시 ✓ 피드백). */
 function CodeBlock({ children }: { children: string }) {
+  const [copied, setCopied] = useState(false)
+  const onCopy = async () => {
+    if (await copyText(children)) {
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 1300)
+    }
+  }
   return (
-    <pre className="overflow-x-auto whitespace-pre-wrap break-words rounded-lg border border-border bg-bg px-3 py-2.5 text-[0.8125rem] leading-6 text-text">
-      <code className="font-mono">{children}</code>
-    </pre>
+    <div className="relative">
+      <pre className="overflow-x-auto whitespace-pre-wrap break-words rounded-lg border border-border bg-bg py-2.5 pl-3 pr-10 text-[0.8125rem] leading-6 text-text">
+        <code className="font-mono">{children}</code>
+      </pre>
+      <button
+        type="button"
+        onClick={onCopy}
+        aria-label={copied ? '복사됨' : '코드 복사'}
+        title={copied ? '복사됨' : '코드 복사'}
+        className="absolute right-1.5 top-1.5 inline-flex size-7 items-center justify-center rounded-md border border-border bg-surface text-text-muted transition hover:border-border-strong hover:text-text"
+      >
+        {copied ? (
+          <Check className="size-3.5 text-accent-2" aria-hidden />
+        ) : (
+          <Copy className="size-3.5" aria-hidden />
+        )}
+      </button>
+    </div>
   )
 }
 

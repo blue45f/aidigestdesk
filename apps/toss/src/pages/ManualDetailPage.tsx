@@ -1,5 +1,7 @@
+import { copyText } from '@aidigestdesk/content/shared';
 import { useMemo, useState } from 'react';
 
+import { haptic } from '../lib/haptic';
 import { onExternalClick } from '../lib/links';
 import { getManualBySlug, manualCategories, manualSnapshotDate } from '../lib/manuals';
 import { goBack } from '../router';
@@ -19,11 +21,27 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 function CodeBlock({ children }: { children: string }) {
+  const [copied, setCopied] = useState(false);
+  const onCopy = async () => {
+    if (await copyText(children)) {
+      haptic('tickWeak');
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1300);
+    }
+  };
   return (
-    <pre style={{ margin: 0, overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
-      background: theme.surfaceAlt, border: `1px solid ${theme.border}`, borderRadius: 10, padding: '11px 12px',
-      fontSize: 12.5, lineHeight: 1.6, color: theme.text,
-      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>{children}</pre>
+    <div style={{ position: 'relative' }}>
+      <pre style={{ margin: 0, overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+        background: theme.surfaceAlt, border: `1px solid ${theme.border}`, borderRadius: 10, padding: '11px 40px 11px 12px',
+        fontSize: 12.5, lineHeight: 1.6, color: theme.text,
+        fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>{children}</pre>
+      <button type="button" onClick={onCopy} aria-label={copied ? '복사됨' : '코드 복사'} className="pressable"
+        style={{ position: 'absolute', top: 7, right: 7, width: 28, height: 28, display: 'grid', placeItems: 'center',
+          borderRadius: 8, cursor: 'pointer', fontSize: 13, border: `1px solid ${theme.border}`,
+          background: theme.surface, color: copied ? theme.accent : theme.textMuted }}>
+        {copied ? '✓' : '⧉'}
+      </button>
+    </div>
   );
 }
 
