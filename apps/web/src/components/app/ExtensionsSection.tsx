@@ -351,7 +351,7 @@ function ExtensionCard({ extension }: { extension: AgentExtension }) {
       ) : null}
 
       {extension.koreanNote ? (
-        <div className="mt-3 rounded-md border border-accent/30 bg-accent/10 px-3 py-2 text-xs leading-5 text-accent">
+        <div className="mt-3 rounded-md border border-accent/30 bg-accent/10 px-3 py-2 text-xs leading-5 text-accent-text">
           <span className="font-semibold">국내 팁 · </span>
           {extension.koreanNote}
         </div>

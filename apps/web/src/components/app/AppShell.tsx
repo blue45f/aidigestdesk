@@ -132,7 +132,7 @@ export function Header({
             <span className="flex min-w-0 items-center gap-1.5 text-sm font-semibold text-text">
               <span className="truncate whitespace-nowrap sm:hidden">AIDigest</span>
               <span className="hidden truncate whitespace-nowrap sm:inline">AIDigestDesk</span>
-              <span className="hidden items-center gap-1 rounded-full border border-accent-3/40 bg-accent-3/10 px-1.5 py-px text-[0.625rem] font-bold tracking-wide text-accent-3 uppercase sm:inline-flex">
+              <span className="hidden items-center gap-1 rounded-full border border-accent-3/40 bg-accent-3/10 px-1.5 py-px text-[0.625rem] font-bold tracking-wide text-accent-3-text uppercase sm:inline-flex">
                 <span className="live-dot !size-1.5 !bg-accent-3" aria-hidden />
                 BETA
               </span>
@@ -311,7 +311,7 @@ export function BottomTabBar({
             onClick={() => onNavigate(item.id)}
             aria-current={active ? 'page' : undefined}
             className={`relative flex flex-1 flex-col items-center gap-0.5 pt-1.5 pb-1 text-[0.6875rem] font-semibold transition-colors ${
-              active ? 'text-accent' : 'text-text-subtle hover:text-text'
+              active ? 'text-accent-text' : 'text-text-subtle hover:text-text'
             }`}
           >
             {/* 활성 표시 — 아이콘 뒤 accent 알약(Material 스타일) */}

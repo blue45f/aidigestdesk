@@ -169,7 +169,7 @@ export function TranslatedNewsSection() {
 
                 {article.koreanAngle ? (
                   <p className="mt-3 rounded border border-accent/20 bg-accent/5 px-2 py-1 text-xs leading-5 text-text-muted">
-                    <span className="font-semibold text-accent">국내 관점</span> {article.koreanAngle}
+                    <span className="font-semibold text-accent-text">국내 관점</span> {article.koreanAngle}
                   </p>
                 ) : null}
 
@@ -187,7 +187,7 @@ export function TranslatedNewsSection() {
                     href={article.sourceUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex min-h-9 items-center gap-1 rounded-md px-2 text-xs font-semibold text-accent transition hover:underline"
+                    className="inline-flex min-h-9 items-center gap-1 rounded-md px-2 text-xs font-semibold text-accent-text transition hover:underline"
                   >
                     원문 보기
                     <ExternalLink className="size-3.5" aria-hidden />

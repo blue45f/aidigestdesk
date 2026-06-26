@@ -137,7 +137,7 @@ export function SitemapRoute({ onNavigate }: { onNavigate: (route: AppRoute) => 
         <section className="rounded-lg border border-border bg-surface p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold text-accent">사이트맵 · /sitemap</p>
+              <p className="text-xs font-semibold text-accent-text">사이트맵 · /sitemap</p>
               <h1 className="mt-1 text-2xl font-semibold text-text">AIDigestDesk 전체 지도</h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
                 모든 페이지와 주요 섹션으로 한 번에 이동할 수 있습니다.

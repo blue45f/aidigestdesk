@@ -167,7 +167,7 @@ export function DesignWorkflowSection() {
       <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
         <article className="rounded-lg border border-border bg-surface p-5">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs font-semibold text-accent">작업 흐름</p>
+            <p className="text-xs font-semibold text-accent-text">작업 흐름</p>
             <span className="text-xs font-semibold text-text-subtle">
               {designUpdates.length}개
             </span>
@@ -320,7 +320,7 @@ export function DesignWorkflowSection() {
                 key={entry.id}
                 className="grid gap-3 px-4 py-3 md:grid-cols-[8rem_1fr_7rem]"
               >
-                <span className="text-xs font-semibold text-accent">
+                <span className="text-xs font-semibold text-accent-text">
                   {getSafeProviderLabel(entry.providerId)}
                 </span>
                 <div>
@@ -495,7 +495,7 @@ export function ManualGuides({ guides }: { guides: ManualGuide[] }) {
               className="rounded-lg border border-border bg-surface p-5"
             >
               <div className="flex items-center justify-between gap-3">
-                <span className="text-xs font-semibold text-accent">
+                <span className="text-xs font-semibold text-accent-text">
                   {getSafeProviderLabel(guide.providerId)}
                 </span>
                 <span className="rounded-md border border-border bg-bg px-2 py-1 text-xs font-semibold text-text-subtle">
@@ -711,7 +711,7 @@ export function PersonaPlaybooks({ guides }: { guides: PersonaGuide[] }) {
                 <div className="px-4 py-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <p className="text-xs font-semibold text-accent">
+                      <p className="text-xs font-semibold text-accent-text">
                         {guide.role}
                       </p>
                       <h3 className="mt-1 text-base font-semibold text-text">

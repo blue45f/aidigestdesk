@@ -121,11 +121,11 @@ function RankBadge({ position, medal = true }: { position: number; medal?: boole
     !medal
       ? 'border-border bg-bg text-text-subtle'
       : position === 1
-        ? 'border-amber-400/50 bg-amber-400/15 text-amber-600 dark:text-amber-300'
+        ? 'border-amber-400/50 bg-amber-400/15 text-amber-700 dark:text-amber-300'
         : position === 2
           ? 'border-slate-400/50 bg-slate-400/15 text-slate-600 dark:text-slate-300'
           : position === 3
-            ? 'border-orange-400/50 bg-orange-400/15 text-orange-600 dark:text-orange-300'
+            ? 'border-orange-400/50 bg-orange-400/15 text-orange-700 dark:text-orange-300'
             : 'border-border bg-bg text-text-subtle'
   return (
     <span
@@ -472,7 +472,7 @@ export function RankingBoard({
                   aria-pressed={active}
                   className={
                     active
-                      ? 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border border-accent bg-accent/12 px-3 py-1.5 text-xs font-semibold text-accent'
+                      ? 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border border-accent bg-accent/12 px-3 py-1.5 text-xs font-semibold text-accent-text'
                       : 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
                   }
                 >
@@ -492,7 +492,7 @@ export function RankingBoard({
                   aria-pressed={active}
                   className={
                     active
-                      ? 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border border-accent bg-accent/12 px-3 py-1.5 text-xs font-semibold text-accent'
+                      ? 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border border-accent bg-accent/12 px-3 py-1.5 text-xs font-semibold text-accent-text'
                       : 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
                   }
                 >

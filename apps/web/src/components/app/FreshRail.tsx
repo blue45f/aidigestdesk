@@ -16,10 +16,10 @@ import { Chip, NewBadge, SectionHeader, Thumbnail } from '@/components/app/Commo
 
 /** 종류별 커버 색조 — 이미지가 없는 항목(주로 일정/세미나)도 의도적으로 보이게 한다. */
 const KIND_COVER: Record<FreshItem['kind'], string> = {
-  도서: 'from-accent/15 to-accent/5 text-accent',
-  '강좌/영상': 'from-accent-4/15 to-accent-4/5 text-accent-4',
-  '문서/글': 'from-accent-2/15 to-accent-2/5 text-accent-2',
-  '일정/세미나': 'from-accent-3/15 to-accent-3/5 text-accent-3',
+  도서: 'from-accent/15 to-accent/5 text-accent-text',
+  '강좌/영상': 'from-accent-4/15 to-accent-4/5 text-accent-4-text',
+  '문서/글': 'from-accent-2/15 to-accent-2/5 text-accent-2-text',
+  '일정/세미나': 'from-accent-3/15 to-accent-3/5 text-accent-3-text',
 }
 
 function FreshCover({ item }: { item: FreshItem }) {

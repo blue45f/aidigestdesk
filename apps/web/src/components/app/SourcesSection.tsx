@@ -152,7 +152,7 @@ export function SourcesSection({ sourceItems }: { sourceItems: SourceRef[] }) {
                   <ExternalLink className="size-3.5 text-text-subtle" aria-hidden />
                 </span>
                 <span className="mt-3 block text-sm font-semibold text-text">{source.title}</span>
-                <span className="mt-1 block text-xs font-medium text-accent">
+                <span className="mt-1 block text-xs font-medium text-accent-text">
                   {source.publisher}
                 </span>
                 <span className="mt-2 block text-xs leading-5 text-text-muted">{source.note}</span>

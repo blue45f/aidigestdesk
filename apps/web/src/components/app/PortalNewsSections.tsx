@@ -432,7 +432,7 @@ export function Briefing({
             <button
               type="button"
               onClick={onSeeAll}
-              className="group inline-flex items-center gap-1 text-sm font-semibold text-accent transition hover:text-accent/80"
+              className="group inline-flex items-center gap-1 text-sm font-semibold text-accent-text transition hover:text-accent"
             >
               전체 보기
               <ArrowRight
@@ -453,7 +453,7 @@ export function Briefing({
                 />
                 <div className="min-w-0 flex-1">
                   <p className="flex items-center gap-1.5 text-xs font-semibold text-text-subtle">
-                    <span className="text-accent">{getProviderLabel(item.providerId)}</span>
+                    <span className="text-accent-text">{getProviderLabel(item.providerId)}</span>
                     <span aria-hidden>·</span>
                     <span className="tabular-nums">{item.date}</span>
                   </p>
@@ -586,7 +586,7 @@ export function Briefing({
                 >
                   <div>
                     <p className="text-xs font-semibold text-text-subtle">{item.date}</p>
-                    <p className="mt-1 text-xs font-semibold text-accent">
+                    <p className="mt-1 text-xs font-semibold text-accent-text">
                       {getProviderLabel(item.providerId)}
                     </p>
                   </div>
@@ -1131,7 +1131,7 @@ export function WebzineSection({
         <div className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
           <article className="rounded-lg border border-border bg-surface p-5">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-md border border-border bg-bg px-2 py-1 text-xs font-semibold text-accent">
+              <span className="rounded-md border border-border bg-bg px-2 py-1 text-xs font-semibold text-accent-text">
                 {lead.category === 'news'
                   ? '뉴스'
                   : lead.category === 'events'
@@ -1183,7 +1183,7 @@ export function WebzineSection({
               const metadata = getUpdateMetadata(item)
               return (
                 <article key={item.id} className="rounded-lg border border-border bg-surface p-4">
-                  <p className="text-xs font-semibold text-accent">
+                  <p className="text-xs font-semibold text-accent-text">
                     {item.date} · {getProviderLabel(item.providerId)}
                   </p>
                   <h3 className="mt-2 text-sm font-semibold leading-5 text-text">{item.title}</h3>
@@ -1402,7 +1402,7 @@ function EventCalendarBoard() {
       <div className="rounded-lg border border-border bg-surface p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent">
+            <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent-text">
               <CalendarDays className="size-3.5" aria-hidden />
               일정 캘린더
             </p>
@@ -1602,7 +1602,7 @@ function EventCalendarBoard() {
                     </span>
                     <span
                       className={`compact-calendar-quick-meta block truncate text-xs ${
-                        cell.isSelected ? 'text-ink-fg/80' : 'text-text-subtle'
+                        cell.isSelected ? 'text-ink-fg/80' : 'text-text-muted'
                       }`}
                     >
                       {cell.events[0]?.type} · {cell.events[0]?.organizer}
@@ -1610,7 +1610,7 @@ function EventCalendarBoard() {
                   </span>
                   <span
                     className={`compact-calendar-quick-count inline-flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
-                      cell.isSelected ? 'bg-white/15 text-ink-fg' : 'bg-accent text-ink-fg'
+                      cell.isSelected ? 'bg-white/15 text-ink-fg' : 'bg-accent-text text-ink-fg'
                     }`}
                   >
                     {cell.events.length}
@@ -1683,7 +1683,7 @@ function EventCalendarBoard() {
       <aside className="rounded-lg border border-border bg-surface p-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent">
+            <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent-text">
               <SlidersHorizontal className="size-3.5" aria-hidden />
               일정 리스트
             </p>
@@ -1721,7 +1721,7 @@ function EventCalendarBoard() {
                 <article key={item.id} className="rounded-md border border-border bg-bg p-3">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
-                      <p className="text-xs font-semibold text-accent">
+                      <p className="text-xs font-semibold text-accent-text">
                         {formatDateRange(item)} · {item.type}
                       </p>
                       <h4 className="mt-1 text-sm font-semibold leading-5 text-text">
@@ -1930,7 +1930,7 @@ export function EventPromotionsSection() {
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs font-semibold text-accent">
+                    <p className="text-xs font-semibold text-accent-text">
                       {getProviderLabel(item.providerId)}
                     </p>
                     <h3 className="mt-1 text-sm font-semibold leading-5 text-text">{item.title}</h3>

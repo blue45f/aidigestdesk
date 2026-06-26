@@ -161,7 +161,7 @@ export function AuthDialog({
       >
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="grid size-7 place-items-center rounded-md border border-accent/30 bg-accent/10 text-accent">
+            <span className="grid size-7 place-items-center rounded-md border border-accent/30 bg-accent/10 text-accent-text">
               <ModeIcon className="size-4" aria-hidden />
             </span>
             <h2 id={titleId} className="text-base font-semibold text-text">
@@ -225,7 +225,7 @@ export function AuthDialog({
               <p
                 id={errorId}
                 role="alert"
-                className="rounded-md border border-accent-4/40 bg-accent-4/10 px-3 py-2 text-[0.8125rem] text-accent-4"
+                className="rounded-md border border-accent-4/40 bg-accent-4/10 px-3 py-2 text-[0.8125rem] text-accent-4-text"
               >
                 {error}
               </p>
@@ -247,7 +247,7 @@ export function AuthDialog({
           type="button"
           onClick={switchMode}
           disabled={anyBusy}
-          className="mt-2 inline-flex min-h-9 w-full items-center justify-center rounded-md text-center text-[0.8125rem] font-semibold text-accent transition hover:underline disabled:pointer-events-none disabled:opacity-50"
+          className="mt-2 inline-flex min-h-9 w-full items-center justify-center rounded-md text-center text-[0.8125rem] font-semibold text-accent-text transition hover:underline disabled:pointer-events-none disabled:opacity-50"
         >
           {copy.toggle}
         </button>

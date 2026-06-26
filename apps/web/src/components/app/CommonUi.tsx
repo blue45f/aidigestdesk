@@ -84,7 +84,7 @@ export function SortChip({
       }`}
       className={
         active
-          ? 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1 rounded-full border border-accent bg-accent/12 px-3 py-1.5 text-xs font-semibold text-accent'
+          ? 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1 rounded-full border border-accent bg-accent/12 px-3 py-1.5 text-xs font-semibold text-accent-text'
           : 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
       }
     >
@@ -298,7 +298,7 @@ export function ResultSummary({
       <div className="min-w-0">
         <p className="text-xs font-semibold text-text-subtle">필터 결과</p>
         <p className="mt-0.5 text-sm font-semibold text-text">
-          <span className="text-accent">{shown}</span>
+          <span className="text-accent-text">{shown}</span>
           {unit} / 전체 {total}
           {unit}
         </p>
@@ -332,7 +332,7 @@ export function ActiveFilterChips({
           key={chip.key}
           type="button"
           onClick={chip.onRemove}
-          className="inline-flex min-h-9 shrink-0 items-center gap-1 rounded-full border border-accent/30 bg-accent/10 py-1 pr-1.5 pl-2.5 text-xs font-semibold text-accent transition hover:bg-accent/20"
+          className="inline-flex min-h-9 shrink-0 items-center gap-1 rounded-full border border-accent/30 bg-accent/10 py-1 pr-1.5 pl-2.5 text-xs font-semibold text-accent-text transition hover:bg-accent/20"
         >
           {chip.label}
           <X className="size-3" aria-hidden />
@@ -343,10 +343,10 @@ export function ActiveFilterChips({
 }
 
 const sourceKindStyles: Record<SourceKind, { label: string; className: string }> = {
-  official: { label: '공식', className: 'border-accent-2/30 bg-accent-2/10 text-accent-2' },
-  benchmark: { label: '벤치마크', className: 'border-accent-3/40 bg-accent-3/10 text-accent-3' },
-  publisher: { label: '출판/교육', className: 'border-accent/30 bg-accent/10 text-accent' },
-  community: { label: '커뮤니티', className: 'border-accent-4/30 bg-accent-4/10 text-accent-4' },
+  official: { label: '공식', className: 'border-accent-2/30 bg-accent-2/10 text-accent-2-text' },
+  benchmark: { label: '벤치마크', className: 'border-accent-3/40 bg-accent-3/10 text-accent-3-text' },
+  publisher: { label: '출판/교육', className: 'border-accent/30 bg-accent/10 text-accent-text' },
+  community: { label: '커뮤니티', className: 'border-accent-4/30 bg-accent-4/10 text-accent-4-text' },
 }
 
 export function SourceKindBadge({ kind }: { kind: SourceKind }) {
@@ -362,10 +362,10 @@ export function SourceKindBadge({ kind }: { kind: SourceKind }) {
 
 const chipTones = {
   neutral: 'border-border bg-bg text-text-subtle',
-  accent: 'border-accent/30 bg-accent/10 text-accent',
-  blue: 'border-accent-2/30 bg-accent-2/10 text-accent-2',
-  amber: 'border-accent-3/40 bg-accent-3/10 text-accent-3',
-  coral: 'border-accent-4/30 bg-accent-4/10 text-accent-4',
+  accent: 'border-accent/30 bg-accent/10 text-accent-text',
+  blue: 'border-accent-2/30 bg-accent-2/10 text-accent-2-text',
+  amber: 'border-accent-3/40 bg-accent-3/10 text-accent-3-text',
+  coral: 'border-accent-4/30 bg-accent-4/10 text-accent-4-text',
   ink: 'border-ink bg-ink text-ink-fg',
 } as const
 
@@ -393,7 +393,7 @@ export function Chip({
 /** 신규 등록/발행 항목 강조 배지. */
 export function NewBadge({ label = '신규' }: { label?: string }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border border-accent-4/40 bg-accent-4/12 px-2 py-0.5 text-[0.6875rem] font-bold text-accent-4">
+    <span className="inline-flex items-center gap-1 rounded-full border border-accent-4/40 bg-accent-4/12 px-2 py-0.5 text-[0.6875rem] font-bold text-accent-4-text">
       <Sparkles className="size-3" aria-hidden />
       {label}
     </span>
@@ -528,7 +528,7 @@ export function Thumbnail({
           
           <div className="relative z-10 flex flex-col items-center gap-2 px-3 text-center">
             {Icon ? (
-              <span className="grid size-11 place-items-center rounded-full border border-border bg-surface text-text-muted shadow-sm ring-4 ring-surface-2 group-hover:border-accent/30 group-hover:bg-accent/5 group-hover:text-accent group-hover:shadow-[0_0_15px_rgba(var(--color-accent-rgb),0.12)] transition-all duration-300">
+              <span className="grid size-11 place-items-center rounded-full border border-border bg-surface text-text-muted shadow-sm ring-4 ring-surface-2 group-hover:border-accent/30 group-hover:bg-accent/5 group-hover:text-accent-text group-hover:shadow-[0_0_15px_rgba(var(--color-accent-rgb),0.12)] transition-all duration-300">
                 <Icon className="size-5 transition-transform duration-300 group-hover:scale-110" aria-hidden />
               </span>
             ) : null}
@@ -566,7 +566,7 @@ export function MetadataChips({
         >
           <dt className="sr-only">{item.label}</dt>
           <dd>
-            <span className="text-text-muted/70">{item.label}</span>{' '}
+            <span className="text-text-subtle">{item.label}</span>{' '}
             <span className="font-semibold text-text-muted">{item.value}</span>
           </dd>
         </div>

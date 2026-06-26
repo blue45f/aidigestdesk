@@ -114,7 +114,7 @@ function AdminLogin({
               <ShieldCheck className="size-5" aria-hidden />
             </span>
             <div>
-              <p className="text-xs font-semibold text-accent">/admin 라우트</p>
+              <p className="text-xs font-semibold text-accent-text">/admin 라우트</p>
               <h1 className="mt-1 text-2xl font-semibold text-text">
                 관리자 로그인
               </h1>
@@ -285,7 +285,7 @@ function MemberManagementSection() {
                           removeMember(member.id);
                           setRefreshToken((token) => token + 1);
                         }}
-                        className="inline-flex min-h-9 items-center gap-1 rounded-md border border-accent-4/40 bg-accent-4/10 px-2.5 py-1.5 text-xs font-semibold text-accent-4 transition hover:bg-accent-4/20"
+                        className="inline-flex min-h-9 items-center gap-1 rounded-md border border-accent-4/40 bg-accent-4/10 px-2.5 py-1.5 text-xs font-semibold text-accent-4-text transition hover:bg-accent-4/20"
                       >
                         <Trash2 className="size-3.5" aria-hidden />
                         삭제
@@ -446,7 +446,7 @@ function AdminConsole({
         >
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold text-accent">
+              <p className="text-xs font-semibold text-accent-text">
                 관리자 콘솔 · /admin
               </p>
               <h1 className="mt-1 text-2xl font-semibold text-text">
@@ -609,7 +609,7 @@ function AdminConsole({
                     <p className="text-sm font-semibold text-text">
                       {check.label}
                     </p>
-                    <span className="text-xs font-semibold text-accent">
+                    <span className="text-xs font-semibold text-accent-text">
                       {check.status}
                     </span>
                   </div>
@@ -726,7 +726,7 @@ function AdminConsole({
                   className="rounded-md border border-border bg-bg p-3 transition hover:border-border-strong"
                 >
                   <span className="flex items-center justify-between gap-3">
-                    <span className="text-xs font-semibold text-accent">
+                    <span className="text-xs font-semibold text-accent-text">
                       {candidate.priority} · {candidate.cadence}
                     </span>
                     <ExternalLink

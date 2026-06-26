@@ -37,7 +37,7 @@ function DemoNotice({ children }: { children: ReactNode }) {
   return (
     <div
       role="note"
-      className="rounded-md border border-accent-3/30 bg-accent-3/10 p-4 text-sm leading-6 text-accent-3"
+      className="rounded-md border border-accent-3/30 bg-accent-3/10 p-4 text-sm leading-6 text-accent-3-text"
     >
       {children}
     </div>
@@ -174,7 +174,7 @@ function TermsDocument({ onNavigate }: { onNavigate: (route: AppRoute) => void }
             <button
               type="button"
               onClick={() => onNavigate('support')}
-              className="inline-flex min-h-9 items-center rounded-md px-1 font-semibold text-accent underline-offset-2 hover:underline"
+              className="inline-flex min-h-9 items-center rounded-md px-1 font-semibold text-accent-text underline-offset-2 hover:underline"
             >
               문의 페이지
             </button>
@@ -396,7 +396,7 @@ export function TermsRoute({ onNavigate }: { onNavigate: (route: AppRoute) => vo
         <section className="rounded-lg border border-border bg-surface p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-accent">약관·정책 · /terms</p>
+              <p className="text-xs font-semibold text-accent-text">약관·정책 · /terms</p>
               <h1 className="mt-1 text-2xl font-semibold text-text">
                 이용약관 및 개인정보처리방침
               </h1>

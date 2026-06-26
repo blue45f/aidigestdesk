@@ -411,7 +411,7 @@ export function EventCostComparisonSection() {
                 <p className="text-right text-sm font-semibold text-text">
                   ${estimate.adjustedTotal.toFixed(2)}
                 </p>
-                <p className="hidden text-right text-xs font-semibold text-accent md:block">
+                <p className="hidden text-right text-xs font-semibold text-accent-text md:block">
                   ${saved.toFixed(2)}
                 </p>
               </div>

@@ -69,7 +69,7 @@ export function MusicToggle() {
 
   const cls = (active: boolean) =>
     `flex size-11 items-center justify-center rounded-full border text-lg shadow-md transition-transform active:scale-95 ${
-      active ? 'border-accent bg-accent/12 text-accent' : 'border-border bg-surface text-text-muted'
+      active ? 'border-accent bg-accent/12 text-accent-text' : 'border-border bg-surface text-text-muted'
     }`
 
   return (

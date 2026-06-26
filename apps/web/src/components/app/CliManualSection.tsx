@@ -141,7 +141,7 @@ function ManualDetail({ manual }: { manual: CliToolManual }) {
                 aria-pressed={active}
                 className={
                   active
-                    ? 'inline-flex min-h-8 shrink-0 snap-start items-center rounded-full border border-accent bg-accent/12 px-3 py-1 text-xs font-semibold text-accent'
+                    ? 'inline-flex min-h-8 shrink-0 snap-start items-center rounded-full border border-accent bg-accent/12 px-3 py-1 text-xs font-semibold text-accent-text'
                     : 'inline-flex min-h-8 shrink-0 snap-start items-center rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
                 }
               >
@@ -180,7 +180,7 @@ function ManualDetail({ manual }: { manual: CliToolManual }) {
               className="rounded-xl border border-border bg-surface px-3 py-2.5"
             >
               <div className="flex flex-wrap items-center gap-2">
-                <code className="rounded bg-bg px-1.5 py-0.5 font-mono text-[0.8125rem] font-semibold text-accent">
+                <code className="rounded bg-bg px-1.5 py-0.5 font-mono text-[0.8125rem] font-semibold text-accent-text">
                   {c.command}
                 </code>
                 <span className="rounded border border-border bg-bg px-1.5 py-px text-[0.625rem] font-medium text-text-subtle">
@@ -295,7 +295,7 @@ export function CliManualSection({ id }: { id?: string }) {
               aria-pressed={active}
               className={
                 active
-                  ? 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border border-accent bg-accent/12 px-3 py-1.5 text-xs font-semibold text-accent'
+                  ? 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border border-accent bg-accent/12 px-3 py-1.5 text-xs font-semibold text-accent-text'
                   : 'inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
               }
             >

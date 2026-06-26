@@ -226,7 +226,7 @@ export function TaskRecommendationSection({
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold text-accent">
+                    <p className="text-xs font-semibold text-accent-text">
                       {getTaskRecommendationCategoryLabel(recommendation.category)}
                     </p>
                     <h3 className="mt-1 text-base font-semibold text-text">
@@ -541,7 +541,7 @@ export function CodingToolDirectorySection({ tools }: { tools: AiCodingToolProfi
               <article key={tool.id} className="rounded-lg border border-border bg-surface p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold text-accent">
+                    <p className="text-xs font-semibold text-accent-text">
                       {tool.vendor} · {tool.category}
                     </p>
                     <h3 className="mt-1 text-base font-semibold text-text">{tool.toolName}</h3>
@@ -773,7 +773,7 @@ export function VibeCodingSection({ commands }: { commands: VibeCodingCommand[] 
               <article key={command.id} className="rounded-lg border border-border bg-surface p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs font-semibold text-accent">
+                    <p className="text-xs font-semibold text-accent-text">
                       {getProviderLabel(command.providerId)} · {command.surface}
                     </p>
                     <h3 className="mt-1 text-base font-semibold text-text">{command.modelName}</h3>

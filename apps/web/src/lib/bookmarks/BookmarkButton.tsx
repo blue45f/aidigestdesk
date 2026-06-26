@@ -56,7 +56,7 @@ export function BookmarkButton({
         title={label}
         className={
           active
-            ? 'inline-flex min-h-9 items-center gap-1.5 rounded-md border border-accent/40 bg-accent/10 px-2.5 py-1.5 text-xs font-semibold text-accent transition'
+            ? 'inline-flex min-h-9 items-center gap-1.5 rounded-md border border-accent/40 bg-accent/10 px-2.5 py-1.5 text-xs font-semibold text-accent-text transition'
             : 'inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
         }
       >
@@ -79,7 +79,7 @@ export function BookmarkButton({
       title={label}
       className={
         active
-          ? 'grid size-9 shrink-0 place-items-center rounded-md border border-accent/40 bg-accent/10 text-accent transition'
+          ? 'grid size-9 shrink-0 place-items-center rounded-md border border-accent/40 bg-accent/10 text-accent-text transition'
           : 'grid size-9 shrink-0 place-items-center rounded-md border border-border bg-surface text-text-subtle transition hover:border-border-strong hover:text-text'
       }
     >

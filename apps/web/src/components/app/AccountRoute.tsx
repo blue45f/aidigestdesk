@@ -134,7 +134,7 @@ function AuthPanel({ onAuthed }: { onAuthed: (session: MemberSession) => void })
           autoComplete={tab === 'signup' ? 'new-password' : 'current-password'}
         />
         {error ? (
-          <p className="rounded-md border border-accent-4/30 bg-accent-4/10 px-3 py-2 text-xs font-semibold text-accent-4">
+          <p className="rounded-md border border-accent-4/30 bg-accent-4/10 px-3 py-2 text-xs font-semibold text-accent-4-text">
             {error}
           </p>
         ) : null}
@@ -257,7 +257,7 @@ function ProfilePanel({
           <button
             type="button"
             onClick={() => setConfirmWithdraw(true)}
-            className="mt-4 inline-flex h-10 items-center gap-1.5 rounded-md border border-accent-4/40 bg-accent-4/10 px-4 text-sm font-semibold text-accent-4 transition hover:bg-accent-4/20"
+            className="mt-4 inline-flex h-10 items-center gap-1.5 rounded-md border border-accent-4/40 bg-accent-4/10 px-4 text-sm font-semibold text-accent-4-text transition hover:bg-accent-4/20"
           >
             회원 탈퇴
           </button>

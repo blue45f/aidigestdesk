@@ -186,7 +186,7 @@ function PageHeader({ route }: { route: ContentRoute }) {
   const meta = routeMeta[route]
   return (
     <section className="rounded-lg border border-border bg-surface p-5">
-      <p className="text-xs font-semibold text-accent">{meta.eyebrow}</p>
+      <p className="text-xs font-semibold text-accent-text">{meta.eyebrow}</p>
       <h1 className="mt-1 text-2xl font-semibold text-text">{meta.title}</h1>
       <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">{meta.description}</p>
     </section>
@@ -207,7 +207,7 @@ function ExploreGrid({ onNavigate }: { onNavigate: (route: AppRoute) => void }) 
             className="reveal is-revealed group relative flex items-start gap-3 overflow-hidden rounded-lg border border-border bg-surface p-4 text-left transition-[transform,border-color,box-shadow] duration-200 ease-[var(--ease-out-quart)] hover:-translate-y-0.5 hover:border-border-strong hover:shadow-[0_12px_28px_-18px_color-mix(in_oklch,var(--color-ink),transparent_55%)]"
           >
             <span className="sheen" aria-hidden />
-            <span className="grid size-10 shrink-0 place-items-center rounded-md border border-border bg-bg text-accent transition-colors duration-200 group-hover:border-accent/40 group-hover:bg-accent/10">
+            <span className="grid size-10 shrink-0 place-items-center rounded-md border border-border bg-bg text-accent-text transition-colors duration-200 group-hover:border-accent/40 group-hover:bg-accent/10">
               <card.icon className="size-5" aria-hidden />
             </span>
             <span className="min-w-0">

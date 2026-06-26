@@ -1158,7 +1158,7 @@ export function CommunityRoute({
         <section className="rounded-lg border border-border bg-surface p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold text-accent">커뮤니티 · /community</p>
+              <p className="text-xs font-semibold text-accent-text">커뮤니티 · /community</p>
               <h1 className="mt-1 text-2xl font-semibold text-text">
                 커뮤니티 · 채팅방·게시판·카페
               </h1>

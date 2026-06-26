@@ -87,7 +87,7 @@ export function PortalHero({ onNavigate }: { onNavigate: (route: AppRoute) => vo
           <button
             type="button"
             onClick={() => onNavigate('deals')}
-            className="group ml-auto inline-flex items-center gap-1.5 rounded-full border border-accent/25 bg-accent/5 px-3 py-1 text-xs font-semibold text-accent transition-colors hover:bg-accent/10"
+            className="group ml-auto inline-flex items-center gap-1.5 rounded-full border border-accent/25 bg-accent/5 px-3 py-1 text-xs font-semibold text-accent-text transition-colors hover:bg-accent/10"
           >
             <BadgePercent className="size-3.5" aria-hidden />
             할인·혜택 {stats.deals}건

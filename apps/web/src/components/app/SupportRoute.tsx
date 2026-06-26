@@ -32,9 +32,9 @@ const categoryHints: Record<InquiryCategory, string> = {
 
 /** 상태 뱃지 톤. 진행도에 따라 토큰 색을 매핑한다. */
 const statusTone: Record<InquiryStatus, string> = {
-  new: 'border-accent-2/30 bg-accent-2/10 text-accent-2',
-  in_progress: 'border-accent-3/40 bg-accent-3/10 text-accent-3',
-  resolved: 'border-accent/30 bg-accent/10 text-accent',
+  new: 'border-accent-2/30 bg-accent-2/10 text-accent-2-text',
+  in_progress: 'border-accent-3/40 bg-accent-3/10 text-accent-3-text',
+  resolved: 'border-accent/30 bg-accent/10 text-accent-text',
   closed: 'border-border bg-surface-2 text-text-subtle',
 }
 
@@ -144,11 +144,11 @@ function InquiryBoard() {
           </ul>
         ) : state.phase === 'error' ? (
           <div className="rounded-lg border border-accent-4/30 bg-accent-4/10 p-5">
-            <p className="text-sm font-semibold text-accent-4">{state.message}</p>
+            <p className="text-sm font-semibold text-accent-4-text">{state.message}</p>
             <button
               type="button"
               onClick={reload}
-              className="mt-3 inline-flex min-h-9 items-center gap-1.5 rounded-md border border-accent-4/40 bg-accent-4/10 px-3 py-1.5 text-xs font-semibold text-accent-4 transition hover:bg-accent-4/20"
+              className="mt-3 inline-flex min-h-9 items-center gap-1.5 rounded-md border border-accent-4/40 bg-accent-4/10 px-3 py-1.5 text-xs font-semibold text-accent-4-text transition hover:bg-accent-4/20"
             >
               <RotateCcw className="size-3.5" aria-hidden />
               다시 시도
@@ -255,7 +255,7 @@ export function SupportRoute({ onNavigate }: { onNavigate: (route: AppRoute) => 
         <section className="rounded-lg border border-border bg-surface p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-accent">문의 · /support</p>
+              <p className="text-xs font-semibold text-accent-text">문의 · /support</p>
               <h1
                 ref={headingRef}
                 tabIndex={-1}
@@ -431,7 +431,7 @@ export function SupportRoute({ onNavigate }: { onNavigate: (route: AppRoute) => 
               {/* 검증 에러는 aria-live로 announce. */}
               <p role="alert" aria-live="assertive" className="min-h-0">
                 {error ? (
-                  <span className="block rounded-md border border-accent-4/30 bg-accent-4/10 px-3 py-2 text-xs font-semibold text-accent-4">
+                  <span className="block rounded-md border border-accent-4/30 bg-accent-4/10 px-3 py-2 text-xs font-semibold text-accent-4-text">
                     {error}
                   </span>
                 ) : null}

@@ -156,7 +156,7 @@ function DealCard({ deal }: { deal: LlmDeal }) {
 
       {deal.koreanNote ? (
         <div className="flex gap-2 rounded-md border border-accent/30 bg-accent/10 px-3 py-2">
-          <span className="shrink-0 text-[0.6875rem] font-bold text-accent">국내 팁</span>
+          <span className="shrink-0 text-[0.6875rem] font-bold text-accent-text">국내 팁</span>
           <span className="text-xs leading-5 text-text-muted">{deal.koreanNote}</span>
         </div>
       ) : null}
@@ -281,7 +281,7 @@ export function DealsSection({ deals = llmDeals }: { deals?: LlmDeal[] }) {
               onClick={() => setRegion(domesticOnly ? '전체' : '국내')}
               className={
                 domesticOnly
-                  ? 'inline-flex min-h-9 w-fit items-center gap-1.5 rounded-md border border-accent bg-accent/15 px-3 py-1.5 text-xs font-semibold text-accent'
+                  ? 'inline-flex min-h-9 w-fit items-center gap-1.5 rounded-md border border-accent bg-accent/15 px-3 py-1.5 text-xs font-semibold text-accent-text'
                   : 'inline-flex min-h-9 w-fit items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
               }
             >

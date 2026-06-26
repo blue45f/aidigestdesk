@@ -104,7 +104,7 @@ export function AboutRoute({ onNavigate }: { onNavigate: (route: AppRoute) => vo
         <section className="rounded-lg border border-border bg-surface p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="max-w-2xl">
-              <p className="text-xs font-semibold text-accent">소개·가이드 · /about</p>
+              <p className="text-xs font-semibold text-accent-text">소개·가이드 · /about</p>
               <h1 className="mt-1 text-2xl font-semibold text-text text-balance">
                 AIDigestDesk는 어떤 곳인가요?
               </h1>

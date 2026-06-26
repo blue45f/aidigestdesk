@@ -230,7 +230,7 @@ function CommandCard({ command }: { command: VibeCodingCommand }) {
               type="button"
               onClick={() => setNotesOpen((open) => !open)}
               aria-expanded={notesOpen}
-              className="inline-flex items-center gap-1 text-xs font-semibold text-accent transition hover:text-text"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-accent-text transition hover:text-text"
             >
               {notesOpen ? '접기' : `${command.setupNotes.length - 3}개 더 보기`}
               <ChevronDown
@@ -249,7 +249,7 @@ function CommandCard({ command }: { command: VibeCodingCommand }) {
             {command.caveats.map((caveat) => (
               <li
                 key={caveat}
-                className="rounded border border-accent-3/30 bg-accent-3/10 px-2 py-1 text-xs leading-5 text-accent-3"
+                className="rounded border border-accent-3/30 bg-accent-3/10 px-2 py-1 text-xs leading-5 text-accent-3-text"
               >
                 {caveat}
               </li>

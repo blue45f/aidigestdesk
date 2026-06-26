@@ -417,7 +417,7 @@ export function DesignRoute({ onNavigate }: { onNavigate: (route: AppRoute) => v
         <section className="rounded-lg border border-border bg-surface p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold text-accent">디자인 시스템 · /design</p>
+              <p className="text-xs font-semibold text-accent-text">디자인 시스템 · /design</p>
               <h1 className="mt-1 text-2xl font-semibold text-text">AIDigestDesk 디자인 시스템</h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
                 실제 테마 토큰과 공유 컴포넌트를 코드에서 직접 렌더링하는 리빙 스타일가이드입니다.
