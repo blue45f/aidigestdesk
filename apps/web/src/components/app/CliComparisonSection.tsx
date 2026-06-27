@@ -574,8 +574,8 @@ export function LlmCliManualSection({ manuals = llmCliManuals }: { manuals?: Llm
     <section id="cli-manual" className="scroll-mt-32 space-y-4">
       <SectionHeader
         icon={BookOpenCheck}
-        title="LLM CLI 실전 매뉴얼"
-        description="설치·인증부터 repo 수정, OpenAI 호환 API, MCP/권한, 팀 운영까지 LLM CLI를 실제 업무에 붙이는 절차를 한곳에서 확인합니다."
+        title="CLI 실전 워크플로 가이드"
+        description="설치·인증부터 repo 수정, OpenAI 호환 API, MCP/권한, 팀 운영까지 LLM CLI를 실제 업무에 붙이는 절차(워크플로)를 한곳에서 확인합니다. 도구별 명령어 레퍼런스는 [AI 도구 → CLI 도구별 매뉴얼]에서 보세요."
         badge={<Chip tone="accent">{manuals.length}개 매뉴얼</Chip>}
       />
 

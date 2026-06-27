@@ -1,10 +1,7 @@
 import { type ProviderId } from '@aidigestdesk/content'
 import { cliToolManuals, getCliManualBySlug, type CliToolManual } from '@aidigestdesk/content/cliManuals'
-import { copyText } from '@aidigestdesk/content/shared'
 import {
   BookOpen,
-  Check,
-  Copy,
   Download,
   ExternalLink,
   KeyRound,
@@ -18,34 +15,27 @@ import { BrandMark, SearchField, SortChip, type SortDirection } from '@/componen
 
 type CmdSort = 'default' | 'command' | 'category'
 
-/** 코드/명령 블록 — 우상단 복사 버튼(복사 시 ✓ 피드백). */
-function CodeBlock({ children }: { children: string }) {
-  const [copied, setCopied] = useState(false)
-  const onCopy = async () => {
-    if (await copyText(children)) {
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 1300)
-    }
-  }
+/**
+ * 설치·인증처럼 설명 문장 + 인라인 `명령`이 섞인 텍스트를 읽기 쉽게 렌더한다.
+ * 전체를 monospace 코드블록에 넣던 기존 방식은 가독성이 나빠, 본문은 일반 글꼴(고대비)로,
+ * 백틱으로 감싼 명령만 인라인 코드 칩으로 강조한다. 줄바꿈·들여쓰기는 보존한다.
+ */
+function RichProse({ text }: { text: string }) {
   return (
-    <div className="relative">
-      <pre className="overflow-x-auto whitespace-pre-wrap break-words rounded-lg border border-border bg-bg py-2.5 pl-3 pr-10 text-[0.8125rem] leading-6 text-text">
-        <code className="font-mono">{children}</code>
-      </pre>
-      <button
-        type="button"
-        onClick={onCopy}
-        aria-label={copied ? '복사됨' : '코드 복사'}
-        title={copied ? '복사됨' : '코드 복사'}
-        className="absolute right-1.5 top-1.5 inline-flex size-7 items-center justify-center rounded-md border border-border bg-surface text-text-muted transition hover:border-border-strong hover:text-text"
-      >
-        {copied ? (
-          <Check className="size-3.5 text-accent-2" aria-hidden />
+    <p className="text-sm leading-7 whitespace-pre-wrap text-text">
+      {text.split(/(`[^`]+`)/g).map((part, i) =>
+        part.startsWith('`') && part.endsWith('`') ? (
+          <code
+            key={i}
+            className="mx-0.5 rounded border border-border bg-bg px-1.5 py-0.5 font-mono text-[0.8125rem] font-semibold text-accent-text"
+          >
+            {part.slice(1, -1)}
+          </code>
         ) : (
-          <Copy className="size-3.5" aria-hidden />
-        )}
-      </button>
-    </div>
+          part
+        )
+      )}
+    </p>
   )
 }
 
@@ -99,24 +89,24 @@ function ManualDetail({ manual }: { manual: CliToolManual }) {
         <p className="text-sm leading-6 text-text-muted">{manual.overview}</p>
       ) : null}
 
-      {/* 설치 · 인증 */}
-      <div className="grid gap-3 md:grid-cols-2">
+      {/* 설치 · 인증 — 설명 문장이라 전체폭 카드 + 본문(고대비) + 인라인 명령 칩으로 읽기 쉽게 */}
+      <div className="space-y-3">
         {manual.install ? (
-          <div className="space-y-2">
-            <h4 className="flex items-center gap-1.5 text-sm font-semibold text-text">
+          <div className="rounded-xl border border-border bg-surface/60 p-3.5">
+            <h4 className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-text">
               <Download className="size-4 text-accent" aria-hidden />
               설치
             </h4>
-            <CodeBlock>{manual.install}</CodeBlock>
+            <RichProse text={manual.install} />
           </div>
         ) : null}
         {manual.auth ? (
-          <div className="space-y-2">
-            <h4 className="flex items-center gap-1.5 text-sm font-semibold text-text">
+          <div className="rounded-xl border border-border bg-surface/60 p-3.5">
+            <h4 className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-text">
               <KeyRound className="size-4 text-accent" aria-hidden />
               인증 · 로그인
             </h4>
-            <CodeBlock>{manual.auth}</CodeBlock>
+            <RichProse text={manual.auth} />
           </div>
         ) : null}
       </div>

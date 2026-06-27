@@ -1,7 +1,5 @@
-import { copyText } from '@aidigestdesk/content/shared';
 import { useMemo, useState } from 'react';
 
-import { haptic } from '../lib/haptic';
 import { onExternalClick } from '../lib/links';
 import { getManualBySlug, manualCategories, manualSnapshotDate } from '../lib/manuals';
 import { goBack } from '../router';
@@ -20,28 +18,45 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function CodeBlock({ children }: { children: string }) {
-  const [copied, setCopied] = useState(false);
-  const onCopy = async () => {
-    if (await copyText(children)) {
-      haptic('tickWeak');
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1300);
-    }
-  };
+/**
+ * 설치·인증처럼 설명 문장 + 인라인 `명령`이 섞인 텍스트를 읽기 쉽게 렌더(monospace 코드블록 대신).
+ * 본문은 일반 글꼴(고대비), 백틱 명령만 인라인 코드 칩으로 강조. 웹 RichProse 와 동일 표현.
+ */
+function RichProse({ text }: { text: string }) {
   return (
-    <div style={{ position: 'relative' }}>
-      <pre style={{ margin: 0, overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
-        background: theme.surfaceAlt, border: `1px solid ${theme.border}`, borderRadius: 10, padding: '11px 40px 11px 12px',
-        fontSize: 12.5, lineHeight: 1.6, color: theme.text,
-        fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>{children}</pre>
-      <button type="button" onClick={onCopy} aria-label={copied ? '복사됨' : '코드 복사'} className="pressable"
-        style={{ position: 'absolute', top: 7, right: 7, width: 28, height: 28, display: 'grid', placeItems: 'center',
-          borderRadius: 8, cursor: 'pointer', fontSize: 13, border: `1px solid ${theme.border}`,
-          background: theme.surface, color: copied ? theme.accent : theme.textMuted }}>
-        {copied ? '✓' : '⧉'}
-      </button>
-    </div>
+    <p
+      style={{
+        margin: 0,
+        fontSize: 14,
+        lineHeight: 1.75,
+        color: theme.text,
+        whiteSpace: 'pre-wrap',
+        wordBreak: 'break-word',
+      }}
+    >
+      {text.split(/(`[^`]+`)/g).map((part, i) =>
+        part.startsWith('`') && part.endsWith('`') ? (
+          <code
+            key={i}
+            style={{
+              margin: '0 2px',
+              padding: '2px 6px',
+              borderRadius: 6,
+              border: `1px solid ${theme.border}`,
+              background: theme.surfaceAlt,
+              color: theme.accent,
+              fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+              fontSize: 12.5,
+              fontWeight: 700,
+            }}
+          >
+            {part.slice(1, -1)}
+          </code>
+        ) : (
+          part
+        )
+      )}
+    </p>
   );
 }
 
@@ -104,10 +119,10 @@ export function ManualDetailPage({ slug }: { slug: string }) {
         </div>
 
         {manual.install && (
-          <Section title="📥 설치"><CodeBlock>{manual.install}</CodeBlock></Section>
+          <Section title="📥 설치"><RichProse text={manual.install} /></Section>
         )}
         {manual.auth && (
-          <Section title="🔑 인증 · 로그인"><CodeBlock>{manual.auth}</CodeBlock></Section>
+          <Section title="🔑 인증 · 로그인"><RichProse text={manual.auth} /></Section>
         )}
 
         <Section title={`⌨️ 명령어 · 옵션 ${manual.commands.length}개`}>

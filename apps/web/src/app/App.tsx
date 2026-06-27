@@ -371,7 +371,7 @@ const toolsPaneMeta: Array<{
   },
   {
     id: 'cli-manual',
-    title: 'CLI 매뉴얼',
+    title: 'CLI 도구별 매뉴얼',
     description: '도구별 명령·옵션 상세 레퍼런스',
     icon: FileText,
   },

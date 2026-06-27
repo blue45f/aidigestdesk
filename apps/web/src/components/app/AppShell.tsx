@@ -64,7 +64,7 @@ const routeSections: Partial<
     { href: '#task-recommendations', label: '작업 추천', icon: Sparkles },
     { href: '#ai-tools', label: 'AI 도구', icon: Boxes },
     { href: '#extensions', label: '확장 디렉터리', icon: Boxes },
-    { href: '#cli-manual', label: 'CLI 실전 매뉴얼', icon: Code2 },
+    { href: '#cli-manual', label: 'CLI 도구별 매뉴얼', icon: Code2 },
     { href: '#vibe-coding', label: 'CLI 명령어', icon: Code2 },
     { href: '#cli-comparison', label: 'CLI 비교표', icon: Code2 },
     { href: '#design', label: '디자인 워크플로', icon: FileText },

@@ -19,7 +19,7 @@ describe('LLM CLI manual UI', () => {
   it('filters manuals by practical CLI search terms', () => {
     render(<LlmCliManualSection />)
 
-    expect(screen.getByRole('heading', { name: 'LLM CLI 실전 매뉴얼' })).toBeTruthy()
+    expect(screen.getByRole('heading', { name: 'CLI 실전 워크플로 가이드' })).toBeTruthy()
     expect(screen.getByRole('heading', { name: '전용 LLM CLI 빠른 시작' })).toBeTruthy()
 
     fireEvent.change(screen.getByLabelText('매뉴얼 검색'), {
