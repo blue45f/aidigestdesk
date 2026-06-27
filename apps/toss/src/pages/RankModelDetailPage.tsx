@@ -8,7 +8,7 @@ import {
 } from '../lib/rankings';
 import { goBack } from '../router';
 import { theme, pageShell } from '../theme';
-import { BackBar, BookmarkButton, MetaChip, RankBadge } from '../ui';
+import { BackBar, BookmarkButton, BrandIcon, MetaChip, RankBadge } from '../ui';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -63,7 +63,10 @@ export function RankModelDetailPage({ id }: { id: string }) {
         <div className="rise">
           <h1 style={{ fontSize: 24, fontWeight: 800, lineHeight: 1.3, wordBreak: 'keep-all' }}>{name}</h1>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginTop: 8 }}>
-            <span style={{ fontSize: 14, color: theme.textMuted }}>{provider}</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, color: theme.textMuted }}>
+              <BrandIcon src={found.entry.iconUrl} size={16} />
+              {provider}
+            </span>
             {profile?.status && <MetaChip>{profile.status}</MetaChip>}
             {profile?.lastUpdate && <MetaChip>업데이트 {profile.lastUpdate}</MetaChip>}
           </div>

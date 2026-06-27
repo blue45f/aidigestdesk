@@ -6,7 +6,7 @@ import { getUpdate } from '../lib/api';
 import { onExternalClick } from '../lib/links';
 import { navigate } from '../router';
 import { theme } from '../theme';
-import { Badge } from '../ui';
+import { Badge, BrandIcon } from '../ui';
 
 export function UpdateDetailPage({ id = '' }: { id?: string }) {
   const platform = usePlatform();
@@ -38,7 +38,7 @@ export function UpdateDetailPage({ id = '' }: { id?: string }) {
       {Header}
       <div className="rise" style={{ padding: `4px 20px ${hasUrl ? 110 : 40}px` }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12 }}>
-          <Badge accent>{u.provider}</Badge>{u.date && <span style={{ fontSize: 13, color: theme.textMuted }}>{u.date}</span>}
+          <BrandIcon src={u.iconUrl} size={16} /><Badge accent>{u.provider}</Badge>{u.date && <span style={{ fontSize: 13, color: theme.textMuted }}>{u.date}</span>}
         </div>
         <h1 style={{ fontSize: 22, fontWeight: 800, lineHeight: 1.34 }}>{u.title}</h1>
 
