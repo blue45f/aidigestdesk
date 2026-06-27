@@ -146,6 +146,18 @@ export function MetaChip({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * 제공사/브랜드 favicon — 랭킹·혜택 등 카드에서 공용으로 쓰는 작은 로고.
+ * iconUrl 은 content 생성기에서 베이크(웹 BrandMark 와 동일 소스)라 웹↔토스 시각이 싱크된다.
+ */
+export function BrandIcon({ src, size = 16 }: { src: string | null; size?: number }) {
+  if (!src) return null;
+  return (
+    <img src={src} alt="" width={size} height={size} loading="lazy" decoding="async"
+      style={{ borderRadius: 4, flexShrink: 0 }} />
+  );
+}
+
 /** 상세 페이지 상단 뒤로가기 바. */
 export function BackBar({ onBack, label='뒤로' }: { onBack:()=>void; label?:string }) {
   return (

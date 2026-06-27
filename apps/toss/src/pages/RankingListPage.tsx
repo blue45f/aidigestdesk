@@ -18,7 +18,7 @@ import { BannerAd } from '../components/BannerAd';
 import { AD_GROUPS } from '../lib/ads';
 import { navigate } from '../router';
 import { theme, pageShell } from '../theme';
-import { Badge, Chips, MetaChip, RankBadge, Segmented, SortChip } from '../ui';
+import { Badge, BrandIcon, Chips, MetaChip, RankBadge, Segmented, SortChip } from '../ui';
 
 type Scope = 'models' | 'extensions';
 type Dir = 'asc' | 'desc';
@@ -76,17 +76,7 @@ function ModelRow({ entry, position, onOpen, medal }: { entry: ModelRankEntry; p
           )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
-          {entry.iconUrl && (
-            <img
-              src={entry.iconUrl}
-              alt=""
-              width={16}
-              height={16}
-              loading="lazy"
-              decoding="async"
-              style={{ borderRadius: 4, flexShrink: 0 }}
-            />
-          )}
+          <BrandIcon src={entry.iconUrl} />
           <span style={{ fontSize: 12.5, color: theme.textMuted }}>{entry.provider}</span>
         </div>
         <div style={{ display: 'flex', gap: 6, marginTop: 9, flexWrap: 'wrap' }}>
