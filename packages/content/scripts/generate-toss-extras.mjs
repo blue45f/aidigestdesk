@@ -10,7 +10,10 @@ import { fileURLToPath } from 'node:url'
 import {
   aiCodingTools,
   eventScheduleItems,
+  getBrandIconUrl,
   getDealStatus,
+  getDomainFromUrl,
+  getProviderIconUrl,
   getProviderLabel,
   glossaryTerms,
   learningResources,
@@ -32,9 +35,18 @@ function periodLabel(period) {
   return '상시'
 }
 
+// 제공사 브랜드 아이콘 URL — providerId면 제공사 favicon, 아니면(market 등) URL 도메인 favicon.
+// 웹은 BrandMark(providerId/domain)로 렌더하므로 토스도 같은 소스로 베이크해 시각 싱크한다.
+function brandIcon(provider, url) {
+  if (provider && provider !== 'market') return getProviderIconUrl(provider) ?? null
+  const domain = url ? getDomainFromUrl(url) : null
+  return domain ? (getBrandIconUrl(domain) ?? null) : null
+}
+
 const deals = llmDeals.map((d) => ({
   id: d.id,
   provider: d.provider === 'market' ? d.providerName : (getProviderLabel(d.provider) ?? d.providerName),
+  iconUrl: brandIcon(d.provider, d.url),
   dealType: d.dealType,
   audience: d.audience,
   region: d.region,

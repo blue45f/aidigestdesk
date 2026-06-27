@@ -4,6 +4,7 @@
     {
       "id": "deal-openai-academy",
       "provider": "OpenAI",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=openai.com&sz=64",
       "dealType": "학생/교육",
       "audience": "학생",
       "region": "글로벌",
@@ -26,6 +27,7 @@
     {
       "id": "deal-openai-batch",
       "provider": "OpenAI",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=openai.com&sz=64",
       "dealType": "배치/캐싱 절감",
       "audience": "개인",
       "region": "글로벌",
@@ -48,6 +50,7 @@
     {
       "id": "deal-anthropic-education",
       "provider": "Anthropic",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=claude.com&sz=64",
       "dealType": "학생/교육",
       "audience": "학생",
       "region": "글로벌",
@@ -70,6 +73,7 @@
     {
       "id": "deal-anthropic-caching",
       "provider": "Anthropic",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=claude.com&sz=64",
       "dealType": "배치/캐싱 절감",
       "audience": "개인",
       "region": "글로벌",
@@ -92,6 +96,7 @@
     {
       "id": "deal-google-students",
       "provider": "Google",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=gemini.google&sz=64",
       "dealType": "학생/교육",
       "audience": "학생",
       "region": "글로벌",
@@ -113,6 +118,7 @@
     {
       "id": "deal-google-aistudio-free",
       "provider": "Google",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=gemini.google&sz=64",
       "dealType": "무료 크레딧",
       "audience": "개인",
       "region": "글로벌",
@@ -135,6 +141,7 @@
     {
       "id": "deal-deepseek-offpeak",
       "provider": "DeepSeek",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=deepseek.com&sz=64",
       "dealType": "API 가격 인하",
       "audience": "개인",
       "region": "글로벌",
@@ -157,6 +164,7 @@
     {
       "id": "deal-qwen-free-quota",
       "provider": "Alibaba Qwen",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=qwen.ai&sz=64",
       "dealType": "무료 크레딧",
       "audience": "개인",
       "region": "아시아",
@@ -178,6 +186,7 @@
     {
       "id": "deal-mistral-free-tier",
       "provider": "Mistral AI",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=mistral.ai&sz=64",
       "dealType": "무료 크레딧",
       "audience": "개인",
       "region": "글로벌",
@@ -199,6 +208,7 @@
     {
       "id": "deal-cursor-students",
       "provider": "Cursor",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=cursor.com&sz=64",
       "dealType": "학생/교육",
       "audience": "학생",
       "region": "글로벌",
@@ -221,6 +231,7 @@
     {
       "id": "deal-github-copilot-free",
       "provider": "GitHub",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=github.com&sz=64",
       "dealType": "구독 할인",
       "audience": "개인",
       "region": "글로벌",
@@ -242,6 +253,7 @@
     {
       "id": "deal-github-education",
       "provider": "GitHub Education",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=education.github.com&sz=64",
       "dealType": "학생/교육",
       "audience": "학생",
       "region": "글로벌",
@@ -264,6 +276,7 @@
     {
       "id": "deal-gemini-code-assist-free",
       "provider": "Google",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=gemini.google&sz=64",
       "dealType": "구독 할인",
       "audience": "개인",
       "region": "글로벌",
@@ -286,6 +299,7 @@
     {
       "id": "deal-upstage-credit",
       "provider": "Upstage",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=upstage.ai&sz=64",
       "dealType": "국내 혜택",
       "audience": "스타트업",
       "region": "국내",
@@ -308,6 +322,7 @@
     {
       "id": "deal-naver-clova-trial",
       "provider": "NAVER Cloud",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=ncloud.com&sz=64",
       "dealType": "국내 혜택",
       "audience": "팀/조직",
       "region": "국내",
@@ -330,6 +345,7 @@
     {
       "id": "deal-gov-bizinfo-ai-support-hub",
       "provider": "기업마당",
+      "iconUrl": null,
       "dealType": "정부지원사업",
       "audience": "전체",
       "region": "국내",
@@ -352,6 +368,7 @@
     {
       "id": "deal-gov-gwangju-ondevice-ai-scaleup",
       "provider": "기업마당",
+      "iconUrl": null,
       "dealType": "정부지원사업",
       "audience": "스타트업",
       "region": "국내",
@@ -374,6 +391,7 @@
     {
       "id": "deal-gov-jeonnam-robot-ai-manufacturing",
       "provider": "기업마당",
+      "iconUrl": null,
       "dealType": "정부지원사업",
       "audience": "팀/조직",
       "region": "국내",
@@ -396,6 +414,7 @@
     {
       "id": "deal-gov-deeptech-startup-college",
       "provider": "K-Startup",
+      "iconUrl": null,
       "dealType": "정부지원사업",
       "audience": "스타트업",
       "region": "국내",
@@ -418,6 +437,7 @@
     {
       "id": "deal-gov-aihub-public-datasets",
       "provider": "AI-Hub",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=aihub.or.kr&sz=64",
       "dealType": "정부지원사업",
       "audience": "전체",
       "region": "국내",
@@ -440,6 +460,7 @@
     {
       "id": "deal-xai-free-credits",
       "provider": "xAI",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=x.ai&sz=64",
       "dealType": "무료 크레딧",
       "audience": "개인",
       "region": "글로벌",

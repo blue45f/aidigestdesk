@@ -3,6 +3,8 @@ import data from '../extras.json';
 export interface DealEntry {
   id: string;
   provider: string;
+  /** 제공사/브랜드 아이콘 URL(생성기 베이크). 웹 BrandMark와 시각 싱크. */
+  iconUrl: string | null;
   dealType: string;
   audience: string;
   region: string;

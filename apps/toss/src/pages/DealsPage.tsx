@@ -46,7 +46,20 @@ function DealCard({ deal }: { deal: DealEntry }) {
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
         <StatusBadge status={deal.status} />
         <span style={{ fontSize: 13, fontWeight: 800, color: theme.accent }}>{deal.discountLabel}</span>
-        <span style={{ marginLeft: 'auto', fontSize: 12, color: theme.textMuted }}>{deal.provider}</span>
+        <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: theme.textMuted }}>
+          {deal.iconUrl && (
+            <img
+              src={deal.iconUrl}
+              alt=""
+              width={14}
+              height={14}
+              loading="lazy"
+              decoding="async"
+              style={{ borderRadius: 3, flexShrink: 0 }}
+            />
+          )}
+          {deal.provider}
+        </span>
       </div>
       <div style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.4 }}>{deal.title}</div>
       {deal.summary && (
