@@ -1,0 +1,39 @@
+{
+  "name": "@aidigestdesk/api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AIDigestDesk 자체 호스팅 회원/계정 백엔드 — 계정·JWT·서버 동기화 프로필·앱인토스 로그인.",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "nest start --watch",
+    "build": "rm -f tsconfig.tsbuildinfo && nest build",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p ./tsconfig.json --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/core": "^11.0.1",
+    "@nestjs/jwt": "^11.0.2",
+    "@nestjs/platform-express": "^11.0.1",
+    "@neondatabase/serverless": "^1.1.0",
+    "compression": "^1.8.1",
+    "drizzle-orm": "^0.45.2",
+    "helmet": "^8.2.0",
+    "nestjs-zod": "^4.0.1",
+    "pg": "^8.22.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^11.0.1",
+    "@nestjs/schematics": "^11.0.1",
+    "@types/compression": "^1.8.1",
+    "@types/node": "^25.9.3",
+    "@types/pg": "^8.20.0",
+    "drizzle-kit": "^0.31.10",
+    "typescript": "^6.0.3"
+  }
+}

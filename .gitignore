@@ -5,6 +5,8 @@ dist
 .env.local
 .vercel
 *.tsbuildinfo
+# API 로컬 JSON 폴백 DB (DATABASE_URL 미설정 시)
+apps/api/.data/
 .tmp
 .tmp-*
 packages/content/.tmp-*
