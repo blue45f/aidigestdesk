@@ -2,6 +2,8 @@ import { Top } from '@toss/tds-mobile';
 import { useMemo, useState } from 'react';
 
 import { AnimatedTitle } from '../components/AnimatedTitle';
+import { BannerAd } from '../components/BannerAd';
+import { AD_GROUPS } from '../lib/ads';
 import { onExternalClick } from '../lib/links';
 
 import {
@@ -153,6 +155,8 @@ export function DealsPage() {
             </div>
           </>
         )}
+
+        <BannerAd adGroupId={AD_GROUPS.feedList} marginTop={18} />
 
         <p style={{ fontSize: 11.5, color: theme.textMuted, textAlign: 'center', marginTop: 22, lineHeight: 1.6 }}>
           {extrasSnapshotDate} 기준 · 신청 전 공식 페이지에서 조건을 꼭 확인하세요

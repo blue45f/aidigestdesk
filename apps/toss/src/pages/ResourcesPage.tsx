@@ -157,6 +157,8 @@ export function ResourcesPage() {
           </div>
         )}
 
+        <BannerAd adGroupId={AD_GROUPS.feedList} marginTop={18} />
+
         <p style={{ fontSize: 11.5, color: theme.textMuted, textAlign: 'center', marginTop: 22, lineHeight: 1.6 }}>
           {extrasSnapshotDate} 기준
         </p>
