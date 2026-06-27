@@ -144,7 +144,7 @@ export function ManualDetailPage({ slug }: { slug: string }) {
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
                   <code style={{ background: theme.text, padding: '3px 8px', borderRadius: 6,
                     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: 13.5, fontWeight: 800,
-                    color: theme.bg }}>{c.command}</code>
+                    color: theme.bg, overflowWrap: 'anywhere', minWidth: 0 }}>{c.command}</code>
                   <MetaChip>{c.category}</MetaChip>
                 </div>
                 <p style={{ fontSize: 13.5, color: theme.text, marginTop: 8, lineHeight: 1.6 }}>{c.description}</p>

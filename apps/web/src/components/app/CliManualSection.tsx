@@ -175,7 +175,7 @@ function ManualDetail({ manual }: { manual: CliToolManual }) {
               className="rounded-xl border border-border bg-surface px-3.5 py-3 transition hover:border-border-strong"
             >
               <div className="flex flex-wrap items-center gap-2">
-                <code className="rounded-md bg-ink px-2 py-1 font-mono text-sm font-bold text-ink-fg">
+                <code className="rounded-md bg-ink px-2 py-1 font-mono text-sm font-bold text-ink-fg [overflow-wrap:anywhere]">
                   {c.command}
                 </code>
                 <span className="rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 text-[0.6875rem] font-semibold text-accent-text">
