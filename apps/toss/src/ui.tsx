@@ -30,7 +30,7 @@ export function BookmarkButton({ item }: { item: Bookmark }) {
 export function Badge({ children, accent }: { children: ReactNode; accent?: boolean }) {
   return <span style={{ display:'inline-flex', alignItems:'center', height:22, padding:'0 8px', borderRadius:6,
     fontSize:12, fontWeight:600, lineHeight:1, color: accent?theme.accent:theme.textMuted,
-    background: accent?theme.accentSoft:'rgba(255,255,255,0.07)' }}>{children}</span>;
+    background: accent?theme.accentSoft:'var(--c-soft)' }}>{children}</span>;
 }
 
 export function SearchBar({ value, onChange, placeholder }: { value:string; onChange:(v:string)=>void; placeholder?:string }) {
@@ -44,7 +44,7 @@ export function Chips({ items, active, onPick }: { items:string[]; active:string
   return <div className="chips">
     {items.map((c)=>{ const on=c===active; return (
       <button key={c} type="button" onClick={()=>onPick(c)} className="pressable" style={{ flexShrink:0, height:34, padding:'0 14px',
-        borderRadius:999, fontSize:14, fontWeight:600, cursor:'pointer', border: on?'none':'1px solid rgba(255,255,255,0.1)',
+        borderRadius:999, fontSize:14, fontWeight:600, cursor:'pointer', border: on?'none':'1px solid var(--c-border-2)',
         transition:'background-color .18s, color .18s, border-color .18s',
         background: on?theme.accent:'transparent', color: on?theme.accentInk:theme.textMuted }}>{c}</button>); })}
   </div>;
@@ -61,7 +61,7 @@ export function Cover({ gradient, src, alt, height=150, radius=12 }: { gradient?
 /** 1·2·3위 메달 뱃지. 색만으로 전달하지 않도록 숫자를 항상 병기.
  *  medal=false(가격·속도·이름 등 비순위 정렬)면 중립색 — 표시 순서를 순위로 오인 방지. */
 export function RankBadge({ position, medal = true }: { position: number; medal?: boolean }) {
-  const neutral = { bg: 'rgba(255,255,255,0.05)', bd: theme.border, fg: theme.textMuted };
+  const neutral = { bg: 'var(--c-faint)', bd: theme.border, fg: theme.textMuted };
   const palette = !medal
     ? neutral
     : position === 1
@@ -85,7 +85,7 @@ export function SortChip({ label, active, dir, onToggle }: { label:string; activ
     <button type="button" onClick={onToggle} aria-pressed={active} className="pressable"
       style={{ flexShrink:0, height:34, padding:'0 12px', borderRadius:999, fontSize:13.5, fontWeight:700, cursor:'pointer',
         display:'inline-flex', alignItems:'center', gap:5,
-        border: active ? `1px solid ${theme.accent}` : '1px solid rgba(255,255,255,0.1)',
+        border: active ? `1px solid ${theme.accent}` : '1px solid var(--c-border-2)',
         background: active ? theme.accentSoft : 'transparent', color: active ? theme.accent : theme.textMuted }}>
       {label}<span aria-hidden style={{ fontSize:12 }}>{arrow}</span>
     </button>
@@ -141,7 +141,7 @@ export function TabBar({ active, onPick }: { active:TabId; onPick:(t:TabId)=>voi
 export function MetaChip({ children }: { children: ReactNode }) {
   return (
     <span style={{ display:'inline-flex', alignItems:'center', height:22, padding:'0 8px', borderRadius:7,
-      fontSize:11.5, fontWeight:600, color:theme.textMuted, background:'rgba(255,255,255,0.05)',
+      fontSize:11.5, fontWeight:600, color:theme.textMuted, background:'var(--c-faint)',
       fontVariantNumeric:'tabular-nums' }}>{children}</span>
   );
 }

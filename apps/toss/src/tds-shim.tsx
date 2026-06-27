@@ -38,7 +38,7 @@ export function Button({ children, onClick, style, variant, loading, disabled }:
         minHeight: 52,
         padding: '0 18px',
         borderRadius: 14,
-        border: weak ? '1px solid rgba(255,255,255,0.16)' : 'none',
+        border: weak ? '1px solid var(--c-border-2)' : 'none',
         background: weak ? 'transparent' : ACCENT,
         color: weak ? '#f4fbf8' : ACCENT_INK,
         fontSize: 16,

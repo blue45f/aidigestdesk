@@ -1,14 +1,18 @@
 import { brandTokens, semanticTokens, shapeTokens } from '@aidigestdesk/content/shared';
 
-// 브랜드·시맨틱·형태 토큰은 공유(웹과 동일 정체성). bg/surface 등 다크 중립은
-// 토스 모바일 폼팩터 전용이라 여기서만 정의한다.
+// 중립 색(bg/surface/text/border/알파)은 index.css의 CSS 변수로 위임 → prefers-color-scheme 로
+// 라이트/다크 자동 전환(토스 앱 테마 반영). 브랜드·형태 토큰은 공유 소스(웹과 동일 정체성).
 export const theme = {
-  bg: '#0a0f1a',
-  surface: '#141c2c',
-  surfaceAlt: '#1c2740',
-  border: 'rgba(255,255,255,0.08)',
-  text: '#eaf1ff',
-  textMuted: semanticTokens.neutral,
+  bg: 'var(--c-bg)',
+  surface: 'var(--c-surface)',
+  surfaceAlt: 'var(--c-surface-2)',
+  border: 'var(--c-border)',
+  borderStrong: 'var(--c-border-2)',
+  text: 'var(--c-text)',
+  textMuted: 'var(--c-text-muted)',
+  faint: 'var(--c-faint)',
+  mute: 'var(--c-mute)',
+  soft: 'var(--c-soft)',
   accent: brandTokens.accent,
   accentSoft: brandTokens.accentSoft,
   accentInk: brandTokens.accentInk,

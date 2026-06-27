@@ -1,6 +1,22 @@
-:root { color-scheme: dark; --r-md:14px; --r-lg:18px; }
+:root {
+  /* 라이트/다크 모두 지원 — 토스 앱(기기) 테마를 prefers-color-scheme 로 따른다. 기본=다크. */
+  color-scheme: light dark;
+  --r-md:14px; --r-lg:18px;
+  --c-bg:#0a0f1a; --c-surface:#141c2c; --c-surface-2:#1c2740;
+  --c-border:rgba(255,255,255,0.08); --c-border-2:rgba(255,255,255,0.14);
+  --c-text:#eaf1ff; --c-text-muted:#9fb2cd; --c-placeholder:#94a6c4;
+  --c-faint:rgba(255,255,255,0.05); --c-mute:rgba(255,255,255,0.06); --c-soft:rgba(255,255,255,0.07);
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --c-bg:#f4f7fc; --c-surface:#ffffff; --c-surface-2:#eef3fa;
+    --c-border:rgba(0,0,0,0.10); --c-border-2:rgba(0,0,0,0.16);
+    --c-text:#0b1422; --c-text-muted:#566275; --c-placeholder:#5b6b82;
+    --c-faint:rgba(0,0,0,0.04); --c-mute:rgba(0,0,0,0.05); --c-soft:rgba(0,0,0,0.06);
+  }
+}
 * { box-sizing: border-box; }
-html, body { margin:0; padding:0; background:#0a0f1a; color:#eaf1ff;
+html, body { margin:0; padding:0; background:var(--c-bg); color:var(--c-text);
   font-family:'Pretendard Variable',Pretendard,-apple-system,system-ui,sans-serif;
   -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
   overscroll-behavior-y:none; line-height:1.5; }
@@ -17,9 +33,9 @@ p { text-wrap:pretty; }
   mask-image: linear-gradient(90deg, #000 calc(100% - 22px), transparent 100%); }
 .chips::-webkit-scrollbar { display:none; }
 .field { width:100%; height:46px; padding:0 14px 0 40px; border-radius:var(--r-md);
-  background:#141c2c; border:1px solid rgba(255,255,255,0.08); color:#eaf1ff; font-size:15px; outline:none;
+  background:var(--c-surface); border:1px solid var(--c-border); color:var(--c-text); font-size:15px; outline:none;
   transition: border-color .15s ease, box-shadow .15s ease; }
-.field::placeholder { color:#94a6c4; }
+.field::placeholder { color:var(--c-placeholder); }
 /* 입력 포커스 피드백 통일 — accent 보더 + 은은한 글로우(텍스트영역 포함). */
 .field:focus, textarea:focus, input:focus { border-color: rgba(110,168,254,0.6); box-shadow: 0 0 0 3px rgba(110,168,254,0.16); }
 textarea, input { transition: border-color .15s ease, box-shadow .15s ease; }
@@ -28,12 +44,13 @@ textarea, input { transition: border-color .15s ease, box-shadow .15s ease; }
 /* 페이지 전환 — 라우트 진입 시 살짝 떠오르며 페이드. App이 key=경로로 재트리거. */
 @keyframes pageEnter { from { opacity:0; transform:translateY(8px);} to { opacity:1; transform:none; } }
 .page-enter { animation: pageEnter .34s cubic-bezier(.16,1,.3,1) both; }
-/* 화려한 타이틀 — 연속 그라데이션 시머 + 은은한 글로우. 탭하면 JS가 파티클을 터뜨린다(AnimatedTitle). */
+/* 화려한 타이틀 — 연속 그라데이션 시머 + 은은한 글로우. 탭하면 JS가 파티클을 터뜨린다(AnimatedTitle).
+   중립 스톱은 --c-text 로 두어 라이트/다크 모두 잘 보이게 한다. */
 @keyframes aidShimmer { 0% { background-position: 0% 50%; } 100% { background-position: 220% 50%; } }
 @keyframes aidGlow { 0%,100% { filter: drop-shadow(0 0 1px rgba(110,168,254,0.25)); } 50% { filter: drop-shadow(0 0 9px rgba(110,168,254,0.55)); } }
 .aid-shimmer-title {
   display:inline-block; font-weight:800; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent;
-  background-image: linear-gradient(100deg,#eaf1ff 0%,#6ea8fe 22%,#74d6a3 42%,#f5c842 60%,#eaf1ff 80%,#6ea8fe 100%);
+  background-image: linear-gradient(100deg,var(--c-text) 0%,#6ea8fe 22%,#74d6a3 42%,#f5c842 60%,var(--c-text) 80%,#6ea8fe 100%);
   background-size: 220% auto; -webkit-background-clip:text; background-clip:text;
   -webkit-text-fill-color:transparent; color:transparent;
   animation: aidShimmer 3.6s linear infinite, aidGlow 2.4s ease-in-out infinite;

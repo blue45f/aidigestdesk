@@ -29,7 +29,7 @@ function statusColors(status: string): { bg: string; fg: string } {
   if (status === '진행중' || status === '모집중') return { bg: 'rgba(116,214,163,0.16)', fg: '#74d6a3' };
   if (status === '진행예정') return { bg: 'rgba(110,168,254,0.16)', fg: '#6ea8fe' };
   if (status === '상시' || status === '상시 확인') return { bg: 'rgba(245,200,66,0.16)', fg: '#f5c842' };
-  return { bg: 'rgba(255,255,255,0.06)', fg: theme.textMuted }; // 종료 등
+  return { bg: 'var(--c-mute)', fg: theme.textMuted }; // 종료 등
 }
 
 function StatusBadge({ status }: { status: string }) {

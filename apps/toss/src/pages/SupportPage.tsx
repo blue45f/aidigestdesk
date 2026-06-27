@@ -20,7 +20,7 @@ const CATEGORY_VALUE_BY_LABEL = new Map(INQUIRY_CATEGORIES.map((c) => [INQUIRY_C
 function statusColor(status: string): { bg: string; fg: string } {
   if (status === 'resolved') return { bg: 'rgba(116,214,163,0.16)', fg: '#74d6a3' };
   if (status === 'in_progress') return { bg: 'rgba(245,200,66,0.16)', fg: '#f5c842' };
-  if (status === 'closed') return { bg: 'rgba(255,255,255,0.06)', fg: theme.textMuted };
+  if (status === 'closed') return { bg: 'var(--c-mute)', fg: theme.textMuted };
   return { bg: theme.accentSoft, fg: theme.accent }; // new
 }
 

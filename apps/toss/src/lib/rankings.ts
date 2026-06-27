@@ -141,5 +141,5 @@ export const GRADE_PALETTE: Record<string, { bg: string; fg: string }> = {
   S: { bg: 'rgba(245,200,66,0.16)', fg: '#f5c842' },
   A: { bg: 'rgba(110,168,254,0.16)', fg: '#6ea8fe' },
   B: { bg: 'rgba(199,154,58,0.16)', fg: '#c79a3a' },
-  C: { bg: 'rgba(255,255,255,0.06)', fg: '#94a6c4' },
+  C: { bg: 'var(--c-mute)', fg: 'var(--c-text-muted)' },
 };
