@@ -2,6 +2,8 @@ import { Top } from '@toss/tds-mobile';
 import { useMemo, useState } from 'react';
 
 import { AnimatedTitle } from '../components/AnimatedTitle';
+import { BannerAd } from '../components/BannerAd';
+import { AD_GROUPS } from '../lib/ads';
 import { onExternalClick } from '../lib/links';
 
 import {
