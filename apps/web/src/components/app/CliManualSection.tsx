@@ -113,10 +113,15 @@ function ManualDetail({ manual }: { manual: CliToolManual }) {
 
       {/* 명령어 표 — 검색 · 카테고리 필터 · 정렬 */}
       <div className="space-y-3">
-        <h4 className="flex items-center gap-1.5 text-sm font-semibold text-text">
-          <TerminalSquare className="size-4 text-accent" aria-hidden />
-          명령어 · 옵션 <span className="text-xs font-normal text-text-subtle">{manual.commands.length}개</span>
-        </h4>
+        <div className="flex items-center justify-between gap-2">
+          <h4 className="flex items-center gap-1.5 text-base font-bold text-text">
+            <TerminalSquare className="size-4 text-accent" aria-hidden />
+            명령어 · 옵션
+          </h4>
+          <span className="shrink-0 rounded-full bg-accent/12 px-2.5 py-1 text-xs font-bold text-accent-text">
+            {manual.commands.length}개
+          </span>
+        </div>
 
         <SearchField label="명령 검색" value={query} onChange={setQuery} placeholder="명령·설명 검색" />
 
@@ -167,19 +172,19 @@ function ManualDetail({ manual }: { manual: CliToolManual }) {
           {commands.map((c, i) => (
             <li
               key={`${c.command}-${i}`}
-              className="rounded-xl border border-border bg-surface px-3 py-2.5"
+              className="rounded-xl border border-border bg-surface px-3.5 py-3 transition hover:border-border-strong"
             >
               <div className="flex flex-wrap items-center gap-2">
-                <code className="rounded bg-bg px-1.5 py-0.5 font-mono text-[0.8125rem] font-semibold text-accent-text">
+                <code className="rounded-md bg-ink px-2 py-1 font-mono text-sm font-bold text-ink-fg">
                   {c.command}
                 </code>
-                <span className="rounded border border-border bg-bg px-1.5 py-px text-[0.625rem] font-medium text-text-subtle">
+                <span className="rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 text-[0.6875rem] font-semibold text-accent-text">
                   {c.category}
                 </span>
               </div>
-              <p className="mt-1.5 text-sm leading-6 text-text-muted">{c.description}</p>
+              <p className="mt-2 text-sm leading-6 text-text">{c.description}</p>
               {c.example ? (
-                <code className="mt-1.5 block overflow-x-auto whitespace-pre-wrap break-words rounded bg-bg px-2 py-1.5 font-mono text-xs text-text-subtle">
+                <code className="mt-2 block overflow-x-auto whitespace-pre-wrap break-words rounded-md border border-border bg-bg px-2.5 py-2 font-mono text-xs text-text-muted">
                   {c.example}
                 </code>
               ) : null}

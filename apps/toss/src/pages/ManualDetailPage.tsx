@@ -142,12 +142,12 @@ export function ManualDetailPage({ slug }: { slug: string }) {
               <div key={`${c.command}-${i}`} style={{ background: theme.surface, border: `1px solid ${theme.border}`,
                 borderRadius: theme.radius, padding: '12px 14px' }}>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-                  <code style={{ background: theme.surfaceAlt, padding: '2px 7px', borderRadius: 6,
-                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: 13, fontWeight: 700,
-                    color: theme.accent }}>{c.command}</code>
+                  <code style={{ background: theme.text, padding: '3px 8px', borderRadius: 6,
+                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: 13.5, fontWeight: 800,
+                    color: theme.bg }}>{c.command}</code>
                   <MetaChip>{c.category}</MetaChip>
                 </div>
-                <p style={{ fontSize: 13.5, color: theme.textMuted, marginTop: 8, lineHeight: 1.55 }}>{c.description}</p>
+                <p style={{ fontSize: 13.5, color: theme.text, marginTop: 8, lineHeight: 1.6 }}>{c.description}</p>
                 {c.example && (
                   <code style={{ display: 'block', marginTop: 8, overflowX: 'auto', whiteSpace: 'pre-wrap',
                     wordBreak: 'break-word', background: theme.surfaceAlt, borderRadius: 8, padding: '8px 10px',
