@@ -95,6 +95,7 @@ const learning = learningResources.map((r) => ({
   type: r.type,
   title: r.title,
   author: r.author,
+  iconUrl: brandIcon(null, r.url),
   language: r.language,
   level: r.level,
   summary: r.summary,

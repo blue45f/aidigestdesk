@@ -50,6 +50,8 @@ export interface LearningEntry {
   type: string;
   title: string;
   author: string;
+  /** 출처(도메인) 아이콘 URL — 생성기 베이크. 웹 ResourceLibrary(BrandMark)와 시각 싱크. */
+  iconUrl: string | null;
   language: string;
   level: string;
   summary: string;

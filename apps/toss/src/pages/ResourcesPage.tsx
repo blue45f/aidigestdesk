@@ -15,7 +15,7 @@ import {
   tools,
 } from '../lib/extras';
 import { theme, pageShell } from '../theme';
-import { Badge, Chips, MetaChip, SearchBar, Segmented } from '../ui';
+import { Badge, BrandIcon, Chips, MetaChip, SearchBar, Segmented } from '../ui';
 
 type Scope = 'glossary' | 'learning' | 'tools';
 const SCOPES = [
@@ -116,7 +116,10 @@ export function ResourcesPage() {
                     <Badge>{l.language}</Badge>
                   </div>
                   <div style={{ fontSize: 15.5, fontWeight: 700, lineHeight: 1.4 }}>{l.title}</div>
-                  <div style={{ fontSize: 12.5, color: theme.textMuted, marginTop: 4 }}>{l.author}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 4 }}>
+                    <BrandIcon src={l.iconUrl} size={14} />
+                    <span style={{ fontSize: 12.5, color: theme.textMuted }}>{l.author}</span>
+                  </div>
                   {l.summary && <p style={{ fontSize: 13, color: theme.textMuted, marginTop: 8, lineHeight: 1.55,
                     display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{l.summary}</p>}
                   <div style={{ marginTop: 10, fontSize: 12.5, fontWeight: 700, color: theme.accent }}>열기 ↗</div>
