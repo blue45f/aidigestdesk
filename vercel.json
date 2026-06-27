@@ -1,6 +1,6 @@
 {
   "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm run build",
+  "buildCommand": "pnpm exec turbo run build --filter=@aidigestdesk/web",
   "outputDirectory": "apps/web/dist",
   "rewrites": [
     {
