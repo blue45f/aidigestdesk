@@ -787,7 +787,7 @@ export default function App() {
   }
 
   const renderFilterBar = () => (
-    <div className="z-30 -mx-3 border-b border-border bg-bg/85 px-3 py-3 backdrop-blur md:sticky md:top-[7.25rem] md:-mx-4 md:px-4 lg:-mx-6 lg:px-6">
+    <div className="z-30 -mx-3 border-b border-border bg-bg px-3 py-3 md:sticky md:top-[7.25rem] md:-mx-4 md:bg-bg/85 md:px-4 md:backdrop-blur lg:-mx-6 lg:px-6">
       <div className="mx-auto flex max-w-[96rem] flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-x-4 md:gap-y-2">
         <MultiSegmentBar
           label="제공사"
