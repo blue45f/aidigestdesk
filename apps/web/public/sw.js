@@ -2,8 +2,11 @@
 // 정적 SPA이므로 네트워크 우선 + 셸 폴백 전략으로 단순하게 둔다.
 // 캐시 버전을 올리면 이전 캐시는 activate에서 정리된다.
 
-const CACHE = 'aidigestdesk-shell-v2'
-const SHELL = ['/', '/index.html', '/favicon.svg', '/icon.svg', '/manifest.webmanifest']
+const CACHE = 'aidigestdesk-shell-v3'
+// HTML(/, /index.html)은 프리캐시하지 않는다 — 내비게이션은 항상 네트워크 우선이라
+// 배포 직후에도 최신 셸을 받는다. 오프라인 폴백은 networkFirstNavigation 이 매 방문마다
+// 갱신해 둔 런타임 캐시('/index.html')의 최신본을 쓴다. 프리캐시는 불변 정적 자산만.
+const SHELL = ['/favicon.svg', '/icon.svg', '/manifest.webmanifest']
 
 function isSameOrigin(request) {
   try {
