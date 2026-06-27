@@ -66,6 +66,7 @@ const events = eventScheduleItems.map((e) => ({
   id: e.id,
   title: e.title,
   organizer: e.organizer,
+  iconUrl: brandIcon(null, e.url),
   type: e.type,
   startDate: e.startDate,
   endDate: e.endDate ?? null,

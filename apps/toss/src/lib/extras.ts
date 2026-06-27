@@ -23,6 +23,8 @@ export interface EventEntry {
   id: string;
   title: string;
   organizer: string;
+  /** 주최 출처(도메인) 아이콘 URL — 생성기 베이크. 혜택(deals)과 동일 패턴. */
+  iconUrl: string | null;
   type: string;
   startDate: string;
   endDate: string | null;
