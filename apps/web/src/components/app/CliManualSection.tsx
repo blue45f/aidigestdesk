@@ -22,7 +22,7 @@ type CmdSort = 'default' | 'command' | 'category'
  */
 function RichProse({ text }: { text: string }) {
   return (
-    <p className="text-sm leading-7 whitespace-pre-wrap text-text">
+    <p className="text-sm leading-7 whitespace-pre-wrap [overflow-wrap:anywhere] text-text">
       {text.split(/(`[^`]+`)/g).map((part, i) =>
         part.startsWith('`') && part.endsWith('`') ? (
           <code

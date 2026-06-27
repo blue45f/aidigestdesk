@@ -31,7 +31,7 @@ function RichProse({ text }: { text: string }) {
         lineHeight: 1.75,
         color: theme.text,
         whiteSpace: 'pre-wrap',
-        wordBreak: 'break-word',
+        overflowWrap: 'anywhere',
       }}
     >
       {text.split(/(`[^`]+`)/g).map((part, i) =>
@@ -150,7 +150,7 @@ export function ManualDetailPage({ slug }: { slug: string }) {
                 <p style={{ fontSize: 13.5, color: theme.text, marginTop: 8, lineHeight: 1.6 }}>{c.description}</p>
                 {c.example && (
                   <code style={{ display: 'block', marginTop: 8, overflowX: 'auto', whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word', background: theme.surfaceAlt, borderRadius: 8, padding: '8px 10px',
+                    overflowWrap: 'anywhere', background: theme.surfaceAlt, borderRadius: 8, padding: '8px 10px',
                     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: 12, color: theme.textMuted }}>{c.example}</code>
                 )}
               </div>
