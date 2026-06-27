@@ -7,7 +7,15 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { getProviderLabel, getSources, SNAPSHOT_DATE, updates } from '../dist/index.js'
+import {
+  getBrandIconUrl,
+  getDomainFromUrl,
+  getProviderIconUrl,
+  getProviderLabel,
+  getSources,
+  SNAPSHOT_DATE,
+  updates,
+} from '../dist/index.js'
 
 const scriptDir = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(scriptDir, '../../..')
@@ -24,17 +32,29 @@ function firstSourceUrl(sourceIds) {
   return ref?.url ?? ''
 }
 
+// 제공사 아이콘 — providerId면 제공사 favicon, 아니면(market 등) 출처 URL 도메인 favicon.
+// 웹 PortalNewsSections(BrandMark)와 동일 소스로 베이크해 소식 피드 시각을 싱크한다.
+function updateIcon(providerId, url) {
+  if (providerId && providerId !== 'market') return getProviderIconUrl(providerId) ?? null
+  const domain = url ? getDomainFromUrl(url) : null
+  return domain ? (getBrandIconUrl(domain) ?? null) : null
+}
+
 const items = updates
-  .map((u) => ({
-    id: u.id,
-    title: u.title,
-    provider: providerLabel(u.providerId),
-    date: u.date,
-    summary: u.summary,
-    impact: u.impact,
-    tags: Array.isArray(u.tags) ? u.tags.slice(0, 4) : [],
-    url: firstSourceUrl(u.sourceIds),
-  }))
+  .map((u) => {
+    const url = firstSourceUrl(u.sourceIds)
+    return {
+      id: u.id,
+      title: u.title,
+      provider: providerLabel(u.providerId),
+      iconUrl: updateIcon(u.providerId, url),
+      date: u.date,
+      summary: u.summary,
+      impact: u.impact,
+      tags: Array.isArray(u.tags) ? u.tags.slice(0, 4) : [],
+      url,
+    }
+  })
   .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
 
 const payload = { generatedAt: SNAPSHOT_DATE, items }

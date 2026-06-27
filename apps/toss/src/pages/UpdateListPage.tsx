@@ -7,7 +7,7 @@ import { getUpdates, type Update } from '../lib/api';
 import { AD_GROUPS } from '../lib/ads';
 import { navigate } from '../router';
 import { theme, pageShell } from '../theme';
-import { SearchBar, Chips, Badge } from '../ui';
+import { SearchBar, Chips, Badge, BrandIcon } from '../ui';
 
 const ALL = '전체';
 
@@ -51,7 +51,8 @@ export function UpdateListPage() {
                   style={{ display: 'flex', gap: 10, alignItems: 'flex-start', width: '100%', textAlign: 'left', cursor: 'pointer',
                     background: theme.accentSoft, border: `1px solid ${theme.accent}`, borderRadius: theme.radius, padding: '12px 14px', color: theme.text }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 4 }}>
+                      <BrandIcon src={u.iconUrl} size={14} />
                       <span style={{ fontSize: 12, fontWeight: 700, color: theme.accent }}>{u.provider}</span>
                       {u.date && <span style={{ fontSize: 11.5, color: theme.textMuted }}>{u.date}</span>}
                     </div>
@@ -71,6 +72,7 @@ export function UpdateListPage() {
               style={{ animationDelay: `${90 + i * 22}ms`, display: 'block', width: '100%', textAlign: 'left',
                 background: theme.surface, border: `1px solid ${theme.border}`, borderRadius: theme.radius, padding: 16, color: theme.text, cursor: 'pointer' }}>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
+                <BrandIcon src={u.iconUrl} size={15} />
                 <Badge accent>{u.provider}</Badge>
                 {u.date && <span style={{ fontSize: 12, color: theme.textMuted }}>{u.date}</span>}
               </div>

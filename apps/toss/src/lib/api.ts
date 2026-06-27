@@ -1,7 +1,7 @@
 import data from '../sample-data.json';
 
 export interface Update {
-  id: string; title: string; provider: string; date: string;
+  id: string; title: string; provider: string; iconUrl: string | null; date: string;
   summary: string; impact: string; tags: string[]; url: string;
 }
 
