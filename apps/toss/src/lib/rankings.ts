@@ -7,6 +7,8 @@ export interface ModelRankEntry {
   id: string;
   name: string;
   provider: string;
+  /** 제공사 브랜드 아이콘 URL(생성기에서 getProviderIconUrl로 베이크). 웹 랭킹과 시각 싱크. */
+  iconUrl: string | null;
   metric: string;
   score: number | null;
   scoreLabel: string;

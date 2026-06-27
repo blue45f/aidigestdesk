@@ -75,7 +75,20 @@ function ModelRow({ entry, position, onOpen, medal }: { entry: ModelRankEntry; p
             </span>
           )}
         </div>
-        <div style={{ fontSize: 12.5, color: theme.textMuted, marginTop: 3 }}>{entry.provider}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
+          {entry.iconUrl && (
+            <img
+              src={entry.iconUrl}
+              alt=""
+              width={16}
+              height={16}
+              loading="lazy"
+              decoding="async"
+              style={{ borderRadius: 4, flexShrink: 0 }}
+            />
+          )}
+          <span style={{ fontSize: 12.5, color: theme.textMuted }}>{entry.provider}</span>
+        </div>
         <div style={{ display: 'flex', gap: 6, marginTop: 9, flexWrap: 'wrap' }}>
           <MetaChip>{entry.metric}</MetaChip>
           {entry.price && <MetaChip>{entry.price}</MetaChip>}
