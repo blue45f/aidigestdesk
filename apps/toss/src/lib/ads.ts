@@ -22,6 +22,8 @@ const MIN_VERSION = '5.241.0' as const;
 export const AD_GROUPS = {
   /** 목록·피드형 배너. 콘솔 승인 후 실 ID로 교체. */
   feedList: 'ait-ad-test-banner-id',
+  /** 상세(매뉴얼·랭킹·소식 상세) 본문 하단 배너. 콘솔 승인 후 실 ID로 교체. */
+  detail: 'ait-ad-test-banner-id',
 } as const;
 
 /** 이 환경에서 배너를 띄울 수 있는지. false면 컴포넌트는 아무것도 렌더하지 않아야 한다. */

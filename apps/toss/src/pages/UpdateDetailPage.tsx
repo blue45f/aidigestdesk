@@ -2,6 +2,8 @@ import { usePlatform } from '@heejun/platform-bridge';
 import { Button } from '@toss/tds-mobile';
 import { useEffect, useState } from 'react';
 
+import { BannerAd } from '../components/BannerAd';
+import { AD_GROUPS } from '../lib/ads';
 import { getUpdate } from '../lib/api';
 import { onExternalClick } from '../lib/links';
 import { navigate } from '../router';
@@ -55,6 +57,7 @@ export function UpdateDetailPage({ id = '' }: { id?: string }) {
           <button type="button" onClick={share} className="pressable" style={{ width: '100%', minHeight: 52, borderRadius: 14,
             border: `1px solid ${theme.border}`, background: 'transparent', color: theme.text, fontSize: 16, fontWeight: 700, cursor: 'pointer' }}>공유하기</button>
         </div>
+        <BannerAd adGroupId={AD_GROUPS.detail} marginTop={22} />
       </div>
 
       {hasUrl && (

@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 
+import { BannerAd } from '../components/BannerAd';
+import { AD_GROUPS } from '../lib/ads';
 import {
   getModelEntryById,
   getModelStandingsByName,
@@ -131,6 +133,8 @@ export function RankModelDetailPage({ id }: { id: string }) {
             이 항목은 벤치마크 순위 데이터예요. 상세 모델 프로필이 아직 연결되지 않았습니다.
           </p>
         )}
+
+        <BannerAd adGroupId={AD_GROUPS.detail} marginTop={24} />
 
         <p style={{ fontSize: 11.5, color: theme.textMuted, textAlign: 'center', marginTop: 26, lineHeight: 1.6 }}>
           {snapshotDate} 기준 · 공개 벤치마크 출처 기반

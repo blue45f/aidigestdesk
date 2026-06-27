@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 
+import { BannerAd } from '../components/BannerAd';
+import { AD_GROUPS } from '../lib/ads';
 import { onExternalClick } from '../lib/links';
 import { getManualBySlug, manualCategories, manualSnapshotDate } from '../lib/manuals';
 import { goBack } from '../router';
@@ -201,6 +203,8 @@ export function ManualDetailPage({ slug }: { slug: string }) {
             })}
           </div>
         )}
+
+        <BannerAd adGroupId={AD_GROUPS.detail} marginTop={24} />
 
         <p style={{ fontSize: 11.5, color: theme.textMuted, textAlign: 'center', marginTop: 22, lineHeight: 1.6 }}>
           {manualSnapshotDate} 기준

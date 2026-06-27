@@ -29,7 +29,12 @@ export function BannerAd({
     if (!supported || !ref.current) return;
     let result: TossAdsAttachBannerResult | null = null;
     let cancelled = false;
-    void attachBannerSafe(adGroupId, ref.current, { theme: 'dark', tone, variant }).then((r) => {
+    // 라이트/다크 자동 — index.css의 prefers-color-scheme와 광고 테마를 맞춘다(하드코딩 금지).
+    const scheme =
+      typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: light)')?.matches
+        ? 'light'
+        : 'dark';
+    void attachBannerSafe(adGroupId, ref.current, { theme: scheme, tone, variant }).then((r) => {
       if (cancelled) {
         r?.destroy();
         return;
