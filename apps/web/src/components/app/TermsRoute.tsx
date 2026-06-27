@@ -202,7 +202,8 @@ function PrivacyDocument() {
         회원 데모·환경설정 정보는 이용자의 브라우저 localStorage에만 저장되며 서버로 전송되지 않습니다.
         다만 <strong>문의하기</strong>로 보내는 정보(제목·내용·이름·이메일·접속 URL)는 문의 처리를 위해
         운영 서버(desk-platform)로 전송·저장되며, 이메일을 제외한 문의 내용은 공개 문의 게시판에 표시될
-        수 있습니다.
+        수 있습니다. <strong>토스 미니앱 버전</strong>은 회원 로그인 없이 익명 식별키로 동작하며, 동일한
+        개인정보 보호 기준(기기 저장·문의만 서버 전송)을 따릅니다.
       </DemoNotice>
 
       <div className="mt-6 space-y-7">

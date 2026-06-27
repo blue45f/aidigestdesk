@@ -183,9 +183,16 @@ export function SupportPage() {
               정보는 스냅샷 기준이라 실제와 다를 수 있어요. 외부 링크·혜택은 각 제공사 정책을 따라요.
             </p>
             <p style={{ margin: 0 }}>
+              <strong style={{ color: theme.text }}>계정·로그인</strong> · 별도 회원가입·로그인 없이 익명으로 이용해요. 커뮤니티는
+              이 기기에 저장된 닉네임으로 참여하며, 토스 계정·개인정보는 수집하지 않아요.
+            </p>
+            <p style={{ margin: 0 }}>
               <strong style={{ color: theme.text }}>개인정보</strong> · 닉네임·화면 설정은 이 기기에만 저장돼요. 문의(제목·내용·이름·이메일)는
               운영 서버(desk-platform)로 전송·저장되며, 이메일을 제외한 내용은 공개 문의 목록에 표시될 수 있어요.
               마케팅·판매 목적의 제3자 제공은 없어요.
+            </p>
+            <p style={{ margin: 0, fontSize: 12, color: theme.textMuted }}>
+              시행일 2026-06-18 · 웹 버전 이용약관·개인정보처리방침과 동일 기준이에요.
             </p>
           </div>
         </details>
