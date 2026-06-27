@@ -2,6 +2,7 @@ import { CommunityPage } from './pages/CommunityPage.tsx';
 import { DealsPage } from './pages/DealsPage.tsx';
 import { ManualDetailPage } from './pages/ManualDetailPage.tsx';
 import { ManualListPage } from './pages/ManualListPage.tsx';
+import { ProfilePage } from './pages/ProfilePage.tsx';
 import { RankExtensionDetailPage } from './pages/RankExtensionDetailPage.tsx';
 import { RankingListPage } from './pages/RankingListPage.tsx';
 import { RankModelDetailPage } from './pages/RankModelDetailPage.tsx';
@@ -52,8 +53,9 @@ export function App() {
   const isSupport = path === '/support';
   const isSaved = path === '/saved';
   const isCommunity = path === '/community';
+  const isProfile = path === '/profile';
 
-  if (updateDetail || modelDetail || extDetail || manualDetail || isSupport || isSaved || isCommunity) {
+  if (updateDetail || modelDetail || extDetail || manualDetail || isSupport || isSaved || isCommunity || isProfile) {
     const detail = updateDetail ? (
       <UpdateDetailPage id={decodeURIComponent(updateDetail[1])} />
     ) : modelDetail ? (
@@ -66,6 +68,8 @@ export function App() {
       <SavedPage />
     ) : isCommunity ? (
       <CommunityPage />
+    ) : isProfile ? (
+      <ProfilePage />
     ) : (
       <SupportPage />
     );

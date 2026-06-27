@@ -15,6 +15,10 @@ const NICKNAME_KEY = 'aidigestdesk.community.nickname.v1'
 const CAFE_MEMBERSHIP_KEY = 'aidigestdesk.community.cafeMembership.v1'
 const MEMBER_ID_KEY = 'aidigestdesk.community.memberId.v1'
 const DEFAULT_NICKNAME = '게스트'
+const AVATAR_KEY = 'aidigestdesk.community.avatar.v1'
+const JOINED_KEY = 'aidigestdesk.community.joinedAt.v1'
+/** 익명 회원 아바타 이모지 — 기본값은 memberId 해시로 결정하고, 사용자가 바꿀 수 있다. */
+export const AVATAR_PALETTE = ['🦊', '🐼', '🐯', '🦁', '🐧', '🐸', '🦉', '🐙', '🐳', '🦄', '🐝', '🦖'] as const
 
 export type Channel = {
   id: string
@@ -811,5 +815,68 @@ export function getMemberId(): string {
     return generated
   } catch {
     return `anon:${createId('member')}`
+  }
+}
+
+/** 문자열 → 안정적 양수 해시(아바타 기본값 선택용). */
+function hashString(s: string): number {
+  let h = 0
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0
+  return Math.abs(h)
+}
+
+/**
+ * 익명 회원 아바타(이모지). 저장값이 있으면 그걸, 없으면 memberId 해시로 팔레트에서 결정한다.
+ * 로그인 없이도 기기별로 일관된 아바타를 줘 커뮤니티 정체성을 만든다.
+ */
+export function getAvatar(): string {
+  if (typeof window === 'undefined') return AVATAR_PALETTE[0]
+  try {
+    const raw = window.localStorage.getItem(AVATAR_KEY)?.trim()
+    if (raw) return raw
+    return AVATAR_PALETTE[hashString(getMemberId()) % AVATAR_PALETTE.length] ?? AVATAR_PALETTE[0]
+  } catch {
+    return AVATAR_PALETTE[0]
+  }
+}
+
+export function setAvatar(emoji: string): void {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(AVATAR_KEY, emoji)
+  } catch {
+    // 아바타 저장 실패는 치명적이지 않으므로 무시한다.
+  }
+}
+
+/** 익명 회원 최초 활동일(가입일). 최초 1회 기록하고 이후 고정한다. */
+export function getJoinedAt(): string {
+  const today = () => new Date().toISOString().slice(0, 10)
+  if (typeof window === 'undefined') return today()
+  try {
+    const existing = window.localStorage.getItem(JOINED_KEY)?.trim()
+    if (existing) return existing
+    const stamp = today()
+    window.localStorage.setItem(JOINED_KEY, stamp)
+    return stamp
+  } catch {
+    return today()
+  }
+}
+
+export interface MemberProfile {
+  memberId: string
+  nickname: string
+  avatar: string
+  joinedAt: string
+}
+
+/** 익명 회원 프로필 한 번에 조회(내 정보 화면·커뮤니티 공용). */
+export function getProfile(): MemberProfile {
+  return {
+    memberId: getMemberId(),
+    nickname: getNickname(),
+    avatar: getAvatar(),
+    joinedAt: getJoinedAt(),
   }
 }

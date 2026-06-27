@@ -88,6 +88,19 @@ export function UpdateListPage() {
         {/* 인앱 배너 광고 — 홈 피드(가장 자주 보는 목록)에 인라인 배치. 토스 5.241.0+ 에서만 노출. */}
         <BannerAd adGroupId={AD_GROUPS.feedList} marginTop={18} />
 
+        {/* 내 정보(익명 회원 프로필) 진입 — 닉네임·아바타·저장·문의 허브. 로그인 없이 기기 기반. */}
+        <button type="button" onClick={() => navigate('/profile')} className="pressable"
+          style={{ width: '100%', marginTop: 18, display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left',
+            background: theme.surface, border: `1px solid ${theme.border}`, borderRadius: theme.radius, padding: 16,
+            color: theme.text, cursor: 'pointer' }}>
+          <span aria-hidden style={{ fontSize: 22 }}>👤</span>
+          <span style={{ flex: 1, minWidth: 0 }}>
+            <span style={{ display: 'block', fontSize: 15, fontWeight: 700 }}>내 정보</span>
+            <span style={{ display: 'block', fontSize: 12.5, color: theme.textMuted, marginTop: 2 }}>닉네임·아바타·저장한 항목 관리</span>
+          </span>
+          <span aria-hidden style={{ fontSize: 20, color: theme.textMuted }}>›</span>
+        </button>
+
         {/* 커뮤니티(채팅·게시판·카페) 진입 — 웹과 동일 기능, shared 스토어 공용. 1차 기능이라 강조. */}
         <button type="button" onClick={() => navigate('/community')} className="pressable"
           style={{ width: '100%', marginTop: 18, display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left',

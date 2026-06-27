@@ -15,6 +15,7 @@ import {
   editComment,
   editPost,
   formatRelativeTime,
+  getAvatar,
   getCafeMemberCount,
   getCommunitySnapshot,
   getNickname,
@@ -36,7 +37,7 @@ import {
   type Post,
 } from '@aidigestdesk/content/shared';
 
-import { goBack } from '../router';
+import { goBack, navigate } from '../router';
 import { theme, pageShell } from '../theme';
 import { BackBar, Chips, MetaChip, Segmented } from '../ui';
 
@@ -361,6 +362,7 @@ function CafeView({ nickname }: { nickname: string }) {
 export function CommunityPage() {
   const [scope, setScope] = useState<Scope>('chat');
   const [nickname, setNick] = useState(() => getNickname());
+  const [avatar] = useState(() => getAvatar());
   const current = nickname.trim() || '게스트';
 
   return (
@@ -372,9 +374,14 @@ export function CommunityPage() {
         <div style={{ marginBottom: 14 }}>
           <Segmented options={SCOPES} value={scope} onChange={(v) => setScope(v as Scope)} />
         </div>
-        <div style={{ marginBottom: 14 }}>
+        <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <button type="button" onClick={() => navigate('/profile')} aria-label="내 정보" className="pressable"
+            style={{ width: 42, height: 42, borderRadius: 999, flexShrink: 0, display: 'grid', placeItems: 'center',
+              fontSize: 22, background: theme.accentSoft, border: `1px solid ${theme.border}`, cursor: 'pointer' }}>
+            {avatar}
+          </button>
           <input value={nickname} onChange={(e) => { setNick(e.target.value); setNickname(e.target.value); }}
-            placeholder="닉네임(게스트)" aria-label="닉네임" style={{ ...fieldStyle, height: 42, paddingLeft: 12 }} />
+            placeholder="닉네임(게스트)" aria-label="닉네임" style={{ ...fieldStyle, height: 42, paddingLeft: 12, flex: 1 }} />
         </div>
         {scope === 'chat' ? <ChatView nickname={current} />
           : scope === 'board' ? <BoardView nickname={current} />
