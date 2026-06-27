@@ -21,7 +21,6 @@ import {
   BookOpen,
   Boxes,
   ChevronRight,
-  Code2,
   Cpu,
   FileText,
   MessagesSquare,
@@ -336,8 +335,6 @@ const toolsPaneIds = [
   'ai-tools',
   'extensions',
   'cli-manual',
-  'vibe-coding',
-  'cli-comparison',
   'design',
 ] as const
 
@@ -371,21 +368,9 @@ const toolsPaneMeta: Array<{
   },
   {
     id: 'cli-manual',
-    title: 'CLI 도구별 매뉴얼',
-    description: '도구별 명령·옵션 상세 레퍼런스',
+    title: 'CLI',
+    description: '도구별 매뉴얼 · 명령어 · 비교표',
     icon: FileText,
-  },
-  {
-    id: 'vibe-coding',
-    title: 'CLI 명령어',
-    description: '실행 명령과 사용 조건',
-    icon: Code2,
-  },
-  {
-    id: 'cli-comparison',
-    title: 'CLI 비교표',
-    description: '표면·강점·주의점 비교',
-    icon: Table2,
   },
   {
     id: 'design',
@@ -398,6 +383,8 @@ const toolsPaneMeta: Array<{
 function getToolsPaneFromHash(): ToolsPaneId {
   if (typeof window === 'undefined') return defaultToolsPane
   const hashId = window.location.hash.replace(/^#/, '')
+  // 레거시 해시(#vibe-coding·#cli-comparison)는 통합된 CLI 허브로 매핑한다.
+  if (hashId === 'vibe-coding' || hashId === 'cli-comparison') return 'cli-manual'
   return toolsPaneIds.includes(hashId as ToolsPaneId) ? (hashId as ToolsPaneId) : defaultToolsPane
 }
 
@@ -507,6 +494,7 @@ export default function App() {
   const [memberSession, setMemberSession] = useState<MemberSession | null>(getInitialMemberSession)
   const { dark, toggle: toggleDark } = useColorScheme()
   const [toolsPane, setToolsPane] = useState<ToolsPaneId>(getToolsPaneFromHash)
+  const [cliTab, setCliTab] = useState<'manual' | 'commands' | 'compare'>('manual')
   const [modelsTab, setModelsTab] = useState<ModelsTabId>(getModelsTabFromHash)
   const toast = useToast()
 
@@ -750,9 +738,7 @@ export default function App() {
     'task-recommendations': visibleTaskRecommendations.length,
     'ai-tools': visibleAiCodingTools.length,
     extensions: getExtensionStats().total,
-    'cli-manual': visibleLlmCliManuals.length,
-    'vibe-coding': visibleVibeCommands.length,
-    'cli-comparison': visibleVibeCommands.length,
+    'cli-manual': visibleVibeCommands.length,
     design: 1,
   }
 
@@ -762,22 +748,50 @@ export default function App() {
         return <CodingToolDirectorySection tools={visibleAiCodingTools} />
       case 'extensions':
         return <ExtensionsSection />
-      case 'cli-manual':
+      case 'cli-manual': {
+        // CLI 허브 — 흩어져 있던 도구별 매뉴얼·명령어·비교표를 하나의 하위탭으로 통합(IA 단순화).
+        const cliTabs = [
+          { id: 'manual' as const, label: '도구별 매뉴얼' },
+          { id: 'commands' as const, label: '명령어' },
+          { id: 'compare' as const, label: '비교표' },
+        ]
         return (
-          <Suspense
-            fallback={
-              <div className="rounded-2xl border border-border bg-surface/60 p-6 text-center text-sm text-text-subtle">
-                CLI 매뉴얼 불러오는 중…
-              </div>
-            }
-          >
-            <CliManualSection id="cli-manuals" />
-          </Suspense>
+          <div className="space-y-4">
+            <div className="touch-scroll -mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
+              {cliTabs.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setCliTab(t.id)}
+                  aria-pressed={cliTab === t.id}
+                  className={
+                    cliTab === t.id
+                      ? 'min-h-9 shrink-0 rounded-full border border-ink bg-ink px-4 py-1.5 text-sm font-semibold text-ink-fg'
+                      : 'min-h-9 shrink-0 rounded-full border border-border bg-surface px-4 py-1.5 text-sm font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
+                  }
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            {cliTab === 'commands' ? (
+              <VibeCodingSection commands={visibleVibeCommands} />
+            ) : cliTab === 'compare' ? (
+              <CliComparisonSection commands={visibleVibeCommands} />
+            ) : (
+              <Suspense
+                fallback={
+                  <div className="rounded-2xl border border-border bg-surface/60 p-6 text-center text-sm text-text-subtle">
+                    CLI 매뉴얼 불러오는 중…
+                  </div>
+                }
+              >
+                <CliManualSection id="cli-manuals" />
+              </Suspense>
+            )}
+          </div>
         )
-      case 'vibe-coding':
-        return <VibeCodingSection commands={visibleVibeCommands} />
-      case 'cli-comparison':
-        return <CliComparisonSection commands={visibleVibeCommands} />
+      }
       case 'design':
         return <DesignWorkflowSection />
       case 'task-recommendations':
