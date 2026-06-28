@@ -10,8 +10,14 @@
  */
 import { getStableUserKey } from './toss';
 
-/** 배포된 API 베이스 URL. 미설정('')이면 서버 연동을 건너뛰고 로컬로만 동작한다. */
-const API_URL = (import.meta.env.VITE_AIDIGEST_API_URL ?? '').replace(/\/$/, '');
+/**
+ * 배포된 API 베이스 URL. 공개 URL이라 default로 라이브 주소를 둔다(desk-platform 패턴과 동일).
+ * env로 override 가능(dev=localhost:4350). 빈 값으로 두면 서버 연동을 건너뛰고 로컬로만 동작.
+ */
+const API_URL = (import.meta.env.VITE_AIDIGEST_API_URL ?? 'https://aidigestdesk-api.vercel.app').replace(
+  /\/$/,
+  '',
+);
 const TOKEN_KEY = 'aid-auth-token.v1';
 
 export interface ServerUser {
