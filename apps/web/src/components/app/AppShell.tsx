@@ -29,7 +29,6 @@ import type { MemberSession } from '@/components/app/memberAuth'
 import type { ComponentType } from 'react'
 
 import { IconButton } from '@/components/app/CommonUi'
-import { MemberAuthControl } from '@/components/layout/MemberAuthControl'
 import { SEARCH_INPUT_ID } from '@/hooks/useSearchHotkey'
 
 type NavIcon = ComponentType<{ className?: string; 'aria-hidden'?: boolean }>
@@ -88,6 +87,7 @@ export function Header({
   onNavigate,
   adminSession,
   memberSession,
+  memberSessionLoading,
   dark,
   onToggleDark,
 }: {
@@ -97,6 +97,7 @@ export function Header({
   onNavigate: (route: AppRoute) => void
   adminSession: AdminSession | null
   memberSession: MemberSession | null
+  memberSessionLoading: boolean
   dark: boolean
   onToggleDark: () => void
 }) {
@@ -190,11 +191,6 @@ export function Header({
               )}
             </button>
           ) : null}
-          {/* Firebase 회원 로그인은 '추가 옵션'이라 데스크톱에서만 — 모바일 헤더의 이중 로그인
-              아이콘 군집을 없애고 단일 계정 로그인만 남긴다. */}
-          <span className="hidden lg:contents">
-            <MemberAuthControl />
-          </span>
           <IconButton label={dark ? '라이트 모드' : '다크 모드'} onClick={onToggleDark}>
             {dark ? (
               <Sun className="size-4" aria-hidden />
@@ -202,7 +198,12 @@ export function Header({
               <Moon className="size-4" aria-hidden />
             )}
           </IconButton>
-          {memberSession ? (
+          {memberSessionLoading ? (
+            <span
+              className="hidden h-9 w-24 animate-pulse rounded-md border border-border bg-surface-2 lg:block"
+              aria-label="로그인 상태 확인 중"
+            />
+          ) : memberSession ? (
             <button
               type="button"
               onClick={() => onNavigate('account')}
@@ -362,10 +363,7 @@ export function Sidebar({
                         : 'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-text-muted transition hover:bg-surface-2 hover:text-text'
                     }
                   >
-                    <item.icon
-                      className={active ? 'size-4 text-accent' : 'size-4'}
-                      aria-hidden
-                    />
+                    <item.icon className={active ? 'size-4 text-accent' : 'size-4'} aria-hidden />
                     {item.label}
                   </a>
                 )

@@ -241,4 +241,21 @@ export class DatabaseService implements OnModuleInit {
     this.saveToFile()
     return target
   }
+
+  /** 사용자와 연결된 서비스 세션을 즉시 무효화하기 위한 멱등 삭제. */
+  async deleteUser(id: string): Promise<boolean> {
+    if (this.useSqlDb) {
+      const deleted = await db
+        .delete(schema.users)
+        .where(eq(schema.users.id, id))
+        .returning({ id: schema.users.id })
+      return deleted.length > 0
+    }
+
+    const index = this.data.users.findIndex((user) => user.id === id)
+    if (index < 0) return false
+    this.data.users.splice(index, 1)
+    this.saveToFile()
+    return true
+  }
 }

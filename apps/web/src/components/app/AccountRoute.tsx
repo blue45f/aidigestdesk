@@ -1,11 +1,4 @@
-import {
-  Home,
-  LogIn,
-  LogOut,
-  ShieldCheck,
-  UserPlus,
-  UserRound,
-} from 'lucide-react'
+import { Home, LogIn, LogOut, ShieldCheck, UserPlus, UserRound } from 'lucide-react'
 import { useState } from 'react'
 
 import type { AppRoute } from '@/components/app/appRoutes'
@@ -13,7 +6,8 @@ import type { MemberSession } from '@/components/app/memberAuth'
 import type { FormEvent } from 'react'
 
 import { Chip, SectionHeader } from '@/components/app/CommonUi'
-import { logIn, logOut, signUp, withdraw } from '@/components/app/memberAuth'
+import { getMemberAuthProvider, logIn, signUp, withdraw } from '@/components/app/memberAuth'
+import { useAuth } from '@/lib/firebaseAuth'
 
 type AuthTab = 'login' | 'signup'
 
@@ -27,6 +21,7 @@ function Field({
   onChange,
   placeholder,
   autoComplete,
+  minLength,
 }: {
   label: string
   type?: string
@@ -34,6 +29,7 @@ function Field({
   onChange: (value: string) => void
   placeholder?: string
   autoComplete?: string
+  minLength?: number
 }) {
   return (
     <label className="block">
@@ -42,6 +38,8 @@ function Field({
         type={type}
         value={value}
         autoComplete={autoComplete}
+        minLength={minLength}
+        required
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         className={inputClass}
@@ -51,23 +49,44 @@ function Field({
 }
 
 function AuthPanel({ onAuthed }: { onAuthed: (session: MemberSession) => void }) {
+  const provider = getMemberAuthProvider()
+  const firebaseAuth = useAuth()
   const [tab, setTab] = useState<AuthTab>('login')
   const [email, setEmail] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const passwordMinLength = tab === 'signup' ? 8 : 6
 
   const reset = () => {
     setError('')
     setPassword('')
+    firebaseAuth.clearError()
   }
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError('')
+    firebaseAuth.clearError()
     setBusy(true)
     try {
+      if (provider === 'firebase') {
+        if (tab === 'signup') {
+          if (displayName.trim().length < 2) {
+            setError('닉네임은 2자 이상이어야 합니다.')
+            return
+          }
+          if (password.length < 8) {
+            setError('비밀번호는 8자 이상이어야 합니다.')
+            return
+          }
+          await firebaseAuth.signUp(email, password, displayName)
+        } else {
+          await firebaseAuth.signIn(email, password)
+        }
+        return
+      }
       const result =
         tab === 'signup'
           ? await signUp({ email, displayName, password })
@@ -77,6 +96,22 @@ function AuthPanel({ onAuthed }: { onAuthed: (session: MemberSession) => void })
       } else {
         setError(result.error)
       }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '로그인 요청을 처리하지 못했습니다.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const signInAsGuest = async () => {
+    if (busy) return
+    setError('')
+    firebaseAuth.clearError()
+    setBusy(true)
+    try {
+      await firebaseAuth.signInAsGuest()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '게스트 로그인을 처리하지 못했습니다.')
     } finally {
       setBusy(false)
     }
@@ -123,6 +158,7 @@ function AuthPanel({ onAuthed }: { onAuthed: (session: MemberSession) => void })
             onChange={setDisplayName}
             placeholder="커뮤니티에서 보일 이름"
             autoComplete="nickname"
+            minLength={2}
           />
         ) : null}
         <Field
@@ -132,23 +168,50 @@ function AuthPanel({ onAuthed }: { onAuthed: (session: MemberSession) => void })
           onChange={setPassword}
           placeholder={tab === 'signup' ? '8자 이상' : '비밀번호'}
           autoComplete={tab === 'signup' ? 'new-password' : 'current-password'}
+          minLength={passwordMinLength}
         />
-        {error ? (
+        {error || firebaseAuth.error ? (
           <p className="rounded-md border border-accent-4/30 bg-accent-4/10 px-3 py-2 text-xs font-semibold text-accent-4-text">
-            {error}
+            {error || firebaseAuth.error}
           </p>
         ) : null}
         <button
           type="submit"
-          disabled={busy}
+          disabled={
+            busy ||
+            !email.trim() ||
+            password.length < passwordMinLength ||
+            (tab === 'signup' && displayName.trim().length < 2)
+          }
           className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-md border border-ink bg-ink px-4 text-sm font-semibold text-ink-fg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {tab === 'signup' ? '가입하고 시작하기' : '로그인'}
         </button>
       </form>
+      {provider === 'firebase' ? (
+        <>
+          <div className="my-3 flex items-center gap-3 text-text-subtle">
+            <span className="h-px flex-1 bg-border" aria-hidden />
+            <span className="text-xs">또는</span>
+            <span className="h-px flex-1 bg-border" aria-hidden />
+          </div>
+          <button
+            type="button"
+            onClick={() => void signInAsGuest()}
+            disabled={busy}
+            className="inline-flex h-10 w-full items-center justify-center rounded-md border border-border bg-bg px-4 text-sm font-semibold text-text-muted transition hover:border-border-strong hover:text-text disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            게스트로 시작하기
+          </button>
+        </>
+      ) : null}
       <p className="mt-4 text-xs leading-5 text-text-subtle">
-        데모 인증입니다. 계정 정보는 서버로 전송되지 않고 이 브라우저(localStorage)에만 저장되며,
-        비밀번호는 해시로 보관됩니다. 자세한 내용은 약관·정책에서 확인하세요.
+        {provider === 'firebase'
+          ? '안전한 서버 인증으로 세션이 유지되며, 비밀번호는 이 사이트가 직접 저장하지 않습니다.'
+          : provider === 'authdesk'
+            ? 'AuthDesk 서버 인증으로 세션을 검증하고 로그아웃 시 서버 세션도 폐기합니다.'
+            : '데모 인증입니다. 계정 정보는 이 브라우저(localStorage)에만 저장되며 비밀번호는 해시로 보관됩니다.'}{' '}
+        자세한 내용은 약관·정책에서 확인하세요.
       </p>
     </section>
   )
@@ -162,10 +225,25 @@ function ProfilePanel({
 }: {
   session: MemberSession
   onLogout: () => void
-  onWithdraw: () => void
+  onWithdraw: () => Promise<void>
   onNavigate: (route: AppRoute) => void
 }) {
   const [confirmWithdraw, setConfirmWithdraw] = useState(false)
+  const [withdrawPending, setWithdrawPending] = useState(false)
+  const [withdrawError, setWithdrawError] = useState('')
+
+  const confirmDelete = async () => {
+    if (withdrawPending) return
+    setWithdrawError('')
+    setWithdrawPending(true)
+    try {
+      await onWithdraw()
+    } catch (err) {
+      setWithdrawError(err instanceof Error ? err.message : '회원 탈퇴를 처리하지 못했습니다.')
+    } finally {
+      setWithdrawPending(false)
+    }
+  }
 
   return (
     <section className="space-y-4">
@@ -177,7 +255,9 @@ function ProfilePanel({
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="truncate text-lg font-semibold text-text">{session.displayName}</h2>
-              {session.role === 'admin' ? (
+              {session.isGuest ? (
+                <Chip tone="blue">게스트</Chip>
+              ) : session.role === 'admin' ? (
                 <Chip tone="accent" icon={ShieldCheck}>
                   관리자
                 </Chip>
@@ -185,14 +265,20 @@ function ProfilePanel({
                 <Chip tone="blue">회원</Chip>
               )}
             </div>
-            <p className="truncate text-sm text-text-muted">{session.email}</p>
+            <p className="truncate text-sm text-text-muted">
+              {session.email || '이메일 없이 이용 중'}
+            </p>
           </div>
         </div>
         <dl className="mt-5 grid gap-3 sm:grid-cols-2">
           <div className="rounded-md border border-border bg-bg p-3">
             <dt className="text-xs font-semibold text-text-subtle">권한</dt>
             <dd className="mt-1 text-sm font-semibold text-text">
-              {session.role === 'admin' ? '관리자 (콘텐츠/회원 관리)' : '일반 회원'}
+              {session.isGuest
+                ? '게스트 회원'
+                : session.role === 'admin'
+                  ? '관리자 (콘텐츠/회원 관리)'
+                  : '일반 회원'}
             </dd>
           </div>
           <div className="rounded-md border border-border bg-bg p-3">
@@ -231,61 +317,92 @@ function ProfilePanel({
         </div>
       </div>
 
-      <div className="rounded-lg border border-accent-4/30 bg-accent-4/5 p-6">
-        <h3 className="text-sm font-semibold text-text">회원 탈퇴</h3>
-        <p className="mt-1 text-sm leading-6 text-text-muted">
-          탈퇴하면 이 브라우저에 저장된 계정 정보가 영구 삭제됩니다. 되돌릴 수 없습니다.
-        </p>
-        {confirmWithdraw ? (
-          <div className="mt-4 flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={onWithdraw}
-              className="inline-flex h-10 items-center gap-1.5 rounded-md border border-accent-4 bg-accent-4 px-4 text-sm font-semibold text-ink-fg transition hover:opacity-90"
-            >
-              영구 삭제 확인
-            </button>
-            <button
-              type="button"
-              onClick={() => setConfirmWithdraw(false)}
-              className="inline-flex h-10 items-center rounded-md border border-border bg-surface px-4 text-sm font-semibold text-text-muted transition hover:text-text"
-            >
-              취소
-            </button>
-          </div>
-        ) : (
+      {session.provider === 'authdesk' ? (
+        <div className="rounded-lg border border-border bg-surface p-6">
+          <h3 className="text-sm font-semibold text-text">계정 삭제</h3>
+          <p className="mt-1 text-sm leading-6 text-text-muted">
+            서버 계정 삭제는 본인 확인이 필요한 작업입니다. 고객지원에서 삭제를 요청해 주세요.
+          </p>
           <button
             type="button"
-            onClick={() => setConfirmWithdraw(true)}
-            className="mt-4 inline-flex h-10 items-center gap-1.5 rounded-md border border-accent-4/40 bg-accent-4/10 px-4 text-sm font-semibold text-accent-4-text transition hover:bg-accent-4/20"
+            onClick={() => onNavigate('support')}
+            className="mt-4 inline-flex h-10 items-center rounded-md border border-border bg-bg px-4 text-sm font-semibold text-text-muted transition hover:border-border-strong hover:text-text"
           >
-            회원 탈퇴
+            고객지원으로 이동
           </button>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="rounded-lg border border-accent-4/30 bg-accent-4/5 p-6">
+          <h3 className="text-sm font-semibold text-text">회원 탈퇴</h3>
+          <p className="mt-1 text-sm leading-6 text-text-muted">
+            {session.provider === 'firebase'
+              ? '탈퇴하면 서버의 로그인 계정이 영구 삭제됩니다. 최근 로그인 확인이 필요할 수 있습니다.'
+              : '탈퇴하면 이 브라우저에 저장된 계정 정보가 영구 삭제됩니다.'}{' '}
+            되돌릴 수 없습니다.
+          </p>
+          {withdrawError ? (
+            <p role="alert" className="mt-3 text-sm font-semibold text-accent-4-text">
+              {withdrawError}
+            </p>
+          ) : null}
+          {confirmWithdraw ? (
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => void confirmDelete()}
+                disabled={withdrawPending}
+                className="inline-flex h-10 items-center gap-1.5 rounded-md border border-accent-4 bg-accent-4 px-4 text-sm font-semibold text-ink-fg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {withdrawPending ? '삭제 중…' : '영구 삭제 확인'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmWithdraw(false)}
+                disabled={withdrawPending}
+                className="inline-flex h-10 items-center rounded-md border border-border bg-surface px-4 text-sm font-semibold text-text-muted transition hover:text-text disabled:opacity-60"
+              >
+                취소
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setConfirmWithdraw(true)}
+              className="mt-4 inline-flex h-10 items-center gap-1.5 rounded-md border border-accent-4/40 bg-accent-4/10 px-4 text-sm font-semibold text-accent-4-text transition hover:bg-accent-4/20"
+            >
+              회원 탈퇴
+            </button>
+          )}
+        </div>
+      )}
     </section>
   )
 }
 
 export function AccountRoute({
   session,
+  loading,
   onAuthed,
   onLogout,
   onWithdraw,
   onNavigate,
 }: {
   session: MemberSession | null
+  loading: boolean
   onAuthed: (session: MemberSession) => void
   onLogout: () => void
   onWithdraw: () => void
   onNavigate: (route: AppRoute) => void
 }) {
-  const handleLogout = () => {
-    logOut()
-    onLogout()
-  }
-  const handleWithdraw = () => {
-    if (session) withdraw(session.id)
+  const firebaseAuth = useAuth()
+
+  const handleWithdraw = async () => {
+    if (!session) return
+    if (session.provider === 'firebase') {
+      await firebaseAuth.deleteAccount()
+    } else {
+      withdraw(session.id)
+    }
     onWithdraw()
   }
 
@@ -311,10 +428,19 @@ export function AccountRoute({
             포털로
           </button>
         </div>
-        {session ? (
+        {loading ? (
+          <section
+            aria-busy="true"
+            aria-label="로그인 상태 확인 중"
+            className="rounded-lg border border-border bg-surface p-6"
+          >
+            <div className="h-5 w-32 animate-pulse rounded bg-surface-2" />
+            <div className="mt-4 h-10 w-full animate-pulse rounded bg-surface-2" />
+          </section>
+        ) : session ? (
           <ProfilePanel
             session={session}
-            onLogout={handleLogout}
+            onLogout={onLogout}
             onWithdraw={handleWithdraw}
             onNavigate={onNavigate}
           />

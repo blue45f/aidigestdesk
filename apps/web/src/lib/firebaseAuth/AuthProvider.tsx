@@ -1,12 +1,14 @@
 import {
   createUserWithEmailAndPassword,
+  deleteUser,
   onAuthStateChanged,
   signInAnonymously,
   signInWithEmailAndPassword,
   signOut as fbSignOut,
+  updateProfile,
   type User,
 } from 'firebase/auth'
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 
 import { isFirebaseAuthConfigured } from './config'
 import { AuthContext, authErrorMessage, type AuthState, type AuthUser } from './context'
@@ -19,6 +21,7 @@ function toAuthUser(user: User): AuthUser {
     email: user.email,
     isAnonymous: user.isAnonymous,
     displayName: user.displayName,
+    signedInAt: user.metadata.lastSignInTime ?? new Date().toISOString(),
   }
 }
 
@@ -83,8 +86,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signUp = useCallback(
-    (email: string, password: string) =>
-      run(() => createUserWithEmailAndPassword(auth, email, password)),
+    (email: string, password: string, displayName: string) =>
+      run(async () => {
+        const credential = await createUserWithEmailAndPassword(auth, email, password)
+        await updateProfile(credential.user, { displayName: displayName.trim() })
+        // updateProfile은 auth-state 이벤트를 다시 보장하지 않으므로 즉시 갱신한다.
+        if (mounted.current) setUser(toAuthUser(credential.user))
+      }),
     [run]
   )
   const signIn = useCallback(
@@ -94,11 +102,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
   const signInAsGuest = useCallback(() => run(() => signInAnonymously(auth)), [run])
   const signOut = useCallback(() => run(() => fbSignOut(auth)), [run])
-
-  const value = useMemo<AuthState>(
-    () => ({ user, loading, error, signUp, signIn, signInAsGuest, signOut, clearError }),
-    [user, loading, error, signUp, signIn, signInAsGuest, signOut, clearError]
+  const deleteAccount = useCallback(
+    () =>
+      run(async () => {
+        if (!auth.currentUser) return
+        await deleteUser(auth.currentUser)
+      }),
+    [run]
   )
+
+  const value: AuthState = {
+    user,
+    loading,
+    error,
+    signUp,
+    signIn,
+    signInAsGuest,
+    signOut,
+    deleteAccount,
+    clearError,
+  }
 
   return <AuthContext value={value}>{children}</AuthContext>
 }

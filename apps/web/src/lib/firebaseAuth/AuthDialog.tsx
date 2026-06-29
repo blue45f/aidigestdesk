@@ -14,7 +14,7 @@ const COPY: Record<Mode, { title: string; desc: string; submit: string; toggle: 
   },
   signup: {
     title: '회원가입',
-    desc: '이메일과 비밀번호로 새 계정을 만드세요. 비밀번호는 6자 이상이어야 합니다.',
+    desc: '이메일·닉네임과 8자 이상의 비밀번호로 새 계정을 만드세요.',
     submit: '가입하기',
     toggle: '이미 계정이 있나요? 로그인',
   },
@@ -42,6 +42,7 @@ export function AuthDialog({
   const { signIn, signUp, signInAsGuest, error, clearError, user } = useAuth()
   const [mode, setMode] = useState<Mode>('signin')
   const [email, setEmail] = useState('')
+  const [displayName, setDisplayName] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState<'form' | 'guest' | null>(null)
   const emailRef = useRef<HTMLInputElement>(null)
@@ -50,6 +51,7 @@ export function AuthDialog({
   const titleId = useId()
   const descId = useId()
   const emailId = useId()
+  const displayNameId = useId()
   const passwordId = useId()
   const errorId = useId()
 
@@ -76,6 +78,7 @@ export function AuthDialog({
     setMode('signin')
     setBusy(null)
     setEmail('')
+    setDisplayName('')
     setPassword('')
     clearError()
     onOpenChange(false)
@@ -91,7 +94,7 @@ export function AuthDialog({
     if (busy) return
     setBusy('form')
     try {
-      if (mode === 'signup') await signUp(email, password)
+      if (mode === 'signup') await signUp(email, password, displayName)
       else await signIn(email, password)
     } catch {
       // 에러는 컨텍스트 state(error)로 노출 — 여기선 무시.
@@ -201,6 +204,24 @@ export function AuthDialog({
             />
           </label>
 
+          {mode === 'signup' ? (
+            <label className="block" htmlFor={displayNameId}>
+              <span className="text-xs font-semibold text-text-subtle">닉네임</span>
+              <input
+                id={displayNameId}
+                type="text"
+                autoComplete="nickname"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="커뮤니티에서 보일 이름"
+                minLength={2}
+                required
+                disabled={anyBusy}
+                className={inputClass}
+              />
+            </label>
+          ) : null}
+
           <label className="block" htmlFor={passwordId}>
             <span className="text-xs font-semibold text-text-subtle">비밀번호</span>
             <input
@@ -210,7 +231,7 @@ export function AuthDialog({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              minLength={6}
+              minLength={mode === 'signup' ? 8 : 6}
               aria-describedby={error ? errorId : undefined}
               aria-invalid={error ? true : undefined}
               required
@@ -235,7 +256,12 @@ export function AuthDialog({
           <button
             type="submit"
             className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-md border border-ink bg-ink px-4 text-sm font-semibold text-ink-fg transition hover:opacity-90 disabled:pointer-events-none disabled:opacity-50"
-            disabled={anyBusy || !email || !password}
+            disabled={
+              anyBusy ||
+              !email ||
+              password.length < (mode === 'signup' ? 8 : 6) ||
+              (mode === 'signup' && displayName.trim().length < 2)
+            }
             aria-busy={formBusy || undefined}
           >
             {formBusy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : null}

@@ -1,4 +1,16 @@
-import { Body, Controller, Get, Post, Put, Request, UseGuards, UsePipes } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Put,
+  Request,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common'
 import { ZodValidationPipe } from 'nestjs-zod'
 
 import { AuthGuard, type AuthenticatedRequest } from './auth.guard'
@@ -9,6 +21,7 @@ import {
   RegisterDto,
   TossIdentityDto,
   TossLoginDto,
+  TossUnlinkDto,
 } from './auth.schema'
 import { AuthService } from './auth.service'
 
@@ -45,6 +58,16 @@ export class AuthController {
   @Post('toss/login')
   async loginWithTossAuthCode(@Body() dto: TossLoginDto) {
     return this.authService.loginWithTossAuthCode(dto)
+  }
+
+  /** 토스 앱에서 로그인 연결 해제/약관 철회/토스 탈퇴 시 받는 Basic Auth 콜백. */
+  @Post('toss/unlink')
+  @HttpCode(HttpStatus.OK)
+  async unlinkTossLogin(
+    @Headers('authorization') authorization: string | undefined,
+    @Body() dto: TossUnlinkDto
+  ) {
+    return this.authService.unlinkTossLogin(dto, authorization)
   }
 
   /** 현재 로그인 사용자의 최신 프로필. */

@@ -85,11 +85,20 @@ export const TossLoginSchema = z.object({
   authorizationCode: z
     .string({ required_error: '인가 코드가 필요합니다.' })
     .trim()
-    .min(1, '인가 코드가 필요합니다.'),
-  referrer: z.string().trim().min(1).optional().nullable(),
+    .min(1, '인가 코드가 필요합니다.')
+    .max(4096, '유효하지 않은 인가 코드입니다.'),
+  referrer: z.enum(['DEFAULT', 'SANDBOX']).default('DEFAULT'),
 })
 
 export type TossLoginInput = z.infer<typeof TossLoginSchema>
+
+/** 토스 앱에서 서비스 연결을 해제했을 때 수신하는 서버 콜백. */
+export const TossUnlinkSchema = z.object({
+  userKey: z.coerce.number().int().positive(),
+  referrer: z.enum(['UNLINK', 'WITHDRAWAL_TERMS', 'WITHDRAWAL_TOSS']),
+})
+
+export type TossUnlinkInput = z.infer<typeof TossUnlinkSchema>
 
 /**
  * 프로필 수정 — { nickname?, avatar? }. 둘 다 선택. 아바타는 URL 또는 data URI 를 허용하되,
@@ -108,6 +117,7 @@ export class LoginDto extends createZodDto(LoginSchema) {}
 export class GuestRegisterDto extends createZodDto(GuestRegisterSchema) {}
 export class TossIdentityDto extends createZodDto(TossIdentitySchema) {}
 export class TossLoginDto extends createZodDto(TossLoginSchema) {}
+export class TossUnlinkDto extends createZodDto(TossUnlinkSchema) {}
 export class ProfileUpdateDto extends createZodDto(ProfileUpdateSchema) {}
 
 /** 클라이언트에 노출하는 사용자 프로필(비밀 필드 제외). */

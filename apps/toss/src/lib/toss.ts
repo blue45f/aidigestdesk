@@ -5,6 +5,7 @@
 import {
   appLogin,
   getAnonymousKey,
+  getIsTossLoginIntegratedService,
   getOperationalEnvironment,
   getSchemeUri,
   share,
@@ -52,6 +53,16 @@ export async function tossAppLogin(): Promise<{
     return result ?? null;
   } catch {
     return null;
+  }
+}
+
+/** 콘솔에서 토스 로그인 설정이 완료됐는지 확인한다. 미지원 환경은 false. */
+export async function isTossLoginAvailable(): Promise<boolean> {
+  if (!isInToss()) return false;
+  try {
+    return Boolean(await getIsTossLoginIntegratedService());
+  } catch {
+    return false;
   }
 }
 

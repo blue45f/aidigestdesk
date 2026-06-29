@@ -91,8 +91,8 @@ const sitemapSections: SitemapSection[] = [
     route: 'account',
     title: '내 계정',
     description:
-      '회원가입, 로그인, 프로필, 회원 탈퇴를 관리합니다. 계정은 브라우저에만 저장됩니다.',
-    links: [{ label: '로그인 / 회원가입', note: '데모 인증 · localStorage' }],
+      '회원가입, 로그인, 게스트 이용, 프로필과 회원 탈퇴를 하나의 계정 화면에서 관리합니다.',
+    links: [{ label: '로그인 / 회원가입', note: '통합 회원 인증 · 세션 자동 복구' }],
   },
   {
     id: 'support',

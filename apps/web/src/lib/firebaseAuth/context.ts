@@ -6,6 +6,7 @@ export interface AuthUser {
   email: string | null
   isAnonymous: boolean
   displayName: string | null
+  signedInAt: string
 }
 
 export interface AuthState {
@@ -15,10 +16,11 @@ export interface AuthState {
   loading: boolean
   /** 최근 인증 작업의 한국어 에러 메시지(없으면 null). */
   error: string | null
-  signUp(email: string, password: string): Promise<void>
+  signUp(email: string, password: string, displayName: string): Promise<void>
   signIn(email: string, password: string): Promise<void>
   signInAsGuest(): Promise<void>
   signOut(): Promise<void>
+  deleteAccount(): Promise<void>
   /** 표시된 에러를 비운다(예: 다이얼로그 모드 토글 시). */
   clearError(): void
 }
@@ -43,13 +45,15 @@ export function authErrorMessage(code: string | undefined): string {
     case 'auth/email-already-in-use':
       return '이미 가입된 이메일입니다. 로그인해 주세요.'
     case 'auth/weak-password':
-      return '비밀번호가 너무 약합니다. 6자 이상으로 설정해 주세요.'
+      return '비밀번호가 너무 약합니다. 8자 이상으로 설정해 주세요.'
     case 'auth/invalid-email':
       return '이메일 형식이 올바르지 않습니다.'
     case 'auth/missing-password':
       return '비밀번호를 입력해 주세요.'
     case 'auth/user-disabled':
       return '비활성화된 계정입니다. 관리자에게 문의하세요.'
+    case 'auth/requires-recent-login':
+      return '보안을 위해 다시 로그인한 뒤 회원 탈퇴를 진행해 주세요.'
     case 'auth/too-many-requests':
       return '시도가 너무 많습니다. 잠시 후 다시 시도해 주세요.'
     case 'auth/network-request-failed':

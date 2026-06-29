@@ -15,6 +15,7 @@ import { enhanceRails, playTick, tapRipple } from '@aidigestdesk/content/shared'
 import { useEffect } from 'react';
 
 import { navigate, usePathname } from './router';
+import { trackScreen } from './lib/analytics';
 import { haptic } from './lib/haptic';
 import { MusicToggle } from './components/MusicToggle.tsx';
 import IntroSplashScreen from './components/IntroSplashScreen.tsx';
@@ -22,6 +23,10 @@ import { TabBar, type TabId } from './ui';
 
 export function App() {
   const path = usePathname();
+
+  useEffect(() => {
+    trackScreen(path);
+  }, [path]);
 
   // 전역 클릭 효과음 + 가벼운 햅틱 — 모든 인터랙티브 요소(리스너 1개로 위임).
   // 타이틀(.aid-shimmer-title)은 자체 스파클·confetti 햅틱을 내므로 제외.

@@ -3,6 +3,7 @@ import * as fs from 'node:fs'
 import * as https from 'node:https'
 
 import {
+  BadGatewayException,
   BadRequestException,
   Injectable,
   ServiceUnavailableException,
@@ -23,10 +24,12 @@ import type {
   RegisterInput,
   TossIdentityInput,
   TossLoginInput,
+  TossUnlinkInput,
   UserProfile,
 } from './auth.schema'
 
 const APPS_IN_TOSS_API_BASE = 'https://apps-in-toss-api.toss.im'
+const TOSS_API_TIMEOUT_MS = 12_000
 
 /**
  * 환경변수로 넣은 PEM 본문 정규화. env 의 PEM 은 줄바꿈이 "\n" 리터럴로 저장되는 경우가
@@ -196,7 +199,7 @@ export class AuthService {
       '/api-partner/v1/apps-in-toss/user/oauth2/generate-token',
       agent,
       {
-        body: { authorizationCode: input.authorizationCode, referrer: input.referrer ?? 'DEFAULT' },
+        body: { authorizationCode: input.authorizationCode, referrer: input.referrer },
       }
     )
 
@@ -234,6 +237,45 @@ export class AuthService {
     return this.issue(user)
   }
 
+  /**
+   * 토스 앱의 연결 해제 콜백을 검증하고 해당 앱 전용 userKey 계정을 제거한다.
+   * DB 존재 여부와 무관하게 성공시키는 멱등 처리라 토스의 중복 콜백에도 안전하다.
+   */
+  async unlinkTossLogin(
+    input: TossUnlinkInput,
+    authorization: string | undefined
+  ): Promise<{ ok: true }> {
+    this.assertTossUnlinkAuthorization(authorization)
+    await this.db.deleteUser(`toss-user-${input.userKey}`)
+    return { ok: true }
+  }
+
+  private assertTossUnlinkAuthorization(authorization: string | undefined): void {
+    const expectedUsername = process.env.APPS_IN_TOSS_UNLINK_USERNAME?.trim()
+    const expectedPassword = process.env.APPS_IN_TOSS_UNLINK_PASSWORD?.trim()
+    if (!expectedUsername || !expectedPassword) {
+      throw new ServiceUnavailableException('토스 로그인 연결 해제 콜백 인증이 설정되지 않았어요.')
+    }
+
+    const encoded = authorization?.startsWith('Basic ') ? authorization.slice(6).trim() : ''
+    let actual: string
+    try {
+      actual = Buffer.from(encoded, 'base64').toString('utf8')
+    } catch {
+      throw new UnauthorizedException('콜백 인증에 실패했어요.')
+    }
+
+    const expected = `${expectedUsername}:${expectedPassword}`
+    const expectedBytes = Buffer.from(expected)
+    const actualBytes = Buffer.from(actual)
+    if (
+      expectedBytes.length !== actualBytes.length ||
+      !crypto.timingSafeEqual(expectedBytes, actualBytes)
+    ) {
+      throw new UnauthorizedException('콜백 인증에 실패했어요.')
+    }
+  }
+
   private createMtlsAgent(): https.Agent {
     // 서버리스 환경엔 고정 경로 인증서 파일이 없을 수 있어, PEM 본문(env)을 우선 지원하고
     // 파일 경로는 폴백으로 둔다.
@@ -251,7 +293,13 @@ export class AuthService {
           'getAnonymousKey 기반 식별 로그인(/auth/toss)을 사용해 주세요.'
       )
     }
-    return new https.Agent({ cert, key })
+    try {
+      return new https.Agent({ cert, key })
+    } catch {
+      throw new ServiceUnavailableException(
+        '토스 로그인 mTLS 인증서 또는 개인키 형식이 올바르지 않아요.'
+      )
+    }
   }
 
   private requestTossApi<T>(
@@ -270,6 +318,7 @@ export class AuthService {
           agent,
           headers: {
             'Content-Type': 'application/json',
+            Accept: 'application/json',
             ...(options.bearer ? { Authorization: `Bearer ${options.bearer}` } : {}),
             ...(payload ? { 'Content-Length': Buffer.byteLength(payload) } : {}),
           },
@@ -281,14 +330,31 @@ export class AuthService {
           })
           response.on('end', () => {
             try {
-              resolve(raw ? (JSON.parse(raw) as T) : ({} as T))
+              const parsed = raw ? (JSON.parse(raw) as T) : ({} as T)
+              const status = response.statusCode ?? 500
+              if (status >= 400 && status < 500) {
+                reject(
+                  new UnauthorizedException('토스 로그인 인가 코드 또는 토큰이 유효하지 않아요.')
+                )
+                return
+              }
+              if (status < 200 || status >= 300) {
+                reject(new BadGatewayException('토스 로그인 서버가 요청을 처리하지 못했어요.'))
+                return
+              }
+              resolve(parsed)
             } catch {
-              reject(new UnauthorizedException('토스 API 응답을 해석하지 못했어요.'))
+              reject(new BadGatewayException('토스 로그인 서버 응답을 해석하지 못했어요.'))
             }
           })
         }
       )
-      request.on('error', (error) => reject(error))
+      request.setTimeout(TOSS_API_TIMEOUT_MS, () => {
+        request.destroy(new Error('Toss login API timeout'))
+      })
+      request.on('error', () => {
+        reject(new ServiceUnavailableException('토스 로그인 서버에 연결하지 못했어요.'))
+      })
       if (payload) {
         request.write(payload)
       }

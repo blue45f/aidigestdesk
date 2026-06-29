@@ -27,15 +27,16 @@ pnpm --filter @aidigestdesk/api typecheck
 
 ## 환경변수
 
-| 변수                                                         | 필수              | 설명                                                                                               |
-| ------------------------------------------------------------ | ----------------- | -------------------------------------------------------------------------------------------------- |
-| `PORT`                                                       | 아니오            | 리슨 포트(기본 `4350`).                                                                            |
-| `DATABASE_URL`                                               | 프로덕션 권장     | PostgreSQL 연결 문자열. 미설정 시 JSON 파일 폴백. 비로컬 호스트는 SSL(`rejectUnauthorized:false`). |
-| `AIDIGEST_DB_PATH`                                           | 아니오            | JSON 폴백 DB 파일 경로(기본 `./.data/db.json`). `DATABASE_URL` 설정 시 무시.                       |
-| `JWT_SECRET`                                                 | 프로덕션 **필수** | JWT 서명/검증 시크릿. 미설정 시 로컬 개발용 폴백만 사용(프로덕션에서 반드시 강한 랜덤 값 주입).    |
-| `ADMIN_EMAILS`                                               | 아니오            | 운영자 이메일(콤마 구분). 미설정 시 기본 `blue45f@gmail.com`. `isAdmin` 판정에 사용.               |
-| `APPS_IN_TOSS_MTLS_CERT` / `APPS_IN_TOSS_MTLS_KEY`           | 토스 로그인 시    | mTLS 인증서/키 PEM **본문**(`\n` 리터럴은 개행으로 변환됨).                                        |
-| `APPS_IN_TOSS_MTLS_CERT_PATH` / `APPS_IN_TOSS_MTLS_KEY_PATH` | 토스 로그인 시    | mTLS 인증서/키 **파일 경로**(PEM 본문 env 미설정 시 폴백).                                         |
+| 변수                                                            | 필수              | 설명                                                                                               |
+| --------------------------------------------------------------- | ----------------- | -------------------------------------------------------------------------------------------------- |
+| `PORT`                                                          | 아니오            | 리슨 포트(기본 `4350`).                                                                            |
+| `DATABASE_URL`                                                  | 프로덕션 권장     | PostgreSQL 연결 문자열. 미설정 시 JSON 파일 폴백. 비로컬 호스트는 SSL(`rejectUnauthorized:false`). |
+| `AIDIGEST_DB_PATH`                                              | 아니오            | JSON 폴백 DB 파일 경로(기본 `./.data/db.json`). `DATABASE_URL` 설정 시 무시.                       |
+| `JWT_SECRET`                                                    | 프로덕션 **필수** | JWT 서명/검증 시크릿. 미설정 시 로컬 개발용 폴백만 사용(프로덕션에서 반드시 강한 랜덤 값 주입).    |
+| `ADMIN_EMAILS`                                                  | 아니오            | 운영자 이메일(콤마 구분). 미설정 시 기본 `blue45f@gmail.com`. `isAdmin` 판정에 사용.               |
+| `APPS_IN_TOSS_MTLS_CERT` / `APPS_IN_TOSS_MTLS_KEY`              | 토스 로그인 시    | mTLS 인증서/키 PEM **본문**(`\n` 리터럴은 개행으로 변환됨).                                        |
+| `APPS_IN_TOSS_MTLS_CERT_PATH` / `APPS_IN_TOSS_MTLS_KEY_PATH`    | 토스 로그인 시    | mTLS 인증서/키 **파일 경로**(PEM 본문 env 미설정 시 폴백).                                         |
+| `APPS_IN_TOSS_UNLINK_USERNAME` / `APPS_IN_TOSS_UNLINK_PASSWORD` | 연결 해제 콜백 시 | 콘솔의 콜백 Basic Auth와 같은 값. 충분히 긴 무작위 비밀번호를 사용.                                |
 
 mTLS 인증서가 없으면 `POST /api/auth/toss/login` 은 `503` 으로 안내하며, 승인 전에는 `POST /api/auth/toss`(getAnonymousKey 식별 로그인)를 쓰면 된다.
 
@@ -43,16 +44,17 @@ mTLS 인증서가 없으면 `POST /api/auth/toss/login` 은 `503` 으로 안내�
 
 모든 경로 앞에 `/api` 프리픽스가 붙는다.
 
-| 메서드 | 경로                   | 인증   | 바디                                      | 응답                    |
-| ------ | ---------------------- | ------ | ----------------------------------------- | ----------------------- |
-| GET    | `/api/health`          | -      | -                                         | `{ ok, service, ts }`   |
-| POST   | `/api/auth/register`   | -      | `{ email, password(≥6), nickname(2~20) }` | `{ accessToken, user }` |
-| POST   | `/api/auth/login`      | -      | `{ email, password }`                     | `{ accessToken, user }` |
-| POST   | `/api/auth/guest`      | -      | `{ nickname(2~20) }`                      | `{ accessToken, user }` |
-| POST   | `/api/auth/toss`       | -      | `{ anonymousKey(8~256), nickname? }`      | `{ accessToken, user }` |
-| POST   | `/api/auth/toss/login` | -      | `{ authorizationCode, referrer? }`        | `{ accessToken, user }` |
-| GET    | `/api/auth/me`         | Bearer | -                                         | `user`(최신 프로필)     |
-| PUT    | `/api/auth/profile`    | Bearer | `{ nickname?, avatar? }`                  | `user`(갱신된 프로필)   |
+| 메서드 | 경로                    | 인증   | 바디                                      | 응답                    |
+| ------ | ----------------------- | ------ | ----------------------------------------- | ----------------------- |
+| GET    | `/api/health`           | -      | -                                         | `{ ok, service, ts }`   |
+| POST   | `/api/auth/register`    | -      | `{ email, password(≥6), nickname(2~20) }` | `{ accessToken, user }` |
+| POST   | `/api/auth/login`       | -      | `{ email, password }`                     | `{ accessToken, user }` |
+| POST   | `/api/auth/guest`       | -      | `{ nickname(2~20) }`                      | `{ accessToken, user }` |
+| POST   | `/api/auth/toss`        | -      | `{ anonymousKey(8~256), nickname? }`      | `{ accessToken, user }` |
+| POST   | `/api/auth/toss/login`  | -      | `{ authorizationCode, referrer? }`        | `{ accessToken, user }` |
+| POST   | `/api/auth/toss/unlink` | Basic  | `{ userKey, referrer }`                   | `{ ok: true }`          |
+| GET    | `/api/auth/me`          | Bearer | -                                         | `user`(최신 프로필)     |
+| PUT    | `/api/auth/profile`     | Bearer | `{ nickname?, avatar? }`                  | `user`(갱신된 프로필)   |
 
 ### 인증/계정 동작
 
@@ -61,6 +63,7 @@ mTLS 인증서가 없으면 `POST /api/auth/toss/login` 은 `503` 으로 안내�
 - **게스트**: id `guest-<uuid>`, `isGuest: true`.
 - **토스 식별 로그인(`/auth/toss`)**: `toss-<sha256(anonymousKey)[:32]>` 결정적 id 로 멱등 get-or-create. 서버 mTLS·동의 불필요(앱 승인 전에도 동작).
 - **토스 로그인(`/auth/toss/login`)**: 인가 코드 → 서버 mTLS 토큰 교환(`apps-in-toss-api.toss.im`) → `userKey` → id `toss-user-<userKey>`.
+- **연결 해제 콜백(`/auth/toss/unlink`)**: 콘솔과 동일한 Basic Auth를 검증한 뒤 `userKey` 계정을 멱등 삭제. 기존 JWT도 DB 존재 확인에서 즉시 차단된다.
 - **프로필 동기화(`/auth/profile`)**: 서버에 닉네임/아바타를 저장. `email`(빈 문자열 제외)만 부분 유니크라 익명/게스트/토스 계정은 다중 공존 가능.
 
 ### `UserProfile` 응답 형태

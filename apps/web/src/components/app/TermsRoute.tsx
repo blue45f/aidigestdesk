@@ -8,8 +8,7 @@ import type { ReactNode } from 'react'
 import { Chip, SegmentBar } from '@/components/app/CommonUi'
 import { getTermsClient } from '@/components/app/deskcloud'
 
-
-const EFFECTIVE_DATE = '2026-06-18'
+const EFFECTIVE_DATE = '2026-06-29'
 
 type DocumentId = 'terms' | 'privacy'
 
@@ -32,8 +31,8 @@ const documentTitles: Record<DocumentId, string> = {
   privacy: '개인정보처리방침',
 }
 
-/** 데모/포트폴리오 면책을 강조하는 틴티드 콜아웃 박스. */
-function DemoNotice({ children }: { children: ReactNode }) {
+/** 약관·방침에서 중요한 적용 범위를 강조하는 콜아웃 박스. */
+function PolicyNotice({ children }: { children: ReactNode }) {
   return (
     <div
       role="note"
@@ -75,10 +74,11 @@ function TermsDocument({ onNavigate }: { onNavigate: (route: AppRoute) => void }
         </p>
       </header>
 
-      <DemoNotice>
-        본 포털은 데모/포트폴리오 목적이며 실제 계약·법적 효력을 갖지 않습니다. 아래 조항은 실제
-        서비스 약관의 형식을 보여주기 위한 예시이며, 특정 사업자의 법적 의무를 발생시키지 않습니다.
-      </DemoNotice>
+      <PolicyNotice>
+        본 약관은 시행일부터 AIDigestDesk 웹 서비스와 토스 미니앱에 적용됩니다. 서비스를 이용하면 본
+        약관과 개인정보처리방침에 동의한 것으로 봅니다. 회원가입 또는 토스 로그인 과정에서 별도
+        동의가 필요한 항목은 해당 화면에서 구분해 안내합니다.
+      </PolicyNotice>
 
       <div className="mt-6 space-y-7">
         <Article number={1} title="목적">
@@ -118,8 +118,9 @@ function TermsDocument({ onNavigate }: { onNavigate: (route: AppRoute) => void }
         <Article number={4} title="서비스의 제공 및 변경">
           <p>
             운영자는 서비스의 내용을 큐레이션 정책에 따라 추가·수정·삭제할 수 있습니다. 서비스는
-            데모 환경 특성상 사전 고지 없이 일부 기능이 변경되거나 중단될 수 있으며, 이로 인한 이용
-            제약에 대해 운영자는 책임을 지지 않습니다.
+            원칙적으로 무료로 제공되며, 유료 기능을 도입하는 경우 가격·결제·환불 조건을 결제 전에
+            별도로 고지합니다. 점검, 장애, 정책 변경 등으로 제공 내용이 변경되거나 일시 중단될 수
+            있으며 중요한 변경은 서비스 화면을 통해 사전에 안내합니다.
           </p>
         </Article>
 
@@ -128,6 +129,7 @@ function TermsDocument({ onNavigate }: { onNavigate: (route: AppRoute) => void }
           <ul className="list-disc space-y-1 pl-5">
             <li>서비스의 정상적인 운영을 방해하거나 자동화된 수단으로 과도하게 수집하는 행위</li>
             <li>타인의 권리를 침해하거나 관련 법령을 위반하는 행위</li>
+            <li>타인의 계정이나 식별정보를 도용하거나 허위 정보를 입력하는 행위</li>
             <li>서비스가 제공하는 정보를 출처 표기 없이 상업적으로 무단 재배포하는 행위</li>
           </ul>
         </Article>
@@ -155,16 +157,18 @@ function TermsDocument({ onNavigate }: { onNavigate: (route: AppRoute) => void }
 
         <Article number={8} title="면책조항">
           <p>
-            서비스는 정보 제공을 목적으로 하며, 특정 모델·도구의 구매나 투자, 도입 등 일체의 의사결정
-            결과에 대한 책임은 전적으로 이용자에게 있습니다. 운영자는 서비스 이용으로 발생한 직접·간접
-            손해에 대해 관련 법령이 허용하는 범위에서 책임을 부담하지 않습니다.
+            서비스는 정보 제공을 목적으로 하며, 특정 모델·도구의 구매나 투자, 도입 전에 이용자가
+            원문과 최신 조건을 직접 확인해야 합니다. 운영자는 고의 또는 중대한 과실이 없는 한 외부
+            출처의 변경, 이용자 귀책사유, 불가항력으로 발생한 손해에 대해 책임을 지지 않으며, 관련
+            법령상 배제할 수 없는 책임은 본 조항으로 제한되지 않습니다.
           </p>
         </Article>
 
         <Article number={9} title="준거법 및 분쟁해결">
           <p>
             이 약관은 대한민국 법령에 따라 해석되며, 서비스 이용과 관련하여 분쟁이 발생할 경우
-            운영자와 이용자는 신의성실의 원칙에 따라 원만한 해결을 위해 노력합니다.
+            운영자와 이용자는 우선 상호 협의하여 해결하도록 노력합니다. 협의로 해결되지 않는 분쟁은
+            민사소송법 등 관계 법령에 따른 관할 법원에서 해결합니다.
           </p>
         </Article>
 
@@ -178,8 +182,9 @@ function TermsDocument({ onNavigate }: { onNavigate: (route: AppRoute) => void }
             >
               문의 페이지
             </button>
-            를 통해 접수합니다. 전화·이메일 대신 내부 문의 게시판으로 창구를 통합했으며, 접수된
-            문의는 공개 게시판에 표시되고 운영자가 확인 후 상태를 업데이트합니다.
+            를 통해 접수합니다. 운영 주체는 <strong>AIDigestDesk 운영팀</strong>이며, 접수된 문의의
+            제목·내용·이름은 공개 문의 게시판에 표시될 수 있으므로 비밀번호, 인증 토큰, 주민등록번호
+            등 민감한 정보를 작성하지 마세요. 회신용 이메일은 공개하지 않습니다.
           </p>
         </Article>
       </div>
@@ -187,40 +192,43 @@ function TermsDocument({ onNavigate }: { onNavigate: (route: AppRoute) => void }
   )
 }
 
-function PrivacyDocument() {
+function PrivacyDocument({ onNavigate }: { onNavigate: (route: AppRoute) => void }) {
   return (
     <article className="rounded-lg border border-border bg-surface p-6">
       <header className="space-y-2 border-b border-border pb-5">
         <h2 className="text-xl font-semibold text-text">개인정보처리방침</h2>
         <p className="text-sm leading-7 text-text-muted">
-          AIDigestDesk는 이용자의 개인정보를 소중히 다루며, 데모 환경에서 처리하는 정보의 항목과
-          취급 방식을 아래와 같이 안내합니다.
+          AIDigestDesk의 웹·토스 미니앱에서 처리하는 정보의 항목과 이용 방식을 안내합니다.
         </p>
       </header>
 
-      <DemoNotice>
-        회원 데모·환경설정 정보는 이용자의 브라우저 localStorage에만 저장되며 서버로 전송되지 않습니다.
-        다만 <strong>문의하기</strong>로 보내는 정보(제목·내용·이름·이메일·접속 URL)는 문의 처리를 위해
-        운영 서버(desk-platform)로 전송·저장되며, 이메일을 제외한 문의 내용은 공개 문의 게시판에 표시될
-        수 있습니다. <strong>토스 미니앱 버전</strong>은 회원 로그인 없이 익명 식별키로 동작하며, 동일한
-        개인정보 보호 기준(기기 저장·문의만 서버 전송)을 따릅니다.
-      </DemoNotice>
+      <PolicyNotice>
+        배포 환경에 따라 웹은 Firebase Auth 또는 AuthDesk 인증을 사용하고, 토스 미니앱은 익명
+        식별키를 기본으로 사용하며 이용자가 선택한 경우 토스 로그인 식별자를 연결합니다. 비밀번호와
+        토스의 이름·전화번호는 AIDigestDesk 서버에 저장하지 않습니다.
+      </PolicyNotice>
 
       <div className="mt-6 space-y-7">
         <Article number={1} title="수집하는 개인정보 항목">
           <p>
-            <strong>(가) 브라우저에만 저장되는 정보</strong> — 회원 데모 기능 이용 시 입력될 수 있으며,
-            이용자의 브라우저 localStorage에만 저장되고 서버로 전송되지 않습니다.
+            <strong>(가) 회원 인증 및 프로필</strong> — 웹 회원가입 시 이메일 주소, 닉네임, 인증
+            서비스가 발급한 사용자 식별자와 로그인 메타데이터를 처리합니다. 로컬 폴백 환경에서는
+            해당 정보가 브라우저에만 저장될 수 있습니다.
           </p>
           <ul className="list-disc space-y-1 pl-5">
-            <li>이메일 주소 (데모 로그인 식별용)</li>
-            <li>닉네임 (화면 표시용)</li>
-            <li>다크 모드, 필터 선택값 등 화면 환경설정</li>
+            <li>웹: 이메일 주소, 닉네임, 인증 서비스 사용자 식별자</li>
+            <li>인증 보안: 접속 IP, 사용자 에이전트, 로그인 시각과 오류 기록</li>
+            <li>토스 미니앱: 익명 식별키의 단방향 해시 기반 식별자</li>
+            <li>토스 로그인 선택 시: 해당 앱 전용 userKey와 사용자가 설정한 닉네임·아바타</li>
           </ul>
           <p className="mt-3">
-            <strong>(나) 문의 시 서버로 전송되는 정보</strong> — 문의하기 이용 시 다음 항목이 운영
-            서버(desk-platform)로 전송·저장됩니다. 이메일을 제외한 제목·내용·이름은 공개 문의 게시판에
-            표시될 수 있습니다.
+            <strong>(나) 기기 저장 정보</strong> — 로그인 토큰, 다크 모드, 필터·북마크 등 화면
+            설정이 브라우저 또는 앱 WebView 저장소에 보관될 수 있습니다.
+          </p>
+          <p className="mt-3">
+            <strong>(다) 문의 시 서버로 전송되는 정보</strong> — 문의하기 이용 시 다음 항목이 운영
+            서버(desk-platform)로 전송·저장됩니다. 이메일을 제외한 제목·내용·이름은 공개 문의
+            게시판에 표시될 수 있습니다.
           </p>
           <ul className="list-disc space-y-1 pl-5">
             <li>문의 제목·내용</li>
@@ -232,61 +240,113 @@ function PrivacyDocument() {
 
         <Article number={2} title="개인정보의 수집 목적">
           <p>
-            입력된 정보는 데모 로그인 상태 유지, 화면 개인화(닉네임 표시·환경설정 보존) 목적으로만
-            브라우저 내부에서 사용됩니다. 광고·마케팅·프로파일링 목적으로 활용하지 않습니다.
+            회원 식별과 로그인 상태 유지, 기기 변경 시 계정 연결, 닉네임·아바타 등 화면 개인화, 문의
+            접수·회신과 서비스 보안 운영을 위해 처리합니다. 별도 동의 없이 개인정보를 광고 판매
+            목적으로 제공하지 않습니다.
           </p>
         </Article>
 
         <Article number={3} title="보유 및 이용기간">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>웹·서버 회원 정보: 회원 탈퇴 또는 계정 삭제 완료 시까지</li>
+            <li>토스 로그인 정보: 연결 해제, 약관 철회 또는 토스 탈퇴 콜백 처리 시까지</li>
+            <li>기기 저장 정보: 로그아웃 또는 앱·브라우저 저장소 삭제 시까지</li>
+            <li>문의 정보: 문의 접수일부터 3년 또는 이용자의 삭제 요청 처리 시까지</li>
+            <li>Firebase 인증 IP 기록: 수 주, 그 밖의 인증 정보: 계정 삭제 요청 시까지</li>
+          </ul>
           <p>
-            정보는 이용자의 브라우저에 저장된 상태로 유지되며, 이용자가 직접 삭제하거나 브라우저
-            저장소를 비우면 즉시 사라집니다. 운영자는 별도의 보관 기간을 두지 않으며 서버에 사본을
-            보관하지 않습니다.
+            계정 삭제 후 Firebase의 활성·백업 시스템에서 관련 인증 정보가 완전히 제거되기까지 최대
+            180일이 걸릴 수 있습니다. 관계 법령이 별도 보관을 요구하면 해당 정보만 법정 기간 동안
+            분리해 보관합니다.
           </p>
         </Article>
 
         <Article number={4} title="제3자 제공 및 처리 위탁">
           <p>
-            서비스는 이용자의 개인정보를 마케팅·판매 목적으로 제3자에게 제공하지 않습니다. 다만 문의
-            기능의 데이터는 문의 접수·처리를 위해 운영 인프라(desk-platform)에서 저장·처리되며, 이는
-            서비스 제공에 필요한 범위의 처리 위탁에 해당합니다. 브라우저에만 저장되는 회원·환경설정
-            정보는 외부로 제공되지 않습니다.
+            서비스는 개인정보를 판매하지 않으며 법령상 근거 또는 이용자 동의 없이 제3자에게 제공하지
+            않습니다. 서비스 제공을 위해 다음 업무를 위탁할 수 있고, 각 수탁자에는 필요한 최소
+            정보만 전달합니다.
           </p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>Google LLC(Firebase Authentication): 웹 회원 인증과 계정 보안</li>
+            <li>AuthDesk: 환경 설정에 따른 웹 회원 인증과 서버 세션 관리</li>
+            <li>비바리퍼블리카: 토스 미니앱 식별키·토스 로그인 제공</li>
+            <li>Vercel·Neon 및 서비스 API 인프라: 웹·API 제공과 회원 프로필 저장</li>
+            <li>desk-platform: 문의 접수, 공개 문의 게시판과 처리 상태 관리</li>
+          </ul>
         </Article>
 
         <Article number={5} title="쿠키 및 로컬스토리지 사용">
           <p>
-            서비스는 로그인 상태와 화면 설정을 유지하기 위해 브라우저 localStorage를 사용합니다.
-            추적용 제3자 쿠키는 사용하지 않으며, 이용자는 브라우저 설정에서 저장소 사용을 거부하거나
-            언제든지 삭제할 수 있습니다.
+            서비스는 로그인 상태와 화면 설정을 유지하기 위해 브라우저 localStorage, IndexedDB 또는
+            앱 WebView 저장소를 사용할 수 있습니다. 이용자는 로그아웃하거나 브라우저·앱 설정에서
+            저장된 데이터를 삭제할 수 있습니다.
           </p>
         </Article>
 
         <Article number={6} title="이용자의 권리">
           <p>
-            이용자는 본인의 데모 정보를 언제든지 조회·수정·삭제할 수 있습니다. 회원 탈퇴를 선택하면
-            저장된 localStorage 데이터가 즉시 삭제되며, 브라우저 캐시·저장소를 직접 비우는 방법으로도
-            모든 정보를 제거할 수 있습니다.
+            이용자는 계정 화면에서 본인의 프로필을 조회·수정하고 로그아웃 또는 회원 탈퇴를 요청할 수
+            있습니다. AuthDesk 계정처럼 본인 확인이 필요한 삭제 요청은 문의 페이지에서 접수합니다.
+            토스 앱에서 로그인 연결이나 약관 동의를 철회하면 해당 콜백을 통해 연결 계정을
+            삭제합니다.
           </p>
         </Article>
 
         <Article number={7} title="개인정보 보호 책임">
           <p>
-            회원·환경설정 정보는 서버로 전송되지 않아 외부 유출 위험이 구조적으로 낮습니다. 문의 시
-            전송되는 정보는 운영 서버에 저장되며, 최소 항목만 수집하고 회신 목적 외에는 사용하지
-            않습니다. 공용 기기를 사용하는 경우 다른 사람이 브라우저 저장소에 접근할 수 있으므로 이용
-            후 로그아웃 또는 데이터 삭제를 권장합니다.
+            인증 토큰은 전송 구간 암호화를 사용하고, 비밀번호는 인증 제공자가 처리하며 서비스 응답에
+            비밀번호 해시나 mTLS 개인키를 포함하지 않습니다. 토스 로그인에서는 앱 전용 userKey만
+            계정 연결에 사용하고 암호화된 이름·전화번호 등 추가 개인정보는 요청·저장하지 않습니다.
+            공용 기기에서는 이용 후 로그아웃을 권장합니다.
           </p>
         </Article>
 
-        <Article number={8} title="처리방침의 변경 고지">
+        <Article number={8} title="개인정보의 국외 이전">
+          <p>
+            웹에서 Firebase Authentication을 이용하면 인증 정보가 다음과 같이 국외에서 처리됩니다.
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>이전받는 자: Google LLC</li>
+            <li>이전 국가: 미국</li>
+            <li>이전 항목: 이메일, 비밀번호, 사용자 식별자, 닉네임, IP, 사용자 에이전트</li>
+            <li>목적: 회원가입·로그인·계정 관리, 부정 이용 방지와 인증 보안</li>
+            <li>시점·방법: 회원가입 또는 로그인 시 암호화된 네트워크를 통한 전송</li>
+            <li>보유기간: 제3조의 Firebase 인증 정보 보유기간과 동일</li>
+          </ul>
+          <p>
+            국외 이전을 원하지 않으면 웹 회원가입·로그인을 이용하지 않고 공개 콘텐츠를 열람할 수
+            있습니다. 이미 가입한 이용자는 회원 탈퇴로 이전된 인증 정보의 삭제를 요청할 수 있습니다.
+          </p>
+        </Article>
+
+        <Article number={9} title="보호책임자 및 권리구제">
+          <p>
+            개인정보 보호책임자는 <strong>AIDigestDesk 운영팀</strong>입니다.
+            열람·정정·삭제·처리정지, 동의 철회와 개인정보 관련 문의는{' '}
+            <button
+              type="button"
+              onClick={() => onNavigate('support')}
+              className="inline-flex min-h-9 items-center rounded-md px-1 font-semibold text-accent-text underline-offset-2 hover:underline"
+            >
+              문의 페이지
+            </button>
+            에서 접수할 수 있으며, 본인 확인 후 지체 없이 처리합니다.
+          </p>
+          <p>
+            개인정보 침해에 대한 상담·신고는 한국인터넷진흥원 개인정보침해 신고센터(국번 없이 118),
+            분쟁조정은 개인정보분쟁조정위원회(1833-6972)를 이용할 수 있습니다.
+          </p>
+        </Article>
+
+        <Article number={10} title="처리방침의 변경 고지">
           <p>
             본 처리방침이 변경될 경우 적용 일자와 변경 내용을 서비스 화면에 게시하여 안내합니다.
             중요한 변경 사항은 시행 전 충분한 기간을 두고 공지합니다.
           </p>
         </Article>
 
-        <Article number={9} title="시행일">
+        <Article number={11} title="시행일">
           <p>본 개인정보처리방침은 {EFFECTIVE_DATE}부터 적용됩니다.</p>
         </Article>
       </div>
@@ -302,7 +362,11 @@ function StaticDocument({
   document: DocumentId
   onNavigate: (route: AppRoute) => void
 }) {
-  return document === 'terms' ? <TermsDocument onNavigate={onNavigate} /> : <PrivacyDocument />
+  return document === 'terms' ? (
+    <TermsDocument onNavigate={onNavigate} />
+  ) : (
+    <PrivacyDocument onNavigate={onNavigate} />
+  )
 }
 
 /**
@@ -388,7 +452,7 @@ function RemoteTermsDocument({
 
 export function TermsRoute({ onNavigate }: { onNavigate: (route: AppRoute) => void }) {
   const [activeDocument, setActiveDocument] = useState<DocumentId>('terms')
-  // env로 게이트: TermsDesk가 설정되면 게시본을, 미설정이면 정적 데모 본문을 렌더한다.
+  // env로 게이트: TermsDesk가 설정되면 게시본을, 미설정이면 정적 운영 본문을 렌더한다.
   const remoteEnabled = getTermsClient() !== null
 
   return (
@@ -402,8 +466,8 @@ export function TermsRoute({ onNavigate }: { onNavigate: (route: AppRoute) => vo
                 이용약관 및 개인정보처리방침
               </h1>
               <p className="mt-2 text-sm leading-7 text-text-muted">
-                AIDigestDesk는 데모/포트폴리오 포털입니다. 아래 문서는 실제 서비스 약관·방침의
-                형식과 구성을 보여주기 위한 시연용 내용이며, 법적 효력을 갖지 않습니다.
+                AIDigestDesk 웹 서비스와 토스 미니앱에 적용되는 운영 약관과 개인정보 처리
+                기준입니다. 시행일과 변경 내용을 확인한 뒤 서비스를 이용해 주세요.
               </p>
             </div>
             <button
@@ -443,7 +507,7 @@ export function TermsRoute({ onNavigate }: { onNavigate: (route: AppRoute) => vo
             <ShieldCheck className="size-3.5" aria-hidden />
           )}
           {activeDocument === 'terms' ? '이용약관' : '개인정보처리방침'} · 시행일 {EFFECTIVE_DATE} ·
-          데모/포트폴리오 스냅샷 기준
+          AIDigestDesk 운영 정책
         </p>
       </div>
     </main>

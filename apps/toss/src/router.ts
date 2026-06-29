@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { trackNavigation } from './lib/analytics';
+
 // 브라우저(History API) 라우터 — 해시(#) 없이 pathname으로 라우팅한다.
 // 주의: 새로고침/딥링크가 정상 동작하려면 호스트가 모든 경로에 index.html을
 // 폴백 서빙해야 한다(vite dev/preview는 SPA 폴백 기본 제공). 앱인토스 WebView에서는
@@ -21,6 +23,7 @@ export function usePathname(): string {
 
 export function navigate(to: string): void {
   if (to === window.location.pathname) return;
+  trackNavigation(to);
   window.history.pushState(null, '', to);
   // pushState는 popstate를 발생시키지 않으므로 직접 디스패치해 구독자를 갱신한다.
   window.dispatchEvent(new PopStateEvent('popstate'));

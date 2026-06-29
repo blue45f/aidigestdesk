@@ -31,7 +31,7 @@ import {
   Trophy,
   Workflow,
 } from 'lucide-react'
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
 
 import type { CSSProperties } from 'react'
 
@@ -65,7 +65,14 @@ import {
   ManualGuides,
   PersonaPlaybooks,
 } from '@/components/app/LearningWorkflowSections'
-import { getInitialMemberSession, logOut, type MemberSession } from '@/components/app/memberAuth'
+import {
+  getInitialMemberSession,
+  getMemberAuthProvider,
+  logOut,
+  restoreMemberSession,
+  subscribeMemberSession,
+  type MemberSession,
+} from '@/components/app/memberAuth'
 import {
   BenchmarkBoard,
   ComparisonMatrix,
@@ -94,12 +101,27 @@ import { SkipLink } from '@/components/layout/SkipLink'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { useSearchHotkey } from '@/hooks/useSearchHotkey'
+import { useAuth, type AuthUser } from '@/lib/firebaseAuth'
 import { shareOrCopy } from '@/lib/share'
 import { useToast } from '@/lib/toast'
 
 // CLI 매뉴얼(명령 287개)은 데이터가 커서 lazy 로드 — /resources 진입 시에만 청크 fetch.
+
+function toFirebaseMemberSession(user: AuthUser | null): MemberSession | null {
+  if (!user) return null
+  const email = user.email ?? ''
+  return {
+    id: user.uid,
+    email,
+    displayName: user.displayName?.trim() || email.split('@')[0] || '게스트',
+    role: 'member',
+    signedInAt: user.signedInAt,
+    provider: 'firebase',
+    isGuest: user.isAnonymous,
+  }
+}
 const CliManualSection = lazy(() =>
-  import('@/components/app/CliManualSection').then((m) => ({ default: m.CliManualSection })),
+  import('@/components/app/CliManualSection').then((m) => ({ default: m.CliManualSection }))
 )
 
 const providerFilters: Array<{ id: ProviderId | 'all'; label: string }> = [
@@ -491,7 +513,16 @@ export default function App() {
   const [selectedModelId, setSelectedModelId] = useState(modelProfiles[0]?.id ?? '')
   const [route, setRoute] = useState<AppRoute>(getCurrentRoute)
   const [adminSession, setAdminSession] = useState<AdminSession | null>(getInitialAdminSession)
-  const [memberSession, setMemberSession] = useState<MemberSession | null>(getInitialMemberSession)
+  const memberAuthProvider = getMemberAuthProvider()
+  const firebaseAuth = useAuth()
+  const [storedMemberSession, setStoredMemberSession] = useState<MemberSession | null>(
+    getInitialMemberSession
+  )
+  const memberSession =
+    memberAuthProvider === 'firebase'
+      ? toFirebaseMemberSession(firebaseAuth.user)
+      : storedMemberSession
+  const memberSessionLoading = memberAuthProvider === 'firebase' && firebaseAuth.loading
   const { dark, toggle: toggleDark } = useColorScheme()
   const [toolsPane, setToolsPane] = useState<ToolsPaneId>(getToolsPaneFromHash)
   const [cliTab, setCliTab] = useState<'manual' | 'commands' | 'compare'>('manual')
@@ -515,6 +546,13 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    if (memberAuthProvider === 'firebase') return undefined
+    const unsubscribe = subscribeMemberSession(setStoredMemberSession)
+    void restoreMemberSession().then(setStoredMemberSession)
+    return unsubscribe
+  }, [memberAuthProvider])
+
+  useEffect(() => {
     const syncHash = () => {
       const r = getCurrentRoute()
       if (r === 'tools') setToolsPane(getToolsPaneFromHash())
@@ -532,7 +570,7 @@ export default function App() {
       if (!target || target.closest('.aid-shimmer-title')) return
       if (
         target.closest(
-          'button, a, [role="button"], [role="tab"], label, select, input:not([type="text"]):not([type="email"]):not([type="search"]):not([type="number"])',
+          'button, a, [role="button"], [role="tab"], label, select, input:not([type="text"]):not([type="email"]):not([type="search"]):not([type="number"])'
         )
       ) {
         playTick()
@@ -607,11 +645,15 @@ export default function App() {
     setAdminSession(null)
   }
   const handleMemberLogout = () => {
+    if (memberAuthProvider === 'firebase') {
+      void firebaseAuth.signOut()
+      return
+    }
     logOut()
-    setMemberSession(null)
+    setStoredMemberSession(null)
   }
 
-  const results = useMemo(() => searchCatalog(query, providers, []), [query, providers])
+  const results = searchCatalog(query, providers, [])
   const hasActiveFilter = query.trim() !== '' || providers.length > 0
 
   const visibleModels =
@@ -702,7 +744,9 @@ export default function App() {
     // 선택한 모델 상세로 스크롤 — 모바일에서 상세를 전면화(CardStack 의도)
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
-        document.getElementById('model-detail')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        document
+          .getElementById('model-detail')
+          ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       })
     })
   }
@@ -965,6 +1009,7 @@ export default function App() {
         onNavigate={navigateToRoute}
         adminSession={adminSession}
         memberSession={memberSession}
+        memberSessionLoading={memberSessionLoading}
         dark={dark}
         onToggleDark={toggleDark}
       />
@@ -978,9 +1023,10 @@ export default function App() {
       ) : route === 'account' ? (
         <AccountRoute
           session={memberSession}
-          onAuthed={(session) => setMemberSession(session)}
+          loading={memberSessionLoading}
+          onAuthed={setStoredMemberSession}
           onLogout={handleMemberLogout}
-          onWithdraw={() => setMemberSession(null)}
+          onWithdraw={() => setStoredMemberSession(null)}
           onNavigate={navigateToRoute}
         />
       ) : route === 'community' ? (
