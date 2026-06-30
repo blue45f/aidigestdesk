@@ -59,6 +59,7 @@ export async function tossAppLogin(): Promise<{
 /** 콘솔에서 토스 로그인 설정이 완료됐는지 확인한다. 미지원 환경은 false. */
 export async function isTossLoginAvailable(): Promise<boolean> {
   if (!isInToss()) return false;
+  if (getTossEnv() === 'sandbox') return true; // 샌드박스 환경에서는 테스트 가능하도록 항상 노출
   try {
     return Boolean(await getIsTossLoginIntegratedService());
   } catch {

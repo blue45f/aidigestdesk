@@ -76,6 +76,11 @@ export function ProfilePage() {
     }
     setServerConnected(true);
     setTossConnected(true);
+    if (user.nickname) {
+      setNickname(user.nickname);
+      if (user.avatar) setAvatar(user.avatar);
+      setProfile((p) => ({ ...p, nickname: user.nickname, avatar: user.avatar || p.avatar }));
+    }
   };
 
   const onLogout = async () => {
@@ -88,6 +93,11 @@ export function ProfilePage() {
       current.nickname === '게스트' ? undefined : current.nickname,
     );
     setServerConnected(Boolean(anonymous));
+    if (anonymous) {
+      setNickname(anonymous.nickname);
+      if (anonymous.avatar) setAvatar(anonymous.avatar);
+      setProfile((p) => ({ ...p, nickname: anonymous.nickname, avatar: anonymous.avatar || p.avatar }));
+    }
   };
 
   const shortId = profile.memberId.replace(/^anon:/, '').slice(0, 8);

@@ -192,32 +192,55 @@ export class AuthService {
    * mTLS 인증서(콘솔 발급)가 환경변수로 설정돼야 동작한다. 미설정 시 503 으로 안내한다.
    */
   async loginWithTossAuthCode(input: TossLoginInput): Promise<AuthResult> {
-    const agent = this.createMtlsAgent()
+    let userKey: number
 
-    const tokenResponse = await this.requestTossApi<{ success?: { accessToken?: string } }>(
-      'POST',
-      '/api-partner/v1/apps-in-toss/user/oauth2/generate-token',
-      agent,
-      {
-        body: { authorizationCode: input.authorizationCode, referrer: input.referrer },
+    const cert =
+      normalizeMtlsPem(process.env.APPS_IN_TOSS_MTLS_CERT) ??
+      readMtlsPemFile(process.env.APPS_IN_TOSS_MTLS_CERT_PATH)
+    const key =
+      normalizeMtlsPem(process.env.APPS_IN_TOSS_MTLS_KEY) ??
+      readMtlsPemFile(process.env.APPS_IN_TOSS_MTLS_KEY_PATH)
+
+    const isSandboxMock = input.referrer === 'SANDBOX' && (!cert || !key)
+
+    if (isSandboxMock) {
+      // 샌드박스 가상 로그인 동선 지원 (mTLS 미설정 시 mock 동작)
+      // authorizationCode에서 결정적인 userKey를 정수로 생성
+      let hash = 0
+      for (let i = 0; i < input.authorizationCode.length; i++) {
+        hash = (hash << 5) - hash + input.authorizationCode.charCodeAt(i)
+        hash |= 0
       }
-    )
+      userKey = Math.abs(hash) || 999999
+    } else {
+      const agent = this.createMtlsAgent()
 
-    const tossAccessToken = tokenResponse?.success?.accessToken
-    if (!tossAccessToken) {
-      throw new UnauthorizedException('토스 로그인 토큰 발급에 실패했어요.')
-    }
+      const tokenResponse = await this.requestTossApi<{ success?: { accessToken?: string } }>(
+        'POST',
+        '/api-partner/v1/apps-in-toss/user/oauth2/generate-token',
+        agent,
+        {
+          body: { authorizationCode: input.authorizationCode, referrer: input.referrer },
+        }
+      )
 
-    const meResponse = await this.requestTossApi<{ success?: { userKey?: number } }>(
-      'GET',
-      '/api-partner/v1/apps-in-toss/user/oauth2/login-me',
-      agent,
-      { bearer: tossAccessToken }
-    )
+      const tossAccessToken = tokenResponse?.success?.accessToken
+      if (!tossAccessToken) {
+        throw new UnauthorizedException('토스 로그인 토큰 발급에 실패했어요.')
+      }
 
-    const userKey = meResponse?.success?.userKey
-    if (userKey == null) {
-      throw new UnauthorizedException('토스 사용자 정보를 가져오지 못했어요.')
+      const meResponse = await this.requestTossApi<{ success?: { userKey?: number } }>(
+        'GET',
+        '/api-partner/v1/apps-in-toss/user/oauth2/login-me',
+        agent,
+        { bearer: tossAccessToken }
+      )
+
+      const resolvedUserKey = meResponse?.success?.userKey
+      if (resolvedUserKey == null) {
+        throw new UnauthorizedException('토스 사용자 정보를 가져오지 못했어요.')
+      }
+      userKey = resolvedUserKey
     }
 
     const userId = `toss-user-${userKey}`
