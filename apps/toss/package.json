@@ -10,8 +10,9 @@
     "deploy": "ait deploy",
     "typecheck": "tsc -b",
     "preview": "vite preview",
-    "build:ait": "pnpm run predata && vite build && ait build",
-    "build": "pnpm run predata && vite build && ait build"
+    "check:release": "node scripts/check-release-build.mjs",
+    "build:ait": "pnpm run predata && vite build && pnpm run check:release && ait build",
+    "build": "pnpm run build:ait"
   },
   "dependencies": {
     "@aidigestdesk/content": "workspace:*",

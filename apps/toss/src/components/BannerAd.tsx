@@ -26,7 +26,7 @@ export function BannerAd({
   const [supported] = useState(() => adsSupported());
 
   useEffect(() => {
-    if (!supported || !ref.current) return;
+    if (!adGroupId || !supported || !ref.current) return;
     let result: TossAdsAttachBannerResult | null = null;
     let cancelled = false;
     // 라이트/다크 자동 — index.css의 prefers-color-scheme와 광고 테마를 맞춘다(하드코딩 금지).
@@ -47,7 +47,7 @@ export function BannerAd({
     };
   }, [supported, adGroupId, tone, variant]);
 
-  if (!supported) return null;
+  if (!adGroupId || !supported) return null;
   // 너비는 항상 100%(고정 px 금지). 높이는 variant에 맞춰 자동.
   return <div ref={ref} style={{ width: '100%', marginTop }} />;
 }

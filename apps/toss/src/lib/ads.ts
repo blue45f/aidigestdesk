@@ -16,14 +16,16 @@ import { isInToss } from './toss';
 const MIN_VERSION = '5.241.0' as const;
 
 /**
- * 콘솔(47675)에 등록·승인된 광고그룹 ID로 교체. 미승인/개발 중엔 문서의 테스트 ID 사용.
- * 테스트 ID는 실수익이 없고 렌더 검증용이다(목록형 배너 = ait-ad-test-banner-id).
+ * 콘솔에서 발급한 운영 광고 그룹 ID만 사용한다.
+ *
+ * 출시 번들에 테스트 ID가 포함되면 심사가 반려되므로 환경변수가 없을 때 테스트 ID로
+ * 폴백하지 않는다. 운영 ID가 준비되지 않은 환경에서는 BannerAd가 광고를 렌더하지 않는다.
  */
 export const AD_GROUPS = {
-  /** 목록·피드형 배너. 콘솔 승인 후 실 ID로 교체. */
-  feedList: import.meta.env.VITE_TOSS_AD_GROUP_FEED || 'ait-ad-test-banner-id',
-  /** 상세(매뉴얼·랭킹·소식 상세) 본문 하단 배너. 콘솔 승인 후 실 ID로 교체. */
-  detail: import.meta.env.VITE_TOSS_AD_GROUP_DETAIL || 'ait-ad-test-banner-id',
+  /** 목록·피드형 배너. 미설정 시 광고 미노출. */
+  feedList: import.meta.env.VITE_TOSS_AD_GROUP_FEED?.trim() ?? '',
+  /** 상세(매뉴얼·랭킹·소식 상세) 본문 하단 배너. 미설정 시 광고 미노출. */
+  detail: import.meta.env.VITE_TOSS_AD_GROUP_DETAIL?.trim() ?? '',
 } as const;
 
 /** 이 환경에서 배너를 띄울 수 있는지. false면 컴포넌트는 아무것도 렌더하지 않아야 한다. */
@@ -69,6 +71,7 @@ export async function attachBannerSafe(
   el: HTMLElement,
   options?: TossAdsAttachBannerOptions,
 ): Promise<TossAdsAttachBannerResult | null> {
+  if (!adGroupId) return null;
   const ok = await ensureInitialized();
   if (!ok) return null;
   try {
