@@ -12,21 +12,44 @@ import { SupportPage } from './pages/SupportPage.tsx';
 import { UpdateDetailPage } from './pages/UpdateDetailPage.tsx';
 import { UpdateListPage } from './pages/UpdateListPage.tsx';
 import { enhanceRails, playTick, tapRipple } from '@aidigestdesk/content/shared';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
-import { navigate, usePathname } from './router';
+import { navigate, usePathname, registerPreNavigate } from './router';
 import { trackScreen } from './lib/analytics';
 import { haptic } from './lib/haptic';
 import { MusicToggle } from './components/MusicToggle.tsx';
 import IntroSplashScreen from './components/IntroSplashScreen.tsx';
 import { TabBar, type TabId } from './ui';
+import { useTossFullScreenAd } from './lib/ads.ts';
 
 export function App() {
   const path = usePathname();
+  const interstitial = useTossFullScreenAd('interstitial');
+  const navigationCountRef = useRef(0);
+  const lastAdTimeRef = useRef(0);
 
   useEffect(() => {
     trackScreen(path);
   }, [path]);
+
+  // 페이지 이동 시 전면 광고 노출 설정
+  useEffect(() => {
+    registerPreNavigate(() => {
+      if (interstitial.configured && interstitial.supported) {
+        navigationCountRef.current += 1;
+        const now = Date.now();
+        const freqOk = navigationCountRef.current >= 3;
+        const timeOk = now - lastAdTimeRef.current >= 2 * 60 * 1000;
+        if (interstitial.ready && freqOk && timeOk && interstitial.show()) {
+          navigationCountRef.current = 0;
+          lastAdTimeRef.current = now;
+        }
+      }
+    });
+    return () => {
+      registerPreNavigate(null);
+    };
+  }, [interstitial]);
 
   // 전역 클릭 효과음 + 가벼운 햅틱 — 모든 인터랙티브 요소(리스너 1개로 위임).
   // 타이틀(.aid-shimmer-title)은 자체 스파클·confetti 햅틱을 내므로 제외.

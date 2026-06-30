@@ -21,8 +21,21 @@ export function usePathname(): string {
   return path;
 }
 
+let preNavigateCallback: ((to: string) => void) | null = null;
+
+export function registerPreNavigate(cb: ((to: string) => void) | null): void {
+  preNavigateCallback = cb;
+}
+
 export function navigate(to: string): void {
   if (to === window.location.pathname) return;
+  if (preNavigateCallback) {
+    try {
+      preNavigateCallback(to);
+    } catch {
+      // no-op
+    }
+  }
   trackNavigation(to);
   window.history.pushState(null, '', to);
   // pushState는 popstate를 발생시키지 않으므로 직접 디스패치해 구독자를 갱신한다.

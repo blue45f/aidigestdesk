@@ -1,19 +1,26 @@
-/**
- * 앱인토스 인앱 배너 광고 가드 래퍼.
- * 배너는 토스 앱 5.241.0+ 에서만 동작한다. 미만/비토스(샌드박스·웹)에선 모두 no-op →
- * 빈 화면 대신 미노출(컴포넌트가 null 반환). lib/toss.ts 의 try/catch 폴백 원칙을 그대로 따른다.
- */
 import {
   TossAds,
   isMinVersionSupported,
+  loadFullScreenAd,
+  showFullScreenAd,
   type TossAdsAttachBannerOptions,
   type TossAdsAttachBannerResult,
 } from '@apps-in-toss/web-framework';
+import {
+  startBgm,
+  stopBgm,
+  isBgmPlaying,
+  getAudioContext,
+} from '@aidigestdesk/content/shared';
+import { useEffect, useRef, useState } from 'react';
 
 import { isInToss } from './toss';
 
 /** 배너 최소 토스 앱 버전(문서: 미만은 빈 화면). */
 const MIN_VERSION = '5.241.0' as const;
+
+/** Full screen test ad ID from Toss docs. */
+const TEST_FULLSCREEN_AD_GROUP_ID = 'ait.dev.43daa14da3ae487b';
 
 /**
  * 콘솔에서 발급한 운영 광고 그룹 ID만 사용한다.
@@ -80,3 +87,183 @@ export async function attachBannerSafe(
     return null;
   }
 }
+
+export type FullScreenAdFormat = 'interstitial' | 'rewarded';
+
+/** 전면/보상형 광고 그룹 ID를 가져와요. */
+export function getFullScreenAdGroupId(format: FullScreenAdFormat): string | null {
+  const value =
+    format === 'rewarded'
+      ? import.meta.env.VITE_TOSS_REWARDED_AD_GROUP_ID
+      : import.meta.env.VITE_TOSS_INTERSTITIAL_AD_GROUP_ID;
+  if (value?.trim()) return value.trim();
+  return import.meta.env.DEV ? TEST_FULLSCREEN_AD_GROUP_ID : null;
+}
+
+function isFullScreenAdSupported(): boolean {
+  try {
+    return Boolean(loadFullScreenAd.isSupported() && showFullScreenAd.isSupported());
+  } catch {
+    return false;
+  }
+}
+
+let pausedForAd = false;
+let bgmWasPlayingBeforeAd = false;
+
+function pauseAudioForAd(): void {
+  if (pausedForAd) return;
+  pausedForAd = true;
+
+  bgmWasPlayingBeforeAd = isBgmPlaying();
+  if (bgmWasPlayingBeforeAd) {
+    stopBgm();
+  }
+
+  const ctx = getAudioContext();
+  if (ctx && ctx.state === 'running') {
+    void ctx.suspend().catch(() => {});
+  }
+}
+
+function resumeAudioAfterAd(): void {
+  if (!pausedForAd) return;
+  pausedForAd = false;
+
+  const ctx = getAudioContext();
+  if (ctx && ctx.state === 'suspended') {
+    void ctx.resume()
+      .then(() => {
+        if (bgmWasPlayingBeforeAd) {
+          startBgm();
+        }
+      })
+      .catch(() => {
+        if (bgmWasPlayingBeforeAd) {
+          startBgm();
+        }
+      });
+  } else {
+    if (bgmWasPlayingBeforeAd) {
+      startBgm();
+    }
+  }
+}
+
+type FullScreenAdCallbacks = Readonly<{
+  onReward?: (reward: { unitType: string; unitAmount: number }) => void;
+  onError?: (error: Error) => void;
+}>;
+
+function toError(error: unknown): Error {
+  return error instanceof Error ? error : new Error(String(error));
+}
+
+/** 통합 광고 전면/보상형 훅 */
+export function useTossFullScreenAd(
+  format: FullScreenAdFormat,
+  callbacks: FullScreenAdCallbacks = {},
+) {
+  const adGroupId = getFullScreenAdGroupId(format);
+  const supported = isFullScreenAdSupported();
+  const [ready, setReady] = useState(false);
+  const loadUnregisterRef = useRef<(() => void) | null>(null);
+  const showUnregisterRef = useRef<(() => void) | null>(null);
+  const loadRef = useRef<() => void>(() => undefined);
+  const onRewardRef = useRef(callbacks.onReward);
+  const onErrorRef = useRef(callbacks.onError);
+
+  onRewardRef.current = callbacks.onReward;
+  onErrorRef.current = callbacks.onError;
+
+  const unregisterLoad = () => {
+    loadUnregisterRef.current?.();
+    loadUnregisterRef.current = null;
+  };
+
+  const unregisterShow = () => {
+    showUnregisterRef.current?.();
+    showUnregisterRef.current = null;
+  };
+
+  loadRef.current = () => {
+    unregisterLoad();
+    setReady(false);
+    if (!adGroupId || !supported) return;
+
+    try {
+      loadUnregisterRef.current = loadFullScreenAd({
+        options: { adGroupId },
+        onEvent: ({ type }) => {
+          if (type !== 'loaded') return;
+          unregisterLoad();
+          setReady(true);
+        },
+        onError: (error) => {
+          unregisterLoad();
+          setReady(false);
+          onErrorRef.current?.(toError(error));
+        },
+      });
+    } catch (error) {
+      setReady(false);
+      onErrorRef.current?.(toError(error));
+    }
+  };
+
+  useEffect(() => {
+    loadRef.current();
+    return () => {
+      unregisterLoad();
+      unregisterShow();
+    };
+  }, [adGroupId, supported]);
+
+  const show = (): boolean => {
+    if (!ready || !adGroupId || !supported) return false;
+
+    unregisterShow();
+    setReady(false);
+    let finished = false;
+    const finishAndReload = () => {
+      if (finished) return;
+      finished = true;
+      unregisterShow();
+      resumeAudioAfterAd();
+      loadRef.current();
+    };
+
+    try {
+      pauseAudioForAd();
+      showUnregisterRef.current = showFullScreenAd({
+        options: { adGroupId },
+        onEvent: (event) => {
+          if (event.type === 'userEarnedReward') {
+            onRewardRef.current?.(event.data);
+          }
+          if (event.type === 'dismissed' || event.type === 'failedToShow') {
+            finishAndReload();
+          }
+        },
+        onError: (error) => {
+          onErrorRef.current?.(toError(error));
+          finishAndReload();
+        },
+      });
+      return true;
+    } catch (error) {
+      onErrorRef.current?.(toError(error));
+      finishAndReload();
+      return false;
+    }
+  };
+
+  return {
+    configured: Boolean(adGroupId),
+    ready,
+    reload: () => loadRef.current(),
+    show,
+    supported,
+  };
+}
+

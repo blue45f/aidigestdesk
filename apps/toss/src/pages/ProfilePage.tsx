@@ -13,6 +13,7 @@ import { isTossLoginAvailable } from '../lib/toss';
 import { goBack, navigate } from '../router';
 import { theme, pageShell } from '../theme';
 import { BackBar } from '../ui';
+import { requestPushAgreement } from '../lib/notifications';
 
 /**
  * 내 정보 — 기본은 기기 기반 익명 회원이며, 콘솔 설정이 끝난 환경에서는 토스 로그인도 제공한다.
@@ -27,6 +28,30 @@ export function ProfilePage() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const bookmarks = useBookmarks();
   const nick = profile.nickname;
+
+  const [pushAgreed, setPushAgreed] = useState(() => {
+    try {
+      return localStorage.getItem('aidigestdesk_toss_push_agreed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const handlePushAgreement = async () => {
+    const templateCode = import.meta.env.VITE_TOSS_NOTIFICATION_TEMPLATE_CODE || 'ALERT_OTP_TEMPLATE';
+    const res = await requestPushAgreement(templateCode);
+    if (res === 'agree') {
+      setPushAgreed(true);
+      try {
+        localStorage.setItem('aidigestdesk_toss_push_agreed', 'true');
+      } catch {}
+    } else if (res === 'reject') {
+      setPushAgreed(false);
+      try {
+        localStorage.setItem('aidigestdesk_toss_push_agreed', 'false');
+      } catch {}
+    }
+  };
 
   // 자체 API 세션 보장 + 저장소를 비운 기기 복구(서버에 실제 프로필이 있으면 끌어온다).
   // API 미배포/도달 불가 시 graceful — 아무 일도 안 일어나고 로컬 프로필로 동작한다.
@@ -197,6 +222,22 @@ export function ProfilePage() {
             ) : null}
           </div>
         ) : null}
+
+        <div style={{ marginTop: 14, padding: 14, borderRadius: theme.radius, background: theme.surface,
+          border: `1px solid ${theme.border}` }}>
+          <div style={{ fontSize: 15, fontWeight: 800 }}>알림 설정</div>
+          <p style={{ marginTop: 6, fontSize: 12.5, color: theme.textMuted, lineHeight: 1.6 }}>
+            AI가 추천하는 핵심 소식 및 추천 리포트 알림을 받아보세요.
+          </p>
+          <button type="button" onClick={handlePushAgreement}
+            className="pressable" style={{ width: '100%', height: 46, marginTop: 12, borderRadius: theme.radius,
+              background: pushAgreed ? theme.accentSoft : 'transparent',
+              border: `1px solid ${pushAgreed ? theme.accent : theme.border}`,
+              color: pushAgreed ? theme.accent : theme.text,
+              fontSize: 15, fontWeight: 800, cursor: 'pointer' }}>
+            {pushAgreed ? '✓ 알림 수신 동의됨' : '알림 수신 설정하기'}
+          </button>
+        </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 18 }}>
           {links.map((l) => (
