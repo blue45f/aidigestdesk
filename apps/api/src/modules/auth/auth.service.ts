@@ -45,6 +45,36 @@ const isInvalidGrant = (error: TossApiError | undefined): boolean => {
 }
 
 /**
+ * login-me 응답의 userKey 를 안전하게 정규화한다. 문서상 number 지만 파트너 API 응답을
+ * 신뢰하지 않고 방어적으로 받는다:
+ * - 유한 정수 number → 십진 문자열 (안전 정수 범위를 벗어나 지수 표기가 되면 거부)
+ * - 숫자로만 이뤄진 문자열(trim 후) → 그대로 사용 — number 변환 시 정밀도 손실이 생길 수
+ *   있어 ID(`toss-user-${key}`)는 문자열 기준으로 구성한다.
+ * - 그 외(빈 문자열/NaN/음수/소수/객체 등) → null (호출부에서 401 처리)
+ */
+const normalizeTossUserKey = (value: unknown): string | null => {
+  const raw =
+    typeof value === 'number' ? String(value) : typeof value === 'string' ? value.trim() : ''
+  return /^\d+$/.test(raw) ? raw : null
+}
+
+/**
+ * 토스 OAuth 응답의 scope 를 안전하게 파싱한다. 현재 로직에서 쓰진 않지만, 미래 사용을
+ * 대비한 파서다. 문서상 콤마 구분이지만 실제 예시 응답엔 공백이 섞여 오고
+ * ("...,user_gender, user_key"), 2026-01-02부터 user_key 처럼 기존에 정의되지 않은 항목이
+ * 예고 없이 추가될 수 있다(문서: "scope 처리 시 예외가 발생하지 않도록 주의").
+ * 그래서 콤마/공백을 모두 구분자로 취급해 trim·빈 항목 제거만 하고, 미지의 항목은 에러
+ * 없이 그대로 통과시킨다(호출부가 아는 항목만 골라 쓰고 나머지는 무시). string 이 아니면
+ * 빈 배열을 반환해 어떤 형태가 와도 예외가 나지 않는다.
+ */
+export const parseTossScope = (scope: unknown): string[] => {
+  if (typeof scope !== 'string') {
+    return []
+  }
+  return scope.split(/[\s,]+/).filter((item) => item.length > 0)
+}
+
+/**
  * 환경변수로 넣은 PEM 본문 정규화. env 의 PEM 은 줄바꿈이 "\n" 리터럴로 저장되는 경우가
  * 많아 실제 개행으로 되돌린다. 빈 값이면 null.
  */
@@ -209,28 +239,40 @@ export class AuthService {
     // 폴백은 실제 토스 계정이 아닌 사용자를 로그인시켜 계정 정합성을 깨므로 허용하지 않는다.
     const agent = this.createMtlsAgent()
 
+    // success 에는 accessToken 외에 scope(공백 구분)/tokenType/expiresIn/refreshToken 등이
+    // 함께 오지만, 여기선 accessToken 만 쓰므로 필요한 필드만 unknown 으로 좁혀 받는다.
     const tokenResponse = await this.requestTossApi<{
       resultType?: 'SUCCESS' | 'FAIL'
-      success?: { accessToken?: string }
+      success?: { accessToken?: unknown }
       error?: TossApiError
     }>('POST', '/api-partner/v1/apps-in-toss/user/oauth2/generate-token', agent, {
       body: { authorizationCode: input.authorizationCode, referrer: input.referrer },
     })
 
     const tossAccessToken = tokenResponse?.success?.accessToken
-    if (tokenResponse.resultType !== 'SUCCESS' || !tossAccessToken) {
+    if (
+      tokenResponse.resultType !== 'SUCCESS' ||
+      typeof tossAccessToken !== 'string' ||
+      !tossAccessToken
+    ) {
       throw new UnauthorizedException('토스 로그인 토큰 발급에 실패했어요.')
     }
 
+    // success 에는 userKey 외에 scope(콤마+공백 혼합 구분, 2026-01-02부터 user_key 항목
+    // 추가)·agreedTerms·동의 항목별 암호화 필드(name/phone/email 등, null 가능)가 함께
+    // 오고 앞으로도 늘어날 수 있다. 여기선 userKey 만 쓰므로 나머지는 형태와 무관하게
+    // 무시하고, userKey 도 unknown 으로 받아 normalizeTossUserKey 로 방어적으로 좁힌다.
     const meResponse = await this.requestTossApi<{
       resultType?: 'SUCCESS' | 'FAIL'
-      success?: { userKey?: number }
+      success?: { userKey?: unknown }
       error?: TossApiError
     }>('GET', '/api-partner/v1/apps-in-toss/user/oauth2/login-me', agent, {
       bearer: tossAccessToken,
     })
 
-    const userKey = meResponse?.success?.userKey
+    // 기존 `userKey == null` 체크만으론 ''/‘abc’/객체 같은 비정상 값이
+    // `toss-user-`(빈/오염 ID) 계정을 만들 수 있어 정규화 실패 시 전부 401 로 막는다.
+    const userKey = normalizeTossUserKey(meResponse?.success?.userKey)
     if (meResponse.resultType !== 'SUCCESS' || userKey == null) {
       throw new UnauthorizedException('토스 사용자 정보를 가져오지 못했어요.')
     }
