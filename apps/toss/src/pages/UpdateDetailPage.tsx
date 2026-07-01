@@ -6,6 +6,7 @@ import { BannerAd } from '../components/BannerAd';
 import { AD_GROUPS } from '../lib/ads';
 import { getUpdate } from '../lib/api';
 import { onExternalClick } from '../lib/links';
+import { buildTossShareLink } from '../lib/toss';
 import { navigate } from '../router';
 import { theme } from '../theme';
 import { Badge, BrandIcon } from '../ui';
@@ -30,7 +31,11 @@ export function UpdateDetailPage({ id = '' }: { id?: string }) {
   if (!u) return <div style={{ background: theme.bg, minHeight: '100dvh' }}>{Header}<p style={{ textAlign: 'center', color: theme.textMuted, paddingTop: 40 }}>소식을 찾을 수 없어요.</p></div>;
 
   const share = async () => {
-    const r = await platform.share({ title: '[AI다이제스트]', text: `${u.title}\n${u.summary}` });
+    const tossLink = await buildTossShareLink();
+    const r = await platform.share({
+      title: '[AI다이제스트]',
+      text: `${u.title}\n${u.summary}${tossLink ? `\n${tossLink}` : ''}`,
+    });
     if (r === 'copied') setToast('클립보드에 복사했어요.');
   };
   const hasUrl = Boolean(u.url);

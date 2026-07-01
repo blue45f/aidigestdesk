@@ -8,6 +8,7 @@ import {
   getIsTossLoginIntegratedService,
   getOperationalEnvironment,
   getSchemeUri,
+  getTossShareLink,
   share,
 } from '@apps-in-toss/web-framework';
 
@@ -23,6 +24,8 @@ export function getTossEnv(): TossEnv {
 }
 
 export const isInToss = (): boolean => getTossEnv() !== 'web';
+
+const TOSS_OG_IMAGE_URL = 'https://aidigestdesk.vercel.app/og-toss.png';
 
 /**
  * 비게임 미니앱 사용자 식별키(hash). 서버/동의 없이 미니앱 내 고유 사용자 식별.
@@ -71,6 +74,17 @@ export async function isTossLoginAvailable(): Promise<boolean> {
 export function getMiniAppSchemeUri(): string | null {
   try {
     return getSchemeUri();
+  } catch {
+    return null;
+  }
+}
+
+/** 공식 앱인토스 공유 링크 + 1200×600 OG 이미지를 생성한다. */
+export async function buildTossShareLink(): Promise<string | null> {
+  if (!isInToss()) return null;
+  try {
+    const link = await getTossShareLink('intoss://aidigestdesk', TOSS_OG_IMAGE_URL);
+    return typeof link === 'string' && link.length > 0 ? link : null;
   } catch {
     return null;
   }

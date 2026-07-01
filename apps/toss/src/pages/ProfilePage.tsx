@@ -93,12 +93,13 @@ export function ProfilePage() {
     if (loginPending) return;
     setLoginPending(true);
     setLoginError(null);
-    const user = await connectTossLogin();
+    const result = await connectTossLogin();
     setLoginPending(false);
-    if (!user) {
-      setLoginError('토스 로그인 설정 또는 서버 인증서를 확인해 주세요.');
+    if (!result.ok) {
+      setLoginError(result.message);
       return;
     }
+    const user = result.user;
     setServerConnected(true);
     setTossConnected(true);
     if (user.nickname) {

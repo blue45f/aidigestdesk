@@ -31,6 +31,19 @@ import type {
 const APPS_IN_TOSS_API_BASE = 'https://apps-in-toss-api.toss.im'
 const TOSS_API_TIMEOUT_MS = 12_000
 
+type TossApiError = string | { errorCode?: string; reason?: string }
+
+const isInvalidGrant = (error: TossApiError | undefined): boolean => {
+  if (typeof error === 'string') {
+    return error.toLowerCase() === 'invalid_grant'
+  }
+  return Boolean(
+    error &&
+    (error.errorCode?.toLowerCase() === 'invalid_grant' ||
+      /\binvalid_grant\b/i.test(error.reason ?? ''))
+  )
+}
+
 /**
  * 환경변수로 넣은 PEM 본문 정규화. env 의 PEM 은 줄바꿈이 "\n" 리터럴로 저장되는 경우가
  * 많아 실제 개행으로 되돌린다. 빈 값이면 null.
@@ -192,55 +205,34 @@ export class AuthService {
    * mTLS 인증서(콘솔 발급)가 환경변수로 설정돼야 동작한다. 미설정 시 503 으로 안내한다.
    */
   async loginWithTossAuthCode(input: TossLoginInput): Promise<AuthResult> {
-    let userKey: number
+    // 샌드박스도 공식 문서상 mTLS 서버 교환이 필수다. 인가 코드에서 가짜 userKey를 만드는
+    // 폴백은 실제 토스 계정이 아닌 사용자를 로그인시켜 계정 정합성을 깨므로 허용하지 않는다.
+    const agent = this.createMtlsAgent()
 
-    const cert =
-      normalizeMtlsPem(process.env.APPS_IN_TOSS_MTLS_CERT) ??
-      readMtlsPemFile(process.env.APPS_IN_TOSS_MTLS_CERT_PATH)
-    const key =
-      normalizeMtlsPem(process.env.APPS_IN_TOSS_MTLS_KEY) ??
-      readMtlsPemFile(process.env.APPS_IN_TOSS_MTLS_KEY_PATH)
+    const tokenResponse = await this.requestTossApi<{
+      resultType?: 'SUCCESS' | 'FAIL'
+      success?: { accessToken?: string }
+      error?: TossApiError
+    }>('POST', '/api-partner/v1/apps-in-toss/user/oauth2/generate-token', agent, {
+      body: { authorizationCode: input.authorizationCode, referrer: input.referrer },
+    })
 
-    const isSandboxMock = input.referrer === 'SANDBOX' && (!cert || !key)
+    const tossAccessToken = tokenResponse?.success?.accessToken
+    if (tokenResponse.resultType !== 'SUCCESS' || !tossAccessToken) {
+      throw new UnauthorizedException('토스 로그인 토큰 발급에 실패했어요.')
+    }
 
-    if (isSandboxMock) {
-      // 샌드박스 가상 로그인 동선 지원 (mTLS 미설정 시 mock 동작)
-      // authorizationCode에서 결정적인 userKey를 정수로 생성
-      let hash = 0
-      for (let i = 0; i < input.authorizationCode.length; i++) {
-        hash = (hash << 5) - hash + input.authorizationCode.charCodeAt(i)
-        hash |= 0
-      }
-      userKey = Math.abs(hash) || 999999
-    } else {
-      const agent = this.createMtlsAgent()
+    const meResponse = await this.requestTossApi<{
+      resultType?: 'SUCCESS' | 'FAIL'
+      success?: { userKey?: number }
+      error?: TossApiError
+    }>('GET', '/api-partner/v1/apps-in-toss/user/oauth2/login-me', agent, {
+      bearer: tossAccessToken,
+    })
 
-      const tokenResponse = await this.requestTossApi<{ success?: { accessToken?: string } }>(
-        'POST',
-        '/api-partner/v1/apps-in-toss/user/oauth2/generate-token',
-        agent,
-        {
-          body: { authorizationCode: input.authorizationCode, referrer: input.referrer },
-        }
-      )
-
-      const tossAccessToken = tokenResponse?.success?.accessToken
-      if (!tossAccessToken) {
-        throw new UnauthorizedException('토스 로그인 토큰 발급에 실패했어요.')
-      }
-
-      const meResponse = await this.requestTossApi<{ success?: { userKey?: number } }>(
-        'GET',
-        '/api-partner/v1/apps-in-toss/user/oauth2/login-me',
-        agent,
-        { bearer: tossAccessToken }
-      )
-
-      const resolvedUserKey = meResponse?.success?.userKey
-      if (resolvedUserKey == null) {
-        throw new UnauthorizedException('토스 사용자 정보를 가져오지 못했어요.')
-      }
-      userKey = resolvedUserKey
+    const userKey = meResponse?.success?.userKey
+    if (meResponse.resultType !== 'SUCCESS' || userKey == null) {
+      throw new UnauthorizedException('토스 사용자 정보를 가져오지 못했어요.')
     }
 
     const userId = `toss-user-${userKey}`
@@ -317,7 +309,7 @@ export class AuthService {
       )
     }
     try {
-      return new https.Agent({ cert, key })
+      return new https.Agent({ cert, key, keepAlive: true })
     } catch {
       throw new ServiceUnavailableException(
         '토스 로그인 mTLS 인증서 또는 개인키 형식이 올바르지 않아요.'
@@ -363,6 +355,22 @@ export class AuthService {
               }
               if (status < 200 || status >= 300) {
                 reject(new BadGatewayException('토스 로그인 서버가 요청을 처리하지 못했어요.'))
+                return
+              }
+              if (
+                parsed &&
+                typeof parsed === 'object' &&
+                'resultType' in parsed &&
+                (parsed as { resultType?: string }).resultType === 'FAIL'
+              ) {
+                const error = (parsed as { error?: TossApiError }).error
+                reject(
+                  isInvalidGrant(error)
+                    ? new UnauthorizedException(
+                        '토스 로그인 인가 코드가 만료되었거나 이미 사용됐어요.'
+                      )
+                    : new BadGatewayException('토스 로그인 서버가 실패 응답을 반환했어요.')
+                )
                 return
               }
               resolve(parsed)

@@ -4,5 +4,7 @@ interface ImportMetaEnv {
   readonly VITE_AIDIGEST_API_URL?: string;
   readonly VITE_TOSS_AD_GROUP_FEED?: string;
   readonly VITE_TOSS_AD_GROUP_DETAIL?: string;
+  readonly VITE_TOSS_INTERSTITIAL_AD_GROUP_ID?: string;
+  readonly VITE_TOSS_REWARDED_AD_GROUP_ID?: string;
 }
 interface ImportMeta { readonly env: ImportMetaEnv }

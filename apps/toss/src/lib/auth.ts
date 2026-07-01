@@ -113,22 +113,42 @@ export async function ensureSession(nickname?: string): Promise<ServerUser | nul
  * 토스 로그인 인가 코드를 자체 백엔드에서 교환하고 서비스 세션으로 저장한다.
  * 콘솔 설정·mTLS 인증서가 완료되지 않은 경우 null을 반환해 기존 익명 세션을 유지한다.
  */
-export async function connectTossLogin(): Promise<ServerUser | null> {
-  if (!API_URL) return null;
+export type TossLoginConnectionResult =
+  | { ok: true; user: ServerUser }
+  | { ok: false; message: string };
+
+export async function connectTossLogin(): Promise<TossLoginConnectionResult> {
+  if (!API_URL) return { ok: false, message: '로그인 서버가 설정되지 않았어요.' };
   try {
     const authorization = await tossAppLogin();
-    if (!authorization) return null;
+    if (!authorization) {
+      return { ok: false, message: '토스 로그인이 취소되었거나 로그인 창을 열지 못했어요.' };
+    }
     const res = await fetch(`${API_URL}/api/auth/toss/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(authorization),
     });
-    if (!res.ok) return null;
-    const data = (await res.json()) as { accessToken?: string; user?: ServerUser };
+    const data = (await res.json().catch(() => null)) as
+      | { accessToken?: string; user?: ServerUser; message?: string }
+      | null;
+    if (!res.ok) {
+      return {
+        ok: false,
+        message:
+          data?.message ||
+          (res.status === 503
+            ? '토스 로그인 서버 인증서가 설정되지 않았어요.'
+            : '토스 로그인 서버 처리에 실패했어요.'),
+      };
+    }
+    if (!data?.accessToken || !data.user) {
+      return { ok: false, message: '로그인 서버 응답이 올바르지 않아요.' };
+    }
     if (data.accessToken) setToken(data.accessToken);
-    return data.user ?? null;
+    return { ok: true, user: data.user };
   } catch {
-    return null;
+    return { ok: false, message: '로그인 서버에 연결하지 못했어요.' };
   }
 }
 
