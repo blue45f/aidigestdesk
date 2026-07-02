@@ -22,7 +22,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: unknown, info: ErrorInfo) {
-    console.error('[pickflow] render error', error, info);
+    console.error('[aidigestdesk] render error', error, info);
   }
 
   render() {

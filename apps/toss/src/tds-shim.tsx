@@ -6,8 +6,10 @@
  */
 import type { CSSProperties, ReactNode } from 'react';
 
-const ACCENT = '#13c2a3';
-const ACCENT_INK = '#041412';
+// 브랜드 토큰(@aidigestdesk/content/shared brandTokens)과 동일 값 — 프리뷰 색이
+// 프로덕션(.ait) 브랜드와 어긋나지 않게 한다(shim은 alias 대상이라 하드코딩 유지).
+const ACCENT = '#6ea8fe';
+const ACCENT_INK = '#06122a';
 
 export function TDSMobileAITProvider({
   children,
@@ -40,7 +42,7 @@ export function Button({ children, onClick, style, variant, loading, disabled }:
         borderRadius: 14,
         border: weak ? '1px solid var(--c-border-2)' : 'none',
         background: weak ? 'transparent' : ACCENT,
-        color: weak ? '#f4fbf8' : ACCENT_INK,
+        color: weak ? 'var(--c-text)' : ACCENT_INK,
         fontSize: 16,
         fontWeight: 700,
         cursor: disabled || loading ? 'default' : 'pointer',
@@ -59,7 +61,7 @@ function TitleParagraph({ children, size = 22 }: { children: ReactNode; size?: n
 
 function SubtitleParagraph({ children, size = 15 }: { children: ReactNode; size?: number }) {
   return (
-    <span style={{ fontSize: size, color: '#9fb4ad', display: 'block', marginTop: 6 }}>
+    <span style={{ fontSize: size, color: 'var(--c-text-muted)', display: 'block', marginTop: 6 }}>
       {children}
     </span>
   );
