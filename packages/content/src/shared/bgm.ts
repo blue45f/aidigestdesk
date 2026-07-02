@@ -1,6 +1,8 @@
-// 배경음악 — Web Audio 로 절차 생성하는 신나는 대중 팝/시티팝(에셋 0·저작권 0). 웹·토스 공용.
-// 킥·하이햇 비트 + 베이스 + 아르페지오 + 패드를 룩어헤드 스케줄러로 타이트하게 연주.
-// 대중적 코드 진행(I-V-vi-IV 등) 4트랙 로테이션. 자동재생 안 함(토글=유저 제스처로 시작).
+// 배경음악 — 호스티드 mp3 플레이리스트(1순위) + Web Audio 절차 생성 시티팝(폴백). 웹·토스 공용.
+// `/audio/playlist.json`을 첫 startBgm에서 1회 fetch(모듈 로드 사이드이펙트 0, 결과 세션 캐시).
+// 매니페스트가 없거나(404/비JSON/스키마 불일치) autoplay 정책에 막히면 조용히 합성 엔진으로 폴백.
+// 자동재생 안 함(토글=유저 제스처로 시작). stopBgm→startBgm은 위치 보존 resume — 광고 파이프라인
+// (apps/toss lib/ads.ts: 광고 전 stopBgm / 종료 후 startBgm)이 이 계약에 의존한다.
 import { getAudioContext } from './sound';
 
 interface Track {
@@ -151,31 +153,255 @@ function pauseScheduling(fadeSeconds: number) {
   }
 }
 
+// ---------- 호스티드 mp3 플레이리스트 레이어 ----------
+
+/** 호스티드 트랙의 출처 표기 정보(UI 크레딧 표시용). */
+export interface BgmTrackCredit {
+  title: string;
+  artist?: string;
+  license?: string;
+  creditUrl?: string;
+}
+
+interface HostedTrack extends BgmTrackCredit {
+  /** 절대화된 오디오 URL(성공한 manifest 오리진 기준). */
+  src: string;
+}
+
+// 토스 미니앱 번들은 웹 오리진이 아니라 상대 fetch가 실패할 수 있다 — 웹 프로덕션 오리진 폴백.
+const REMOTE_MANIFEST_URL = 'https://aidigestdesk.vercel.app/audio/playlist.json';
+const HOSTED_VOLUME = 0.5;
+const FADE_MS = 800;
+
+type BgmMode = 'synth' | 'hosted';
+let mode: BgmMode = 'synth';
+let hostedTracks: HostedTrack[] = [];
+let hostedIndex = 0;
+let manifestPromise: Promise<void> | null = null;
+let manifestReady = false;
+let audioEl: HTMLAudioElement | null = null;
+let fadeTimer: ReturnType<typeof setInterval> | null = null;
+
+/** 매니페스트 JSON → 검증된 트랙 목록. src는 baseUrl 기준 절대화. (순수 함수 — 테스트 대상) */
+export function parseBgmManifest(data: unknown, baseUrl: string): HostedTrack[] {
+  if (typeof data !== 'object' || data === null) return [];
+  const raw = (data as { tracks?: unknown }).tracks;
+  if (!Array.isArray(raw)) return [];
+  const out: HostedTrack[] = [];
+  for (const item of raw) {
+    if (typeof item !== 'object' || item === null) continue;
+    const t = item as Record<string, unknown>;
+    if (typeof t.src !== 'string' || t.src === '' || typeof t.title !== 'string' || t.title === '') continue;
+    let src: string;
+    try {
+      src = new URL(t.src, baseUrl).toString();
+    } catch {
+      continue;
+    }
+    out.push({
+      src,
+      title: t.title,
+      ...(typeof t.artist === 'string' ? { artist: t.artist } : {}),
+      ...(typeof t.license === 'string' ? { license: t.license } : {}),
+      ...(typeof t.creditUrl === 'string' ? { creditUrl: t.creditUrl } : {}),
+    });
+  }
+  return out;
+}
+
+async function fetchManifest(url: string): Promise<HostedTrack[]> {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return [];
+    // SPA 폴백이 HTML을 200으로 돌려주는 경우 등 비JSON이면 json()이 throw → [].
+    const data: unknown = await res.json();
+    return parseBgmManifest(data, res.url || url);
+  } catch {
+    return [];
+  }
+}
+
+/** 매니페스트 1회 fetch(세션 캐시). 실패해도 조용히 — 합성 폴백이 있으므로 콘솔 스팸 금지. */
+function ensureManifest(): Promise<void> {
+  manifestPromise ??= (async () => {
+    if (typeof fetch === 'undefined') return;
+    let tracks = await fetchManifest('/audio/playlist.json');
+    if (tracks.length === 0) tracks = await fetchManifest(REMOTE_MANIFEST_URL);
+    if (tracks.length > 0) {
+      hostedTracks = tracks;
+      manifestReady = true;
+    }
+  })();
+  return manifestPromise;
+}
+
+function getAudioElement(): HTMLAudioElement | null {
+  if (audioEl) return audioEl;
+  if (typeof window === 'undefined' || typeof window.Audio === 'undefined') return null;
+  try {
+    const el = new window.Audio();
+    el.preload = 'auto';
+    el.addEventListener('ended', () => {
+      // 트랙 로테이션 — 무한 순환.
+      if (!playing || mode !== 'hosted' || hostedTracks.length === 0) return;
+      hostedIndex = (hostedIndex + 1) % hostedTracks.length;
+      playHosted(true);
+    });
+    audioEl = el;
+    return el;
+  } catch {
+    return null;
+  }
+}
+
+/** 볼륨 램프(페이드). 새 페이드가 시작되면 진행 중이던 페이드(및 그 완료 콜백)는 취소된다. */
+function fadeAudioTo(el: HTMLAudioElement, target: number, ms: number, onDone?: () => void) {
+  if (fadeTimer) clearInterval(fadeTimer);
+  const from = el.volume;
+  const startedAt = Date.now();
+  fadeTimer = setInterval(() => {
+    const p = Math.min(1, (Date.now() - startedAt) / ms);
+    try {
+      el.volume = from + (target - from) * p;
+    } catch {
+      /* iOS 등 볼륨 제어 불가 환경 무시 */
+    }
+    if (p >= 1) {
+      if (fadeTimer) clearInterval(fadeTimer);
+      fadeTimer = null;
+      onDone?.();
+    }
+  }, 50);
+}
+
+function startSynth(fadeSeconds: number): void {
+  mode = 'synth';
+  resumeScheduling(fadeSeconds);
+}
+
+/**
+ * 호스티드 재생 시작/재개. restart=true면 트랙 처음부터(로테이션), 아니면 현재 위치에서 resume
+ * (stopBgm이 위치를 보존하므로 광고 후 startBgm이 같은 지점에서 이어진다).
+ * play()가 reject(autoplay 정책)하면 합성 폴백 — 유저 제스처로 이미 ctx가 언락된 상태.
+ */
+function playHosted(restart = false): void {
+  const el = getAudioElement();
+  const track = hostedTracks[hostedIndex];
+  if (!el || !track) {
+    startSynth(1.0);
+    return;
+  }
+  mode = 'hosted';
+  try {
+    if (el.src !== track.src) el.src = track.src;
+    else if (restart) el.currentTime = 0;
+    try {
+      el.volume = 0;
+    } catch {
+      /* 볼륨 제어 불가 환경 무시 */
+    }
+    const p = el.play();
+    if (p && typeof p.then === 'function') {
+      p.then(() => {
+        fadeAudioTo(el, HOSTED_VOLUME, FADE_MS);
+      }).catch(() => {
+        if (playing) startSynth(1.0);
+      });
+    } else {
+      fadeAudioTo(el, HOSTED_VOLUME, FADE_MS);
+    }
+  } catch {
+    if (playing) startSynth(1.0);
+  }
+}
+
+/** 페이드아웃 후 pause — currentTime(재생 위치)은 보존. */
+function pauseHosted(ms: number): void {
+  const el = audioEl;
+  if (!el || el.paused) return;
+  fadeAudioTo(el, 0, ms, () => {
+    try {
+      el.pause();
+    } catch {
+      /* 무시 */
+    }
+  });
+}
+
+function bindVisibility(): void {
+  if (visibilityBound || typeof document === 'undefined') return;
+  visibilityBound = true;
+  document.addEventListener('visibilitychange', () => {
+    if (!playing) return;
+    if (document.hidden) {
+      if (mode === 'hosted') pauseHosted(400);
+      else pauseScheduling(0.4);
+    } else if (mode === 'hosted') {
+      playHosted();
+    } else {
+      resumeScheduling(0.6);
+    }
+  });
+}
+
 export function startBgm(): void {
   if (playing) return;
-  if (!getAudioContext()) return;
+  if (typeof window === 'undefined') return;
   playing = true;
-  resumeScheduling(1.0);
-  if (!visibilityBound && typeof document !== 'undefined') {
-    visibilityBound = true;
-    document.addEventListener('visibilitychange', () => {
-      if (!playing) return;
-      if (document.hidden) pauseScheduling(0.4);
-      else resumeScheduling(0.6);
-    });
+  try {
+    bindVisibility();
+    if (manifestReady && hostedTracks.length > 0) {
+      playHosted(); // stop 시점 위치에서 그대로 resume
+    } else {
+      // 매니페스트 미도착/실패 — 무음 구간 없이 합성을 즉시 시작하고,
+      // 매니페스트가 도착하면(여전히 재생 중일 때만) 합성 페이드아웃→호스티드 페이드인 전환.
+      startSynth(1.0);
+      void ensureManifest()
+        .then(() => {
+          if (playing && mode === 'synth' && manifestReady && hostedTracks.length > 0) {
+            pauseScheduling(FADE_MS / 1000);
+            playHosted();
+          }
+        })
+        .catch(() => {
+          /* 절대 throw 금지 */
+        });
+    }
+  } catch {
+    /* 절대 throw 금지 */
   }
 }
 
 export function stopBgm(): void {
   playing = false;
-  pauseScheduling(0.5);
+  try {
+    pauseScheduling(0.5);
+    pauseHosted(500);
+  } catch {
+    /* 절대 throw 금지 */
+  }
 }
 
 export function isBgmPlaying(): boolean {
   return playing;
 }
 
-/** 현재 트랙 이름(UI 표시용). */
+/** 현재 트랙 이름(UI 표시용) — 호스티드면 mp3 title, 합성이면 절차생성 트랙명. */
 export function currentTrackName(): string {
-  return playing ? currentTrack().name : '';
+  if (!playing) return '';
+  if (mode === 'hosted') return hostedTracks[hostedIndex]?.title ?? '';
+  return currentTrack().name;
+}
+
+/** 호스티드 트랙 크레딧(출처 표기용) — 합성 폴백 재생 중이거나 정지 상태면 null. */
+export function currentTrackCredit(): BgmTrackCredit | null {
+  if (!playing || mode !== 'hosted') return null;
+  const t = hostedTracks[hostedIndex];
+  if (!t) return null;
+  return {
+    title: t.title,
+    ...(t.artist !== undefined ? { artist: t.artist } : {}),
+    ...(t.license !== undefined ? { license: t.license } : {}),
+    ...(t.creditUrl !== undefined ? { creditUrl: t.creditUrl } : {}),
+  };
 }

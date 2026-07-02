@@ -1,0 +1,18 @@
+{
+  "tracks": [
+    {
+      "src": "/audio/hey-android.mp3",
+      "title": "Hey Android",
+      "artist": "VoldemarSF",
+      "license": "Pixabay Content License",
+      "creditUrl": "https://pixabay.com/music/pop-hey-android-340670/"
+    },
+    {
+      "src": "/audio/synthwave-vocal-pop-love-song.mp3",
+      "title": "Synthwave Vocal Pop Love Song",
+      "artist": "Sound4Stock",
+      "license": "Pixabay Content License",
+      "creditUrl": "https://pixabay.com/music/electronic-synthwave-vocal-pop-love-song-464602/"
+    }
+  ]
+}

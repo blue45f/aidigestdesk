@@ -1,4 +1,5 @@
 import {
+  currentTrackCredit,
   currentTrackName,
   isBgmPlaying,
   isSoundMuted,
@@ -11,11 +12,13 @@ import { useEffect, useState } from 'react'
 /**
  * 오디오 컨트롤(플로팅) — 효과음 on/off + 배경음악 on/off.
  * 토스와 동일한 @aidigestdesk/content/shared 엔진. 자동재생 안 함(autoplay 정책).
+ * 호스티드 트랙이면 pill에 아티스트 크레딧 + 출처 링크(Pixabay) 표기.
  */
 export function MusicToggle() {
   const [muted, setMuted] = useState(() => isSoundMuted())
   const [on, setOn] = useState(() => isBgmPlaying())
   const [track, setTrack] = useState('')
+  const [credit, setCredit] = useState<ReturnType<typeof currentTrackCredit>>(null)
   // 거슬리지 않게 — 몇 초 뒤 자동 숨김(투명), 스크롤·마우스·터치 등 활동하면 다시 나타남.
   const [visible, setVisible] = useState(true)
 
@@ -43,7 +46,10 @@ export function MusicToggle() {
 
   useEffect(() => {
     if (!on) return
-    const update = () => setTrack(currentTrackName())
+    const update = () => {
+      setTrack(currentTrackName())
+      setCredit(currentTrackCredit())
+    }
     update()
     const id = window.setInterval(update, 4000)
     return () => clearInterval(id)
@@ -60,17 +66,24 @@ export function MusicToggle() {
       stopBgm()
       setOn(false)
       setTrack('')
+      setCredit(null)
     } else {
       startBgm()
       setOn(true)
       setTrack(currentTrackName())
+      setCredit(currentTrackCredit())
     }
   }
 
+  // 좁은 화면(≤380px)에선 FAB를 살짝 축소해 콘텐츠 가림을 줄인다(라이브 QA).
   const cls = (active: boolean) =>
-    `flex size-11 items-center justify-center rounded-full border text-lg shadow-md transition-transform active:scale-95 ${
+    `flex size-11 items-center justify-center rounded-full border text-lg shadow-md transition-transform active:scale-95 max-[380px]:size-10 ${
       active ? 'border-accent bg-accent/12 text-accent-text' : 'border-border bg-surface text-text-muted'
     }`
+
+  const pillCls =
+    'max-w-[46vw] truncate rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-bold text-accent shadow-sm'
+  const pillLabel = `♪ ${track}${credit?.artist ? ` — ${credit.artist}` : ''}`
 
   return (
     <div
@@ -83,9 +96,19 @@ export function MusicToggle() {
       }}
     >
       {on && track && (
-        <span className="rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-bold text-accent shadow-sm">
-          ♪ {track}
-        </span>
+        credit?.creditUrl ? (
+          <a
+            href={credit.creditUrl}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`배경음악 출처 보기: ${track}`}
+            className={pillCls}
+          >
+            {pillLabel}
+          </a>
+        ) : (
+          <span className={pillCls}>{pillLabel}</span>
+        )
       )}
       <button
         type="button"
