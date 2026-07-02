@@ -82,10 +82,9 @@ export function App() {
   const manualDetail = path.match(/^\/manual\/(.+)$/);
   const isSupport = path === '/support';
   const isSaved = path === '/saved';
-  const isCommunity = path === '/community';
   const isProfile = path === '/profile';
 
-  if (updateDetail || modelDetail || extDetail || manualDetail || isSupport || isSaved || isCommunity || isProfile) {
+  if (updateDetail || modelDetail || extDetail || manualDetail || isSupport || isSaved || isProfile) {
     const detail = updateDetail ? (
       <UpdateDetailPage id={decodeURIComponent(updateDetail[1])} />
     ) : modelDetail ? (
@@ -96,8 +95,6 @@ export function App() {
       <ManualDetailPage slug={decodeURIComponent(manualDetail[1])} />
     ) : isSaved ? (
       <SavedPage />
-    ) : isCommunity ? (
-      <CommunityPage />
     ) : isProfile ? (
       <ProfilePage />
     ) : (
@@ -117,6 +114,7 @@ export function App() {
     : path === '/deals' ? 'deals'
     : path === '/resources' ? 'resources'
     : path === '/manuals' ? 'manual'
+    : path === '/community' ? 'community'
     : 'feed';
 
   const page =
@@ -124,10 +122,12 @@ export function App() {
     : tab === 'deals' ? <DealsPage />
     : tab === 'resources' ? <ResourcesPage />
     : tab === 'manual' ? <ManualListPage />
+    : tab === 'community' ? <CommunityPage />
     : <UpdateListPage />;
 
   const tabToPath: Record<TabId, string> = {
     feed: '/', rank: '/rankings', deals: '/deals', resources: '/resources', manual: '/manuals',
+    community: '/community',
   };
 
   return (

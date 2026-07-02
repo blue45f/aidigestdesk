@@ -142,8 +142,8 @@ export function Segmented({ options, value, onChange }: { options:{id:string;lab
   );
 }
 
-/** 하단 탭바 — 소식 / 랭킹 / 혜택 / 자료 / 매뉴얼 전환. */
-export type TabId = 'feed' | 'rank' | 'deals' | 'resources' | 'manual';
+/** 하단 탭바 — 소식 / 랭킹 / 혜택 / 자료 / 매뉴얼 / 커뮤니티 전환(웹 1차 내비 6개와 동일 구성). */
+export type TabId = 'feed' | 'rank' | 'deals' | 'resources' | 'manual' | 'community';
 export function TabBar({ active, onPick }: { active:TabId; onPick:(t:TabId)=>void }) {
   const items:{id:TabId;label:string;icon:string}[] = [
     { id:'feed', label:'소식', icon:'📰' },
@@ -151,6 +151,7 @@ export function TabBar({ active, onPick }: { active:TabId; onPick:(t:TabId)=>voi
     { id:'deals', label:'혜택', icon:'🎁' },
     { id:'resources', label:'자료', icon:'📚' },
     { id:'manual', label:'매뉴얼', icon:'📘' },
+    { id:'community', label:'커뮤니티', icon:'💬' },
   ];
   return (
     <nav aria-label="주요 메뉴" style={{ position:'fixed', left:0, right:0, bottom:0, zIndex:30,

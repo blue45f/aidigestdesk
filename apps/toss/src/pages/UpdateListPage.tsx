@@ -182,18 +182,7 @@ export function UpdateListPage() {
           <span aria-hidden style={{ fontSize: 20, color: theme.textMuted }}>›</span>
         </button>
 
-        {/* 커뮤니티(채팅·게시판·카페) 진입 — 웹과 동일 기능, shared 스토어 공용. 1차 기능이라 강조. */}
-        <button type="button" onClick={() => navigate('/community')} className="pressable"
-          style={{ width: '100%', marginTop: 18, display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left',
-            background: theme.accentSoft, border: `1px solid ${theme.accent}`, borderRadius: theme.radius, padding: 16,
-            color: theme.text, cursor: 'pointer' }}>
-          <span aria-hidden style={{ fontSize: 22 }}>👥</span>
-          <span style={{ flex: 1, minWidth: 0 }}>
-            <span style={{ display: 'block', fontSize: 15, fontWeight: 700 }}>커뮤니티</span>
-            <span style={{ display: 'block', fontSize: 12.5, color: theme.textMuted, marginTop: 2 }}>채팅방·게시판·카페에서 함께 이야기해요</span>
-          </span>
-          <span aria-hidden style={{ fontSize: 20, color: theme.textMuted }}>›</span>
-        </button>
+        {/* 커뮤니티는 하단 탭바 1차 메뉴로 승격(웹 GNB와 동일) — 피드 허브 카드는 제거. */}
 
         {/* 저장한 항목(즐겨찾기) 진입 */}
         <button type="button" onClick={() => navigate('/saved')} className="pressable"

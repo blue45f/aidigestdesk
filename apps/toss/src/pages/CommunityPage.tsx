@@ -42,9 +42,9 @@ import {
   type Post,
 } from '@aidigestdesk/content/shared';
 
-import { goBack, navigate } from '../router';
+import { navigate } from '../router';
 import { theme, pageShell } from '../theme';
-import { BackBar, Chips, MetaChip, Segmented } from '../ui';
+import { Chips, MetaChip, Segmented } from '../ui';
 
 // 웹 CommunityRoute와 동일한 로직(@aidigestdesk/content/shared/community) 위에
 // 토스 TDS 렌더만 얹은 화면. 편집은 shared 한 곳 → 웹·토스 동시 반영.
@@ -392,7 +392,6 @@ export function CommunityPage() {
 
   return (
     <div style={{ minHeight: '100dvh', background: theme.bg }}>
-      <BackBar onBack={() => goBack('/')} label="소식" />
       <Top title={<Top.TitleParagraph size={22}>💬 <AnimatedTitle size={22}>커뮤니티</AnimatedTitle></Top.TitleParagraph>}
         subtitleBottom={<Top.SubtitleParagraph size={15}>채팅·게시판·카페 — 서버에 저장, 기기·웹과 공유</Top.SubtitleParagraph>} />
       <div style={pageShell}>
