@@ -2,6 +2,16 @@
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm exec turbo run build --filter=@aidigestdesk/web",
   "outputDirectory": "apps/web/dist",
+  "headers": [
+    {
+      "source": "/audio/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, HEAD, OPTIONS" },
+        { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }
+      ]
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
