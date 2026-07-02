@@ -18,7 +18,7 @@ import { BannerAd } from '../components/BannerAd';
 import { AD_GROUPS } from '../lib/ads';
 import { navigate } from '../router';
 import { theme, pageShell } from '../theme';
-import { Badge, BrandIcon, Chips, MetaChip, RankBadge, Segmented, SortChip } from '../ui';
+import { Badge, BrandIcon, Chips, CountUpNumber, MetaChip, RankBadge, Segmented, SortChip } from '../ui';
 
 type Scope = 'models' | 'extensions';
 type Dir = 'asc' | 'desc';
@@ -71,7 +71,8 @@ function ModelRow({ entry, position, onOpen, medal }: { entry: ModelRankEntry; p
           <span style={{ fontSize: 15.5, fontWeight: 700, lineHeight: 1.35, wordBreak: 'keep-all' }}>{entry.name}</span>
           {entry.score !== null && (
             <span style={{ fontSize: 16, fontWeight: 800, color: theme.accent, fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
-              {(entry.scoreLabel?.trim().startsWith('≈') ? '≈' : '') + entry.score.toLocaleString()}
+              {/* 점수 카운트업 — ≈(추정) 접두 보존, reduced-motion 시 즉시 최종값 */}
+              <CountUpNumber value={entry.score} approx={entry.scoreLabel?.trim().startsWith('≈') ?? false} />
             </span>
           )}
         </div>

@@ -1,9 +1,43 @@
 import { burstAt } from '@aidigestdesk/content/shared';
+import { useEffect, useState } from 'react';
 
 import { toggleBookmark, useIsBookmarked, type Bookmark } from './lib/bookmarks';
 import { theme } from './theme';
 
 import type { ReactNode } from 'react';
+
+function prefersReducedMotion(): boolean {
+  try {
+    return !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * 점수 카운트업 — 마운트 시 rAF 1회 패스(~0.7s)로 0→value. 최종 프레임은 정확한 값으로
+ * 스냅(소수점 보존). reduced-motion이면 애니메이션 없이 즉시 최종값.
+ */
+export function CountUpNumber({ value, approx = false, duration = 700 }: { value: number; approx?: boolean; duration?: number }) {
+  const [display, setDisplay] = useState(() => (prefersReducedMotion() ? value : 0));
+  useEffect(() => {
+    if (prefersReducedMotion()) {
+      setDisplay(value);
+      return;
+    }
+    let raf = 0;
+    const start = performance.now();
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setDisplay(p >= 1 ? value : Math.round(value * eased));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [value, duration]);
+  return <>{(approx ? '≈' : '') + display.toLocaleString()}</>;
+}
 
 /** 즐겨찾기 토글 버튼(★). 상세 페이지 헤더 등에서 사용. */
 export function BookmarkButton({ item }: { item: Bookmark }) {
@@ -128,8 +162,10 @@ export function TabBar({ active, onPick }: { active:TabId; onPick:(t:TabId)=>voi
           style={{ flex:1, height:56, position:'relative', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:2,
             background:'none', border:'none', cursor:'pointer', color: on ? theme.accent : theme.textMuted, fontWeight:700,
             transition:'color .18s ease' }}>
-          {on && <span aria-hidden style={{ position:'absolute', top:0, width:22, height:3, borderRadius:3, background:theme.accent }} />}
-          <span aria-hidden style={{ fontSize:18, transition:'transform .18s cubic-bezier(.22,1,.36,1), filter .18s ease',
+          {/* 활성 인디케이터 — 상단 3px 바가 스케일 팝으로 등장(.tab-indicator). */}
+          {on && <span aria-hidden className="tab-indicator" style={{ position:'absolute', top:0, width:22, height:3, borderRadius:3, background:theme.accent }} />}
+          <span aria-hidden className={on ? 'tab-icon tab-icon-on' : 'tab-icon'}
+            style={{ fontSize:18, transition:'transform .18s cubic-bezier(.22,1,.36,1), filter .18s ease',
             transform: on ? 'scale(1.14)' : 'scale(1)', filter: on ? 'none' : 'grayscale(0.4) opacity(0.8)' }}>{it.icon}</span>
           <span style={{ fontSize:11.5 }}>{it.label}</span>
         </button>); })}

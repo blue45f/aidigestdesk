@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { flushSync } from 'react-dom';
 
 import { trackNavigation } from './lib/analytics';
 
@@ -27,8 +28,24 @@ export function registerPreNavigate(cb: ((to: string) => void) | null): void {
   preNavigateCallback = cb;
 }
 
+/** pushState + popstate 디스패치 — pushState는 popstate를 발생시키지 않으므로 직접 알린다. */
+function commitNavigation(to: string): void {
+  window.history.pushState(null, '', to);
+  window.dispatchEvent(new PopStateEvent('popstate'));
+}
+
+function prefersReducedMotion(): boolean {
+  try {
+    return !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  } catch {
+    return false;
+  }
+}
+
 export function navigate(to: string): void {
   if (to === window.location.pathname) return;
+  // preNavigate(전면광고 케이던스 게이트)는 매 navigate마다 정확히 1회,
+  // 뷰 트랜지션 "밖에서" 먼저 호출한다 — 광고 show()와 전환 연출이 서로를 막지 않게.
   if (preNavigateCallback) {
     try {
       preNavigateCallback(to);
@@ -37,9 +54,24 @@ export function navigate(to: string): void {
     }
   }
   trackNavigation(to);
-  window.history.pushState(null, '', to);
-  // pushState는 popstate를 발생시키지 않으므로 직접 디스패치해 구독자를 갱신한다.
-  window.dispatchEvent(new PopStateEvent('popstate'));
+
+  // View Transitions — 지원 + 모션 허용 시 라우트 커밋을 트랜지션 콜백 안에서 동기 flush.
+  // 미지원/reduced-motion은 기존 .page-enter 폴백 유지.
+  const startViewTransition = document.startViewTransition?.bind(document);
+  if (!startViewTransition || prefersReducedMotion()) {
+    commitNavigation(to);
+    return;
+  }
+  // VT 진행 중에는 .page-enter 키프레임을 꺼 이중 애니메이션을 방지한다(index.css .vt-active).
+  document.documentElement.classList.add('vt-active');
+  const transition = startViewTransition(() => {
+    flushSync(() => {
+      commitNavigation(to);
+    });
+  });
+  void transition.finished.finally(() => {
+    document.documentElement.classList.remove('vt-active');
+  });
 }
 
 /**

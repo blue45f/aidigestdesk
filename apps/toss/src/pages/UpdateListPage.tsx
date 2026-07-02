@@ -1,20 +1,85 @@
+import { burstAt } from '@aidigestdesk/content/shared';
 import { Top } from '@toss/tds-mobile';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { AnimatedTitle } from '../components/AnimatedTitle';
 import { BannerAd } from '../components/BannerAd';
 import { getUpdates, type Update } from '../lib/api';
 import { AD_GROUPS } from '../lib/ads';
+import { haptic } from '../lib/haptic';
 import { navigate } from '../router';
 import { theme, pageShell } from '../theme';
 import { SearchBar, Chips, Badge, BrandIcon } from '../ui';
 
 const ALL = '전체';
 
+/** 풀다운이 "새로고침"으로 인정되는 당김 거리(px, 감쇠 적용 후). */
+const PULL_THRESHOLD = 64;
+/** 시각 인디케이터의 최대 당김 거리(px). */
+const PULL_MAX = 96;
+
+/**
+ * 풀다운 리프레시 연출 — 터치 전용. 데이터는 번들 스냅샷이라 재요청이 없으므로
+ * 문구는 "최신 상태 확인" 톤으로 정직하게 두고, 임계 통과 시 스파클+햅틱+리스트
+ * 재진입 애니메이션(refreshKey)을 재생한다. 스크롤 최상단에서 아래로 당길 때만 반응.
+ */
+function usePullToRefresh(onRefresh: () => void) {
+  const [pull, setPull] = useState(0);
+  const [done, setDone] = useState(false);
+  const startYRef = useRef<number | null>(null);
+  const pullRef = useRef(0);
+
+  useEffect(() => {
+    const onTouchStart = (e: TouchEvent) => {
+      startYRef.current = window.scrollY <= 0 ? (e.touches[0]?.clientY ?? null) : null;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      const startY = startYRef.current;
+      const y = e.touches[0]?.clientY;
+      if (startY == null || y == null) return;
+      if (window.scrollY > 0) {
+        startYRef.current = null;
+        pullRef.current = 0;
+        setPull(0);
+        return;
+      }
+      const raw = y - startY;
+      const next = raw > 0 ? Math.min(PULL_MAX, raw * 0.42) : 0;
+      pullRef.current = next;
+      setPull(next);
+    };
+    const onTouchEnd = () => {
+      const reached = pullRef.current >= PULL_THRESHOLD;
+      startYRef.current = null;
+      pullRef.current = 0;
+      setPull(0);
+      if (!reached) return;
+      haptic('confetti');
+      burstAt(window.innerWidth / 2, 96, undefined, 18);
+      setDone(true);
+      onRefresh();
+      window.setTimeout(() => setDone(false), 1400);
+    };
+    const opts: AddEventListenerOptions = { passive: true };
+    window.addEventListener('touchstart', onTouchStart, opts);
+    window.addEventListener('touchmove', onTouchMove, opts);
+    window.addEventListener('touchend', onTouchEnd, opts);
+    return () => {
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+    };
+  }, [onRefresh]);
+
+  return { pull, done };
+}
+
 export function UpdateListPage() {
   const items = getUpdates();
   const [q, setQ] = useState('');
   const [provider, setProvider] = useState(ALL);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { pull, done } = usePullToRefresh(() => setRefreshKey((k) => k + 1));
 
   const providers = useMemo(() => {
     const c = new Map<string, number>();
@@ -35,6 +100,20 @@ export function UpdateListPage() {
 
   return (
     <div style={{ minHeight: '100dvh', background: theme.bg }}>
+      {/* 풀다운 인디케이터 — 당김 진행률에 따라 내려오고, 임계 통과 후 놓으면 확인 문구. */}
+      {(pull > 6 || done) && (
+        <div aria-hidden={!done} role={done ? 'status' : undefined}
+          style={{ position: 'fixed', top: 'calc(env(safe-area-inset-top, 0px) + 10px)', left: '50%', zIndex: 40,
+            transform: `translate(-50%, ${done ? 0 : Math.min(pull, PULL_MAX) - 34}px) scale(${done ? 1 : 0.82 + Math.min(pull / PULL_THRESHOLD, 1) * 0.18})`,
+            opacity: done ? 1 : Math.min(pull / 28, 1),
+            display: 'flex', alignItems: 'center', gap: 7, height: 34, padding: '0 14px', borderRadius: 999,
+            background: theme.surface, border: `1px solid ${pull >= PULL_THRESHOLD || done ? theme.accent : theme.border}`,
+            color: pull >= PULL_THRESHOLD || done ? theme.accent : theme.textMuted,
+            fontSize: 12.5, fontWeight: 700, whiteSpace: 'nowrap', boxShadow: '0 6px 18px rgba(0,0,0,0.25)',
+            transition: done ? 'transform .25s cubic-bezier(.22,1,.36,1)' : 'none', pointerEvents: 'none' }}>
+          {done ? '✓ 최신 소식이에요' : pull >= PULL_THRESHOLD ? '↻ 놓으면 새로고침 연출' : '↓ 아래로 당기기'}
+        </div>
+      )}
       <Top title={<Top.TitleParagraph size={22}>📰 <AnimatedTitle size={22}>AI다이제스트</AnimatedTitle></Top.TitleParagraph>}
         subtitleBottom={<Top.SubtitleParagraph size={15}>주요 AI 모델 업데이트를 한국어로 빠르게</Top.SubtitleParagraph>} />
       <div style={pageShell}>
@@ -66,7 +145,9 @@ export function UpdateListPage() {
           </div>
         )}
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {/* refreshKey — 풀다운 완료 시 리스트 재진입 애니메이션(list-swap) 재생 */}
+        <div key={refreshKey} className={refreshKey > 0 ? 'list-swap' : undefined}
+          style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {filtered.map((u, i) => (
             <button key={u.id} type="button" onClick={() => open(u)} className="pressable rise"
               style={{ animationDelay: `${90 + i * 22}ms`, display: 'block', width: '100%', textAlign: 'left',

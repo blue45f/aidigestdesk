@@ -32,7 +32,9 @@ export function App() {
     trackScreen(path);
   }, [path]);
 
-  // 페이지 이동 시 전면 광고 노출 설정
+  // 페이지 이동 시 전면 광고 노출 설정.
+  // router.navigate가 View Transitions "밖에서" 매 이동당 정확히 1회 호출하는 콜백 —
+  // 전환 3회 + 마지막 광고 후 2분 경과 시에만 show() (빈도 게이트).
   useEffect(() => {
     registerPreNavigate(() => {
       if (interstitial.configured && interstitial.supported) {
