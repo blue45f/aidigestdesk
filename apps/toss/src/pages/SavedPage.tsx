@@ -1,3 +1,5 @@
+import { BannerAd } from '../components/BannerAd';
+import { AD_GROUPS } from '../lib/ads';
 import { removeBookmark, useBookmarks, type BookmarkType } from '../lib/bookmarks';
 import { goBack, navigate } from '../router';
 import { theme, pageShell } from '../theme';
@@ -54,6 +56,9 @@ export function SavedPage() {
             ))}
           </div>
         )}
+
+        {/* 인앱 배너 — 저장 목록 하단. 빈 상태(안내+CTA만 있는 화면)에서는 어색해 렌더하지 않는다. */}
+        {items.length > 0 && <BannerAd adGroupId={AD_GROUPS.feedList} marginTop={18} />}
       </div>
     </div>
   );

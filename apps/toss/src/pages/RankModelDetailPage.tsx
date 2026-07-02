@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { BannerAd } from '../components/BannerAd';
+import { ShareButton } from '../components/ShareButton';
 import { AD_GROUPS } from '../lib/ads';
 import {
   getModelEntryById,
@@ -78,8 +79,9 @@ export function RankModelDetailPage({ id }: { id: string }) {
               {profile.oneLine}
             </p>
           )}
-          <div style={{ marginTop: 14 }}>
+          <div style={{ marginTop: 14, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <BookmarkButton item={{ type: 'model', id, title: name, subtitle: provider, route: `/rank/m/${encodeURIComponent(id)}` }} />
+            <ShareButton text={`${name} (${provider}) — 분야별 랭킹·강점·주의점을 AI다이제스트에서 확인해 보세요.`} />
           </div>
         </div>
 

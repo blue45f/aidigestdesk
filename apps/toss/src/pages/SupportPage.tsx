@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { BannerAd } from '../components/BannerAd';
+import { AD_GROUPS } from '../lib/ads';
 import {
   INQUIRY_CATEGORIES,
   INQUIRY_CATEGORY_LABELS,
@@ -168,6 +170,10 @@ export function SupportPage() {
             })}
           </div>
         )}
+
+        {/* 인앱 배너 — 콘텐츠(게시판) 하단, 법적 안내(약관 details) 위. */}
+        <BannerAd adGroupId={AD_GROUPS.feedList} marginTop={18} />
+
         <details style={{ marginTop: 26, border: `1px solid ${theme.border}`, borderRadius: 'var(--r-md)', background: theme.surface, padding: '0 16px' }}>
           <summary style={{ padding: '14px 0', fontSize: 14, fontWeight: 700, cursor: 'pointer', color: theme.text }}>
             약관 · 개인정보 처리방침

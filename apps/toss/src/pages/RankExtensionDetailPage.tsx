@@ -1,3 +1,6 @@
+import { BannerAd } from '../components/BannerAd';
+import { ShareButton } from '../components/ShareButton';
+import { AD_GROUPS } from '../lib/ads';
 import { onExternalClick } from '../lib/links';
 import { getExtensionById, GRADE_PALETTE, snapshotDate } from '../lib/rankings';
 import { goBack } from '../router';
@@ -63,8 +66,9 @@ export function RankExtensionDetailPage({ id }: { id: string }) {
               {entry.summary}
             </p>
           )}
-          <div style={{ marginTop: 14 }}>
+          <div style={{ marginTop: 14, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <BookmarkButton item={{ type: 'extension', id: entry.id, title: entry.name, subtitle: entry.platform, route: `/rank/x/${encodeURIComponent(entry.id)}` }} />
+            <ShareButton text={`${entry.name} — ${entry.platform} ${entry.kind} 추천 #${entry.rank}\n${entry.summary}`} />
           </div>
         </div>
 
@@ -122,6 +126,9 @@ export function RankExtensionDetailPage({ id }: { id: string }) {
             공식 문서 보기 ↗
           </a>
         )}
+
+        {/* 인앱 배너 — 다른 상세(모델·매뉴얼·소식)와 동일하게 본문 하단. */}
+        <BannerAd adGroupId={AD_GROUPS.detail} marginTop={24} />
 
         <p style={{ fontSize: 11.5, color: theme.textMuted, textAlign: 'center', marginTop: 22, lineHeight: 1.6 }}>
           {snapshotDate} 기준 · 추천 순위는 편집자 큐레이션이에요

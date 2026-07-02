@@ -19,8 +19,13 @@ import { isInToss } from './toss';
 /** 배너 최소 토스 앱 버전(문서: 미만은 빈 화면). */
 const MIN_VERSION = '5.241.0' as const;
 
-/** Full screen test ad ID from Toss docs. */
-const TEST_FULLSCREEN_AD_GROUP_ID = 'ait.dev.43daa14da3ae487b';
+/**
+ * 포맷별 테스트 광고 ID(토스 문서). DEV에서만 사용 — 프로덕션 빌드에서는
+ * `import.meta.env.DEV ? TEST : null` 분기가 상수 폴딩+트리셰이크로 제거되어
+ * scripts/check-release-build.mjs 의 `ait-ad-test-*` 검사를 통과한다.
+ */
+const TEST_INTERSTITIAL_AD_GROUP_ID = 'ait.dev.43daa14da3ae487b';
+const TEST_REWARDED_AD_GROUP_ID = 'ait-ad-test-rewarded-id';
 
 /**
  * 콘솔에서 발급한 운영 광고 그룹 ID만 사용한다.
@@ -97,7 +102,11 @@ export function getFullScreenAdGroupId(format: FullScreenAdFormat): string | nul
       ? import.meta.env.VITE_TOSS_REWARDED_AD_GROUP_ID
       : import.meta.env.VITE_TOSS_INTERSTITIAL_AD_GROUP_ID;
   if (value?.trim()) return value.trim();
-  return import.meta.env.DEV ? TEST_FULLSCREEN_AD_GROUP_ID : null;
+  return import.meta.env.DEV
+    ? format === 'rewarded'
+      ? TEST_REWARDED_AD_GROUP_ID
+      : TEST_INTERSTITIAL_AD_GROUP_ID
+    : null;
 }
 
 function isFullScreenAdSupported(): boolean {

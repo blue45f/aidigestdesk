@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 
 import { BannerAd } from '../components/BannerAd';
+import { ShareButton } from '../components/ShareButton';
 import { AD_GROUPS } from '../lib/ads';
 import { onExternalClick } from '../lib/links';
 import { getManualBySlug, manualCategories, manualSnapshotDate } from '../lib/manuals';
@@ -116,8 +117,9 @@ export function ManualDetailPage({ slug }: { slug: string }) {
         {manual.overview && (
           <p style={{ fontSize: 14.5, color: theme.text, lineHeight: 1.7, marginTop: 12 }}>{manual.overview}</p>
         )}
-        <div style={{ marginTop: 14 }}>
+        <div style={{ marginTop: 14, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <BookmarkButton item={{ type: 'manual', id: manual.slug, title: manual.platform, subtitle: 'CLI 매뉴얼', route: `/manual/${encodeURIComponent(manual.slug)}` }} />
+          <ShareButton text={`${manual.platform} CLI 매뉴얼 — 설치·인증·명령어 ${manual.commands.length}개·실전 팁을 한국어로 정리했어요.`} />
         </div>
 
         {manual.install && (

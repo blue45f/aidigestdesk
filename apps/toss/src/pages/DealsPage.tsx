@@ -3,6 +3,8 @@ import { useMemo, useState } from 'react';
 
 import { AnimatedTitle } from '../components/AnimatedTitle';
 import { BannerAd } from '../components/BannerAd';
+import { RewardedInsight } from '../components/RewardedInsight';
+import { ShareButton } from '../components/ShareButton';
 import { AD_GROUPS } from '../lib/ads';
 import { onExternalClick } from '../lib/links';
 
@@ -42,7 +44,7 @@ function StatusBadge({ status }: { status: string }) {
 
 function DealCard({ deal }: { deal: DealEntry }) {
   return (
-    <a href={deal.url} target="_blank" rel="noreferrer" onClick={onExternalClick(deal.url)} className="pressable"
+    <a href={deal.url} target="_blank" rel="noreferrer" onClick={onExternalClick(deal.url)} className="pressable deal-glow"
       style={{ display: 'block', background: theme.surface, border: `1px solid ${theme.border}`,
         borderRadius: theme.radius, padding: 16, color: theme.text }}>
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
@@ -79,7 +81,7 @@ function EventCard({ event }: { event: EventEntry }) {
   const date = event.endDate && event.endDate !== event.startDate
     ? `${event.startDate} ~ ${event.endDate}` : event.startDate;
   return (
-    <a href={event.url} target="_blank" rel="noreferrer" onClick={onExternalClick(event.url)} className="pressable"
+    <a href={event.url} target="_blank" rel="noreferrer" onClick={onExternalClick(event.url)} className="pressable deal-glow"
       style={{ display: 'block', background: theme.surface, border: `1px solid ${theme.border}`,
         borderRadius: theme.radius, padding: 16, color: theme.text }}>
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
@@ -125,6 +127,10 @@ export function DealsPage() {
       <Top title={<Top.TitleParagraph size={22}>🎁 <AnimatedTitle size={22}>혜택 · 이벤트</AnimatedTitle></Top.TitleParagraph>}
         subtitleBottom={<Top.SubtitleParagraph size={15}>AI 할인·크레딧·해커톤을 한곳에서</Top.SubtitleParagraph>} />
       <div style={pageShell}>
+        {/* 헤더 근처 컴팩트 공유 — 혜택 페이지 자체를 알리는 1개만. */}
+        <div className="rise" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
+          <ShareButton text={'AI 할인·크레딧·해커톤 혜택 모음 — AI다이제스트에서 한눈에 확인해 보세요.'} />
+        </div>
         <div className="rise" style={{ marginBottom: 16 }}>
           <Segmented options={SCOPES} value={scope} onChange={(v) => setScope(v as Scope)} />
         </div>
@@ -158,6 +164,9 @@ export function DealsPage() {
             </div>
           </>
         )}
+
+        {/* 보상형 옵트인 — 딜 목록 하단(스크롤 중반 이후), 배너 위. 진입 직후 노출 금지 규칙 준수. */}
+        {scope === 'deals' && <RewardedInsight />}
 
         <BannerAd adGroupId={AD_GROUPS.feedList} marginTop={18} />
 
