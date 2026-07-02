@@ -12,10 +12,13 @@ const distAssetsDir = new URL('../dist/assets/', import.meta.url)
 // 2026-06-25: 출처 교차검증 기반 분야별 leaderboard 신설(+벤치마크 reference 분리 보존)으로
 // content-catalog 데이터가 늘어 소폭 상향. CLI 매뉴얼(명령 287개)은 별도 lazy 청크로 분리해
 // 메인 청크 밖으로 뺐다(@aidigestdesk/content/cliManuals).
+// 2026-07-02: 라우트 View Transitions·히어로 오로라/파티클·랭킹 바·오버레이 모션 등 1차 모션
+// 레이어 + AA 대비 오버라이드로 CSS raw 86KiB(gzip 14.8KiB). 라이브러리 추가 없음 — raw 상한만
+// 96KiB로 상향(gzip 전송비용은 미미, raw는 런어웨이 가드 역할 유지).
 const budgets = {
   maxJavaScriptBytes: 760 * 1024,
   maxJavaScriptGzipBytes: 210 * 1024,
-  maxCssBytes: 80 * 1024,
+  maxCssBytes: 96 * 1024,
 }
 
 function formatSize(bytes) {
