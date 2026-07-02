@@ -1,5 +1,5 @@
 import { getCatalogStats, SNAPSHOT_DATE } from '@aidigestdesk/content'
-import { ArrowRight, BadgePercent, Sparkles, Table2 } from 'lucide-react'
+import { ArrowRight, BadgePercent, ShieldCheck, Sparkles, Table2 } from 'lucide-react'
 
 import type { AppRoute } from '@/components/app/appRoutes'
 
@@ -30,10 +30,22 @@ export function PortalHero({ onNavigate }: { onNavigate: (route: AppRoute) => vo
         className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,var(--color-accent),var(--color-accent-2),var(--color-accent-3))]"
       />
 
+      {/* 오로라 배경 + 부유 파티클 — 순수 장식(CSS keyframes, reduced-motion 무력화) */}
+      <div className="hero-aurora" aria-hidden>
+        <span className="hero-aurora-blob hero-aurora-blob-1" />
+        <span className="hero-aurora-blob hero-aurora-blob-2" />
+        <span className="hero-aurora-blob hero-aurora-blob-3" />
+        <span className="hero-particle hero-particle-1" />
+        <span className="hero-particle hero-particle-2" />
+        <span className="hero-particle hero-particle-3" />
+        <span className="hero-particle hero-particle-4" />
+      </div>
+
       <div className="relative space-y-4 p-5 sm:p-7">
+        {/* 정직한 카피 — 실시간 갱신이 아니라 수동 검증 스냅샷이므로 '검증'을 전면에. */}
         <p className="flex items-center gap-2 text-xs font-semibold text-text-muted">
-          <span className="live-dot" aria-hidden />
-          {SNAPSHOT_DATE} 기준 · 실시간 큐레이션
+          <ShieldCheck className="size-3.5 text-accent-2-text" aria-hidden />
+          {SNAPSHOT_DATE} 검증 스냅샷 · 출처 확인 큐레이션
         </p>
 
         <div className="space-y-2.5">

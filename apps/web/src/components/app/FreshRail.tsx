@@ -132,7 +132,7 @@ export function FreshRail() {
             href={item.url}
             target="_blank"
             rel="noreferrer"
-            style={{ '--reveal-delay': Math.min(index, 8) * 55 } as CSSProperties}
+            style={{ '--reveal-delay': Math.min(index * 40, 320) } as CSSProperties}
             className="reveal is-revealed group relative w-60 shrink-0 snap-start overflow-hidden rounded-lg border border-border bg-surface transition-[transform,border-color,box-shadow] duration-200 ease-[var(--ease-out-quart)] hover:-translate-y-1 hover:border-border-strong hover:shadow-[0_14px_30px_-20px_color-mix(in_oklch,var(--color-ink),transparent_50%)]"
           >
             <div className="relative overflow-hidden">

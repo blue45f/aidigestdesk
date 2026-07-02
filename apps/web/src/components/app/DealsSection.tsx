@@ -14,6 +14,8 @@ import {
 import { BadgePercent, Clock, ExternalLink, MapPin } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
+import type { CSSProperties } from 'react'
+
 import {
   ActiveFilterChips,
   Chip,
@@ -116,13 +118,18 @@ function LabeledRow({ label, value }: { label: string; value: string }) {
   )
 }
 
-function DealCard({ deal }: { deal: LlmDeal }) {
+function DealCard({ deal, index = 0 }: { deal: LlmDeal; index?: number }) {
   const status = getDealStatus(deal, SNAPSHOT_DATE)
   const providerId = isProviderId(deal.provider) ? deal.provider : undefined
   const domain = providerId ? undefined : getDomainFromUrl(deal.url)
 
   return (
-    <article className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4">
+    // 진입 스태거(40ms 간격, 상한 320ms) + 호버 액센트 글로우/리프트 + 프레스 스케일 + 광택 스윕.
+    <article
+      style={{ '--reveal-delay': Math.min(index * 40, 320) } as CSSProperties}
+      className="reveal is-revealed group relative flex flex-col gap-3 overflow-hidden rounded-lg border border-border bg-surface p-4 transition-[transform,border-color,box-shadow] duration-200 ease-[var(--ease-out-quart)] hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_16px_36px_-20px_color-mix(in_oklch,var(--color-accent),transparent_35%)] active:translate-y-0 active:scale-[0.99]"
+    >
+      <span className="sheen" aria-hidden />
       <div className="flex items-start gap-3">
         <BrandMark providerId={providerId} domain={domain} label={deal.providerName} size="sm" />
         <div className="min-w-0 flex-1">
@@ -313,8 +320,8 @@ export function DealsSection({ deals = llmDeals }: { deals?: LlmDeal[] }) {
 
       {visibleDeals.length ? (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {visibleDeals.map((deal) => (
-            <DealCard key={deal.id} deal={deal} />
+          {visibleDeals.map((deal, index) => (
+            <DealCard key={deal.id} deal={deal} index={index} />
           ))}
         </div>
       ) : (

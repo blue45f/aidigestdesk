@@ -265,9 +265,12 @@ export function Header({
         ))}
       </nav>
 
-      {/* 모바일 검색 */}
+      {/* 모바일 검색 — 열림 시 위에서 살짝 떠오르는 팝(menu-pop, reduced-motion 시 즉시) */}
       {showMobileSearch ? (
-        <div id="mobile-global-search" className="border-t border-border px-3 py-2.5 lg:hidden">
+        <div
+          id="mobile-global-search"
+          className="menu-pop border-t border-border px-3 py-2.5 lg:hidden"
+        >
           <div className="relative">
             <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-subtle" />
             <input
@@ -315,13 +318,18 @@ export function BottomTabBar({
               active ? 'text-accent-text' : 'text-text-subtle hover:text-text'
             }`}
           >
-            {/* 활성 표시 — 아이콘 뒤 accent 알약(Material 스타일) */}
+            {/* 활성 표시 — 아이콘 뒤 accent 알약(Material 스타일) + 활성 시 아이콘 스케일 팝 */}
             <span
-              className={`flex h-7 w-14 items-center justify-center rounded-full transition-colors ${
+              className={`flex h-7 w-14 items-center justify-center rounded-full transition-[background-color,transform] duration-200 ease-[var(--ease-out-expo)] ${
                 active ? 'bg-accent/12' : ''
               }`}
             >
-              <item.icon className="size-[1.3rem]" aria-hidden />
+              <item.icon
+                className={`size-[1.3rem] transition-transform duration-200 ease-[var(--ease-out-expo)] ${
+                  active ? 'scale-110' : 'scale-100'
+                }`}
+                aria-hidden
+              />
             </span>
             <span className="leading-none">{item.mobileLabel}</span>
           </button>

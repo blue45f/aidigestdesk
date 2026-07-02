@@ -59,17 +59,20 @@ function easeOutExpo(t: number): number {
  * 진입 시 0→value 로 한 번 카운트업하는 숫자.
  * - prefers-reduced-motion / 비숫자 표시값이면 즉시 최종값을 보여준다.
  * - 진입 후 1회만 실행하며 rAF 기반(스크롤 리스너 없음).
+ * - decimals: 소수 자릿수 고정 표시(벤치마크 점수 등 소수 값 지원). 기본 0(정수 반올림).
  */
 export function CountUp({
   value,
   durationMs = 900,
   className,
   suffix = '',
+  decimals = 0,
 }: {
   value: number
   durationMs?: number
   className?: string
   suffix?: string
+  decimals?: number
 }) {
   const { ref, revealed } = useReveal<HTMLSpanElement>({ threshold: 0 })
   const [display, setDisplay] = useState(() => (prefersReducedMotion() ? value : 0))
@@ -84,7 +87,7 @@ export function CountUp({
     const start = performance.now()
     const tick = (now: number) => {
       const progress = Math.min(1, (now - start) / durationMs)
-      setDisplay(Math.round(easeOutExpo(progress) * value))
+      setDisplay(easeOutExpo(progress) * value)
       if (progress < 1) frame = requestAnimationFrame(tick)
     }
     frame = requestAnimationFrame(tick)
@@ -93,7 +96,10 @@ export function CountUp({
 
   return (
     <span ref={ref} className={className}>
-      {display.toLocaleString('ko-KR')}
+      {display.toLocaleString('ko-KR', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      })}
       {suffix}
     </span>
   )

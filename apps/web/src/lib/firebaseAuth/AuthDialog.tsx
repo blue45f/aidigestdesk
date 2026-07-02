@@ -148,19 +148,20 @@ export function AuthDialog({
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- 오버레이 클릭/Esc로 닫는 모달; 포커스는 패널 내부에 트랩.
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4 backdrop-blur-sm"
+      className="overlay-fade fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4 backdrop-blur-sm"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) close()
       }}
       onKeyDown={onKeyDown}
     >
+      {/* 열림 모션 — backdrop 페이드 + 패널 스케일 팝(0.96→1, ease-out-expo). reduced-motion 즉시. */}
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descId}
-        className="w-full max-w-sm rounded-lg border border-border bg-surface p-5 shadow-xl"
+        className="overlay-pop w-full max-w-sm rounded-lg border border-border bg-surface p-5 shadow-xl"
       >
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2">

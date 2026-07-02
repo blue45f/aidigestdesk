@@ -35,6 +35,8 @@ import {
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
+import type { CSSProperties } from 'react'
+
 import {
   BrandMark,
   EmptyState,
@@ -443,8 +445,12 @@ export function Briefing({
           ) : null}
         </header>
         <ul className="space-y-2">
-          {latest.map((item) => (
-            <li key={item.id}>
+          {latest.map((item, index) => (
+            <li
+              key={item.id}
+              className="reveal is-revealed"
+              style={{ '--reveal-delay': Math.min(index * 40, 320) } as CSSProperties}
+            >
               <div className="flex items-start gap-3 rounded-xl border border-border bg-surface px-3 py-3 transition-colors hover:border-border-strong">
                 <BrandMark
                   providerId={item.providerId === 'market' ? undefined : item.providerId}

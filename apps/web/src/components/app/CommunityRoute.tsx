@@ -3,6 +3,7 @@ import {
   addComment,
   addPost,
   boardCategories,
+  burstAt,
   deleteBoardPost,
   deleteComment,
   deletePost,
@@ -61,6 +62,17 @@ import {
 import { getCommunityClient } from '@/components/app/deskcloud'
 
 type CommunityTab = 'chat' | 'board' | 'cafe'
+
+/**
+ * 제출 성공 피드백 — 폼의 submit 버튼 중심 좌표에서 파티클 버스트.
+ * reduced-motion 은 burstAt 이 자체적으로 무시한다(shared 엔진).
+ */
+function burstFromForm(form: HTMLFormElement | null) {
+  if (!form) return
+  const button = form.querySelector<HTMLElement>('button[type="submit"]')
+  const rect = (button ?? form).getBoundingClientRect()
+  burstAt(rect.left + rect.width / 2, rect.top + rect.height / 2)
+}
 
 function MessageRow({ post }: { post: Post }) {
   const mine = isOwner(post.authorId)
@@ -164,13 +176,14 @@ function ChatTab({ nickname }: { nickname: string }) {
     [state, activeChannel]
   )
 
-  const submit = () => {
+  const submit = (form: HTMLFormElement | null = null) => {
     if (!activeChannel) return
     const body = draft.trim()
     if (!body) return
 
     addPost({ channelId: activeChannel.id, author: nickname, body })
     setDraft('')
+    burstFromForm(form)
   }
 
   return (
@@ -209,7 +222,8 @@ function ChatTab({ nickname }: { nickname: string }) {
 
         <div className="min-w-0">
           {activeChannel ? (
-            <div className="space-y-4">
+            // key 로 채널 전환 시 스레드 컨테이너를 스왑(진입 애니메이션 재생).
+            <div key={activeChannel.id} className="swap-in space-y-4">
               <header className="rounded-md border border-border bg-bg p-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h3 className="flex items-center gap-1.5 text-sm font-semibold text-text">
@@ -245,7 +259,7 @@ function ChatTab({ nickname }: { nickname: string }) {
                 className="space-y-3 rounded-md border border-border bg-bg p-3"
                 onSubmit={(event) => {
                   event.preventDefault()
-                  submit()
+                  submit(event.currentTarget)
                 }}
               >
                 <label className="block">
@@ -256,7 +270,7 @@ function ChatTab({ nickname }: { nickname: string }) {
                     onKeyDown={(event) => {
                       if (event.key === 'Enter' && !event.shiftKey) {
                         event.preventDefault()
-                        submit()
+                        submit(event.currentTarget.form)
                       }
                     }}
                     rows={3}
@@ -302,11 +316,12 @@ function CommentSection({ postId, nickname }: { postId: string; nickname: string
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editBody, setEditBody] = useState('')
 
-  const submit = () => {
+  const submit = (form: HTMLFormElement | null = null) => {
     const trimmed = body.trim()
     if (!trimmed) return
     addComment({ postId, author: nickname, body: trimmed })
     setBody('')
+    burstFromForm(form)
   }
   const saveEdit = (id: string) => {
     const trimmed = editBody.trim()
@@ -396,7 +411,7 @@ function CommentSection({ postId, nickname }: { postId: string; nickname: string
         className="mt-2 flex items-end gap-2"
         onSubmit={(event) => {
           event.preventDefault()
-          submit()
+          submit(event.currentTarget)
         }}
       >
         <input
@@ -543,11 +558,12 @@ function BoardComposer({
 
   const canSubmit = title.trim().length > 0 && body.trim().length > 0
 
-  const submit = () => {
+  const submit = (form: HTMLFormElement | null = null) => {
     if (!canSubmit) return
     onSubmit({ category, title: title.trim(), body: body.trim() })
     setTitle('')
     setBody('')
+    burstFromForm(form)
   }
 
   return (
@@ -555,7 +571,7 @@ function BoardComposer({
       className="space-y-3 rounded-md border border-border bg-bg p-3"
       onSubmit={(event) => {
         event.preventDefault()
-        submit()
+        submit(event.currentTarget)
       }}
     >
       <div className="grid gap-3 sm:grid-cols-[1fr_2fr]">
@@ -642,18 +658,21 @@ function BoardTab({ nickname }: { nickname: string }) {
           onChange={setActiveCategory}
         />
 
-        {posts.length > 0 ? (
-          <ul className="space-y-2">
-            {posts.map((post) => (
-              <BoardPostRow key={post.id} post={post} nickname={nickname} />
-            ))}
-          </ul>
-        ) : (
-          <EmptyState
-            title="아직 글이 없습니다"
-            body="이 카테고리에는 아직 글이 없습니다. 아래에서 첫 글을 작성해 보세요."
-          />
-        )}
+        {/* key 로 카테고리 전환 시 목록 컨테이너를 스왑(진입 애니메이션 재생). */}
+        <div key={activeCategory} className="swap-in">
+          {posts.length > 0 ? (
+            <ul className="space-y-2">
+              {posts.map((post) => (
+                <BoardPostRow key={post.id} post={post} nickname={nickname} />
+              ))}
+            </ul>
+          ) : (
+            <EmptyState
+              title="아직 글이 없습니다"
+              body="이 카테고리에는 아직 글이 없습니다. 아래에서 첫 글을 작성해 보세요."
+            />
+          )}
+        </div>
 
         <BoardComposer
           nickname={nickname}
@@ -929,7 +948,8 @@ function RemoteBoardPanel({
   }
 
   return (
-    <div className="space-y-3">
+    // RemoteBoardTab 이 key={board.slug} 로 마운트하므로 보드 전환 시 스왑 애니메이션 재생.
+    <div className="swap-in space-y-3">
       {loading ? (
         <RemoteLoadingRow label="글을 불러오는 중…" />
       ) : error ? (
@@ -1164,13 +1184,13 @@ export function CommunityRoute({
               </h1>
               {remote ? (
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
-                  채팅방에서 실시간 대화를, 게시판에서 카테고리별 글을, 카페에서 관심 주제 모임을
+                  채팅방에서 가벼운 대화를, 게시판에서 카테고리별 글을, 카페에서 관심 주제 모임을
                   즐겨 보세요. 게시판·카페는 CommunityDesk 서비스에 연결되어 있어 글이 실제로
                   저장·공유되며, 채팅방은 아직 이 브라우저에만 저장되는 데모입니다.
                 </p>
               ) : (
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
-                  채팅방에서 실시간 대화를, 게시판에서 카테고리별 글을, 카페에서 관심 주제 모임을
+                  채팅방에서 가벼운 대화를, 게시판에서 카테고리별 글을, 카페에서 관심 주제 모임을
                   즐겨 보세요. 이 공간은 데모 단계이며 모든 글과 가입 정보는 백엔드 없이 이
                   브라우저(localStorage)에만 저장됩니다.
                 </p>
@@ -1204,7 +1224,10 @@ export function CommunityRoute({
           </div>
         </section>
 
-        {renderTab()}
+        {/* key 로 탭 전환 시 콘텐츠 컨테이너를 스왑(진입 애니메이션 재생, reduced-motion 즉시). */}
+        <div key={tab} className="swap-in">
+          {renderTab()}
+        </div>
       </div>
     </main>
   )

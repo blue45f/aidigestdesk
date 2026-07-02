@@ -138,8 +138,8 @@ export function SegmentBar<T extends string>({
             onClick={() => onChange(item.id)}
             className={
               item.id === value
-                ? 'min-h-9 shrink-0 rounded-md border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg'
-                : 'min-h-9 shrink-0 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
+                ? 'min-h-9 shrink-0 rounded-md border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg transition-[background-color,border-color,color,transform] duration-200 ease-[var(--ease-out-quart)] active:scale-95'
+                : 'min-h-9 shrink-0 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition-[background-color,border-color,color,transform] duration-200 ease-[var(--ease-out-quart)] hover:border-border-strong hover:text-text active:scale-95'
             }
           >
             {item.label}
@@ -190,8 +190,8 @@ export function MultiSegmentBar<T extends string>({
               }}
               className={
                 selected
-                  ? 'min-h-9 shrink-0 rounded-md border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg'
-                  : 'min-h-9 shrink-0 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-border-strong hover:text-text'
+                  ? 'min-h-9 shrink-0 rounded-md border border-ink bg-ink px-3 py-1.5 text-xs font-semibold text-ink-fg transition-[background-color,border-color,color,transform] duration-200 ease-[var(--ease-out-quart)] active:scale-95'
+                  : 'min-h-9 shrink-0 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition-[background-color,border-color,color,transform] duration-200 ease-[var(--ease-out-quart)] hover:border-border-strong hover:text-text active:scale-95'
               }
             >
               {item.label}

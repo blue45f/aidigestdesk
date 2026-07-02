@@ -40,7 +40,10 @@ import {
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
+import type { CSSProperties } from 'react'
+
 import { BrandMark, Chip, SortChip, type ChipTone, type SortDirection } from '@/components/app/CommonUi'
+import { CountUp } from '@/components/app/Motion'
 
 /* 벤치마크 모델명 → 상세 프로필 id 매칭(모델명/별칭, 공백·대소문자 무시). */
 const normalizeName = (value: string) => value.toLowerCase().replace(/\s+/g, ' ').trim()
@@ -137,25 +140,41 @@ function RankBadge({ position, medal = true }: { position: number; medal?: boole
   )
 }
 
+/* 랭킹 행 공통 진입 연출 — 순위 기반 스태거(40ms 간격, 상한 320ms)와 1·2·3위 글로우. */
+function rankRowStyle(position: number): CSSProperties {
+  return { '--reveal-delay': Math.min((position - 1) * 40, 320) } as CSSProperties
+}
+
+function rankGlowClass(position: number, medal: boolean): string {
+  return medal && position <= 3 ? ` rank-glow-${position}` : ''
+}
+
 function ModelRow({
   entry,
   position,
   onOpen,
   medal = true,
+  maxScore,
 }: {
   entry: BenchmarkEntry
   position: number
   onOpen?: () => void
   medal?: boolean
+  /** 현재 목록의 최고 점수 — 점수 바(상대 채움) 계산용. */
+  maxScore?: number
 }) {
   const provider =
     entry.providerId === 'other'
       ? '기타'
       : (getProviderLabel(entry.providerId) ?? entry.providerId)
   const score = parseNum(entry.score)
-  // ≈(추정) 접두는 보존, 숫자엔 천단위 구분
+  // ≈(추정) 접두는 보존, 숫자엔 천단위 구분(소수 자릿수는 원본 표기를 따른다)
   const isEstimate = entry.score.trim().startsWith('≈')
-  const scoreDisplay = score != null ? (isEstimate ? '≈' : '') + score.toLocaleString('ko-KR') : entry.score
+  const scoreDecimals = score != null ? Math.min(String(score).split('.')[1]?.length ?? 0, 2) : 0
+  const scoreRatio =
+    score != null && maxScore != null && maxScore > 0 && score >= 0
+      ? Math.max(6, Math.round((score / maxScore) * 100))
+      : null
   // 단위가 맞는 값만 칩으로 — 일부 데이터의 price/speed 필드엔 설명 문구가 들어있어 거른다.
   const showPrice = Boolean(entry.price) && /[$₩]|원|무료|free|\/\s*1m/i.test(entry.price)
   const showSpeed = Boolean(entry.speed) && /tok|\/s|초당|ms/i.test(entry.speed)
@@ -192,30 +211,41 @@ function ModelRow({
             ))}
           </div>
         ) : null}
+        {scoreRatio != null ? (
+          /* 점수 바 — 목록 최고점 대비 상대 채움. 진입 시 scaleX 0→1(행 스태거와 동기). */
+          <div className="rank-bar mt-2" aria-hidden>
+            <span className="rank-bar-fill" style={{ width: `${scoreRatio}%` }} />
+          </div>
+        ) : null}
       </div>
       <div className="shrink-0 text-right">
-        <p className="text-base font-bold tabular-nums text-text">{scoreDisplay}</p>
+        <p className="text-base font-bold tabular-nums text-text">
+          {score != null ? (
+            <>
+              {isEstimate ? '≈' : ''}
+              <CountUp value={score} decimals={scoreDecimals} durationMs={760} />
+            </>
+          ) : (
+            entry.score
+          )}
+        </p>
         <p className="text-[0.6875rem] text-text-subtle">점수</p>
       </div>
       {onOpen ? <ChevronRight className="size-4 shrink-0 text-text-subtle" aria-hidden /> : null}
     </>
   )
 
+  const rowClass = `flex w-full items-center gap-3 rounded-xl border border-border bg-surface px-3 py-3 transition-colors hover:border-border-strong${rankGlowClass(position, medal)}`
+
   return (
-    <li>
+    <li className="reveal is-revealed" style={rankRowStyle(position)}>
       {onOpen ? (
-        <button
-          type="button"
-          onClick={onOpen}
-          className="flex w-full items-center gap-3 rounded-xl border border-border bg-surface px-3 py-3 text-left transition-colors hover:border-border-strong"
-        >
+        <button type="button" onClick={onOpen} className={`${rowClass} text-left`}>
           {inner}
           <span className="sr-only">상세 보기</span>
         </button>
       ) : (
-        <div className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-3 transition-colors hover:border-border-strong">
-          {inner}
-        </div>
+        <div className={rowClass}>{inner}</div>
       )}
     </li>
   )
@@ -252,21 +282,17 @@ function ExtensionRow({
     </>
   )
 
+  const rowClass = `flex w-full items-center gap-3 rounded-xl border border-border bg-surface px-3 py-3 transition-colors hover:border-border-strong${rankGlowClass(position, medal)}`
+
   return (
-    <li>
+    <li className="reveal is-revealed" style={rankRowStyle(position)}>
       {onOpen ? (
-        <button
-          type="button"
-          onClick={onOpen}
-          className="flex w-full items-center gap-3 rounded-xl border border-border bg-surface px-3 py-3 text-left transition-colors hover:border-border-strong"
-        >
+        <button type="button" onClick={onOpen} className={`${rowClass} text-left`}>
           {inner}
           <span className="sr-only">상세 보기</span>
         </button>
       ) : (
-        <div className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-3 transition-colors hover:border-border-strong">
-          {inner}
-        </div>
+        <div className={rowClass}>{inner}</div>
       )}
     </li>
   )
@@ -368,6 +394,11 @@ export function RankingBoard({
 
   const visibleModels = limit ? rankedModels.slice(0, limit) : rankedModels
   const visibleExtensions = limit ? rankedExtensions.slice(0, limit) : rankedExtensions
+  // 점수 바(상대 채움)의 기준 — 현재 보이는 목록의 최고 점수.
+  const maxVisibleScore = visibleModels.reduce(
+    (max, entry) => Math.max(max, parseNum(entry.score) ?? 0),
+    0
+  )
   const totalCount = scope === 'models' ? rankedModels.length : rankedExtensions.length
   const shownCount = scope === 'models' ? visibleModels.length : visibleExtensions.length
 
@@ -538,6 +569,7 @@ export function RankingBoard({
                   entry={entry}
                   position={index + 1}
                   medal={effectiveModelSort === 'rank'}
+                  maxScore={maxVisibleScore}
                   onOpen={profileId ? () => onSelectModel?.(profileId) : undefined}
                 />
               )
