@@ -23,3 +23,6 @@ DESIGN.md
 
 # turbo cache
 .turbo/
+
+# local-only env (live ad group IDs 등)
+.env*.local
