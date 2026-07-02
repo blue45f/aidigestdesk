@@ -31,7 +31,7 @@ import {
   Trophy,
   Workflow,
 } from 'lucide-react'
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 
 import type { CSSProperties } from 'react'
 
@@ -99,11 +99,12 @@ import { IntroSplashScreen } from '@/components/layout/IntroSplashScreen'
 import { RouteAnnouncer } from '@/components/layout/RouteAnnouncer'
 import { SkipLink } from '@/components/layout/SkipLink'
 import { useColorScheme } from '@/hooks/useColorScheme'
-import { useDocumentTitle } from '@/hooks/useDocumentTitle'
+import { useDocumentMeta } from '@/hooks/useDocumentTitle'
 import { useSearchHotkey } from '@/hooks/useSearchHotkey'
 import { useAuth, type AuthUser } from '@/lib/firebaseAuth'
 import { shareOrCopy } from '@/lib/share'
 import { useToast } from '@/lib/toast'
+import { withRouteTransition } from '@/lib/viewTransition'
 
 // CLI 매뉴얼(명령 287개)은 데이터가 커서 lazy 로드 — /resources 진입 시에만 청크 fetch.
 
@@ -165,6 +166,25 @@ const routeMeta: Record<ContentRoute, { eyebrow: string; title: string; descript
   },
 }
 
+/**
+ * 라우트별 공유/SEO 설명 — routeMeta(콘텐츠 라우트)를 재사용하고, 나머지 라우트는
+ * routeTitles 에 맞춘 합리적 설명을 둔다. portal 은 undefined → index.html 기본값 복원.
+ */
+const routeDescriptions: Partial<Record<AppRoute, string>> = {
+  models: routeMeta.models.description,
+  tools: routeMeta.tools.description,
+  deals: routeMeta.deals.description,
+  resources: routeMeta.resources.description,
+  community: '채팅방·게시판·카페에서 AI/LLM 주제로 대화하고 글을 나누는 커뮤니티 공간입니다.',
+  about: 'AIDigestDesk 소개와 사용 가이드 — 데이터 검증 원칙과 화면별 활용법을 안내합니다.',
+  admin: '콘텐츠 스냅샷과 운영 도구를 관리하는 AIDigestDesk 관리자 콘솔입니다.',
+  account: '회원 로그인과 프로필, 게스트 전환 등 내 계정 정보를 관리합니다.',
+  support: '이용 중 궁금한 점이나 제안을 남기는 AIDigestDesk 문의 창구입니다.',
+  terms: '서비스 이용약관과 개인정보 처리방침 등 정책 문서를 확인합니다.',
+  design: 'AIDigestDesk 디자인 시스템 — 색·타이포그래피·컴포넌트 토큰을 한눈에 봅니다.',
+  sitemap: '모든 페이지와 섹션으로 한 번에 이동할 수 있는 전체 사이트맵입니다.',
+}
+
 const exploreCards: Array<{
   route: AppRoute
   title: string
@@ -224,7 +244,7 @@ function ExploreGrid({ onNavigate }: { onNavigate: (route: AppRoute) => void }) 
             key={card.route}
             type="button"
             onClick={() => onNavigate(card.route)}
-            style={{ '--reveal-delay': index * 60 } as CSSProperties}
+            style={{ '--reveal-delay': Math.min(index * 40, 320) } as CSSProperties}
             className="reveal is-revealed group relative flex items-start gap-3 overflow-hidden rounded-lg border border-border bg-surface p-4 text-left transition-[transform,border-color,box-shadow] duration-200 ease-[var(--ease-out-quart)] hover:-translate-y-0.5 hover:border-border-strong hover:shadow-[0_12px_28px_-18px_color-mix(in_oklch,var(--color-ink),transparent_55%)]"
           >
             <span className="sheen" aria-hidden />
@@ -529,7 +549,14 @@ export default function App() {
   const [modelsTab, setModelsTab] = useState<ModelsTabId>(getModelsTabFromHash)
   const toast = useToast()
 
-  useDocumentTitle(routeTitles[route])
+  // 라우트별 타이틀+공유 메타(description·og·twitter·og:url). portal 은 index.html 기본값 유지.
+  useDocumentMeta(route === 'portal' ? undefined : routeTitles[route], routeDescriptions[route])
+
+  // popstate 전환도 View Transition 을 타도록 최신 라우트를 ref 로 추적(effect 클로저의 stale 값 방지).
+  const routeRef = useRef(route)
+  useEffect(() => {
+    routeRef.current = route
+  }, [route])
 
   const clearSearch = useCallback(() => setQuery(''), [])
   useSearchHotkey(clearSearch)
@@ -537,9 +564,13 @@ export default function App() {
   useEffect(() => {
     const syncRoute = () => {
       const nextRoute = getCurrentRoute()
-      setRoute(nextRoute)
-      if (nextRoute === 'tools') setToolsPane(getToolsPaneFromHash())
-      if (nextRoute === 'models') setModelsTab(getModelsTabFromHash())
+      const commit = () => {
+        setRoute(nextRoute)
+        if (nextRoute === 'tools') setToolsPane(getToolsPaneFromHash())
+        if (nextRoute === 'models') setModelsTab(getModelsTabFromHash())
+      }
+      // 라우트가 실제로 바뀔 때만 View Transition — 해시만 바뀐 popstate 는 즉시 커밋.
+      if (nextRoute === routeRef.current || !withRouteTransition(commit)) commit()
     }
     window.addEventListener('popstate', syncRoute)
     return () => window.removeEventListener('popstate', syncRoute)
@@ -630,10 +661,21 @@ export default function App() {
     if (window.location.pathname !== nextPath) {
       window.history.pushState(null, '', nextPath)
     }
-    if (nextRoute === 'tools') setToolsPane(getToolsPaneFromHash())
-    if (nextRoute === 'models') setModelsTab(getModelsTabFromHash())
-    setRoute(nextRoute)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    const commit = () => {
+      if (nextRoute === 'tools') setToolsPane(getToolsPaneFromHash())
+      if (nextRoute === 'models') setModelsTab(getModelsTabFromHash())
+      setRoute(nextRoute)
+    }
+    // View Transition 경로에선 새 스냅숏이 이미 최상단이도록 즉시 스크롤,
+    // 미지원/reduced-motion 은 현행(즉시 전환 + smooth 스크롤) 유지.
+    const transitioned = withRouteTransition(() => {
+      commit()
+      window.scrollTo({ top: 0 })
+    })
+    if (!transitioned) {
+      commit()
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }
 
   const handleAdminLogin = (session: AdminSession) => {
@@ -1047,10 +1089,11 @@ export default function App() {
       ) : (
         <div className="grid lg:grid-cols-[15rem_1fr]">
           <Sidebar route={route} onNavigate={navigateToRoute} />
+          {/* 하단 패딩은 index.css 의 main#main-content 공통 규칙이 담당 — 우하단 FAB(MusicToggle) 가림 방지 */}
           <main
             id="main-content"
             tabIndex={-1}
-            className="min-w-0 px-3 py-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] outline-none sm:px-4 sm:py-5 lg:px-6"
+            className="min-w-0 px-3 py-4 outline-none sm:px-4 sm:py-5 lg:px-6"
           >
             <div className="mx-auto max-w-[96rem] space-y-5 sm:space-y-6">
               {renderSections(isContentRoute ? (route as ContentRoute) : 'portal')}

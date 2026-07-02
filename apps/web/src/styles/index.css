@@ -383,8 +383,11 @@
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  /* 라이트 모드 기본 — 흰 배경에서도 또렷하게(진한·채도 높은 브랜드 색). */
-  background-image: linear-gradient(100deg, #1d4ed8 0%, #0891b2 24%, #059669 44%, #7c3aed 64%, #1d4ed8 88%, #0891b2 100%);
+  /* 라이트 모드 기본 — 흰 배경에서도 또렷하게(진한·채도 높은 브랜드 색).
+     대비 실측(bg oklch 0.985 / surface 0.998, 대형 텍스트): #1d4ed8 6.42:1 · #7c3aed 5.46:1 통과,
+     시안 #0891b2(3.53:1)·그린 #059669(3.61:1)는 4.5:1 권장 미달 → hue·채도 유지, 명도만 하향한
+     #007d9e(4.52:1)·#008458(4.52:1)로 교체(3:1 하한은 전 스톱 통과). */
+  background-image: linear-gradient(100deg, #1d4ed8 0%, #007d9e 24%, #008458 44%, #7c3aed 64%, #1d4ed8 88%, #007d9e 100%);
   background-size: 220% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -403,4 +406,315 @@
 .x-fade {
   -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent 100%);
   mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent 100%);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   라우트 전환(View Transitions) — 살짝 위로 떠오르는 fade+slide.
+   JS(withRouteTransition)가 지원+모션 허용일 때만 시작하지만, CSS도 이중 게이트.
+   ───────────────────────────────────────────────────────────── */
+@keyframes route-leave {
+  to {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes route-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: route-leave 0.24s var(--ease-out-quart) both;
+  }
+  ::view-transition-new(root) {
+    animation: route-enter 0.3s var(--ease-out-expo) both;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   FAB 가림 방지 — 우하단 고정 오디오 컨트롤(MusicToggle: bottom 84px + 높이 44px)이
+   페이지 마지막 콘텐츠(홈 푸터·/terms 공지·/support 글자수 등)를 가리지 않도록
+   모든 라우트의 main#main-content 하단에 공통 safe-space 를 확보한다(360px QA).
+   모바일(<lg)은 루트 래퍼의 하단 탭바 여백(3.75rem)과 합산되므로 더 작게 둔다.
+   ───────────────────────────────────────────────────────────── */
+main#main-content {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 1024px) {
+  main#main-content {
+    padding-bottom: calc(9rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PortalHero 오로라 — 블러 그라데이션 블롭 드리프트 + 부유 파티클(전부 장식, aria-hidden).
+   라이트: 저채도·저불투명으로 텍스트 대비 보존 / 다크: 더 또렷. overflow-hidden 내부 전용.
+   ───────────────────────────────────────────────────────────── */
+@keyframes aurora-drift-a {
+  from {
+    transform: translate3d(-6%, -4%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(10%, 8%, 0) scale(1.16);
+  }
+}
+
+@keyframes aurora-drift-b {
+  from {
+    transform: translate3d(8%, 6%, 0) scale(1.12);
+  }
+  to {
+    transform: translate3d(-8%, -6%, 0) scale(0.94);
+  }
+}
+
+@keyframes aurora-drift-c {
+  from {
+    transform: translate3d(-4%, 10%, 0) scale(0.96);
+  }
+  to {
+    transform: translate3d(6%, -8%, 0) scale(1.12);
+  }
+}
+
+@keyframes particle-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translate3d(6px, -14px, 0);
+    opacity: 0.85;
+  }
+}
+
+.hero-aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero-aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(44px);
+  opacity: 0.3;
+  will-change: transform;
+}
+
+.dark .hero-aurora-blob {
+  opacity: 0.52;
+}
+
+.hero-aurora-blob-1 {
+  top: -34%;
+  left: -8%;
+  width: 24rem;
+  height: 16rem;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklch, var(--color-accent), transparent 30%),
+    transparent
+  );
+}
+
+.hero-aurora-blob-2 {
+  top: -12%;
+  right: -6%;
+  width: 20rem;
+  height: 14rem;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklch, var(--color-accent-2), transparent 35%),
+    transparent
+  );
+}
+
+.hero-aurora-blob-3 {
+  bottom: -44%;
+  left: 28%;
+  width: 26rem;
+  height: 15rem;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklch, var(--color-accent-3), transparent 45%),
+    transparent
+  );
+}
+
+.hero-particle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+  background: color-mix(in oklch, var(--color-accent), transparent 45%);
+  opacity: 0.3;
+}
+
+.dark .hero-particle {
+  opacity: 0.6;
+}
+
+.hero-particle-1 {
+  top: 22%;
+  left: 12%;
+}
+
+.hero-particle-2 {
+  top: 58%;
+  left: 38%;
+  width: 4px;
+  height: 4px;
+  background: color-mix(in oklch, var(--color-accent-2), transparent 40%);
+}
+
+.hero-particle-3 {
+  top: 28%;
+  right: 16%;
+  width: 6px;
+  height: 6px;
+  background: color-mix(in oklch, var(--color-accent-3), transparent 50%);
+}
+
+.hero-particle-4 {
+  top: 70%;
+  right: 30%;
+  width: 4px;
+  height: 4px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-aurora-blob-1 {
+    animation: aurora-drift-a 21s var(--ease-out-quart) infinite alternate;
+  }
+  .hero-aurora-blob-2 {
+    animation: aurora-drift-b 17s var(--ease-out-quart) infinite alternate;
+  }
+  .hero-aurora-blob-3 {
+    animation: aurora-drift-c 25s var(--ease-out-quart) infinite alternate;
+  }
+  .hero-particle {
+    animation: particle-float 8s var(--ease-out-quart) infinite;
+  }
+  .hero-particle-2 {
+    animation-duration: 10s;
+    animation-delay: 1.2s;
+  }
+  .hero-particle-3 {
+    animation-duration: 7s;
+    animation-delay: 2.4s;
+  }
+  .hero-particle-4 {
+    animation-duration: 11s;
+    animation-delay: 0.6s;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   오버레이/메뉴/리스트 스왑 진입 모션 — backdrop 페이드 + 스케일 팝(0.96→1, ease-out-expo).
+   reduced-motion 이면 즉시 표시(전역 게이트 + 여기서도 no-preference 로 이중 게이트).
+   ───────────────────────────────────────────────────────────── */
+@keyframes overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes overlay-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+}
+
+@keyframes menu-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+}
+
+@keyframes swap-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .overlay-fade {
+    animation: overlay-fade-in 0.2s var(--ease-out-quart) both;
+  }
+  .overlay-pop {
+    animation: overlay-pop-in 0.2s var(--ease-out-expo) both;
+  }
+  .menu-pop {
+    transform-origin: top center;
+    animation: menu-pop-in 0.18s var(--ease-out-expo) both;
+  }
+  .swap-in {
+    animation: swap-in-up 0.28s var(--ease-out-expo) both;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   랭킹 1·2·3위 하이라이트 글로우 — 메달(순위) 정렬일 때만 행에 부여. 정적 스타일이라
+   모션 설정과 무관. 색은 RankBadge 메달 톤(amber/slate/orange)과 동일 계열.
+   ───────────────────────────────────────────────────────────── */
+.rank-glow-1 {
+  border-color: color-mix(in srgb, #f59e0b, transparent 45%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #f59e0b, transparent 75%),
+    0 10px 26px -16px color-mix(in srgb, #f59e0b, transparent 30%);
+}
+
+.rank-glow-2 {
+  border-color: color-mix(in srgb, #94a3b8, transparent 40%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #94a3b8, transparent 75%),
+    0 10px 24px -16px color-mix(in srgb, #94a3b8, transparent 35%);
+}
+
+.rank-glow-3 {
+  border-color: color-mix(in srgb, #fb923c, transparent 45%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #fb923c, transparent 78%),
+    0 10px 24px -16px color-mix(in srgb, #fb923c, transparent 40%);
+}
+
+/* 랭킹 점수 바 — 목록 최고점 대비 상대 채움. 진입 시 scaleX 0→1(transform-origin left),
+   지연은 행 스태거(--reveal-delay, li 에서 상속)와 동기. reduced-motion 은 즉시 채움. */
+@keyframes rank-bar-fill-in {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+.rank-bar {
+  height: 3px;
+  border-radius: 9999px;
+  background: color-mix(in oklch, var(--color-border), transparent 35%);
+  overflow: hidden;
+}
+
+.rank-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2));
+  transform-origin: left;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rank-bar-fill {
+    animation: rank-bar-fill-in 0.8s var(--ease-out-expo) both;
+    animation-delay: calc(var(--reveal-delay, 0) * 1ms);
+  }
 }
