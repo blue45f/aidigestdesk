@@ -13,16 +13,19 @@ import {
   glossaryCategories,
   learning,
   learningTypes,
+  news,
+  newsRegions,
   tools,
 } from '../lib/extras';
 import { theme, pageShell } from '../theme';
 import { Badge, BrandIcon, Chips, MetaChip, SearchBar, Segmented } from '../ui';
 
-type Scope = 'glossary' | 'learning' | 'tools';
+type Scope = 'glossary' | 'learning' | 'tools' | 'news';
 const SCOPES = [
   { id: 'glossary', label: '용어집' },
   { id: 'learning', label: '강좌·자료' },
   { id: 'tools', label: 'AI 도구' },
+  { id: 'news', label: '해외 소식' },
 ];
 
 const VISIBLE = 20;
@@ -42,6 +45,7 @@ export function ResourcesPage() {
   const [q, setQ] = useState('');
   const [gCat, setGCat] = useState('전체');
   const [lType, setLType] = useState('전체');
+  const [nRegion, setNRegion] = useState('전체');
   const [showAllLearning, setShowAllLearning] = useState(false);
 
   const query = q.trim().toLowerCase();
@@ -66,17 +70,27 @@ export function ResourcesPage() {
     return tools.filter((t) => !query || [t.toolName, t.vendor, t.category, ...t.bestFor, ...t.tags].join(' ').toLowerCase().includes(query));
   }, [query]);
 
+  const filteredNews = useMemo(() => {
+    return news.filter((n) => {
+      const okRegion = nRegion === '전체' || n.region === nRegion;
+      const okQ = !query || [n.koTitle, n.originalTitle, n.publisher, n.koSummary, n.koreanAngle, ...n.keyPoints, ...n.tags]
+        .filter(Boolean).join(' ').toLowerCase().includes(query);
+      return okRegion && okQ;
+    });
+  }, [nRegion, query]);
+
   return (
     <div style={{ minHeight: '100dvh', background: theme.bg, position: 'relative' }}>
       <ProfileButton />
       <Top title={<Top.TitleParagraph size={22}>📚 <AnimatedTitle size={22}>자료</AnimatedTitle></Top.TitleParagraph>}
-        subtitleBottom={<Top.SubtitleParagraph size={15}>용어집·강좌·AI 도구를 한국어로</Top.SubtitleParagraph>} />
+        subtitleBottom={<Top.SubtitleParagraph size={15}>용어집·강좌·도구·해외 소식을 한국어로</Top.SubtitleParagraph>} />
       <div style={pageShell}>
         <div className="rise" style={{ marginBottom: 14 }}>
           <Segmented options={SCOPES} value={scope} onChange={(v) => { setScope(v as Scope); setShowAllLearning(false); }} />
         </div>
         <div className="rise" style={{ animationDelay: '40ms', marginBottom: 12 }}>
-          <SearchBar value={q} onChange={setQ} placeholder={scope === 'glossary' ? '용어 검색' : scope === 'learning' ? '강좌·자료 검색' : '도구 검색'} />
+          <SearchBar value={q} onChange={setQ}
+            placeholder={scope === 'glossary' ? '용어 검색' : scope === 'learning' ? '강좌·자료 검색' : scope === 'tools' ? '도구 검색' : '해외 소식 검색'} />
         </div>
 
         {scope === 'glossary' && (
@@ -162,6 +176,49 @@ export function ResourcesPage() {
             ))}
             {filteredTools.length === 0 && <p style={{ textAlign: 'center', color: theme.textMuted, padding: '40px 0' }}>‘{q}’ 결과가 없어요.</p>}
           </div>
+        )}
+
+        {scope === 'news' && (
+          <>
+            <div className="rise" style={{ animationDelay: '70ms', marginBottom: 12 }}>
+              <Chips items={newsRegions} active={nRegion} onPick={setNRegion} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {filteredNews.map((n, i) => (
+                <a key={n.id} href={n.sourceUrl} target="_blank" rel="noreferrer" onClick={onExternalClick(n.sourceUrl)}
+                  className="pressable rise" style={{ animationDelay: `${90 + i * 14}ms`, display: 'block',
+                    background: theme.surface, border: `1px solid ${theme.border}`, borderRadius: theme.radius,
+                    padding: 16, color: theme.text }}>
+                  <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
+                    <BrandIcon src={n.iconUrl} size={14} />
+                    <span style={{ fontSize: 12.5, fontWeight: 700, color: theme.textMuted }}>{n.publisher}</span>
+                    <MetaChip>{n.region}</MetaChip>
+                    <span style={{ fontSize: 11.5, color: theme.textMuted, marginLeft: 'auto' }}>{n.publishedAt}</span>
+                  </div>
+                  <div style={{ fontSize: 15.5, fontWeight: 700, lineHeight: 1.4 }}>{n.koTitle}</div>
+                  <p style={{ fontSize: 12, color: theme.textMuted, marginTop: 3, lineHeight: 1.5 }}>
+                    {n.originalTitle} · {n.originalLanguage} 원문 번역
+                  </p>
+                  <p style={{ fontSize: 13.5, color: theme.text, marginTop: 8, lineHeight: 1.6 }}>{n.koSummary}</p>
+                  {n.keyPoints.length > 0 && (
+                    <ul style={{ margin: '8px 0 0', paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                      {n.keyPoints.map((k) => (
+                        <li key={k} style={{ fontSize: 12.5, color: theme.textMuted, lineHeight: 1.55 }}>{k}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {n.koreanAngle && (
+                    <p style={{ fontSize: 12.5, color: theme.text, marginTop: 8, lineHeight: 1.55, padding: '8px 10px',
+                      background: theme.accentSoft, borderRadius: 8 }}>
+                      🇰🇷 {n.koreanAngle}
+                    </p>
+                  )}
+                  <div style={{ marginTop: 10, fontSize: 12.5, fontWeight: 700, color: theme.accent }}>원문 보기 ↗</div>
+                </a>
+              ))}
+              {filteredNews.length === 0 && <p style={{ textAlign: 'center', color: theme.textMuted, padding: '40px 0' }}>‘{q || nRegion}’ 결과가 없어요.</p>}
+            </div>
+          </>
         )}
 
         <BannerAd adGroupId={AD_GROUPS.feedList} marginTop={18} />

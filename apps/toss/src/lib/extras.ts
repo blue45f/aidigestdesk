@@ -71,6 +71,22 @@ export interface ToolEntry {
   integrations: string[];
   tags: string[];
 }
+export interface NewsEntry {
+  id: string;
+  koTitle: string;
+  originalTitle: string;
+  publisher: string;
+  /** 출처(도메인) 아이콘 URL — 생성기 베이크. 웹 TranslatedNewsSection과 시각 싱크. */
+  iconUrl: string | null;
+  region: string;
+  originalLanguage: string;
+  publishedAt: string;
+  koSummary: string;
+  keyPoints: string[];
+  koreanAngle: string;
+  sourceUrl: string;
+  tags: string[];
+}
 interface ExtrasData {
   snapshotDate: string;
   deals: DealEntry[];
@@ -78,6 +94,7 @@ interface ExtrasData {
   glossary: GlossaryEntry[];
   learning: LearningEntry[];
   tools: ToolEntry[];
+  news: NewsEntry[];
 }
 
 const parsed = data as ExtrasData;
@@ -88,6 +105,7 @@ export const events = parsed.events;
 export const glossary = parsed.glossary;
 export const learning = parsed.learning;
 export const tools = parsed.tools;
+export const news = parsed.news;
 
 /** 데이터에 실제 존재하는 값으로 칩 목록 구성(전체 + 순서 보존). */
 function chipList(values: string[], all = '전체'): string[] {
@@ -100,3 +118,4 @@ export const dealTypes = chipList(deals.map((d) => d.dealType));
 export const eventStatuses = chipList(events.map((e) => e.status));
 export const glossaryCategories = chipList(glossary.map((g) => g.category));
 export const learningTypes = chipList(learning.map((l) => l.type));
+export const newsRegions = chipList(news.map((n) => n.region));

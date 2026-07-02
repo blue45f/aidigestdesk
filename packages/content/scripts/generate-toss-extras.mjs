@@ -19,6 +19,7 @@ import {
   learningResources,
   llmDeals,
   SNAPSHOT_DATE,
+  translatedArticles,
 } from '../dist/index.js'
 
 const scriptDir = dirname(fileURLToPath(import.meta.url))
@@ -116,11 +117,28 @@ const tools = aiCodingTools.map((t) => ({
   tags: cap(t.tags, 4),
 }))
 
-const payload = { snapshotDate: SNAPSHOT_DATE, deals, events, glossary, learning, tools }
+// 해외 소식 번역(웹 TranslatedNewsSection 대응) — 소량이라 요점·한국 시사점까지 전체 유지.
+const news = translatedArticles.map((n) => ({
+  id: n.id,
+  koTitle: n.koTitle,
+  originalTitle: n.originalTitle,
+  publisher: n.publisher,
+  iconUrl: brandIcon(null, n.sourceUrl),
+  region: n.region,
+  originalLanguage: n.originalLanguage,
+  publishedAt: n.publishedAt,
+  koSummary: n.koSummary,
+  keyPoints: cap(n.keyPoints, 4),
+  koreanAngle: n.koreanAngle,
+  sourceUrl: n.sourceUrl,
+  tags: cap(n.tags, 4),
+}))
+
+const payload = { snapshotDate: SNAPSHOT_DATE, deals, events, glossary, learning, tools, news }
 
 await mkdir(dirname(outputPath), { recursive: true })
 await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8')
 
 console.log(
-  `toss extras → ${outputPath}\n  deals: ${deals.length}, events: ${events.length}, glossary: ${glossary.length}, learning: ${learning.length}, tools: ${tools.length}`
+  `toss extras → ${outputPath}\n  deals: ${deals.length}, events: ${events.length}, glossary: ${glossary.length}, learning: ${learning.length}, tools: ${tools.length}, news: ${news.length}`
 )
