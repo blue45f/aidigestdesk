@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 
 import { AnimatedTitle } from '../components/AnimatedTitle';
 import { BannerAd } from '../components/BannerAd';
+import { ProfileButton } from '../components/ProfileButton';
 import { AD_GROUPS } from '../lib/ads';
 import { onExternalClick } from '../lib/links';
 
@@ -66,7 +67,8 @@ export function ResourcesPage() {
   }, [query]);
 
   return (
-    <div style={{ minHeight: '100dvh', background: theme.bg }}>
+    <div style={{ minHeight: '100dvh', background: theme.bg, position: 'relative' }}>
+      <ProfileButton />
       <Top title={<Top.TitleParagraph size={22}>📚 <AnimatedTitle size={22}>자료</AnimatedTitle></Top.TitleParagraph>}
         subtitleBottom={<Top.SubtitleParagraph size={15}>용어집·강좌·AI 도구를 한국어로</Top.SubtitleParagraph>} />
       <div style={pageShell}>

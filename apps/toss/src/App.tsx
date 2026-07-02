@@ -16,6 +16,7 @@ import { useEffect, useRef } from 'react';
 
 import { navigate, usePathname, registerPreNavigate } from './router';
 import { trackScreen } from './lib/analytics';
+import { restoreServerProfile } from './lib/auth';
 import { haptic } from './lib/haptic';
 import { MusicToggle } from './components/MusicToggle.tsx';
 import IntroSplashScreen from './components/IntroSplashScreen.tsx';
@@ -31,6 +32,13 @@ export function App() {
   useEffect(() => {
     trackScreen(path);
   }, [path]);
+
+  // 앱 마운트 시 1회 세션·프로필 복구(웹의 restoreMemberSession 대응) —
+  // 프로필 페이지에 들어가기 전에도 저장소를 비운 기기의 닉네임·아바타가 서버에서 복구된다.
+  // API 미설정/도달 불가면 조용히 no-op(로컬 프로필로 동작).
+  useEffect(() => {
+    void restoreServerProfile();
+  }, []);
 
   // 페이지 이동 시 전면 광고 노출 설정.
   // router.navigate가 View Transitions "밖에서" 매 이동당 정확히 1회 호출하는 콜백 —

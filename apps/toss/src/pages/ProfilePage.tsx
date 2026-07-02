@@ -6,7 +6,9 @@ import {
   disconnectServiceSession,
   ensureSession,
   isTossLoginUser,
+  restoreServerProfile,
   syncProfile,
+  type ServerUser,
 } from '../lib/auth';
 import { useBookmarks } from '../lib/bookmarks';
 import { isTossLoginAvailable } from '../lib/toss';
@@ -22,6 +24,7 @@ import { requestPushAgreement } from '../lib/notifications';
 export function ProfilePage() {
   const [profile, setProfile] = useState(() => getProfile());
   const [serverConnected, setServerConnected] = useState(false);
+  const [serverUser, setServerUser] = useState<ServerUser | null>(null);
   const [tossLoginEnabled, setTossLoginEnabled] = useState(false);
   const [tossConnected, setTossConnected] = useState(false);
   const [loginPending, setLoginPending] = useState(false);
@@ -53,26 +56,22 @@ export function ProfilePage() {
     }
   };
 
-  // 자체 API 세션 보장 + 저장소를 비운 기기 복구(서버에 실제 프로필이 있으면 끌어온다).
-  // API 미배포/도달 불가 시 graceful — 아무 일도 안 일어나고 로컬 프로필로 동작한다.
+  // 자체 API 세션 보장 + 저장소를 비운 기기 복구 — 복구 로직은 앱 마운트와 공유하는
+  // restoreServerProfile(lib/auth) 한 곳에 있다. API 미배포/도달 불가 시 graceful.
   useEffect(() => {
     let alive = true;
-    const initial = getProfile();
-    void Promise.all([
-      ensureSession(initial.nickname === '게스트' ? undefined : initial.nickname),
-      isTossLoginAvailable(),
-    ]).then(([user, loginAvailable]) => {
-      if (!alive) return;
-      setTossLoginEnabled(loginAvailable);
-      if (!user) return;
-      setServerConnected(true);
-      setTossConnected(isTossLoginUser(user));
-      if (initial.nickname === '게스트' && user.nickname && user.nickname !== '게스트') {
-        setNickname(user.nickname);
-        if (user.avatar) setAvatar(user.avatar);
-        setProfile((p) => ({ ...p, nickname: user.nickname, avatar: user.avatar || p.avatar }));
-      }
-    });
+    void Promise.all([restoreServerProfile(), isTossLoginAvailable()]).then(
+      ([user, loginAvailable]) => {
+        if (!alive) return;
+        setTossLoginEnabled(loginAvailable);
+        if (!user) return;
+        setServerConnected(true);
+        setServerUser(user);
+        setTossConnected(isTossLoginUser(user));
+        const restored = getProfile();
+        setProfile((p) => ({ ...p, nickname: restored.nickname, avatar: restored.avatar }));
+      },
+    );
     return () => {
       alive = false;
     };
@@ -101,6 +100,7 @@ export function ProfilePage() {
     }
     const user = result.user;
     setServerConnected(true);
+    setServerUser(user);
     setTossConnected(true);
     if (user.nickname) {
       setNickname(user.nickname);
@@ -113,12 +113,14 @@ export function ProfilePage() {
     disconnectServiceSession();
     setTossConnected(false);
     setServerConnected(false);
+    setServerUser(null);
     setLoginError(null);
     const current = getProfile();
     const anonymous = await ensureSession(
       current.nickname === '게스트' ? undefined : current.nickname,
     );
     setServerConnected(Boolean(anonymous));
+    setServerUser(anonymous);
     if (anonymous) {
       setNickname(anonymous.nickname);
       if (anonymous.avatar) setAvatar(anonymous.avatar);
@@ -192,6 +194,12 @@ export function ProfilePage() {
               color: serverConnected ? '#74d6a3' : theme.textMuted }}>
               {tossConnected ? '✓ 토스 로그인' : serverConnected ? '☁️ 서버 백업됨' : '기기 저장'}
             </span>
+            {serverUser?.isAdmin ? (
+              <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 7px', borderRadius: 999,
+                background: theme.accentSoft, color: theme.accent }}>
+                관리자
+              </span>
+            ) : null}
             <span style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: 11.5 }}>ID {shortId}</span>
           </span>
           {tossConnected ? (

@@ -2,6 +2,7 @@ import { Top } from '@toss/tds-mobile';
 
 import { AnimatedTitle } from '../components/AnimatedTitle';
 import { BannerAd } from '../components/BannerAd';
+import { ProfileButton } from '../components/ProfileButton';
 import { AD_GROUPS } from '../lib/ads';
 import { cliManuals, manualSnapshotDate } from '../lib/manuals';
 import { navigate } from '../router';
@@ -10,7 +11,8 @@ import { MetaChip } from '../ui';
 
 export function ManualListPage() {
   return (
-    <div style={{ minHeight: '100dvh', background: theme.bg }}>
+    <div style={{ minHeight: '100dvh', background: theme.bg, position: 'relative' }}>
+      <ProfileButton />
       <Top title={<Top.TitleParagraph size={22}>📘 <AnimatedTitle size={22}>코딩 CLI 매뉴얼</AnimatedTitle></Top.TitleParagraph>}
         subtitleBottom={<Top.SubtitleParagraph size={15}>설치·인증·명령어·기능·팁을 한국어로</Top.SubtitleParagraph>} />
       <div style={pageShell}>

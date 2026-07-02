@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { AnimatedTitle } from '../components/AnimatedTitle';
 import { BannerAd } from '../components/BannerAd';
+import { ProfileButton } from '../components/ProfileButton';
 import { getUpdates, type Update } from '../lib/api';
 import { AD_GROUPS } from '../lib/ads';
 import { haptic } from '../lib/haptic';
@@ -99,7 +100,7 @@ export function UpdateListPage() {
   const open = (u: Update) => navigate(`/update/${encodeURIComponent(u.id)}`);
 
   return (
-    <div style={{ minHeight: '100dvh', background: theme.bg }}>
+    <div style={{ minHeight: '100dvh', background: theme.bg, position: 'relative' }}>
       {/* 풀다운 인디케이터 — 당김 진행률에 따라 내려오고, 임계 통과 후 놓으면 확인 문구. */}
       {(pull > 6 || done) && (
         <div aria-hidden={!done} role={done ? 'status' : undefined}
@@ -114,6 +115,7 @@ export function UpdateListPage() {
           {done ? '✓ 최신 소식이에요' : pull >= PULL_THRESHOLD ? '↻ 놓으면 새로고침 연출' : '↓ 아래로 당기기'}
         </div>
       )}
+      <ProfileButton />
       <Top title={<Top.TitleParagraph size={22}>📰 <AnimatedTitle size={22}>AI다이제스트</AnimatedTitle></Top.TitleParagraph>}
         subtitleBottom={<Top.SubtitleParagraph size={15}>주요 AI 모델 업데이트를 한국어로 빠르게</Top.SubtitleParagraph>} />
       <div style={pageShell}>

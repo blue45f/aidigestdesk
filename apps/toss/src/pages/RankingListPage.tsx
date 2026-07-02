@@ -15,6 +15,7 @@ import {
 } from '../lib/rankings';
 import { AnimatedTitle } from '../components/AnimatedTitle';
 import { BannerAd } from '../components/BannerAd';
+import { ProfileButton } from '../components/ProfileButton';
 import { AD_GROUPS } from '../lib/ads';
 import { navigate } from '../router';
 import { theme, pageShell } from '../theme';
@@ -172,7 +173,8 @@ export function RankingListPage() {
   };
 
   return (
-    <div style={{ minHeight: '100dvh', background: theme.bg }}>
+    <div style={{ minHeight: '100dvh', background: theme.bg, position: 'relative' }}>
+      <ProfileButton />
       <Top title={<Top.TitleParagraph size={22}>🏆 <AnimatedTitle size={22}>분야별 랭킹</AnimatedTitle></Top.TitleParagraph>}
         subtitleBottom={<Top.SubtitleParagraph size={15}>AI 모델·확장 도구를 분야별로 한눈에</Top.SubtitleParagraph>} />
       <div style={pageShell}>

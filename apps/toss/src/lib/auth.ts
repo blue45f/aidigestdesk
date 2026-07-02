@@ -8,6 +8,8 @@
  * null/false 를 반환한다 → 호출부는 기존 로컬(shared/community) 프로필로 폴백한다.
  * 즉 API 가 없어도 앱은 그대로 동작하고, 배포되면 자동으로 고도화된다.
  */
+import { getProfile, setAvatar, setNickname } from '@aidigestdesk/content/shared';
+
 import { getStableUserKey, tossAppLogin } from './toss';
 
 /**
@@ -107,6 +109,23 @@ export async function ensureSession(nickname?: string): Promise<ServerUser | nul
   } catch {
     return null;
   }
+}
+
+/**
+ * 앱 시작 시 세션·프로필 복구(웹 restoreMemberSession 대응) — 서버 세션을 보장하고,
+ * 로컬 프로필이 기본값(게스트)인데 서버에 실제 프로필이 있으면 로컬로 끌어온다.
+ * ProfilePage 진입 전에도 커뮤니티 닉네임·아바타가 기기 간 일관되게 복구된다.
+ * @returns 서버 사용자 또는 null(API 미설정·도달 불가 — 로컬 프로필로 동작).
+ */
+export async function restoreServerProfile(): Promise<ServerUser | null> {
+  const initial = getProfile();
+  const user = await ensureSession(initial.nickname === '게스트' ? undefined : initial.nickname);
+  if (!user) return null;
+  if (initial.nickname === '게스트' && user.nickname && user.nickname !== '게스트') {
+    setNickname(user.nickname);
+    if (user.avatar) setAvatar(user.avatar);
+  }
+  return user;
 }
 
 /**

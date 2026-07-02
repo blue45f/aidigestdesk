@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 
 import { AnimatedTitle } from '../components/AnimatedTitle';
 import { BannerAd } from '../components/BannerAd';
+import { ProfileButton } from '../components/ProfileButton';
 import { RewardedInsight } from '../components/RewardedInsight';
 import { ShareButton } from '../components/ShareButton';
 import { AD_GROUPS } from '../lib/ads';
@@ -123,7 +124,8 @@ export function DealsPage() {
   );
 
   return (
-    <div style={{ minHeight: '100dvh', background: theme.bg }}>
+    <div style={{ minHeight: '100dvh', background: theme.bg, position: 'relative' }}>
+      <ProfileButton />
       <Top title={<Top.TitleParagraph size={22}>🎁 <AnimatedTitle size={22}>혜택 · 이벤트</AnimatedTitle></Top.TitleParagraph>}
         subtitleBottom={<Top.SubtitleParagraph size={15}>AI 할인·크레딧·해커톤을 한곳에서</Top.SubtitleParagraph>} />
       <div style={pageShell}>
